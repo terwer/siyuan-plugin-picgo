@@ -35,14 +35,14 @@ export default class ImporterPlugin extends Plugin {
   constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
     super(options)
 
-    this.logger = simpleLogger("index", "demo", isDev)
+    this.logger = simpleLogger("index", "picgo-plugin", isDev)
   }
 
   onload() {
-    this.logger.info("Demo loaded")
+    this.logger.info("PicGo Plugin loaded")
   }
 
   onunload() {
-    this.logger.info("Demo loaded")
+    this.logger.info("PicGo Plugin unloaded")
   }
 }
