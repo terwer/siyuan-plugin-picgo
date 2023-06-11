@@ -26,6 +26,6 @@
       "~/*": ["./*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "custom.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "custom.d.ts", "vue-shim.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

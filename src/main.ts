@@ -5,6 +5,7 @@ import { createAppLogger } from "./utils/appLogger.ts"
 import { InjectKeys } from "./utils/injectKeys.ts"
 import AppInstance from "./appInstance.ts"
 import i18n from "./locales"
+import FontAwesome from "~/src/composables/useFontAwesome.ts"
 
 /**
  * Vue 入口
@@ -21,6 +22,9 @@ const createVueApp = async () => {
 
   // 国际化
   app.use(i18n)
+
+  // font-awesome
+  app.use(FontAwesome)
 
   // router
   const router = useVueRouter()
