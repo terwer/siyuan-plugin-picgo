@@ -3,6 +3,9 @@ import vue from "@vitejs/plugin-vue"
 import minimist from "minimist"
 import { createHtmlPlugin } from "vite-plugin-html"
 import path from "path"
+import AutoImport from "unplugin-auto-import/vite"
+import Components from "unplugin-vue-components/vite"
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
 
 const args = minimist(process.argv.slice(2))
 const debugMode = true
@@ -24,6 +27,13 @@ console.log("distDir=>", distDir)
 export default defineConfig({
   plugins: [
     vue(),
+
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
+    }),
 
     createHtmlPlugin({
       minify: !isDev,
