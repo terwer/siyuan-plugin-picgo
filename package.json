@@ -6,7 +6,7 @@
   "scripts": {
     "serve": "vite",
     "dev": "pnpm pluginBuild && pnpm siyuanSync && pnpm siyuanDev",
-    "build": "pnpm siyuanBuild && pnpm pluginBuild && pnpm siyuanSync",
+    "build": "pnpm siyuanBuild && pnpm pluginBuild",
     "pluginBuild": "zhi-build --production",
     "siyuanDev": "vue-tsc && vite build --watch",
     "siyuanBuild": "vue-tsc && vite build",
