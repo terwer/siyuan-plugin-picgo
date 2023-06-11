@@ -23,13 +23,8 @@
  * questions.
  */
 
-// 图标
-// 建议使用 iconfont ，可以调色，可以调整大小
-// https://fontawesome.com/search?q=yuque&o=r&m=free
-// https://www.iconfont.cn/search/index?searchType=icon&q=cnblogs&page=1&tag=&fromCollection=1&fills=
-.iconfont-icon{
-  width 12px
-  height 12px
-  margin-right 10px
-  margin-top 0
-}
+export const workspaceDir = `${(window as any).siyuan.config.system.workspaceDir}`
+export const dataDir = `${(window as any).siyuan.config.system.dataDir}`
+export const isDev = process.env.DEV_MODE === "true"
+export const siyuanApiToken = ""
+export const siyuanApiUrl = ""

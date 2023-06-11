@@ -23,26 +23,8 @@
  * questions.
  */
 
-import { App, IObject, Plugin } from "siyuan"
-import { simpleLogger } from "zhi-lib-base"
-
-import "../index.styl"
-import { isDev } from "./Constants"
-
-export default class ImporterPlugin extends Plugin {
-  private logger
-
-  constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
-    super(options)
-
-    this.logger = simpleLogger("index", "picgo-plugin", isDev)
-  }
-
-  onload() {
-    this.logger.info("PicGo Plugin loaded")
-  }
-
-  onunload() {
-    this.logger.info("PicGo Plugin unloaded")
-  }
+declare module "*.vue" {
+  import { defineComponent } from "vue";
+  const component: ReturnType<typeof defineComponent>;
+  export default component;
 }
