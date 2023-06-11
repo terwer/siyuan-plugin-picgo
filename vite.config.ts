@@ -8,7 +8,7 @@ import Components from "unplugin-vue-components/vite"
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
 
 const args = minimist(process.argv.slice(2))
-const debugMode = true
+const debugMode = false
 const isWatch = args.watch || args.w || false
 const isDev = isWatch || debugMode
 const isWindows = process.platform === "win32"
