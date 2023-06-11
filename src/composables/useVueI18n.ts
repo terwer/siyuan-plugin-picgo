@@ -22,33 +22,20 @@
  * or visit www.terwer.space if you need additional information or have any
  * questions.
  */
+import { useI18n } from "vue-i18n"
 
-import { App, IObject, Plugin } from "siyuan"
-import { simpleLogger } from "zhi-lib-base"
-import { isDev } from "../common/Constants"
-import { initTopbar } from "./topbar"
-import { showPage } from "./dialog"
-import { PageRoute } from "./pageRoute"
+/**
+ * 多语言封装，解决 CSP
+ *
+ * https://github.com/intlify/vue-i18n-next/issues/543
+ */
+export const useVueI18n = () => {
+  const { messages, locale } = useI18n()
 
-export default class PicgoPlugin extends Plugin {
-  private logger
-
-  constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
-    super(options)
-
-    this.logger = simpleLogger("index", "picgo-plugin", isDev)
+  const translate = (key: any) => {
+    const localeMessages = messages.value?.[locale.value]
+    return localeMessages[key] || key
   }
 
-  onload() {
-    initTopbar(this)
-    this.logger.info("PicGo Plugin loaded")
-  }
-
-  openSetting() {
-    showPage(this, PageRoute.Page_Setting)
-  }
-
-  onunload() {
-    this.logger.info("PicGo Plugin unloaded")
-  }
+  return { t: translate, locale }
 }

@@ -43,7 +43,7 @@ module.exports = {
     bundle: true,
     format: "cjs",
     target: ["es6"],
-    external: ["siyuan", "/plugins/publish-bridge/lib/zhi-electron/index.js"],
+    external: ["siyuan"],
     plugins: [
       stylePlugin(),
 

@@ -23,32 +23,19 @@
  * questions.
  */
 
-import { App, IObject, Plugin } from "siyuan"
-import { simpleLogger } from "zhi-lib-base"
-import { isDev } from "../common/Constants"
-import { initTopbar } from "./topbar"
-import { showPage } from "./dialog"
-import { PageRoute } from "./pageRoute"
+import { createRouter, createWebHashHistory, Router, RouteRecordRaw } from "vue-router"
+import PicGoIndex from "~/src/components/PicGoIndex.vue"
 
-export default class PicgoPlugin extends Plugin {
-  private logger
+const PicGoSetting = () => import("~/src/components/PicGoSetting.vue")
 
-  constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
-    super(options)
+const routes: RouteRecordRaw[] = [
+  { path: "/", component: PicGoIndex },
+  { path: "/setting", component: PicGoSetting },
+]
 
-    this.logger = simpleLogger("index", "picgo-plugin", isDev)
-  }
-
-  onload() {
-    initTopbar(this)
-    this.logger.info("PicGo Plugin loaded")
-  }
-
-  openSetting() {
-    showPage(this, PageRoute.Page_Setting)
-  }
-
-  onunload() {
-    this.logger.info("PicGo Plugin unloaded")
-  }
+export const useVueRouter = (): Router => {
+  return createRouter({
+    history: createWebHashHistory(),
+    routes,
+  })
 }

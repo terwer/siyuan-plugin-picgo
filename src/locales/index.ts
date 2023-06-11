@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Terwer . All rights reserved.
+ * Copyright (c) 2022, Terwer . All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,32 +23,18 @@
  * questions.
  */
 
-import { App, IObject, Plugin } from "siyuan"
-import { simpleLogger } from "zhi-lib-base"
-import { isDev } from "../common/Constants"
-import { initTopbar } from "./topbar"
-import { showPage } from "./dialog"
-import { PageRoute } from "./pageRoute"
+import { createI18n } from "vue-i18n"
+import zh_CN from "./zh_CN"
+import en_US from "./en_US"
 
-export default class PicgoPlugin extends Plugin {
-  private logger
+const i18n = createI18n({
+  legacy: false,
+  locale: "zh_CN", // 默认显示语言
+  fallbackLocale: "en_US", // 次要语言
+  messages: {
+    zh_CN,
+    en_US,
+  },
+})
 
-  constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
-    super(options)
-
-    this.logger = simpleLogger("index", "picgo-plugin", isDev)
-  }
-
-  onload() {
-    initTopbar(this)
-    this.logger.info("PicGo Plugin loaded")
-  }
-
-  openSetting() {
-    showPage(this, PageRoute.Page_Setting)
-  }
-
-  onunload() {
-    this.logger.info("PicGo Plugin unloaded")
-  }
-}
+export default i18n

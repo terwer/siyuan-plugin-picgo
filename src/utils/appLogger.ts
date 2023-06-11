@@ -23,32 +23,38 @@
  * questions.
  */
 
-import { App, IObject, Plugin } from "siyuan"
+import { isDev } from "../../common/Constants.ts"
 import { simpleLogger } from "zhi-lib-base"
-import { isDev } from "../common/Constants"
-import { initTopbar } from "./topbar"
-import { showPage } from "./dialog"
-import { PageRoute } from "./pageRoute"
 
-export default class PicgoPlugin extends Plugin {
-  private logger
+/**
+ * 使用 eruda 更好的控制日志
+ */
+window.console = isDev ? (window as any).eruda.get("console") : window.console
 
-  constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
-    super(options)
+/**
+ * 简单的日志接口
+ */
+interface ILogger {
+  debug: (msg: string, obj?: any) => void
+  info: (msg: string, obj?: any) => void
+  warn: (msg: string, obj?: any) => void
+  error: (msg: string | Error, obj?: any) => void
+}
 
-    this.logger = simpleLogger("index", "picgo-plugin", isDev)
-  }
+/**
+ * 一个简单轻量级的日志记录器
+ *
+ * @author terwer
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+export const createAppLogger = (name: string): ILogger => {
+  return simpleLogger(name, "picgo-plugin-app", isDev)
+}
 
-  onload() {
-    initTopbar(this)
-    this.logger.info("PicGo Plugin loaded")
-  }
-
-  openSetting() {
-    showPage(this, PageRoute.Page_Setting)
-  }
-
-  onunload() {
-    this.logger.info("PicGo Plugin unloaded")
-  }
+/**
+ * 销毁日志
+ */
+export const destroyLogger = (): void => {
+  ;(window as any).eruda.destroy()
 }

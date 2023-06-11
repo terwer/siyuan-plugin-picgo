@@ -23,8 +23,9 @@
  */
 
 import { icons } from "./utils/svg"
-import { Dialog } from "siyuan"
 import PicgoPlugin from "./index"
+import { showPage } from "./dialog"
+import { PageRoute } from "./pageRoute"
 
 /**
  * 顶栏按钮
@@ -43,25 +44,6 @@ export function initTopbar(pluginInstance: PicgoPlugin) {
   })
 
   topBarElement.addEventListener("click", async () => {
-    showPage(pluginInstance, "/plugins/siyuan-plugin-picgo/index.html")
+    showPage(pluginInstance, PageRoute.Page_Home)
   })
-}
-
-const showPage = (pluginInstance: PicgoPlugin, pageIndex: string) => {
-  const contentHtml = `<style>
-  iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
-  </style>
-  <iframe src="${pageIndex}" width="100%"></iframe>`
-
-  new Dialog({
-    title: pluginInstance.i18n.picgo,
-    transparent: false,
-    content: contentHtml,
-    width: "60%",
-    height: "550px",
-  } as any)
 }
