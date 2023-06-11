@@ -67,5 +67,12 @@ if __name__ == "__main__":
     if args.verbose:
         print("Verbose mode enabled")
 
-    # plugin.json
-    parse_json(cwd + "plugin.json", "version", args.version)
+    # widget.json
+    parse_json(cwd + "widget.json", "version", args.version)
+
+    # manifest.json
+    parse_json(cwd + "public/manifest.dev.json", "version", args.version)
+    parse_json(cwd + "public/manifest.prod.json", "version", args.version)
+
+    # mv2 manifest.json
+    parse_json(cwd + "public/mv2/manifest-v2-for-firefox.json", "version", args.version)

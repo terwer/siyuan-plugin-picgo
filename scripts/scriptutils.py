@@ -102,14 +102,13 @@ def rm_files(regex):
         rm_file(file)
 
 
-def cp_folder(src, dst, remove_folder=False):
+def cp_folder(src, dst):
     """
     拷贝文件夹
     :param src: 源文件夹，例如："/path/to/source/folder"
     :param dst: 目的地，例如："/path/to/destination/folder"
-    :param remove_folder: 是否删除文件夹
     """
-    if os.path.exists(dst) and remove_folder:
+    if os.path.exists(dst):
         rm_folder(dst)
 
     if not os.path.exists(dst):
@@ -188,7 +187,7 @@ def zip_folder(src_folder, tmp_folder_name, build_zip_path, build_zip_name):
     rm_folder(tmp_folder_name)
 
 
-def create_zip(root_path, file_name, ignored=[], storage_path=None):
+def create_zip(root_path, file_name, ignored=None, storage_path=None):
     """Create a ZIP
 
     This function creates a ZIP file of the provided root path.
@@ -201,6 +200,8 @@ def create_zip(root_path, file_name, ignored=[], storage_path=None):
         storage_path: If provided, ZIP file will be placed in this location. If None, the
                         ZIP will be created in root_path
     """
+    if ignored is None:
+        ignored = []
     if storage_path is not None:
         zip_root = os.path.join(storage_path, file_name)
     else:
