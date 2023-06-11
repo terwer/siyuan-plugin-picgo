@@ -29,7 +29,6 @@ const { copy } = require("esbuild-plugin-copy")
 
 const args = minimist(process.argv.slice(2))
 const isWatch = args.watch || args.w
-const isProduction = args.production || args.prod
 
 const baseDir = isWatch
   ? "/Users/terwer/Documents/mydocs/SiYuanWorkspace/public/data/plugins/siyuan-plugin-picgo"
