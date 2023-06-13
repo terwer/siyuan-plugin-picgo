@@ -28,7 +28,6 @@ import { ElMessage, ElMessageBox } from "element-plus"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import { createAppLogger } from "~/src/utils/appLogger.ts"
 import { ImageItem } from "~/src/models/imageItem.ts"
-import { BrowserUtil } from "zhi-device"
 import { BundledPicgoApi } from "~/src/service/bundledPicgoApi.js"
 
 /**
@@ -90,7 +89,7 @@ export const usePicgoUpload = (props, deps, refs) => {
         return
       }
 
-      if (!BrowserUtil.isElectron()) {
+      if (!picgoCommonData.isSiyuanOrSiyuanNewWin) {
         await ElMessageBox.alert(t("picgo.pic.setting.no.tip"), t("main.opt.tip"), {
           confirmButtonText: t("main.opt.ok"),
         })
@@ -110,14 +109,14 @@ export const usePicgoUpload = (props, deps, refs) => {
       try {
         const fileList = event.target.files
 
-        console.log("onRequest fileList=>", fileList)
+        logger.debug("onRequest fileList=>", fileList)
         if (!fileList || fileList.length === 0) {
           ElMessage.error("请选择图片")
           picgoCommonData.isUploadLoading = false
           return
         }
 
-        if (!BrowserUtil.isElectron()) {
+        if (!picgoCommonData.isSiyuanOrSiyuanNewWin) {
           ElMessage.error("非electron环境只能通过剪贴板上传")
           picgoCommonData.isUploadLoading = false
           return
@@ -126,25 +125,11 @@ export const usePicgoUpload = (props, deps, refs) => {
         // 获取选择的文件的路径数组
         const filePaths = []
         for (let i = 0; i < fileList.length; i++) {
-          // const tmppath = URL.createObjectURL(fileList[i])
-          // logger.debug("tmppath=>", tmppath)
-          //
-          // const base64 = await readBase64FromFile(fileList[i])
-          // logger.debug("base64=>", base64)
-
           if (fileList.item(i).path) {
             filePaths.push(fileList.item(i).path)
             logger.debug("路径不为空")
           } else {
-            // const base64Obj = {
-            //   base64Image: base64,
-            //   fileName: fileList.item(i).name, // 图片的文件名
-            //   width: "200", // 图片宽度
-            //   height: "200", // 图片高度
-            //   extname: ".png", // 图片格式的扩展名 比如.jpg | .png
-            // }
             logger.debug("路径为空，忽略")
-            // filePaths.push(base64Obj)
           }
         }
 
@@ -161,6 +146,7 @@ export const usePicgoUpload = (props, deps, refs) => {
           })
           logger.error(t("main.opt.failure") + "=>" + e)
         }
+        picgoCommonData.loggerMsg = t("main.opt.failure") + "=>" + e
         picgoCommonData.isUploadLoading = false
       }
     },
@@ -181,6 +167,7 @@ export const usePicgoUpload = (props, deps, refs) => {
           })
           logger.error(t("main.opt.failure") + "=>", e)
         }
+        picgoCommonData.loggerMsg = t("main.opt.failure") + "=>" + e
         picgoCommonData.isUploadLoading = false
       }
     },

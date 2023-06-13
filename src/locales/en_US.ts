@@ -96,4 +96,11 @@ export default {
   "picgo.pic.setting": "Picture setting",
   "picgo.pic.setting.no.tip":
     "You are currently using the browser plug -in and cannot inherit PicGo. You can only call the local Picgo client on the local Picgo client through HTTP",
+  "syp.about": "About me",
+  "theme.mode.choose": "Mode",
+  "theme.mode.dark": "Dark mode",
+  "theme.mode.light": "Light mode",
+  "setting.conf.export": "Export config",
+  "setting.conf.import": "Import config",
+  "setting.conf.transport": "Transport",
 }

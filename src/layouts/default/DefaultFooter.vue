@@ -28,7 +28,7 @@
     <div class="footer">
       <div>
         <span class="text"> &copy;2011-{{ nowYear }} </span>
-        <span class="text s-dark" @click="goGithub()">&nbsp;sy-post-publisher&nbsp;</span>
+        <span class="text s-dark" @click="goGithub()">&nbsp;siyuan-plugin-picgo&nbsp;</span>
 
         <span class="text">v{{ v }}&nbsp;</span>
 
@@ -43,23 +43,6 @@
         <span class="text s-dark" @click="openTransportSetting">
           {{ t("setting.conf.transport") }}
         </span>
-
-        <span class="text">.</span>
-        <span class="text s-dark" @click="newWin()">
-          {{ t("blog.newwin.open") }}
-        </span>
-
-        <span class="text">.</span>
-        <span class="text s-dark" @click="openGeneralSetting()">
-          {{ t("setting.blog.index") }}
-        </span>
-
-        <!--
-        -----------------------------------------------------------------------------
-        -->
-        <!-- 思源地址设置弹窗 -->
-
-        <!-- 通用设置弹窗 -->
       </div>
     </div>
   </div>
@@ -86,23 +69,15 @@ const v = ref(version)
 const nowYear = DateUtil.nowYear()
 
 const goGithub = () => {
-  window.open("https://github.com/terwer/sy-post-publisher")
+  window.open("https://github.com/terwer/siyuan-plugin-picgo")
 }
 
 const goAbout = () => {
   window.open("https://blog.terwer.space/about")
 }
 
-const newWin = () => {
-  window.open("https://blog.terwer.space/about")
-}
-
 const openTransportSetting = () => {
   transportFormVisible.value = true
-}
-
-const openGeneralSetting = () => {
-  generalSettingFormVisible.value = true
 }
 </script>
 

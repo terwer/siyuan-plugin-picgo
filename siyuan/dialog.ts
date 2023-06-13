@@ -53,6 +53,6 @@ const showIframePage = (pluginInstance: PicgoPlugin, pageIndex: string) => {
     transparent: false,
     content: contentHtml,
     width: "60%",
-    height: "550px",
+    height: "650px",
   } as any)
 }

@@ -31,7 +31,7 @@ import { usePicgoCommon } from "~/src/composables/picgo/usePicgoCommon.ts"
 import { usePicgoInitPage } from "~/src/composables/picgo/usePicgoInitPage.ts"
 import { usePicgoUpload } from "~/src/composables/picgo/usePicgoUpload.ts"
 import { usePicgoManage } from "~/src/composables/picgo/usePicgoManage.ts"
-import { BrowserUtil } from "zhi-device"
+import PicGoSetting from "~/src/components/PicGoSetting.vue"
 
 const logger = createAppLogger("picgo-index-page")
 
@@ -45,9 +45,6 @@ const props = defineProps({
 
 // refs
 const refSelectedFiles = ref()
-
-// datas
-const isElectron = BrowserUtil.isElectron()
 
 // uses
 const { t } = useVueI18n()
@@ -73,16 +70,16 @@ logger.info("This is picgo index page")
 
     <!-- 操作按钮 -->
     <blockquote class="picgo-opt-btn">
-      <!-- 原有的文件选择按钮 -->
+      <!-- 选择文件上传 -->
       <input
+        ref="refSelectedFiles"
         type="file"
         accept="image/png, image/gif, image/jpeg"
-        ref="refSelectedFiles"
         multiple
         @change="picgoUploadMethods.doUploadPicSelected"
       />
       <el-tooltip
-        v-if="isElectron"
+        v-if="picgoCommonData.isSiyuanOrSiyuanNewWin"
         class="box-item"
         effect="dark"
         :content="t('picgo.upload.select.pic')"
@@ -109,7 +106,7 @@ logger.info("This is picgo index page")
 
       <!-- 下载所有远程图片 -->
       <el-tooltip
-        v-if="false && isElectron"
+        v-if="picgoCommonData.isSiyuanOrSiyuanNewWin"
         class="box-item"
         effect="dark"
         :content="t('picgo.download.onclick')"
@@ -130,7 +127,7 @@ logger.info("This is picgo index page")
 
     <!-- 图片列表 -->
     <ul class="file-list">
-      <li class="file-list-item" v-for="f in picgoCommonData.fileList.files" v-bind:key="f.name">
+      <li v-for="f in picgoCommonData.fileList.files" :key="f.name" class="file-list-item">
         <div><img :src="f.url" :alt="f.name" /></div>
         <div>
           <!-- 上传本地图片到图床 -->
@@ -148,7 +145,7 @@ logger.info("This is picgo index page")
 
           <!-- 下载远程图片到本地 -->
           <el-tooltip
-            v-if="false && isElectron && !f.isLocal"
+            v-if="picgoCommonData.isSiyuanOrSiyuanNewWin && !f.isLocal"
             :content="t('picgo.download.bed.to.local')"
             class="box-item"
             effect="dark"
@@ -201,12 +198,12 @@ logger.info("This is picgo index page")
 
     <!-- Picgo设置 -->
     <el-dialog v-model="picgoUploadData.dialogPicgoSettingFormVisible" :title="t('picgo.pic.setting')">
-      <picgo-setting />
+      <pic-go-setting />
     </el-dialog>
 
     <!-- 日志显示 -->
-    <div class="log-msg" v-if="picgoCommonData.showDebugMsg">
-      <el-input type="textarea" :autosize="{ minRows: 5, maxRows: 10 }" v-model="picgoCommonData.loggerMsg" />
+    <div v-if="picgoCommonData.showDebugMsg" class="log-msg">
+      <el-input v-model="picgoCommonData.loggerMsg" type="textarea" :autosize="{ minRows: 5, maxRows: 10 }" />
     </div>
   </div>
 </template>

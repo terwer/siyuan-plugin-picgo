@@ -200,7 +200,7 @@ export class PicgoPostApi {
     //   }
     //
     //   let imageFullPath
-    //   if (isElectron) {
+    //   if (picgoCommonData.isSiyuanOrSiyuanNewWin) {
     //     const dataDir: string = getSiyuanNewWinDataDir()
     //     imageFullPath = `${dataDir}/assets/${imageItem.name}`
     //     this.logger.info("Will upload picture from", imageFullPath)
@@ -212,7 +212,7 @@ export class PicgoPostApi {
     //   } else {
     //     imageFullPath = imageItem.url
     //   }
-    //   this.logger.warn("isElectron=>" + isElectron + ", imageFullPath=>", imageFullPath)
+    //   this.logger.warn("isSiyuanOrSiyuanNewWin=>" + picgoCommonData.isSiyuanOrSiyuanNewWin + ", imageFullPath=>", imageFullPath)
     //   filePaths.push(imageFullPath)
     //
     //   // 批量上传
