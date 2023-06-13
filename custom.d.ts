@@ -26,3 +26,5 @@
 
 declare module "vue-i18n"
 declare module "@vueuse/core"
+declare module "lodash-es"
+declare module "lodash"
