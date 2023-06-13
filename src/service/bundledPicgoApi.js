@@ -23,9 +23,10 @@
  * questions.
  */
 
-import { NotImplementedException } from "zhi-lib-base"
 import { createAppLogger } from "~/src/utils/appLogger"
 import AppInstance from "~/src/appInstance"
+import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils"
+import { PicGoUploadApi } from "~/src/service/picGoUploadApi"
 
 /**
  * 内置的 PicGo 桥接 API
@@ -36,6 +37,7 @@ import AppInstance from "~/src/appInstance"
  */
 export class BundledPicgoApi {
   logger = createAppLogger("bundled-picgo-api")
+  picGoUploadApi = new PicGoUploadApi()
 
   /**
    * 通过PicGO上传图片
@@ -44,10 +46,26 @@ export class BundledPicgoApi {
    */
   async uploadByPicGO(input) {
     const appInstance = await AppInstance.getInstance()
+    const picgo = appInstance.picgo
     this.logger.debug("appInstance=>", appInstance)
     this.logger.debug("appInstance.picgo=>", appInstance.picgo)
 
     this.logger.debug("input=>", input)
-    throw new NotImplementedException("TODO")
+    if (input) {
+      if (isInSiyuanOrSiyuanNewWin()) {
+        return picgo.upload(input)
+      } else {
+        // HTTP调用本地客户端上传
+        return this.picGoUploadApi.upload(input)
+      }
+    } else {
+      // 通过PicGO上传剪贴板图片
+      if (isInSiyuanOrSiyuanNewWin()) {
+        return picgo.uploadFormClipboard()
+      } else {
+        // HTTP调用本地客户端上传
+        return this.picGoUploadApi.upload()
+      }
+    }
   }
 }

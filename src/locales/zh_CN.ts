@@ -99,4 +99,6 @@ export default {
   "setting.conf.export": "导出配置",
   "setting.conf.import": "导入配置",
   "setting.conf.transport": "导入导出",
+  "main.opt.success": "操作成功",
+  "main.opt.failure": "操作失败",
 }

@@ -23,7 +23,6 @@
  * questions.
  */
 
-import { CommonFetchClient } from "zhi-fetch-middleware"
 import { ObjectUtil } from "zhi-common"
 import { createAppLogger } from "~/src/utils/appLogger.ts"
 
@@ -35,31 +34,17 @@ import { createAppLogger } from "~/src/utils/appLogger.ts"
  */
 export class PicGoUploadApi {
   private logger
-  private commonFetchClient
+  private requestUrl = "http://127.0.0.1:36677"
+  private endpointUrl = "/upload"
+  // private commonFetchClient
 
   constructor() {
-    // appInstance
-    const appInstance: any = {}
-    appInstance.fetch = fetch
-
     this.logger = createAppLogger("picgo-upload-api")
 
-    const requestUrl = "http://127.0.0.1:9564/kms16_release"
-    const endpointUrl = "/api/kms-multidoc/kmsMultidocKnowledgeRestService/queryDoc"
-
-    // fetchOptions
-    const bodyJson = {
-      fdId: "186a05544e8981e71d8e28c408e9ab42",
-    }
-    const fetchOptions = {
-      body: JSON.stringify(bodyJson),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-    }
-
-    const commonFetchClient = new CommonFetchClient(appInstance, requestUrl)
+    // // appInstance
+    // const appInstance: any = {}
+    // appInstance.fetch = fetch
+    // this.commonFetchClient = new CommonFetchClient(appInstance, this.requestUrl)
   }
 
   /**
@@ -70,9 +55,7 @@ export class PicGoUploadApi {
   public async upload(input?: any[]): Promise<string> {
     let ret = JSON.stringify([])
 
-    const apiUrl = "http://127.0.0.1:36677/upload"
-
-    const fetchOps = {
+    const fetchOptions = {
       method: "POST",
     }
 
@@ -84,12 +67,12 @@ export class PicGoUploadApi {
 
     // 数据不为空才传递
     if (ObjectUtil.isEmptyObject(data)) {
-      Object.assign(fetchOps, {
+      Object.assign(fetchOptions, {
         body: JSON.stringify(data),
       })
     }
 
-    Object.assign(fetchOps, {
+    Object.assign(fetchOptions, {
       headers: {
         "Content-Type": "application/json",
         "User-Agent": "Terwer/0.1.0",
@@ -97,16 +80,15 @@ export class PicGoUploadApi {
     })
 
     // 发送请求
+    const apiUrl = `${this.requestUrl}${this.endpointUrl}`
     this.logger.debug("调用HTTP请求上传图片到PicGO，apiUrl=>", apiUrl)
-    this.logger.debug("调用HTTP请求上传图片到PicGO，fetchOps=>", fetchOps)
+    this.logger.debug("调用HTTP请求上传图片到PicGO，fetchOps=>", fetchOptions)
 
     // 使用兼容的fetch调用并返回统一的JSON数据
-    // const result = await commonFetchClient.fetchCall(endpointUrl, fetchOptions)
-    // console.log("test fetchCall result =>", result)
-    // const resJson = await this.doFetch(apiUrl, fetchOps)
-    // this.logger.debug("resJson=>", JSON.stringify(resJson))
-    const resJson = {} as any
-    // this.logger.debug("resJson", resJson)
+    // const result = await this.commonFetchClient.fetchCall(this.endpointUrl, fetchOptions)
+    const response = await fetch(apiUrl, fetchOptions)
+    const resJson = await response.json()
+    this.logger.debug("调用HTTP请求上传图片到PicGO，resJson=>", resJson)
 
     if (resJson.success) {
       const rtnArray = []

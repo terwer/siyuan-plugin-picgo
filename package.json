@@ -36,14 +36,14 @@
     "@vueuse/core": "^10.1.2",
     "blueimp-md5-es6": "^2.7.4",
     "element-plus": "^2.3.6",
-    "siyuan": "^0.7.3",
+    "siyuan": "^0.7.4",
     "vue": "^3.3.4",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.2.2",
-    "zhi-common": "^1.9.6",
-    "zhi-device": "^2.1.0",
-    "zhi-fetch-middleware": "^0.1.8",
+    "zhi-common": "^1.9.8",
+    "zhi-device": "^2.2.0",
+    "zhi-fetch-middleware": "^0.1.11",
     "zhi-lib-base": "^0.2.6",
-    "zhi-siyuan-api": "^1.9.1"
+    "zhi-siyuan-api": "^1.9.3"
   }
 }

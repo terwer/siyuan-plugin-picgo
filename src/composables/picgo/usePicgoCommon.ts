@@ -26,8 +26,8 @@
 import { reactive } from "vue"
 import { ImageItem } from "~/src/models/imageItem.ts"
 import { isDev } from "~/common/Constants.ts"
-import { DeviceDetection, DeviceTypeEnum } from "zhi-device"
 import { createAppLogger } from "~/src/utils/appLogger.ts"
+import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils.ts"
 
 /**
  * Picgo公共组件
@@ -38,22 +38,13 @@ export const usePicgoCommon = () => {
   // private data
   const logger = createAppLogger("picgo-common")
 
-  const deviceType = DeviceDetection.getDevice()
-  // 三种情况，主窗口、挂件、新窗口
-  const isSiyuanOrSiyuanNewWin =
-    deviceType === DeviceTypeEnum.DeviceType_Siyuan_MainWin ||
-    deviceType === DeviceTypeEnum.DeviceType_Siyuan_NewWin ||
-    deviceType === DeviceTypeEnum.DeviceType_Siyuan_Widget
-  logger.debug("deviceType=>", deviceType)
-  logger.debug("isSiyuanOrSiyuanNewWin=>", isSiyuanOrSiyuanNewWin)
-
   // public data
   const picgoCommonData = reactive({
     isUploadLoading: false,
     popWidth: 400,
     showDebugMsg: isDev,
     loggerMsg: "",
-    isSiyuanOrSiyuanNewWin: isSiyuanOrSiyuanNewWin,
+    isSiyuanOrSiyuanNewWin: isInSiyuanOrSiyuanNewWin(),
     fileList: {
       files: <ImageItem[]>[],
     },

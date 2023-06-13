@@ -24,13 +24,13 @@
  */
 
 import { createAppLogger } from "./utils/appLogger"
+import { SiyuanDevice } from "zhi-device"
+import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils.ts"
 
 class AppInstance {
   private static instance: AppInstance | undefined
   private static logger = createAppLogger("app-instance")
-  private readonly win = parent.window as any
-  private readonly workspaceDir = this.win.siyuan.config.system.workspaceDir
-  private readonly libsBase = `${this.workspaceDir}/data/plugins/siyuan-plugin-picgo/libs`
+  private readonly isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
 
   public picgo
 
@@ -45,14 +45,20 @@ class AppInstance {
 
   private async init() {
     // sy-picgo-core
-    const syPicgo = this.initSyPicgo()
-    this.picgo = syPicgo.getPicgoObj()
+    if (this.isSiyuanOrSiyuanNewWin) {
+      const syPicgo = this.initSyPicgo()
+      this.picgo = syPicgo.getPicgoObj()
+    }
   }
 
   // 其他方法
   private initSyPicgo() {
-    const picgoExtension = this.win.require(`${this.libsBase}/sy-picgo-core/syPicgo.js`).default as any
-    const cfgfolder = `${this.workspaceDir}/data/storage/syp/picgo`
+    const win = SiyuanDevice.siyuanWindow()
+    const workspaceDir = win?.siyuan?.config?.system?.workspaceDir
+    const libsBase = `${workspaceDir}/data/plugins/siyuan-plugin-picgo/libs`
+
+    const picgoExtension = win.require(`${libsBase}/sy-picgo-core/syPicgo.js`).default as any
+    const cfgfolder = `${workspaceDir}/data/storage/syp/picgo`
     const picgo_cfg_070 = cfgfolder + "/picgo.cfg.json"
 
     const appFolder = picgoExtension.getCrossPlatformAppDataFolder()

@@ -28,7 +28,7 @@ const stylePlugin = require("esbuild-style-plugin")
 const { copy } = require("esbuild-plugin-copy")
 
 const args = minimist(process.argv.slice(2))
-const isWatch = args.watch || args.w
+const isWatch = args.watch || args.w || false
 
 const baseDir = isWatch
   ? "/Users/terwer/Documents/mydocs/SiYuanWorkspace/public/data/plugins/siyuan-plugin-picgo"
@@ -43,6 +43,7 @@ module.exports = {
     format: "cjs",
     target: ["es6"],
     external: ["siyuan"],
+    define: { "process.env.DEV_MODE": `"${isWatch}"` },
     plugins: [
       stylePlugin(),
 

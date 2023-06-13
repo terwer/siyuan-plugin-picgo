@@ -103,4 +103,6 @@ export default {
   "setting.conf.export": "Export config",
   "setting.conf.import": "Import config",
   "setting.conf.transport": "Transport",
+  "main.opt.success": "Success",
+  "main.opt.failure": "Error",
 }
