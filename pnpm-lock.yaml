@@ -42,20 +42,20 @@ dependencies:
     specifier: ^4.2.2
     version: 4.2.2(vue@3.3.4)
   zhi-common:
-    specifier: ^1.9.8
-    version: 1.9.8
+    specifier: ^1.10.0
+    version: 1.10.0
   zhi-device:
     specifier: ^2.2.0
     version: 2.2.0
   zhi-fetch-middleware:
-    specifier: ^0.1.11
-    version: 0.1.11
+    specifier: ^0.1.12
+    version: 0.1.12
   zhi-lib-base:
     specifier: ^0.2.6
     version: 0.2.6
   zhi-siyuan-api:
-    specifier: ^1.9.3
-    version: 1.9.3
+    specifier: ^1.9.4
+    version: 1.9.4
 
 devDependencies:
   '@terwer/esbuild-config-custom':
@@ -3944,8 +3944,8 @@ packages:
       zhi-lib-base: 0.3.1
     dev: false
 
-  /zhi-common@1.9.8:
-    resolution: {integrity: sha512-08R0XznEnawLjlRYe+5zqXJdAg1F/BgPaJn00YQCu1r/GSM00W+L3hgrvR6ge0ciAUGUYtrVNqID9NbwkOATLQ==}
+  /zhi-common@1.10.0:
+    resolution: {integrity: sha512-LK74xyZkhbe+1F7A74TjhaZEQXG33B9ZqSJa12Vp6ubyVH+HNcZLpucEDGlkG5YdmU+oL3iBwDkfOjyuTJar2A==}
     dependencies:
       zhi-lib-base: 0.3.1
     dev: false
@@ -3954,10 +3954,10 @@ packages:
     resolution: {integrity: sha512-N+DdXkawX0SZFNPwR1eQQ+otXbGXcJj5M+E+q+6yn4kU9qnPA53unloUygO/oSU52SMuaxT7UBB5VV/IHY3MMQ==}
     dev: false
 
-  /zhi-fetch-middleware@0.1.11:
-    resolution: {integrity: sha512-rWaKRkR86Yfkbxjse0de5gJYFACfswr7nDgh2Q6edKeCnR5Z3Uht0YJOar5XkBHpa3CghdZr58dCsrTAwvEkQw==}
+  /zhi-fetch-middleware@0.1.12:
+    resolution: {integrity: sha512-Uv1Cbkvb4PV8VHvfaNGwnm168ZIBsfeEFVmmtOwHlKs/uEEuPua63CYpvV2gVVAkGrmROFzTV/343gRp9PHGpA==}
     dependencies:
-      zhi-common: 1.9.8
+      zhi-common: 1.10.0
       zhi-device: 2.2.0
       zhi-lib-base: 0.3.1
     dev: false
@@ -3970,12 +3970,12 @@ packages:
     resolution: {integrity: sha512-DYN8ebg9c18zBdpQvFtriWmrpYRyaYCJA6cG7ho57zPP4v4yhXWCn4NkPy2rOo9dJAkT57viHfrQp+GJbG6lVw==}
     dev: false
 
-  /zhi-siyuan-api@1.9.3:
-    resolution: {integrity: sha512-2YeF6aelUSD10GG1EnvTrreZMyD21CWvRqlq+O8o1eqGNJMmdSREvaYZjwQQHiPA8XkzpKRxWYT2DaVBASejFg==}
+  /zhi-siyuan-api@1.9.4:
+    resolution: {integrity: sha512-hIsWgZJeZuCcLaHjmu5FmPH0Qx7IRTGFZEEBzfNEzImcLj36x1Lbm4XwGxJyFMnqJ8wA4DIBAAxThHeeiqasqg==}
     dependencies:
       cross-fetch: 3.1.6
       zhi-blog-api: 1.6.8
-      zhi-common: 1.9.8
+      zhi-common: 1.10.0
       zhi-lib-base: 0.3.1
     transitivePeerDependencies:
       - encoding

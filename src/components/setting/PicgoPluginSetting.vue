@@ -27,9 +27,12 @@
 import { ElMessage, ElMessageBox } from "element-plus"
 import { computed, onBeforeMount, onBeforeUnmount, reactive, ref, watch } from "vue"
 import { debounce, DebouncedFunc } from "lodash"
-import ConfigForm from "~/components/picgo/common/ConfigForm.vue"
+import ConfigForm from "~/src/components/common/ConfigForm.vue"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import { createAppLogger } from "~/src/utils/appLogger.ts"
+import picgoUtil from "~/src/service/picgoUtil.js"
+import { PicgoPageMenuType } from "~/src/models/picgoPlugin.ts"
+import { BrowserUtil, SiyuanDevice } from "zhi-device"
 
 const logger = createAppLogger("picgo-plugin-setting")
 
@@ -86,12 +89,12 @@ const checkWork = (item) => {
 
 function openHomepage(url: string) {
   if (url) {
-    goToPage(url)
+    window.open(url)
   }
 }
 
 function goAwesomeList() {
-  goToPage("https://github.com/PicGo/Awesome-PicGo")
+  window.open("https://github.com/PicGo/Awesome-PicGo")
 }
 
 function handleImportLocalPlugin() {
@@ -222,7 +225,8 @@ function cleanSearch() {
 
 // register events
 onBeforeMount(() => {
-  os.value = sysUtil.getOS()
+  const syWin = SiyuanDevice.siyuanWindow()
+  os.value = syWin.process.platform
 
   picgoUtil.ipcRegisterEvent("pluginList", (evt, data) => {
     logger.info("PicgoPluginSetting接收到pluginList事件,data=>", data)
@@ -261,7 +265,7 @@ onBeforeMount(() => {
       ElMessage.error(errMsg)
     }
 
-    reloadPage()
+    BrowserUtil.reloadPage()
   })
 
   picgoUtil.ipcRegisterEvent("picgoHandlePluginIng", (evt, data) => {
@@ -331,7 +335,7 @@ onBeforeMount(() => {
     showPluginConfigForm.value = false
     loading.value = false
 
-    reloadPage()
+    BrowserUtil.reloadPage()
   })
 
   picgoUtil.ipcRegisterEvent("picgoConfigPlugin", (evt, data) => {
@@ -371,13 +375,13 @@ onBeforeUnmount(() => {
 <template>
   <div id="plugin-view">
     <div class="view-title">
-      {{ $t("setting.picgo.plugin") }} -
-      <el-tooltip :content="$t('setting.picgo.plugin.list')" placement="right">
+      {{ t("setting.picgo.plugin") }} -
+      <el-tooltip :content="t('setting.picgo.plugin.list')" placement="right">
         <el-button class="el-icon-goods" @click="goAwesomeList">
           <font-awesome-icon icon="fa-solid fa-cart-shopping" />
         </el-button>
       </el-tooltip>
-      <el-tooltip :content="$t('setting.picgo.plugin.import.local')" placement="left">
+      <el-tooltip :content="t('setting.picgo.plugin.import.local')" placement="left">
         <el-button class="el-icon-download" @click="handleImportLocalPlugin">
           <font-awesome-icon icon="fa-solid fa-download" />
         </el-button>
@@ -387,7 +391,7 @@ onBeforeUnmount(() => {
     <div class="plugin-list-box" v-if="!showPluginConfigForm">
       <div class="plugin-search-box">
         <el-row class="handle-bar" :class="{ 'cut-width': pluginData.pluginList.length > 6 }">
-          <el-input v-model="searchText" :placeholder="$t('setting.picgo.plugin.search.placeholder')">
+          <el-input v-model="searchText" :placeholder="t('setting.picgo.plugin.search.placeholder')">
             <template #suffix>
               <el-icon class="el-input__icon" style="cursor: pointer" @click="cleanSearch">
                 <font-awesome-icon icon="fa-solid fa-xmark" />
@@ -419,10 +423,10 @@ onBeforeUnmount(() => {
                   <span class="plugin-item__config">
                     <template v-if="searchText">
                       <span class="config-button work" v-if="checkWork(item)">
-                        {{ $t("setting.picgo.plugin.work") }}
+                        {{ t("setting.picgo.plugin.work") }}
                       </span>
                       <span class="config-button nowork" v-else>
-                        {{ $t("setting.picgo.plugin.nowork") }}
+                        {{ t("setting.picgo.plugin.nowork") }}
                       </span>
                       <template v-if="!item.hasInstall">
                         <span
@@ -430,22 +434,22 @@ onBeforeUnmount(() => {
                           class="config-button install"
                           @click="installPlugin(item)"
                         >
-                          {{ $t("setting.picgo.plugin.install") }}
+                          {{ t("setting.picgo.plugin.install") }}
                         </span>
                         <span v-else-if="!item.ing && !checkWork(item)" class="config-button ing">
-                          {{ $t("setting.picgo.plugin.nouse") }}
+                          {{ t("setting.picgo.plugin.nouse") }}
                         </span>
                         <span v-else-if="item.ing" class="config-button ing">
-                          {{ $t("setting.picgo.plugin.installing") }}
+                          {{ t("setting.picgo.plugin.installing") }}
                         </span>
                       </template>
                       <span v-else class="config-button ing">
-                        {{ $t("setting.picgo.plugin.installed") }}
+                        {{ t("setting.picgo.plugin.installed") }}
                       </span>
                     </template>
                     <template v-else>
                       <span v-if="item.ing" class="config-button ing">
-                        {{ $t("setting.picgo.plugin.doing.something") }}
+                        {{ t("setting.picgo.plugin.doing.something") }}
                       </span>
                       <template v-else>
                         <el-icon v-if="item.enabled" class="el-icon-setting" @click="buildContextMenu(item)">

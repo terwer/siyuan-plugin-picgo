@@ -30,8 +30,11 @@ import { FormInstance } from "element-plus"
 import { cloneDeep, union } from "lodash-es"
 import { createAppLogger } from "~/src/utils/appLogger.ts"
 import picgoUtil from "~/src/service/picgoUtil.js"
+import { useVueI18n } from "~/src/composables/useVueI18n.ts"
+
 
 const logger = createAppLogger("picbed-config-form")
+const { t } = useVueI18n()
 
 const props = defineProps({
   // 配置类型：plugin、transfer还是uploader
@@ -203,8 +206,8 @@ const onSubmit = async () => {
 
     <div class="config-form">
       <el-form ref="$configForm" label-width="250px" :model="configRuleForm">
-        <el-form-item :label="$t('setting.picgo.config.name')" required prop="_configName">
-          <el-input v-model="configRuleForm._configName" :placeholder="$t('setting.picgo.config.name.placeholder')" />
+        <el-form-item :label="t('setting.picgo.config.name')" required prop="_configName">
+          <el-input v-model="configRuleForm._configName" :placeholder="t('setting.picgo.config.name.placeholder')" />
         </el-form-item>
 
         <!-- dynamic config -->
@@ -256,7 +259,7 @@ const onSubmit = async () => {
         </el-form-item>
 
         <el-form-item>
-          <el-button @click="onSubmit">{{ $t("main.opt.ok") }}</el-button>
+          <el-button @click="onSubmit">{{ t("main.opt.ok") }}</el-button>
         </el-form-item>
       </el-form>
     </div>

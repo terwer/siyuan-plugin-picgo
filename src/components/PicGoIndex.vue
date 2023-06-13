@@ -31,7 +31,6 @@ import { usePicgoCommon } from "~/src/composables/picgo/usePicgoCommon.ts"
 import { usePicgoInitPage } from "~/src/composables/picgo/usePicgoInitPage.ts"
 import { usePicgoUpload } from "~/src/composables/picgo/usePicgoUpload.ts"
 import { usePicgoManage } from "~/src/composables/picgo/usePicgoManage.ts"
-import PicGoSetting from "~/src/components/PicGoSetting.vue"
 
 const logger = createAppLogger("picgo-index-page")
 

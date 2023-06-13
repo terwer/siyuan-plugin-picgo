@@ -23,18 +23,13 @@
  * questions.
  */
 
-import { createRouter, createWebHashHistory, Router, RouteRecordRaw } from "vue-router"
-import PicGoIndex from "~/src/components/PicGoIndex.vue"
-import PicgoSetting from "~/src/components/PicgoSetting.vue"
-
-const routes: RouteRecordRaw[] = [
-  { path: "/", component: PicGoIndex },
-  { path: "/setting", component: PicgoSetting },
-]
-
-export const useVueRouter = (): Router => {
-  return createRouter({
-    history: createWebHashHistory(),
-    routes,
-  })
+export const openPath = (absFilePath) => {
+  const win = SiyuanDevice.siyuanWindow()
+  const { shell } = win.require("electron")
+  shell.openPath(absFilePath)
 }
+
+const electronUtil = {
+  openPath,
+}
+export default electronUtil

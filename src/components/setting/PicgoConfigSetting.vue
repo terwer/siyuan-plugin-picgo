@@ -28,10 +28,14 @@ import { onBeforeMount, onBeforeUnmount, reactive, ref } from "vue"
 import { ElDivider, ElMessage } from "element-plus"
 import { createAppLogger } from "~/src/utils/appLogger.ts"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
+import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils.ts"
+import picgoUtil from "~/src/service/picgoUtil.js"
+import electronUtil from "~/src/service/electronUtil.js"
 
 const logger = createAppLogger("picgo-config-setting")
 
 const { t } = useVueI18n()
+const isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
 
 const DEFAULT_NPM_REGISTRY = "https://registry.npmmirror.com"
 const picBed = ref<IPicBedType[]>([])
@@ -75,7 +79,7 @@ function handleShowPicBedListChange(val: ICheckBoxValueType[]) {
 const handleOpenFile = (filename) => {
   const picgoCfgfile = picgoUtil.getPicgoCfgFile(filename)
   logger.warn("即将打开文件=>", picgoCfgfile)
-  siyuanBrowserUtil.openPath(picgoCfgfile)
+  electronUtil.openPath(picgoCfgfile)
 }
 
 const handleAutoRename = (val: ICheckBoxValueType) => {
@@ -141,51 +145,51 @@ onBeforeUnmount(() => {
   <div>
     <el-form label-width="125px">
       <!-- 打开PicGO配置文件 -->
-      <el-form-item :label="$t('setting.picgo.picgo.open.config.file')">
-        <el-button @click="handleOpenFile('picgo.cfg.json')">{{ $t("setting.picgo.picgo.click.to.open") }} </el-button>
+      <el-form-item :label="t('setting.picgo.picgo.open.config.file')">
+        <el-button @click="handleOpenFile('picgo.cfg.json')">{{ t("setting.picgo.picgo.click.to.open") }} </el-button>
       </el-form-item>
 
       <!-- 打开PicGO日志文件 -->
-      <el-form-item :label="$t('setting.picgo.setting.log.file')">
-        <el-button @click="handleOpenFile('picgo.log')">{{ $t("setting.picgo.picgo.click.to.open") }} </el-button>
+      <el-form-item :label="t('setting.picgo.setting.log.file')">
+        <el-button @click="handleOpenFile('picgo.log')">{{ t("setting.picgo.picgo.click.to.open") }} </el-button>
       </el-form-item>
 
       <!-- 图床开关 -->
-      <el-form-item :label="$t('setting.picgo.picgo.choose.showed.picbed')">
+      <el-form-item :label="t('setting.picgo.picgo.choose.showed.picbed')">
         <el-checkbox-group v-model="form.showPicBedList" @change="handleShowPicBedListChange">
           <el-checkbox v-for="item in picBed" :key="item.name" :label="item.name" />
         </el-checkbox-group>
       </el-form-item>
 
       <!-- 时间戳重命名 -->
-      <el-form-item :label="$t('setting.picgo.setting.timestamp.rename')">
+      <el-form-item :label="t('setting.picgo.setting.timestamp.rename')">
         <el-switch
           v-model="form.autoRename"
-          :active-text="$t('setting.picgo.setting.open')"
-          :inactive-text="$t('setting.picgo.setting.close')"
+          :active-text="t('setting.picgo.setting.open')"
+          :inactive-text="t('setting.picgo.setting.close')"
           @change="handleAutoRename"
         />
       </el-form-item>
 
-      <div v-if="isInSiyuanNewWinBrowser()">
+      <div v-if="isSiyuanOrSiyuanNewWin">
         <el-divider />
 
         <p>
-          {{ $t("setting.picgo.setting.config.tip") }}
+          {{ t("setting.picgo.setting.config.tip") }}
         </p>
 
         <!-- NODE安装路径 -->
-        <el-form-item :label="$t('setting.picgo.setting.node.path')">
-          <el-input v-model="form.nodePath" :placeholder="$t('setting.picgo.setting.node.path.tip')" />
+        <el-form-item :label="t('setting.picgo.setting.node.path')">
+          <el-input v-model="form.nodePath" :placeholder="t('setting.picgo.setting.node.path.tip')" />
         </el-form-item>
-        <el-form-item :label="$t('setting.picgo.setting.node.registry')">
-          <el-input v-model="form.nodeRegistry" :placeholder="$t('setting.picgo.setting.node.registry.tip')" />
+        <el-form-item :label="t('setting.picgo.setting.node.registry')">
+          <el-input v-model="form.nodeRegistry" :placeholder="t('setting.picgo.setting.node.registry.tip')" />
         </el-form-item>
-        <el-form-item :label="$t('setting.picgo.setting.node.proxy')">
-          <el-input v-model="form.nodeProxy" :placeholder="$t('setting.picgo.setting.node.proxy.tip')" />
+        <el-form-item :label="t('setting.picgo.setting.node.proxy')">
+          <el-input v-model="form.nodeProxy" :placeholder="t('setting.picgo.setting.node.proxy.tip')" />
         </el-form-item>
         <el-form-item>
-          <el-button @click="handleSaveNodeConfig">{{ $t("main.opt.ok") }} </el-button>
+          <el-button @click="handleSaveNodeConfig">{{ t("main.opt.ok") }} </el-button>
         </el-form-item>
       </div>
     </el-form>

@@ -27,9 +27,11 @@
 import { onMounted, reactive, ref, toRaw, watch } from "vue"
 import { ElCard, ElMessage } from "element-plus"
 import { usePicbedStore } from "~/src/stores/picbedStore.ts"
-import { useI18n } from "vue-i18n"
-import ConfigForm from "~/components/picgo/common/ConfigForm.vue"
+import ConfigForm from "~/src/components/common/ConfigForm.vue"
 import { createAppLogger } from "~/src/utils/appLogger.ts"
+import { DateUtil } from "zhi-common"
+import { useVueI18n } from "~/src/composables/useVueI18n.ts"
+import picgoUtil from "~/src/service/picgoUtil.js"
 
 const logger = createAppLogger("picbed-setting")
 
@@ -59,7 +61,7 @@ const type = ref("")
 const defaultType = ref("")
 // use
 const picbedStore = usePicbedStore()
-const { t } = useI18n()
+const { t } = useVueI18n()
 
 // 表单展示
 const isNewForm = ref(false)
@@ -207,10 +209,10 @@ onMounted(() => {
   <div class="picbed-setting">
     <el-alert
       :title="
-        $t('setting.picgo.picbed.current.selected.tip') +
+        t('setting.picgo.picbed.current.selected.tip') +
         type +
         '，' +
-        $t('setting.picgo.picbed.current.tip') +
+        t('setting.picgo.picbed.current.tip') +
         defaultType
       "
       type="success"
@@ -245,7 +247,7 @@ onMounted(() => {
                 <span>{{ config._configName }}</span>
                 <span class="pull-right">
                   <el-tooltip
-                    :content="$t('main.opt.edit')"
+                    :content="t('main.opt.edit')"
                     class="box-item"
                     effect="dark"
                     placement="bottom"
@@ -256,7 +258,7 @@ onMounted(() => {
                     </el-button>
                   </el-tooltip>
                   <el-tooltip
-                    :content="$t('main.opt.delete')"
+                    :content="t('main.opt.delete')"
                     class="box-item"
                     effect="dark"
                     placement="bottom"
@@ -269,7 +271,7 @@ onMounted(() => {
                 </span>
               </div>
               <div class="profile-date">
-                {{ dateUtil.formatTimestampToZhDate(config._updatedAt) }}
+                {{ DateUtil.formatTimestampToZhDate(config._updatedAt) }}
               </div>
               <div
                 :class="{
@@ -278,8 +280,8 @@ onMounted(() => {
               >
                 {{
                   config._id === profileData.defaultConfigId
-                    ? $t("setting.picgo.picbed.selected.tip")
-                    : $t("setting.picgo.picbed.unselected.tip")
+                    ? t("setting.picgo.picbed.selected.tip")
+                    : t("setting.picgo.picbed.unselected.tip")
                 }}
               </div>
             </el-card>
@@ -295,7 +297,7 @@ onMounted(() => {
             :disabled="picbedStore.defaultPicBed === type"
             @click="setDefaultPicBed(type)"
           >
-            {{ $t("setting.picgo.picbed.set.default") }}
+            {{ t("setting.picgo.picbed.set.default") }}
           </el-button>
         </div>
       </div>

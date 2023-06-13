@@ -41,10 +41,10 @@
     "vue": "^3.3.4",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.2.2",
-    "zhi-common": "^1.9.8",
+    "zhi-common": "^1.10.0",
     "zhi-device": "^2.2.0",
-    "zhi-fetch-middleware": "^0.1.11",
+    "zhi-fetch-middleware": "^0.1.12",
     "zhi-lib-base": "^0.2.6",
-    "zhi-siyuan-api": "^1.9.3"
+    "zhi-siyuan-api": "^1.9.4"
   }
 }
