@@ -35,7 +35,7 @@ import { PicGoUploadApi } from "~/src/service/picGoUploadApi"
  * @version 0.9.0
  * @since 0.0.1
  */
-export class BundledPicgoApi {
+export class PicgoApi {
   logger = createAppLogger("bundled-picgo-api")
   picGoUploadApi = new PicGoUploadApi()
 

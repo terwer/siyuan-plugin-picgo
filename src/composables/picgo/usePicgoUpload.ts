@@ -28,7 +28,7 @@ import { ElMessage, ElMessageBox } from "element-plus"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import { createAppLogger } from "~/src/utils/appLogger.ts"
 import { ImageItem } from "~/src/models/imageItem.ts"
-import { BundledPicgoApi } from "~/src/service/bundledPicgoApi.js"
+import { PicgoApi } from "~/src/service/picgoApi.js"
 
 /**
  * Picgo上传组件
@@ -37,7 +37,7 @@ export const usePicgoUpload = (props, deps, refs) => {
   // private data
   const logger = createAppLogger("picgo-upload")
   const { t } = useVueI18n()
-  const bundledPicgoApi = new BundledPicgoApi()
+  const bundledPicgoApi = new PicgoApi()
 
   // public data
   const picgoUploadData = reactive({

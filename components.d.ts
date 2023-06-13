@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    ConfigForm: typeof import('./src/components/common/ConfigForm.vue')['default']
     ElAlert: typeof import('element-plus/es')['ElAlert']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElDialog: typeof import('element-plus/es')['ElDialog']
@@ -14,8 +15,11 @@ declare module 'vue' {
     ElPopover: typeof import('element-plus/es')['ElPopover']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    PicbedSetting: typeof import('./src/components/setting/PicbedSetting.vue')['default']
+    PicgoConfigSetting: typeof import('./src/components/setting/PicgoConfigSetting.vue')['default']
     PicGoIndex: typeof import('./src/components/PicGoIndex.vue')['default']
-    PicGoSetting: typeof import('./src/components/PicGoSetting.vue')['default']
+    PicgoPluginSetting: typeof import('./src/components/setting/PicgoPluginSetting.vue')['default']
+    PicgoSetting: typeof import('./src/components/PicgoSetting.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
