@@ -112,12 +112,15 @@ export const usePicgoUpload = (props, deps, refs) => {
         logger.debug("onRequest fileList=>", fileList)
         if (!fileList || fileList.length === 0) {
           ElMessage.error("请选择图片")
+          picgoCommonData.loggerMsg = t("main.opt.failure") + "=>" + "请选择图片"
           picgoCommonData.isUploadLoading = false
           return
         }
 
         if (!picgoCommonData.isSiyuanOrSiyuanNewWin) {
-          ElMessage.error("非electron环境只能通过剪贴板上传")
+          const errMsg = "由于浏览器的安全限制，无法获取本地文件的完整路径，因此非electron环境只能通过剪贴板上传"
+          ElMessage.error(errMsg)
+          picgoCommonData.loggerMsg = t("main.opt.failure") + "=>" + errMsg
           picgoCommonData.isUploadLoading = false
           return
         }

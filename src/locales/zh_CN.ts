@@ -101,4 +101,6 @@ export default {
   "setting.conf.transport": "导入导出",
   "main.opt.success": "操作成功",
   "main.opt.failure": "操作失败",
+  "switch.active.text": "调试模式",
+  "switch.unactive.text": "正常模式",
 }

@@ -78,13 +78,7 @@ logger.info("This is picgo index page")
         multiple
         @change="picgoUploadMethods.doUploadPicSelected"
       />
-      <el-tooltip
-        v-if="picgoCommonData.isSiyuanOrSiyuanNewWin"
-        class="box-item"
-        effect="dark"
-        :content="t('picgo.upload.select.pic')"
-        placement="top-start"
-      >
+      <el-tooltip class="box-item" effect="dark" :content="t('picgo.upload.select.pic')" placement="top-start">
         <el-button type="warning" @click="picgoUploadMethods.bindFileControl">
           <font-awesome-icon icon="fa-solid fa-file-import" />
         </el-button>
@@ -123,6 +117,17 @@ logger.info("This is picgo index page")
           <font-awesome-icon icon="fa-solid fa-gear" />
         </el-button>
       </el-tooltip>
+
+      <!-- 调试模式 -->
+      <span class="box-item switch-item">
+        <el-switch
+          v-model="picgoCommonData.showDebugMsg"
+          inline-prompt
+          size="large"
+          :active-text="t('switch.active.text')"
+          :inactive-text="t('switch.unactive.text')"
+        ></el-switch>
+      </span>
     </blockquote>
 
     <!-- 图片列表 -->
@@ -145,7 +150,7 @@ logger.info("This is picgo index page")
 
           <!-- 下载远程图片到本地 -->
           <el-tooltip
-            v-if="picgoCommonData.isSiyuanOrSiyuanNewWin && !f.isLocal"
+            v-if="false && picgoCommonData.isSiyuanOrSiyuanNewWin && !f.isLocal"
             :content="t('picgo.download.bed.to.local')"
             class="box-item"
             effect="dark"
@@ -289,5 +294,9 @@ input[type="file"] {
 
 .img-big-preview {
   max-width: 100%;
+}
+
+.switch-item {
+  margin-left: 16px;
 }
 </style>

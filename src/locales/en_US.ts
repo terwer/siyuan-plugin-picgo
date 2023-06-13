@@ -105,4 +105,6 @@ export default {
   "setting.conf.transport": "Transport",
   "main.opt.success": "Success",
   "main.opt.failure": "Error",
+  "switch.active.text": "Debug",
+  "switch.unactive.text": "Normal",
 }

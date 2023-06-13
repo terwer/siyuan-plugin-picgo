@@ -12,6 +12,7 @@ declare module 'vue' {
     ElDialog: typeof import('element-plus/es')['ElDialog']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElPopover: typeof import('element-plus/es')['ElPopover']
+    ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     PicGoIndex: typeof import('./src/components/PicGoIndex.vue')['default']
     PicGoSetting: typeof import('./src/components/PicGoSetting.vue')['default']
