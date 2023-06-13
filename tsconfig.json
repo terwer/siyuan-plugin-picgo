@@ -7,6 +7,7 @@
     "skipLibCheck": true,
     "allowJs": true,
     "checkJs": false,
+    "allowSyntheticDefaultImports": true,
 
     /* Bundler mode */
     "moduleResolution": "node",
@@ -26,6 +27,6 @@
       "~/*": ["./*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "custom.d.ts", "vue-shim.d.ts"],
+  "include": ["*.ts", "*.d.ts", "**/**/*.ts", "**/**/*.d.ts", "*.vue", "**/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

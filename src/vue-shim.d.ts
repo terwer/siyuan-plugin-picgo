@@ -29,8 +29,3 @@ declare module "*.vue" {
   export default component;
   export type PluginObject<T> = (app: Vue.App, ...options: any[]) => any;
 }
-
-import Vue from "vue";
-declare module "vue" {
-  export type PluginObject<T> = (app: Vue.App, ...options: any[]) => any;
-}

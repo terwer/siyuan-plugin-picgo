@@ -24,6 +24,8 @@
  */
 
 import { NotImplementedException } from "zhi-lib-base"
+import { createAppLogger } from "~/src/utils/appLogger"
+import AppInstance from "~/src/appInstance"
 
 /**
  * 内置的 PicGo 桥接 API
@@ -33,12 +35,19 @@ import { NotImplementedException } from "zhi-lib-base"
  * @since 0.0.1
  */
 export class BundledPicgoApi {
+  logger = createAppLogger("bundled-picgo-api")
+
   /**
    * 通过PicGO上传图片
    *
    * @returns {Promise<any[]>}
    */
   async uploadByPicGO(input) {
+    const appInstance = await AppInstance.getInstance()
+    this.logger.debug("appInstance=>", appInstance)
+    this.logger.debug("appInstance.picgo=>", appInstance.picgo)
+
+    this.logger.debug("input=>", input)
     throw new NotImplementedException("TODO")
   }
 }

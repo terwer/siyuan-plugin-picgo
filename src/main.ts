@@ -24,13 +24,15 @@
  */
 
 import App from "./App.vue"
-import { createApp } from "vue"
+import { createApp, provide } from "vue"
 import { useVueRouter } from "./composables/useVueRouter.ts"
 import { createAppLogger } from "./utils/appLogger.ts"
 import { InjectKeys } from "./utils/injectKeys.ts"
 import AppInstance from "./appInstance.ts"
 import i18n from "./locales"
 import FontAwesome from "~/src/composables/useFontAwesome.ts"
+
+const logger = createAppLogger("vue-main-entry")
 
 /**
  * Vue 入口
@@ -40,8 +42,12 @@ import FontAwesome from "~/src/composables/useFontAwesome.ts"
  * @since 0.0.1
  */
 const createVueApp = async () => {
-  const logger = createAppLogger("vue-main-entry")
+  // appInstance
+  const appInstance = await AppInstance.getInstance()
+  provide(InjectKeys.APP_INSTANCE, appInstance)
+  logger.info("appInstance provided =>", appInstance)
 
+  // 初始化 vue 实例
   // https://stackoverflow.com/a/62383325/4037224
   const app = createApp(App)
 
@@ -55,17 +61,11 @@ const createVueApp = async () => {
   const router = useVueRouter()
   app.use(router)
 
-  // appInstance
-  const appInstance = new AppInstance()
-  await appInstance.init()
-  app.provide(InjectKeys.APP_INSTANCE, appInstance)
-  logger.info("appInstance provided=>", appInstance)
-
   // 挂载 vue app
   app.mount("#app")
 
   // 暴露 Vue 实例
-  app.provide(InjectKeys.VUE_INSTANCE, app)
+  provide(InjectKeys.VUE_INSTANCE, app)
   logger.info("vue app created")
 }
 
