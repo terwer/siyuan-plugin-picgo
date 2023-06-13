@@ -26,7 +26,7 @@
 <script lang="ts" setup>
 import { ElMessage, ElMessageBox } from "element-plus"
 import { computed, onBeforeMount, onBeforeUnmount, reactive, ref, watch } from "vue"
-import { debounce, DebouncedFunc } from "lodash"
+import { debounce } from "lodash"
 import ConfigForm from "~/src/components/common/ConfigForm.vue"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import { createAppLogger } from "~/src/utils/appLogger.ts"
@@ -54,7 +54,7 @@ const npmSearchText = computed(() => {
     ? `picgo-plugin-${searchText.value}`
     : searchText.value
 })
-let getSearchResult: DebouncedFunc<(val: string) => void>
+let getSearchResult: any
 const showPluginConfigForm = ref(false)
 const pluginConfigData = reactive({
   currentType: "plugin",
