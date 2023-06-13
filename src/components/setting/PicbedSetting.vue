@@ -23,129 +23,15 @@
   - questions.
   -->
 
-<template>
-  <div class="picbed-setting">
-    <el-alert
-      :title="
-        $t('setting.picgo.picbed.current.selected.tip') +
-        type +
-        '，' +
-        $t('setting.picgo.picbed.current.tip') +
-        defaultType
-      "
-      type="success"
-      :closable="false"
-    />
-
-    <!-- 图床配置列表 -->
-    <div class="bed-type-list">
-      <el-button-group>
-        <el-button
-          v-for="item in picBedData.showPicBedList"
-          :type="type === item.type ? 'primary' : ''"
-          :key="item.name"
-          @click="handlePicBedTypeChange(item)"
-          >{{ item.name }}
-        </el-button>
-      </el-button-group>
-    </div>
-
-    <div class="profile-box">
-      <div class="profile-setting" v-if="!showConfigForm">
-        <!-- 图床配置列表 -->
-        <div class="profile-card-box">
-          <div
-            v-bind:key="config._id"
-            class="profile-card-item"
-            v-for="config in profileData.curConfigList"
-            @click="() => selectItem(config._id)"
-          >
-            <el-card>
-              <div class="profile-card-line">
-                <span>{{ config._configName }}</span>
-                <span class="pull-right">
-                  <el-tooltip
-                    :content="$t('main.opt.edit')"
-                    class="box-item"
-                    effect="dark"
-                    placement="bottom"
-                    popper-class="publish-menu-tooltip"
-                  >
-                    <el-button @click.stop="editConfig(config._id)">
-                      <font-awesome-icon icon="fa-solid fa-pen-to-square" />
-                    </el-button>
-                  </el-tooltip>
-                  <el-tooltip
-                    :content="$t('main.opt.delete')"
-                    class="box-item"
-                    effect="dark"
-                    placement="bottom"
-                    popper-class="publish-menu-tooltip"
-                  >
-                    <el-button @click.stop="deleteConfig(config._id)">
-                      <font-awesome-icon icon="fa-solid fa-trash-can" />
-                    </el-button>
-                  </el-tooltip>
-                </span>
-              </div>
-              <div class="profile-date">
-                {{ dateUtil.formatTimestampToZhDate(config._updatedAt) }}
-              </div>
-              <div
-                :class="{
-                  selected: config._id === profileData.defaultConfigId,
-                }"
-              >
-                {{
-                  config._id === profileData.defaultConfigId
-                    ? $t("setting.picgo.picbed.selected.tip")
-                    : $t("setting.picgo.picbed.unselected.tip")
-                }}
-              </div>
-            </el-card>
-          </div>
-          <div class="profile-card-item" @click="addNewConfig">+</div>
-        </div>
-
-        <!-- 配置操作 -->
-        <div class="profile-action">
-          <el-button
-            class="set-default-btn"
-            type="success"
-            :disabled="picbedStore.defaultPicBed === type"
-            @click="setDefaultPicBed(type)"
-          >
-            {{ $t("setting.picgo.picbed.set.default") }}
-          </el-button>
-        </div>
-      </div>
-
-      <!-- 图床配置表单 -->
-      <div class="profile-form" v-else>
-        <config-form
-          config-type="uploader"
-          :id="type"
-          :config="profileData.curConfig"
-          :config-id="profileData.curConfigId"
-          :is-new-form="isNewForm"
-          @on-change="emitBackFn"
-        />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import { onMounted, reactive, ref, toRaw, watch } from "vue"
 import { ElCard, ElMessage } from "element-plus"
-import picgoUtil from "~/utils/otherlib/picgoUtil"
-import { LogFactory } from "~/utils/logUtil"
-import dateUtil from "../../../utils/dateUtil"
-import { usePicbedStore } from "~/stores/picbedStore"
+import { usePicbedStore } from "~/src/stores/picbedStore.ts"
 import { useI18n } from "vue-i18n"
 import ConfigForm from "~/components/picgo/common/ConfigForm.vue"
+import { createAppLogger } from "~/src/utils/appLogger.ts"
 
-const logger = LogFactory.getLogger("components/picgo/setting/PicbedSetting.vue")
+const logger = createAppLogger("picbed-setting")
 
 const props = defineProps({
   isReload: Boolean,
@@ -316,6 +202,118 @@ onMounted(() => {
   reloadConfig()
 })
 </script>
+
+<template>
+  <div class="picbed-setting">
+    <el-alert
+      :title="
+        $t('setting.picgo.picbed.current.selected.tip') +
+        type +
+        '，' +
+        $t('setting.picgo.picbed.current.tip') +
+        defaultType
+      "
+      type="success"
+      :closable="false"
+    />
+
+    <!-- 图床配置列表 -->
+    <div class="bed-type-list">
+      <el-button-group>
+        <el-button
+          v-for="item in picBedData.showPicBedList"
+          :type="type === item.type ? 'primary' : ''"
+          :key="item.name"
+          @click="handlePicBedTypeChange(item)"
+          >{{ item.name }}
+        </el-button>
+      </el-button-group>
+    </div>
+
+    <div class="profile-box">
+      <div class="profile-setting" v-if="!showConfigForm">
+        <!-- 图床配置列表 -->
+        <div class="profile-card-box">
+          <div
+            v-bind:key="config._id"
+            class="profile-card-item"
+            v-for="config in profileData.curConfigList"
+            @click="() => selectItem(config._id)"
+          >
+            <el-card>
+              <div class="profile-card-line">
+                <span>{{ config._configName }}</span>
+                <span class="pull-right">
+                  <el-tooltip
+                    :content="$t('main.opt.edit')"
+                    class="box-item"
+                    effect="dark"
+                    placement="bottom"
+                    popper-class="publish-menu-tooltip"
+                  >
+                    <el-button @click.stop="editConfig(config._id)">
+                      <font-awesome-icon icon="fa-solid fa-pen-to-square" />
+                    </el-button>
+                  </el-tooltip>
+                  <el-tooltip
+                    :content="$t('main.opt.delete')"
+                    class="box-item"
+                    effect="dark"
+                    placement="bottom"
+                    popper-class="publish-menu-tooltip"
+                  >
+                    <el-button @click.stop="deleteConfig(config._id)">
+                      <font-awesome-icon icon="fa-solid fa-trash-can" />
+                    </el-button>
+                  </el-tooltip>
+                </span>
+              </div>
+              <div class="profile-date">
+                {{ dateUtil.formatTimestampToZhDate(config._updatedAt) }}
+              </div>
+              <div
+                :class="{
+                  selected: config._id === profileData.defaultConfigId,
+                }"
+              >
+                {{
+                  config._id === profileData.defaultConfigId
+                    ? $t("setting.picgo.picbed.selected.tip")
+                    : $t("setting.picgo.picbed.unselected.tip")
+                }}
+              </div>
+            </el-card>
+          </div>
+          <div class="profile-card-item" @click="addNewConfig">+</div>
+        </div>
+
+        <!-- 配置操作 -->
+        <div class="profile-action">
+          <el-button
+            class="set-default-btn"
+            type="success"
+            :disabled="picbedStore.defaultPicBed === type"
+            @click="setDefaultPicBed(type)"
+          >
+            {{ $t("setting.picgo.picbed.set.default") }}
+          </el-button>
+        </div>
+      </div>
+
+      <!-- 图床配置表单 -->
+      <div class="profile-form" v-else>
+        <config-form
+          config-type="uploader"
+          :id="type"
+          :config="profileData.curConfig"
+          :config-id="profileData.curConfigId"
+          :is-new-form="isNewForm"
+          @on-change="emitBackFn"
+        />
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .bed-type-list {

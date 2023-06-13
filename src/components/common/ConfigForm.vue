@@ -23,91 +23,15 @@
   - questions.
   -->
 
-<template>
-  <div class="config-form-box">
-    <div class="config-form-header">
-      <el-page-header :icon="ArrowLeft" title="返回" @click="onBack">
-        <template #content>
-          <div class="flex items-center">
-            <span class="text-large font-600 mr-3" :title="configRuleForm._configName">
-              {{ configRuleForm._configName }}
-            </span>
-          </div>
-        </template>
-      </el-page-header>
-    </div>
-
-    <div class="config-form">
-      <el-form ref="$configForm" label-width="250px" :model="configRuleForm">
-        <el-form-item :label="$t('setting.picgo.config.name')" required prop="_configName">
-          <el-input v-model="configRuleForm._configName" :placeholder="$t('setting.picgo.config.name.placeholder')" />
-        </el-form-item>
-
-        <!-- dynamic config -->
-        <el-form-item
-          v-for="(item, index) in configList"
-          :key="item.name + index"
-          :label="item.alias || item.name"
-          :required="item.required"
-          :prop="item.name"
-        >
-          <el-input
-            v-if="item.type === 'input' || item.type === 'password'"
-            v-model="configRuleForm[item.name]"
-            :type="item.type === 'password' ? 'password' : 'input'"
-            :placeholder="item.message || item.name"
-          />
-          <el-select
-            v-else-if="item.type === 'list' && item.choices"
-            v-model="configRuleForm[item.name]"
-            :placeholder="item.message || item.name"
-          >
-            <el-option
-              v-for="choice in item.choices"
-              :key="choice.name || choice.value || choice"
-              :label="choice.name || choice.value || choice"
-              :value="choice.value || choice"
-            />
-          </el-select>
-          <el-select
-            v-else-if="item.type === 'checkbox' && item.choices"
-            v-model="configRuleForm[item.name]"
-            :placeholder="item.message || item.name"
-            multiple
-            collapse-tags
-          >
-            <el-option
-              v-for="choice in item.choices"
-              :key="choice.value || choice"
-              :label="choice.name || choice.value || choice"
-              :value="choice.value || choice"
-            />
-          </el-select>
-          <el-switch
-            v-else-if="item.type === 'confirm'"
-            v-model="configRuleForm[item.name]"
-            active-text="yes"
-            inactive-text="no"
-          />
-        </el-form-item>
-
-        <el-form-item>
-          <el-button @click="onSubmit">{{ $t("main.opt.ok") }}</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import { ArrowLeft } from "@element-plus/icons-vue"
 import { reactive, ref, toRaw, watch } from "vue"
 import { FormInstance } from "element-plus"
-import { LogFactory } from "~/utils/logUtil"
-import picgoUtil from "~/utils/otherlib/picgoUtil"
 import { cloneDeep, union } from "lodash-es"
+import { createAppLogger } from "~/src/utils/appLogger.ts"
+import picgoUtil from "~/src/service/picgoUtil.js"
 
-const logger = LogFactory.getLogger("components/picgo/setting/PicbedConfigForm.vue")
+const logger = createAppLogger("picbed-config-form")
 
 const props = defineProps({
   // 配置类型：plugin、transfer还是uploader
@@ -262,6 +186,82 @@ const onSubmit = async () => {
   onBack()
 }
 </script>
+
+<template>
+  <div class="config-form-box">
+    <div class="config-form-header">
+      <el-page-header :icon="ArrowLeft" title="返回" @click="onBack">
+        <template #content>
+          <div class="flex items-center">
+            <span class="text-large font-600 mr-3" :title="configRuleForm._configName">
+              {{ configRuleForm._configName }}
+            </span>
+          </div>
+        </template>
+      </el-page-header>
+    </div>
+
+    <div class="config-form">
+      <el-form ref="$configForm" label-width="250px" :model="configRuleForm">
+        <el-form-item :label="$t('setting.picgo.config.name')" required prop="_configName">
+          <el-input v-model="configRuleForm._configName" :placeholder="$t('setting.picgo.config.name.placeholder')" />
+        </el-form-item>
+
+        <!-- dynamic config -->
+        <el-form-item
+          v-for="(item, index) in configList"
+          :key="item.name + index"
+          :label="item.alias || item.name"
+          :required="item.required"
+          :prop="item.name"
+        >
+          <el-input
+            v-if="item.type === 'input' || item.type === 'password'"
+            v-model="configRuleForm[item.name]"
+            :type="item.type === 'password' ? 'password' : 'input'"
+            :placeholder="item.message || item.name"
+          />
+          <el-select
+            v-else-if="item.type === 'list' && item.choices"
+            v-model="configRuleForm[item.name]"
+            :placeholder="item.message || item.name"
+          >
+            <el-option
+              v-for="choice in item.choices"
+              :key="choice.name || choice.value || choice"
+              :label="choice.name || choice.value || choice"
+              :value="choice.value || choice"
+            />
+          </el-select>
+          <el-select
+            v-else-if="item.type === 'checkbox' && item.choices"
+            v-model="configRuleForm[item.name]"
+            :placeholder="item.message || item.name"
+            multiple
+            collapse-tags
+          >
+            <el-option
+              v-for="choice in item.choices"
+              :key="choice.value || choice"
+              :label="choice.name || choice.value || choice"
+              :value="choice.value || choice"
+            />
+          </el-select>
+          <el-switch
+            v-else-if="item.type === 'confirm'"
+            v-model="configRuleForm[item.name]"
+            active-text="yes"
+            inactive-text="no"
+          />
+        </el-form-item>
+
+        <el-form-item>
+          <el-button @click="onSubmit">{{ $t("main.opt.ok") }}</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .config-form-header {

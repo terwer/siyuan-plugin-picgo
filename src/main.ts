@@ -31,6 +31,7 @@ import { InjectKeys } from "./utils/injectKeys.ts"
 import AppInstance from "./appInstance.ts"
 import i18n from "./locales"
 import FontAwesome from "~/src/composables/useFontAwesome.ts"
+import { createPinia } from "pinia"
 
 const logger = createAppLogger("vue-main-entry")
 
@@ -50,6 +51,10 @@ const createVueApp = async () => {
   // 初始化 vue 实例
   // https://stackoverflow.com/a/62383325/4037224
   const app = createApp(App)
+
+  // pinia
+  const pinia = createPinia()
+  app.use(pinia)
 
   // 国际化
   app.use(i18n)

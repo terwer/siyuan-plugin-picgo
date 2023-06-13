@@ -20,6 +20,7 @@ module.exports = {
     semi: "off",
     quotes: "off",
     "no-undef": "off",
+    "vue/require-default-prop": "off",
     "vue/no-deprecated-slot-attribute": "off",
     "vue/component-definition-name-casing": "off",
     "@typescript-eslint/no-empty-function": "off",

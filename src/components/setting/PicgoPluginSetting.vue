@@ -23,132 +23,17 @@
   - questions.
   -->
 
-<template>
-  <div id="plugin-view">
-    <div class="view-title">
-      {{ $t("setting.picgo.plugin") }} -
-      <el-tooltip :content="$t('setting.picgo.plugin.list')" placement="right">
-        <el-button class="el-icon-goods" @click="goAwesomeList">
-          <font-awesome-icon icon="fa-solid fa-cart-shopping" />
-        </el-button>
-      </el-tooltip>
-      <el-tooltip :content="$t('setting.picgo.plugin.import.local')" placement="left">
-        <el-button class="el-icon-download" @click="handleImportLocalPlugin">
-          <font-awesome-icon icon="fa-solid fa-download" />
-        </el-button>
-      </el-tooltip>
-    </div>
-
-    <div class="plugin-list-box" v-if="!showPluginConfigForm">
-      <div class="plugin-search-box">
-        <el-row class="handle-bar" :class="{ 'cut-width': pluginData.pluginList.length > 6 }">
-          <el-input v-model="searchText" :placeholder="$t('setting.picgo.plugin.search.placeholder')">
-            <template #suffix>
-              <el-icon class="el-input__icon" style="cursor: pointer" @click="cleanSearch">
-                <font-awesome-icon icon="fa-solid fa-xmark" />
-              </el-icon>
-            </template>
-          </el-input>
-        </el-row>
-      </div>
-      <div class="plugin-list-tip">
-        {{ "当前共有" + pluginData.pluginList.length + "个插件。" }}
-      </div>
-      <div>
-        <el-row v-loading="loading" :gutter="10" class="plugin-list">
-          <el-col v-for="item in pluginData.pluginList" :key="item.fullName" class="plugin-item__container" :span="12">
-            <div class="plugin-item" :class="{ darwin: os === 'darwin' }">
-              <div v-if="!item.gui" class="cli-only-badge" title="CLI only">CLI</div>
-              <img class="plugin-item__logo" :src="item.logo" :onerror="defaultLogo" alt="img" />
-              <div class="plugin-item__content" :class="{ disabled: !item.enabled }">
-                <div class="plugin-item__name" @click="openHomepage(item.homepage)">
-                  {{ item.name }} <small>{{ " " + item.version }}</small>
-                </div>
-                <div class="plugin-item__desc" :title="item.description">
-                  {{ item.description }}
-                </div>
-                <div class="plugin-item__info-bar">
-                  <span class="plugin-item__author">
-                    {{ item.author }}
-                  </span>
-                  <span class="plugin-item__config">
-                    <template v-if="searchText">
-                      <span class="config-button work" v-if="checkWork(item)">
-                        {{ $t("setting.picgo.plugin.work") }}
-                      </span>
-                      <span class="config-button nowork" v-else>
-                        {{ $t("setting.picgo.plugin.nowork") }}
-                      </span>
-                      <template v-if="!item.hasInstall">
-                        <span
-                          v-if="!item.ing && checkWork(item)"
-                          class="config-button install"
-                          @click="installPlugin(item)"
-                        >
-                          {{ $t("setting.picgo.plugin.install") }}
-                        </span>
-                        <span v-else-if="!item.ing && !checkWork(item)" class="config-button ing">
-                          {{ $t("setting.picgo.plugin.nouse") }}
-                        </span>
-                        <span v-else-if="item.ing" class="config-button ing">
-                          {{ $t("setting.picgo.plugin.installing") }}
-                        </span>
-                      </template>
-                      <span v-else class="config-button ing">
-                        {{ $t("setting.picgo.plugin.installed") }}
-                      </span>
-                    </template>
-                    <template v-else>
-                      <span v-if="item.ing" class="config-button ing">
-                        {{ $t("setting.picgo.plugin.doing.something") }}
-                      </span>
-                      <template v-else>
-                        <el-icon v-if="item.enabled" class="el-icon-setting" @click="buildContextMenu(item)">
-                          <font-awesome-icon icon="fa-solid fa-gear" />
-                        </el-icon>
-                        <el-icon v-else class="el-icon-remove-outline" @click="buildContextMenu(item)">
-                          <font-awesome-icon icon="fa-solid fa-bell-slash" />
-                        </el-icon>
-                      </template>
-                    </template>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
-    </div>
-    <!-- 插件自定义配置表单 -->
-    <div class="plugin-config-form" v-else>
-      <config-form
-        :config-type="pluginConfigData.currentType"
-        :id="pluginConfigData.currentType"
-        :config-id="pluginConfigData.configName"
-        :config="pluginConfigData.config"
-        :is-new-form="false"
-        @on-change="emitBackFn"
-      />
-    </div>
-  </div>
-</template>
-
 <script lang="ts" setup>
-import picgoUtil from "~/utils/otherlib/picgoUtil"
-import { LogFactory } from "~/utils/logUtil"
 import { ElMessage, ElMessageBox } from "element-plus"
 import { computed, onBeforeMount, onBeforeUnmount, reactive, ref, watch } from "vue"
-import { goToPage } from "~/utils/otherlib/ChromeUtil"
-import sysUtil from "~/utils/otherlib/sysUtil"
 import { debounce, DebouncedFunc } from "lodash"
-import { useI18n } from "vue-i18n"
-import { PicgoPageMenuType } from "~/utils/platform/picgo/picgoPlugin"
 import ConfigForm from "~/components/picgo/common/ConfigForm.vue"
-import { reloadPage } from "~/utils/browserUtil"
+import { useVueI18n } from "~/src/composables/useVueI18n.ts"
+import { createAppLogger } from "~/src/utils/appLogger.ts"
 
-const logger = LogFactory.getLogger("components/picgo/setting/PicgoPluginSetting.vue")
+const logger = createAppLogger("picgo-plugin-setting")
 
-const { t } = useI18n()
+const { t } = useVueI18n()
 
 // vars
 const loading = ref(false)
@@ -482,6 +367,116 @@ onBeforeUnmount(() => {
   picgoUtil.ipcRemoveEvent("picgoConfigPlugin")
 })
 </script>
+
+<template>
+  <div id="plugin-view">
+    <div class="view-title">
+      {{ $t("setting.picgo.plugin") }} -
+      <el-tooltip :content="$t('setting.picgo.plugin.list')" placement="right">
+        <el-button class="el-icon-goods" @click="goAwesomeList">
+          <font-awesome-icon icon="fa-solid fa-cart-shopping" />
+        </el-button>
+      </el-tooltip>
+      <el-tooltip :content="$t('setting.picgo.plugin.import.local')" placement="left">
+        <el-button class="el-icon-download" @click="handleImportLocalPlugin">
+          <font-awesome-icon icon="fa-solid fa-download" />
+        </el-button>
+      </el-tooltip>
+    </div>
+
+    <div class="plugin-list-box" v-if="!showPluginConfigForm">
+      <div class="plugin-search-box">
+        <el-row class="handle-bar" :class="{ 'cut-width': pluginData.pluginList.length > 6 }">
+          <el-input v-model="searchText" :placeholder="$t('setting.picgo.plugin.search.placeholder')">
+            <template #suffix>
+              <el-icon class="el-input__icon" style="cursor: pointer" @click="cleanSearch">
+                <font-awesome-icon icon="fa-solid fa-xmark" />
+              </el-icon>
+            </template>
+          </el-input>
+        </el-row>
+      </div>
+      <div class="plugin-list-tip">
+        {{ "当前共有" + pluginData.pluginList.length + "个插件。" }}
+      </div>
+      <div>
+        <el-row v-loading="loading" :gutter="10" class="plugin-list">
+          <el-col v-for="item in pluginData.pluginList" :key="item.fullName" class="plugin-item__container" :span="12">
+            <div class="plugin-item" :class="{ darwin: os === 'darwin' }">
+              <div v-if="!item.gui" class="cli-only-badge" title="CLI only">CLI</div>
+              <img class="plugin-item__logo" :src="item.logo" :onerror="defaultLogo" alt="img" />
+              <div class="plugin-item__content" :class="{ disabled: !item.enabled }">
+                <div class="plugin-item__name" @click="openHomepage(item.homepage)">
+                  {{ item.name }} <small>{{ " " + item.version }}</small>
+                </div>
+                <div class="plugin-item__desc" :title="item.description">
+                  {{ item.description }}
+                </div>
+                <div class="plugin-item__info-bar">
+                  <span class="plugin-item__author">
+                    {{ item.author }}
+                  </span>
+                  <span class="plugin-item__config">
+                    <template v-if="searchText">
+                      <span class="config-button work" v-if="checkWork(item)">
+                        {{ $t("setting.picgo.plugin.work") }}
+                      </span>
+                      <span class="config-button nowork" v-else>
+                        {{ $t("setting.picgo.plugin.nowork") }}
+                      </span>
+                      <template v-if="!item.hasInstall">
+                        <span
+                          v-if="!item.ing && checkWork(item)"
+                          class="config-button install"
+                          @click="installPlugin(item)"
+                        >
+                          {{ $t("setting.picgo.plugin.install") }}
+                        </span>
+                        <span v-else-if="!item.ing && !checkWork(item)" class="config-button ing">
+                          {{ $t("setting.picgo.plugin.nouse") }}
+                        </span>
+                        <span v-else-if="item.ing" class="config-button ing">
+                          {{ $t("setting.picgo.plugin.installing") }}
+                        </span>
+                      </template>
+                      <span v-else class="config-button ing">
+                        {{ $t("setting.picgo.plugin.installed") }}
+                      </span>
+                    </template>
+                    <template v-else>
+                      <span v-if="item.ing" class="config-button ing">
+                        {{ $t("setting.picgo.plugin.doing.something") }}
+                      </span>
+                      <template v-else>
+                        <el-icon v-if="item.enabled" class="el-icon-setting" @click="buildContextMenu(item)">
+                          <font-awesome-icon icon="fa-solid fa-gear" />
+                        </el-icon>
+                        <el-icon v-else class="el-icon-remove-outline" @click="buildContextMenu(item)">
+                          <font-awesome-icon icon="fa-solid fa-bell-slash" />
+                        </el-icon>
+                      </template>
+                    </template>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+    </div>
+    <!-- 插件自定义配置表单 -->
+    <div class="plugin-config-form" v-else>
+      <config-form
+        :config-type="pluginConfigData.currentType"
+        :id="pluginConfigData.currentType"
+        :config-id="pluginConfigData.configName"
+        :config="pluginConfigData.config"
+        :is-new-form="false"
+        @on-change="emitBackFn"
+      />
+    </div>
+  </div>
+</template>
 
 <style lang="stylus">
 $darwinBg = #172426
