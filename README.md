@@ -2,6 +2,8 @@
 
 # PicGo Plugin
 
+![](./preview.png)
+
 Your favorite PicGo image bed and PicGo plugins are still available in siyuan-notes, wuhu~
 
 ## Changelog
