@@ -49,6 +49,7 @@ export const usePicgoInitPage = (props, deps) => {
   // private methods
   const initPage = async () => {
     const pageId = props.pageId
+    console.log("pageId=>", pageId)
 
     // 图片信息
     const imageBlocks: any[] = await siyuanApi.getImageBlocksByID(pageId)

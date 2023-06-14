@@ -46,7 +46,7 @@ const pluginData = reactive({
   pluginNameList: <string[]>[],
 })
 const os = ref("")
-const defaultLogo = ref(`this.src="/widgets/sy-post-publisher/lib/picgo/picgo-logo.png"`)
+const defaultLogo = ref(`this.src="/plugins/siyuan-plugin-picgo/libs/sy-picgo-core/picgo-logo.png"`)
 const npmSearchText = computed(() => {
   return searchText.value.match("picgo-plugin-")
     ? searchText.value

@@ -22,3 +22,12 @@
  * or visit www.terwer.space if you need additional information or have any
  * questions.
  */
+
+/**
+ * 文章PicGO图片信息Key
+ */
+const PICGO_FILE_MAP_KEY = "custom-picgo-file-map-key"
+
+export const appConstants = {
+  PICGO_FILE_MAP_KEY,
+}

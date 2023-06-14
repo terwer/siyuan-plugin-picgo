@@ -39,6 +39,7 @@ class AppInstance {
       this.logger.info("Unable to obtain appInstance, try to re-initialized")
       AppInstance.instance = new AppInstance()
       await AppInstance.instance.init()
+      this.logger.info("SyPicgo mounted")
     }
     return AppInstance.instance
   }
@@ -48,6 +49,9 @@ class AppInstance {
     if (this.isSiyuanOrSiyuanNewWin) {
       const syPicgo = this.initSyPicgo()
       this.picgo = syPicgo.getPicgoObj()
+
+      const win = SiyuanDevice.siyuanWindow()
+      win.SyPicgo = syPicgo
     }
   }
 

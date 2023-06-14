@@ -35,7 +35,7 @@ import { createAppLogger } from "~/src/utils/appLogger.ts"
  * @since 0.1.0
  */
 export class ImageParser {
-  private readonly logger = createAppLogger("image-parser.ts")
+  private readonly logger = createAppLogger("image-parser")
 
   /**
    * 检测是否有外链图片
@@ -96,8 +96,33 @@ export class ImageParser {
    * @private
    */
   public parseRemoteImagesToArray(markdownText: string): ParsedImage[] {
+    this.logger.debug("准备解析文本中的远程图片=>", markdownText)
     // 定义正则表达式来匹配以 http 或 https 开头的 Markdown 格式的图片链接
-    const regex = /!\[(.*?)\]\(((https|http|ftp)?:\/\/[^\s/$.?#].[^\s]*)\s*"(.*?)"\)\s*{:\s*([^\n]*)}/g
+    // 只能匹配有属性和备注的情况
+    // const regex = /!\[(.*?)\]\(((https|http|ftp)?:\/\/[^\s/$.?#].[^\s]*)\s*"(.*?)"\)\s*{:\s*([^\n]*)}/g
+    // 同时兼容有属性和没有属性的情况
+    const regex = /!\[(.*?)\]\((https?:\/\/\S+\.(?:jpe?g|png|gif))(?:\s+"(?:[^"\\]|\\.)*")?\s*(?:{:\s*([^\n]*)})?\)/g
+
+    // 匹配普通图片链接：
+    // ![Cat](https://example.com/cat.png)
+    // 匹配结果:
+    // match[1]: "Cat"
+    // match[2]: "https://example.com/cat.png"
+    // match[3]: undefined
+
+    // 匹配带注释的图片链接：
+    // ![Dog](https://example.com/dog.jpg "A dog in the park")
+    // 匹配结果：
+    // match[1]: "Dog"
+    // match[2]: "https://example.com/dog.jpg"
+    // match[3]: "A dog in the park"
+
+    // 匹配带属性的图片链接：
+    // ![Fish](https://example.com/fish.gif){width=200 height=150}
+    // 匹配结果：
+    // match[1]: "Fish"
+    // match[2]: "https://example.com/fish.gif"
+    // match[3]: "width=200 height=150"
 
     // 使用正则表达式来匹配 Markdown 格式的图片链接，并提取其中的各个属性
     const ParsedImages = []
@@ -114,7 +139,7 @@ export class ImageParser {
         isLocal: false,
       })
     }
-    this.logger.debug("远程图片解析完毕.")
+    this.logger.debug("远程图片解析完毕.", ParsedImages)
     return ParsedImages
   }
 
@@ -124,8 +149,15 @@ export class ImageParser {
    * @param markdownText 图片块
    */
   public parseLocalImagesToArray(markdownText: string): ParsedImage[] {
+    this.logger.debug("准备解析文本中的本地图片=>", markdownText)
+
     // 定义正则表达式来匹配以 assets 开头但不以 http、https 或 ftp 开头的 Markdown 格式的图片链接
-    const regex = /!\[(.*?)\]\(((?!http|https|ftp)assets\/.*?)\s*("(?:.*[^"])")?\)\s*(\{(?:.*[^"])})?/g
+    // const regex = /!\[(.*?)\]\(((?!http|https|ftp)assets\/.*?)\s*("(?:.*[^"])")?\)\s*(\{(?:.*[^"])})?/g
+    const regex = /!\[(.*?)\]\(((?!http|https|ftp)assets\/.*?)\s*("(?:[^"\\]|\\.)*")?\s*(\{(?:[^"\\]|\\.)*\})?\)/g
+    // 这样的正则表达式可以同时匹配到以下格式的图片链接：
+    // ![图片](assets/image.png)
+    // ![带注释的图片](assets/image.png "注释")
+    // ![带属性的图片](assets/image.png){width=100 height=200}
 
     // 使用正则表达式来匹配 Markdown 格式的图片链接，并提取其中的各个属性
     const ParsedImages = []
@@ -142,7 +174,7 @@ export class ImageParser {
         isLocal: true,
       })
     }
-    this.logger.debug("本地图片解析完毕.")
+    this.logger.debug("本地图片解析完毕.", ParsedImages)
     return ParsedImages
   }
 

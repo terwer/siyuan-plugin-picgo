@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Terwer . All rights reserved.
+ * Copyright (c) 2022-2023, Terwer . All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,15 +23,17 @@
  * questions.
  */
 
-import { SiyuanDevice } from "zhi-device"
+import { v4 as uuidv4 } from "uuid"
 
-export const openPath = (absFilePath) => {
-  const win = SiyuanDevice.siyuanWindow()
-  const { shell } = win.require("electron")
-  shell.openPath(absFilePath)
+/**
+ * ID生成统一入口
+ */
+const newUuid = () => {
+  return uuidv4()
 }
 
-const electronUtil = {
-  openPath,
+const idUtil = {
+  newUuid,
 }
-export default electronUtil
+
+export default idUtil

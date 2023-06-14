@@ -31,6 +31,7 @@ import { usePicgoCommon } from "~/src/composables/picgo/usePicgoCommon.ts"
 import { usePicgoInitPage } from "~/src/composables/picgo/usePicgoInitPage.ts"
 import { usePicgoUpload } from "~/src/composables/picgo/usePicgoUpload.ts"
 import { usePicgoManage } from "~/src/composables/picgo/usePicgoManage.ts"
+import { BrowserUtil } from "zhi-device"
 
 const logger = createAppLogger("picgo-index-page")
 
@@ -38,7 +39,7 @@ const logger = createAppLogger("picgo-index-page")
 const props = defineProps({
   pageId: {
     type: String,
-    default: undefined,
+    default: BrowserUtil.getQueryParam("pageId"),
   },
 })
 
@@ -60,7 +61,9 @@ logger.info("This is picgo index page")
 
 <template>
   <div class="picgo-body">
+    <!--
     <el-alert :title="t('setting.picgo.index.tip')" type="warning" :closable="false" />
+    -->
 
     <!-- 上传状态 -->
     <div class="upload-status">
@@ -203,6 +206,20 @@ logger.info("This is picgo index page")
     <!-- 日志显示 -->
     <div v-if="picgoCommonData.showDebugMsg" class="log-msg">
       <el-input v-model="picgoCommonData.loggerMsg" type="textarea" :autosize="{ minRows: 5, maxRows: 10 }" />
+    </div>
+
+    <div class="el-alert el-alert--warning is-light" role="alert">
+      <div class="el-alert__content">
+        <div class="el-alert__title">
+          <div>使用须知：</div>
+          <div>1、此处上传的图片不会自动插入文档中，请手动点击按钮复制链接，然后 Ctrl+V 粘贴到文档中。</div>
+          <div>
+            2、对于文档当中原本已经存在的本地图片，点击上传之后不会直接替换原始图片，只会存储本地图片与图床图片的映射信息，需要在发布文章时手动勾选【使用图床】才会进行临时链接替换，请知悉。
+            这样做是为了不破坏其他地方对文档图片的处理。当然，您也可以手动复制图床链接，然后删除原图片，替换为图床图片。
+          </div>
+          <div>3、该图片列表仅展示此文档包含的图片。</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>

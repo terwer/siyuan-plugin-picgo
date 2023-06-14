@@ -30,6 +30,8 @@ import { siyuanKernelApi } from "~/src/utils/utils.ts"
 import { ImageItem } from "~/src/models/imageItem.ts"
 import { ParsedImage } from "~/src/models/parsedImage.ts"
 import { PicgoPostResult } from "~/src/models/picgoPostResult.ts"
+import { appConstants } from "~/src/appConstants.ts"
+import { JsonUtil, StrUtil } from "zhi-common"
 
 /**
  * Picgo与文章交互的通用方法
@@ -52,43 +54,43 @@ export class PicgoPostApi {
    */
   public async doConvertImagesToImagesItemArray(attrs, retImgs: ParsedImage[]): Promise<ImageItem[]> {
     const ret = [] as ImageItem[]
-    //   for (let i = 0; i < retImgs.length; i++) {
-    //     const retImg = retImgs[i]
-    //     const originUrl = retImg.url
-    //     let imgUrl = retImg.url
-    //
-    //     // 获取属性存储的映射数据
-    //     let fileMap = {}
-    //     this.logger.debug("attrs=>", attrs)
-    //     if (!isEmptyString(attrs[CONSTANTS.PICGO_FILE_MAP_KEY])) {
-    //       fileMap = parseJSONObj(attrs[CONSTANTS.PICGO_FILE_MAP_KEY])
-    //       this.logger.debug("fileMap=>", fileMap)
-    //     }
-    //
-    //     // 处理思源本地图片预览
-    //     // 这个是从思源查出来解析的是否是本地
-    //     if (retImg.isLocal) {
-    //       const baseUrl = getSiyuanCfg().baseUrl
-    //       imgUrl = pathJoin(baseUrl, "/" + imgUrl)
-    //     }
-    //
-    //     const imageItem = new ImageItem(originUrl, imgUrl, retImg.isLocal, retImg.alt, retImg.title)
-    //     // fileMap 查出来的是是否上传，上传了，isLocal就false
-    //     if (fileMap[imageItem.hash]) {
-    //       const newImageItem = fileMap[imageItem.hash]
-    //       this.logger.debug("newImageItem=>", newImageItem)
-    //       if (!newImageItem.isLocal) {
-    //         imageItem.isLocal = false
-    //         imageItem.url = newImageItem.url
-    //       }
-    //     }
-    //
-    //     // imageItem.originUrl = decodeURIComponent(imageItem.originUrl)
-    //     imageItem.url = decodeURIComponent(imageItem.url)
-    //     this.logger.debug("imageItem=>", imageItem)
-    //     ret.push(imageItem)
-    //   }
-    //
+    for (let i = 0; i < retImgs.length; i++) {
+      const retImg = retImgs[i]
+      const originUrl = retImg.url
+      let imgUrl = retImg.url
+
+      // 获取属性存储的映射数据
+      let fileMap = {}
+      this.logger.debug("attrs=>", attrs)
+      if (!StrUtil.isEmptyString(attrs[appConstants.PICGO_FILE_MAP_KEY])) {
+        fileMap = JsonUtil.safeParse(attrs[appConstants.PICGO_FILE_MAP_KEY], {})
+        this.logger.debug("fileMap=>", fileMap)
+      }
+
+      // 处理思源本地图片预览
+      // 这个是从思源查出来解析的是否是本地
+      if (retImg.isLocal) {
+        const baseUrl = ""
+        imgUrl = StrUtil.pathJoin(baseUrl, "/" + imgUrl)
+      }
+
+      const imageItem = new ImageItem(originUrl, imgUrl, retImg.isLocal, retImg.alt, retImg.title)
+      // fileMap 查出来的是是否上传，上传了，isLocal就false
+      if (fileMap[imageItem.hash]) {
+        const newImageItem = fileMap[imageItem.hash]
+        this.logger.debug("newImageItem=>", newImageItem)
+        if (!newImageItem.isLocal) {
+          imageItem.isLocal = false
+          imageItem.url = newImageItem.url
+        }
+      }
+
+      // imageItem.originUrl = decodeURIComponent(imageItem.originUrl)
+      imageItem.url = decodeURIComponent(imageItem.url)
+      this.logger.debug("imageItem=>", imageItem)
+      ret.push(imageItem)
+    }
+
     console.error("ret=>", ret)
     return ret
   }

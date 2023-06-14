@@ -24,6 +24,8 @@
  */
 
 import { SiyuanDevice } from "zhi-device"
+import { getRawData, trimValues } from "~/src/utils/utils"
+import idUtil from "~/src/utils/idUtil"
 
 /**
  * 获取当前可用图床
@@ -87,7 +89,7 @@ const savePicgoConfig = (_config, value = undefined) => {
       [_config]: value,
     }
   } else {
-    config = strUtil.getRawData(_config)
+    config = getRawData(_config)
   }
 
   picgo.saveConfig(config)
@@ -120,7 +122,7 @@ const completeUploaderMetaConfig = (originData) => {
     {
       _configName: "Default",
     },
-    strUtil.trimValues(originData),
+    trimValues(originData),
     {
       _id: idUtil.newUuid(),
       _createdAt: Date.now(),
@@ -294,7 +296,7 @@ export const updateUploaderConfig = (type, id, config) => {
   let updatedConfig
   let updatedDefaultId = defaultId
   if (existConfig) {
-    updatedConfig = Object.assign(existConfig, strUtil.trimValues(config), {
+    updatedConfig = Object.assign(existConfig, trimValues(config), {
       _updatedAt: Date.now(),
     })
   } else {
