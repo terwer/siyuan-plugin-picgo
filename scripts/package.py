@@ -16,7 +16,7 @@ if __name__ == "__main__":
     src_folder = dist_folder
     tmp_folder_name = "./siyuan-plugin-picgo"
     build_zip_path = "./build"
-    build_zip_name = "siyuan-siyuan-plugin-picgo-" + v + ".zip"
+    build_zip_name = "siyuan-plugin-picgo-" + v + ".zip"
 
     try:
         # 压缩dist为zip
