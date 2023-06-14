@@ -200,11 +200,6 @@ logger.info("This is picgo index page")
       <img w-full :src="picgoManageData.dialogImageUrl" alt="Preview Image" class="img-big-preview" />
     </el-dialog>
 
-    <!-- Picgo设置 -->
-    <el-dialog v-model="picgoUploadData.dialogPicgoSettingFormVisible" :title="t('picgo.pic.setting')">
-      <pic-go-setting />
-    </el-dialog>
-
     <!-- 日志显示 -->
     <div v-if="picgoCommonData.showDebugMsg" class="log-msg">
       <el-input v-model="picgoCommonData.loggerMsg" type="textarea" :autosize="{ minRows: 5, maxRows: 10 }" />

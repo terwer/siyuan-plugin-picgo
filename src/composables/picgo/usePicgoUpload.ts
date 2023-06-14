@@ -29,6 +29,7 @@ import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import { createAppLogger } from "~/src/utils/appLogger.ts"
 import { ImageItem } from "~/src/models/imageItem.ts"
 import { PicgoApi } from "~/src/service/picgoApi.js"
+import { useRouter } from "vue-router"
 
 /**
  * Picgo上传组件
@@ -37,12 +38,11 @@ export const usePicgoUpload = (props, deps, refs) => {
   // private data
   const logger = createAppLogger("picgo-upload")
   const { t } = useVueI18n()
+  const router = useRouter()
   const bundledPicgoApi = new PicgoApi()
 
   // public data
-  const picgoUploadData = reactive({
-    dialogPicgoSettingFormVisible: false,
-  })
+  const picgoUploadData = reactive({})
 
   // deps
   const picgoCommonMethods = deps.picgoCommonMethods
@@ -84,11 +84,6 @@ export const usePicgoUpload = (props, deps, refs) => {
   // public methods
   const picgoUploadMethods = {
     handlePicgoSetting: async () => {
-      if (picgoCommonData.showDebugMsg) {
-        picgoUploadData.dialogPicgoSettingFormVisible = true
-        return
-      }
-
       if (!picgoCommonData.isSiyuanOrSiyuanNewWin) {
         await ElMessageBox.alert(t("picgo.pic.setting.no.tip"), t("main.opt.tip"), {
           confirmButtonText: t("main.opt.ok"),
@@ -96,9 +91,10 @@ export const usePicgoUpload = (props, deps, refs) => {
         return
       }
 
-      alert(picgoUploadData.dialogPicgoSettingFormVisible)
-
-      picgoUploadData.dialogPicgoSettingFormVisible = true
+      await router.push({
+        path: "/setting",
+        query: { showBack: "true" },
+      })
     },
     bindFileControl: () => {
       refSelectedFiles.value.click()

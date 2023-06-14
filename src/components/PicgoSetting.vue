@@ -28,14 +28,24 @@ import { onBeforeMount, ref } from "vue"
 import picgoUtil from "~/src/service/picgoUtil.js"
 import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils.ts"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
+import { ArrowLeft } from "@element-plus/icons-vue"
+import { useRoute, useRouter } from "vue-router"
 
 const { t } = useVueI18n()
+const router = useRouter()
+const { query } = useRoute()
+
 const isReload = ref(false)
 const picgoVersion = ref("")
 const isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
+const showBack = ref(query.showBack === "true")
 
 const picgoSettingTabChange = () => {
   isReload.value = !isReload.value
+}
+
+const onBack = () => {
+  router.back()
 }
 
 onBeforeMount(() => {
@@ -44,66 +54,80 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div v-if="isSiyuanOrSiyuanNewWin" style="padding-right: 20px">
-    <!-- PicGO配置 -->
-    <el-tabs type="border-card" @tab-click="picgoSettingTabChange">
-      <el-tab-pane :label="t('setting.picgo.picbed')">
-        <!-- 图床类型 -->
-        <picbed-setting :is-reload="isReload" />
-      </el-tab-pane>
-      <el-tab-pane :label="t('setting.picgo.picgo')">
-        <!-- PicGO配置 -->
-        <picgo-config-setting />
-      </el-tab-pane>
-      <el-tab-pane :label="t('setting.picgo.plugin')">
-        <!-- PicGO插件配置 -->
-        <picgo-plugin-setting />
-      </el-tab-pane>
-    </el-tabs>
-
-    <blockquote class="picgo-setting-tip">
-      <div>
-        {{ t("picgo.siyuan.tip") }} 。 当前系统默认的 PicGO 配置文件为：
-        <pre style="display: inline-block"><code>{{ picgoUtil.getPicgoCfgPath() }}</code></pre>
-        。 多个图床中，只能有一个图床设置为默认。默认图床会在上传的时候自动生效。从 0.7.0+
-        开始，单个图床支持多份配置切换，每个图床只能有一个选中的配置生效。
-        {{ t("setting.picgo.refer.to") }}
-        <a target="_blank" href="https://docs.publish.terwer.space/post/picgo-diagram-bed-use-zxqqec.html">{{
-          t("setting.picgo.refer.to.online.doc")
-        }}</a>
-        或者
-        <a href="https://picgo.github.io/PicGo-Core-Doc/zh/guide/config.html#%E6%89%8B%E5%8A%A8%E7%94%9F%E6%88%90"
-          >PicGO 官方文档</a
-        >
-        。
-      </div>
-    </blockquote>
-    <div class="version-tip">
-      当前PicGo版本为
-      <a href="https://github.com/terwer/Electron-PicGo-Core" target="_blank">electron-picgo</a>
-      v{{ picgoVersion }} ， 对 Electron 环境进行了更好的适配 ，由
-      <a href="https://github.com/terwer" target="_blank">terwer</a> 负责维护 。感谢原始
-      <a href="https://github.com/PicGo/PicGo-Core" target="_blank">PicGo-Core</a>
-      项目。
-      <p>特别提示：picgo插件未经过全量测试，不保证所有插件都能运行，目前已经测试可用的插件如下：</p>
-      <p>
-        <a href="https://github.com/terwer/picgo-plugin-watermark-elec">picgo-plugin-watermark-elec</a>
-        搜索关键词：watermark-elec
-      </p>
-      <p>
-        <a href="https://github.com/wayjam/picgo-plugin-s3">picgo-plugin-s3</a>
-        搜索关键词：s3
-      </p>
-      <p>
-        <a href="https://github.com/Herbertzz/picgo-plugin-minio">picgo-plugin-minio</a>
-        搜索关键词：minio
-      </p>
+  <div id="page-body">
+    <div v-if="showBack" class="page-head">
+      <el-page-header :icon="ArrowLeft" title="返回" @click="onBack">
+        <template #content>
+          <div class="flex items-center">
+            <span class="text-large font-600 mr-3">Picgo 设置</span>
+          </div>
+        </template>
+      </el-page-header>
     </div>
-  </div>
-  <div v-else>
-    <div class="picgo-browser-tip">
-      <p>{{ t("picgo.chrome.tip") }} 。</p>
-      <p>{{ t("picgo.pic.setting.no.tip") }} 。</p>
+
+    <div class="page-content-box">
+      <div v-if="isSiyuanOrSiyuanNewWin" style="padding-right: 20px">
+        <!-- PicGO配置 -->
+        <el-tabs type="border-card" @tab-click="picgoSettingTabChange">
+          <el-tab-pane :label="t('setting.picgo.picbed')">
+            <!-- 图床类型 -->
+            <picbed-setting :is-reload="isReload" />
+          </el-tab-pane>
+          <el-tab-pane :label="t('setting.picgo.picgo')">
+            <!-- PicGO配置 -->
+            <picgo-config-setting />
+          </el-tab-pane>
+          <el-tab-pane :label="t('setting.picgo.plugin')">
+            <!-- PicGO插件配置 -->
+            <picgo-plugin-setting />
+          </el-tab-pane>
+        </el-tabs>
+
+        <blockquote class="picgo-setting-tip">
+          <div>
+            {{ t("picgo.siyuan.tip") }} 。 当前系统默认的 PicGO 配置文件为：
+            <pre style="display: inline-block"><code>{{ picgoUtil.getPicgoCfgPath() }}</code></pre>
+            。 多个图床中，只能有一个图床设置为默认。默认图床会在上传的时候自动生效。从 0.7.0+
+            开始，单个图床支持多份配置切换，每个图床只能有一个选中的配置生效。
+            {{ t("setting.picgo.refer.to") }}
+            <a target="_blank" href="https://docs.publish.terwer.space/post/picgo-diagram-bed-use-zxqqec.html">{{
+              t("setting.picgo.refer.to.online.doc")
+            }}</a>
+            或者
+            <a href="https://picgo.github.io/PicGo-Core-Doc/zh/guide/config.html#%E6%89%8B%E5%8A%A8%E7%94%9F%E6%88%90"
+              >PicGO 官方文档</a
+            >
+            。
+          </div>
+        </blockquote>
+        <div class="version-tip">
+          当前PicGo版本为
+          <a href="https://github.com/terwer/Electron-PicGo-Core" target="_blank">electron-picgo</a>
+          v{{ picgoVersion }} ， 对 Electron 环境进行了更好的适配 ，由
+          <a href="https://github.com/terwer" target="_blank">terwer</a> 负责维护 。感谢原始
+          <a href="https://github.com/PicGo/PicGo-Core" target="_blank">PicGo-Core</a>
+          项目。
+          <p>特别提示：picgo插件未经过全量测试，不保证所有插件都能运行，目前已经测试可用的插件如下：</p>
+          <p>
+            <a href="https://github.com/terwer/picgo-plugin-watermark-elec">picgo-plugin-watermark-elec</a>
+            搜索关键词：watermark-elec
+          </p>
+          <p>
+            <a href="https://github.com/wayjam/picgo-plugin-s3">picgo-plugin-s3</a>
+            搜索关键词：s3
+          </p>
+          <p>
+            <a href="https://github.com/Herbertzz/picgo-plugin-minio">picgo-plugin-minio</a>
+            搜索关键词：minio
+          </p>
+        </div>
+      </div>
+      <div v-else>
+        <div class="picgo-browser-tip">
+          <p>{{ t("picgo.chrome.tip") }} 。</p>
+          <p>{{ t("picgo.pic.setting.no.tip") }} 。</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -127,5 +151,18 @@ onBeforeMount(() => {
 
 .version-tip {
   margin: 10px 0;
+}
+
+#page-body {
+  min-width: 600px !important;
+  margin-top: 20px;
+  margin-bottom: 16px;
+}
+.page-head{
+  margin-bottom: 16px;
+  margin-left: 20px;
+}
+.page-content-box {
+  padding: 0 20px;
 }
 </style>
