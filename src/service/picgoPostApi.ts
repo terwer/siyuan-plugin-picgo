@@ -26,12 +26,15 @@
 import { ImageParser } from "~/src/utils/parser/imageParser.ts"
 import { SiyuanKernelApi } from "zhi-siyuan-api"
 import { createAppLogger } from "~/src/utils/appLogger.ts"
-import { siyuanKernelApi } from "~/src/utils/utils.ts"
+import { isInSiyuanOrSiyuanNewWin, siyuanKernelApi } from "~/src/utils/utils.ts"
 import { ImageItem } from "~/src/models/imageItem.ts"
 import { ParsedImage } from "~/src/models/parsedImage.ts"
 import { PicgoPostResult } from "~/src/models/picgoPostResult.ts"
 import { appConstants } from "~/src/appConstants.ts"
 import { JsonUtil, StrUtil } from "zhi-common"
+import { ElMessage } from "element-plus"
+import { SiyuanDevice } from "zhi-device"
+import picgoUtil from "~/src/service/picgoUtil.js"
 
 /**
  * Picgo与文章交互的通用方法
@@ -40,6 +43,7 @@ export class PicgoPostApi {
   private readonly logger = createAppLogger("picgo-post-api")
   private readonly imageParser: ImageParser
   private readonly siyuanApi: SiyuanKernelApi
+  private readonly isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
 
   constructor() {
     this.imageParser = new ImageParser()
@@ -104,77 +108,72 @@ export class PicgoPostApi {
   public async uploadPostImagesToBed(pageId: string, attrs: any, mdContent: string): Promise<PicgoPostResult> {
     const ret = new PicgoPostResult()
 
-    //   const localImages = this.imageParser.parseLocalImagesToArray(mdContent)
-    //   const uniqueLocalImages = [...new Set([...localImages])]
-    //   this.logger.debug("uniqueLocalImages=>", uniqueLocalImages)
-    //
-    //   if (uniqueLocalImages.length === 0) {
-    //     ret.flag = false
-    //     ret.hasImages = false
-    //     ret.mdContent = mdContent
-    //     ret.errmsg = "文章中没有图片"
-    //     return await Promise.resolve(ret)
-    //   }
-    //
-    //   // 开始上传
-    //   try {
-    //     ret.hasImages = true
-    //
-    //     const imageItemArray = await this.doConvertImagesToImagesItemArray(attrs, uniqueLocalImages)
-    //
-    //     const replaceMap = {}
-    //     let hasLocalImages = false
-    //     for (let i = 0; i < imageItemArray.length; i++) {
-    //       const imageItem = imageItemArray[i]
-    //       if (imageItem.originUrl.includes("assets")) {
-    //         replaceMap[imageItem.hash] = imageItem
-    //       }
-    //
-    //       if (!imageItem.isLocal) {
-    //         this.logger.warn("已经上传过图床，请勿重复上传=>", imageItem.originUrl)
-    //         continue
-    //       }
-    //
-    //       hasLocalImages = true
-    //       if (isInSiyuanWidget() && hasLocalImages) {
-    //         throw new Error(
-    //           "检测到有未上传的图片，由于Electron技术限制，挂件通用版不支持上传，仅提供链接替换，请先上传完毕再使用发布。您也可以取消使用图床，或者使用新窗口方式发布。"
-    //         )
-    //       }
-    //
-    //       // 实际上传逻辑
-    //       await this.uploadSingleImageToBed(pageId, attrs, imageItem)
-    //       // 上传完成，需要获取最新链接
-    //       const newattrs = await this.siyuanApi.getBlockAttrs(pageId)
-    //       const newfileMap = parseJSONObj(newattrs[CONSTANTS.PICGO_FILE_MAP_KEY])
-    //       const newImageItem: ImageItem = newfileMap[imageItem.hash]
-    //       replaceMap[imageItem.hash] = new ImageItem(
-    //         newImageItem.originUrl,
-    //         newImageItem.url,
-    //         false,
-    //         newImageItem.alt,
-    //         newImageItem.title
-    //       )
-    //     }
-    //
-    //     if (!hasLocalImages) {
-    //       ElMessage.warning("未发现本地图片，不上传")
-    //     }
-    //
-    //     // 处理链接替换
-    //     this.logger.debug("准备替换正文图片，replaceMap=>", JSON.stringify(replaceMap))
-    //     this.logger.debug("开始替换正文，原文=>", JSON.stringify({ mdContent }))
-    //     ret.mdContent = this.imageParser.replaceImagesWithImageItemArray(mdContent, replaceMap)
-    //     this.logger.debug("图片链接替换完成，新正文=>", JSON.stringify({ newmdContent: ret.mdContent }))
-    //
-    //     ret.flag = true
-    //     this.logger.debug("正文替换完成，最终结果=>", ret)
-    //   } catch (e) {
-    //     ret.flag = false
-    //     ret.errmsg = e
-    //     this.logger.error("文章图片上传失败=>", e)
-    //   }
-    return await Promise.resolve(ret)
+    const localImages = this.imageParser.parseLocalImagesToArray(mdContent)
+    const uniqueLocalImages = [...new Set([...localImages])]
+    this.logger.debug("uniqueLocalImages=>", uniqueLocalImages)
+
+    if (uniqueLocalImages.length === 0) {
+      ret.flag = false
+      ret.hasImages = false
+      ret.mdContent = mdContent
+      ret.errmsg = "文章中没有图片"
+      return ret
+    }
+
+    // 开始上传
+    try {
+      ret.hasImages = true
+
+      const imageItemArray = await this.doConvertImagesToImagesItemArray(attrs, uniqueLocalImages)
+
+      const replaceMap = {}
+      let hasLocalImages = false
+      for (let i = 0; i < imageItemArray.length; i++) {
+        const imageItem = imageItemArray[i]
+        if (imageItem.originUrl.includes("assets")) {
+          replaceMap[imageItem.hash] = imageItem
+        }
+
+        if (!imageItem.isLocal) {
+          this.logger.warn("已经上传过图床，请勿重复上传=>", imageItem.originUrl)
+          continue
+        }
+
+        hasLocalImages = true
+
+        // 实际上传逻辑
+        await this.uploadSingleImageToBed(pageId, attrs, imageItem)
+        // 上传完成，需要获取最新链接
+        const newattrs = await this.siyuanApi.getBlockAttrs(pageId)
+        const newfileMap = JsonUtil.safeParse(newattrs[appConstants.PICGO_FILE_MAP_KEY], {})
+        const newImageItem: ImageItem = newfileMap[imageItem.hash]
+        replaceMap[imageItem.hash] = new ImageItem(
+          newImageItem.originUrl,
+          newImageItem.url,
+          false,
+          newImageItem.alt,
+          newImageItem.title
+        )
+      }
+
+      if (!hasLocalImages) {
+        ElMessage.warning("未发现本地图片，不上传")
+      }
+
+      // 处理链接替换
+      this.logger.debug("准备替换正文图片，replaceMap=>", JSON.stringify(replaceMap))
+      this.logger.debug("开始替换正文，原文=>", JSON.stringify({ mdContent }))
+      ret.mdContent = this.imageParser.replaceImagesWithImageItemArray(mdContent, replaceMap)
+      this.logger.debug("图片链接替换完成，新正文=>", JSON.stringify({ newmdContent: ret.mdContent }))
+
+      ret.flag = true
+      this.logger.debug("正文替换完成，最终结果=>", ret)
+    } catch (e) {
+      ret.flag = false
+      ret.errmsg = e
+      this.logger.error("文章图片上传失败=>", e)
+    }
+    return ret
   }
 
   /**
@@ -190,56 +189,52 @@ export class PicgoPostApi {
     imageItem: ImageItem,
     forceUpload?: boolean
   ): Promise<void> {
-    //   const mapInfoStr = attrs[CONSTANTS.PICGO_FILE_MAP_KEY] ?? "{}"
-    //   const fileMap = parseJSONObj(mapInfoStr)
-    //   this.logger.warn("fileMap=>", fileMap)
-    //
-    //   // 处理上传
-    //   const filePaths = []
-    //   if (!forceUpload && !imageItem.isLocal) {
-    //     this.logger.warn("非本地图片，忽略=>", imageItem.url)
-    //     return
-    //   }
-    //
-    //   let imageFullPath
-    //   if (picgoCommonData.isSiyuanOrSiyuanNewWin) {
-    //     const dataDir: string = getSiyuanNewWinDataDir()
-    //     imageFullPath = `${dataDir}/assets/${imageItem.name}`
-    //     this.logger.info("Will upload picture from", imageFullPath)
-    //
-    //     // 不存在就用网页url
-    //     if (!isFileExist(imageFullPath)) {
-    //       imageFullPath = imageItem.url
-    //     }
-    //   } else {
-    //     imageFullPath = imageItem.url
-    //   }
-    //   this.logger.warn("isSiyuanOrSiyuanNewWin=>" + picgoCommonData.isSiyuanOrSiyuanNewWin + ", imageFullPath=>", imageFullPath)
-    //   filePaths.push(imageFullPath)
-    //
-    //   // 批量上传
-    //   const imageJson: any = await picgoUtil.uploadByPicGO(filePaths)
-    //   this.logger.warn("图片上传完成，imageJson=>", imageJson)
-    //   const imageJsonObj = JSON.parse(imageJson)
-    //   // 处理后续
-    //   if (imageJsonObj && imageJsonObj.length > 0) {
-    //     const img = imageJsonObj[0]
-    //     if (!img?.imgUrl || isEmptyString(img.imgUrl)) {
-    //       throw new Error(
-    //         "图片上传失败，可能原因：PicGO配置错误或者该平台不支持图片覆盖，请检查配置或者尝试上传新图片。请打开picgo.log查看更多信息"
-    //       )
-    //     }
-    //     const newImageItem = new ImageItem(imageItem.originUrl, img.imgUrl, false, imageItem.alt, imageItem.title)
-    //     fileMap[newImageItem.hash] = newImageItem
-    //   } else {
-    //     throw new Error("图片上传失败，可能原因：PicGO配置错误，请检查配置。请打开picgo.log查看更多信息")
-    //   }
-    //
-    //   this.logger.warn("newFileMap=>", fileMap)
-    //
-    //   const newFileMapStr = toJSONString(fileMap)
-    //   await this.siyuanApi.setBlockAttrs(pageId, {
-    //     [CONSTANTS.PICGO_FILE_MAP_KEY]: newFileMapStr,
-    //   })
+    const mapInfoStr = attrs[appConstants.PICGO_FILE_MAP_KEY] ?? "{}"
+    const fileMap = JsonUtil.safeParse(mapInfoStr, {})
+    this.logger.warn("fileMap=>", fileMap)
+
+    // 处理上传
+    const filePaths = []
+    if (!forceUpload && !imageItem.isLocal) {
+      this.logger.warn("非本地图片，忽略=>", imageItem.url)
+      return
+    }
+
+    let imageFullPath
+    if (this.isSiyuanOrSiyuanNewWin) {
+      const win = SiyuanDevice.siyuanWindow()
+      const dataDir: string = win.siyuan.config.system.dataDir
+      imageFullPath = `${dataDir}/assets/${imageItem.name}`
+      this.logger.info("Will upload picture from", imageFullPath)
+    } else {
+      imageFullPath = imageItem.url
+    }
+    this.logger.warn("isSiyuanOrSiyuanNewWin=>" + this.isSiyuanOrSiyuanNewWin + ", imageFullPath=>", imageFullPath)
+    filePaths.push(imageFullPath)
+
+    // 批量上传
+    const imageJson: any = await picgoUtil.uploadByPicGO(filePaths)
+    this.logger.warn("图片上传完成，imageJson=>", imageJson)
+    const imageJsonObj = JSON.parse(imageJson)
+    // 处理后续
+    if (imageJsonObj && imageJsonObj.length > 0) {
+      const img = imageJsonObj[0]
+      if (!img?.imgUrl || StrUtil.isEmptyString(img.imgUrl)) {
+        throw new Error(
+          "图片上传失败，可能原因：PicGO配置错误或者该平台不支持图片覆盖，请检查配置或者尝试上传新图片。请打开picgo.log查看更多信息"
+        )
+      }
+      const newImageItem = new ImageItem(imageItem.originUrl, img.imgUrl, false, imageItem.alt, imageItem.title)
+      fileMap[newImageItem.hash] = newImageItem
+    } else {
+      throw new Error("图片上传失败，可能原因：PicGO配置错误，请检查配置。请打开picgo.log查看更多信息")
+    }
+
+    this.logger.warn("newFileMap=>", fileMap)
+
+    const newFileMapStr = JSON.stringify(fileMap)
+    await this.siyuanApi.setBlockAttrs(pageId, {
+      [appConstants.PICGO_FILE_MAP_KEY]: newFileMapStr,
+    })
   }
 }
