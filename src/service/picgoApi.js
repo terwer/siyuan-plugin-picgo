@@ -46,14 +46,14 @@ export class PicgoApi {
    */
   async uploadByPicGO(input) {
     const appInstance = await AppInstance.getInstance()
-    const picgo = appInstance.picgo
+    const syPicgo = appInstance.syPicgo
     this.logger.debug("appInstance=>", appInstance)
     this.logger.debug("appInstance.picgo=>", appInstance.picgo)
 
     this.logger.debug("input=>", input)
     if (input) {
       if (isInSiyuanOrSiyuanNewWin()) {
-        return picgo.upload(input)
+        return syPicgo.upload(input)
       } else {
         // HTTP调用本地客户端上传
         return this.picGoUploadApi.upload(input)
@@ -61,7 +61,7 @@ export class PicgoApi {
     } else {
       // 通过PicGO上传剪贴板图片
       if (isInSiyuanOrSiyuanNewWin()) {
-        return picgo.uploadFormClipboard()
+        return syPicgo.uploadFormClipboard()
       } else {
         // HTTP调用本地客户端上传
         return this.picGoUploadApi.upload()

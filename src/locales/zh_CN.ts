@@ -91,7 +91,7 @@ export default {
   "picgo.pic.preview": "图片预览",
   "picgo.pic.setting": "图床设置",
   "picgo.pic.setting.no.tip":
-    "由于您当前使用的是浏览器插件，无法直接集成 PicGO ，只能通过 HTTP 请求间接调用本地 PicGO 客户端上图片，请直接在本地 PicGO 客户端进行设置。如需体验更加完整的功能，请通过思源笔记挂件版挂载菜单打开新窗口的方式使用。详情请参考：https://docs.publish.terwer.space/post/the-pendant-mode-is-used-in-the-method-of-mounting-menu-169wrw.html",
+    "由于您当前使用的是浏览器环境，无法直接集成 PicGO ，只能通过 HTTP 请求间接调用本地 PicGO 客户端上图片，请直接在本地 PicGO 客户端进行设置。如需体验更加完整的功能，请通过PC客户端使用。",
   "syp.about": "关于作者",
   "theme.mode.choose": "切换模式",
   "theme.mode.dark": "暗黑模式",

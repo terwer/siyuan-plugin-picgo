@@ -39,7 +39,7 @@ export const usePicgoUpload = (props, deps, refs) => {
   const logger = createAppLogger("picgo-upload")
   const { t } = useVueI18n()
   const router = useRouter()
-  const bundledPicgoApi = new PicgoApi()
+  const picgoApi = new PicgoApi()
 
   // public data
   const picgoUploadData = reactive({})
@@ -132,7 +132,7 @@ export const usePicgoUpload = (props, deps, refs) => {
           }
         }
 
-        const imgInfos = await bundledPicgoApi.uploadByPicGO(filePaths)
+        const imgInfos = await picgoApi.uploadByPicGO(filePaths)
         // 处理后续
         doAfterUpload(imgInfos)
 
@@ -153,7 +153,7 @@ export const usePicgoUpload = (props, deps, refs) => {
       picgoCommonData.isUploadLoading = true
 
       try {
-        const imgInfos = await bundledPicgoApi.uploadByPicGO()
+        const imgInfos = await picgoApi.uploadByPicGO()
         // 处理后续
         doAfterUpload(imgInfos)
 

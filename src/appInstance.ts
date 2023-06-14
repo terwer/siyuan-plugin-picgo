@@ -32,7 +32,7 @@ class AppInstance {
   private static logger = createAppLogger("app-instance")
   private readonly isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
 
-  public picgo
+  public syPicgo
 
   public static async getInstance(): Promise<AppInstance> {
     if (!AppInstance.instance) {
@@ -48,10 +48,11 @@ class AppInstance {
     // sy-picgo-core
     if (this.isSiyuanOrSiyuanNewWin) {
       const syPicgo = this.initSyPicgo()
-      this.picgo = syPicgo.getPicgoObj()
-
+      // mount win
       const win = SiyuanDevice.siyuanWindow()
       win.SyPicgo = syPicgo
+      // prop
+      this.syPicgo = syPicgo
     }
   }
 

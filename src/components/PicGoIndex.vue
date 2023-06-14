@@ -102,7 +102,7 @@ logger.info("This is picgo index page")
 
       <!-- 下载所有远程图片 -->
       <el-tooltip
-        v-if="picgoCommonData.isSiyuanOrSiyuanNewWin"
+        v-if="false && picgoCommonData.isSiyuanOrSiyuanNewWin"
         class="box-item"
         effect="dark"
         :content="t('picgo.download.onclick')"

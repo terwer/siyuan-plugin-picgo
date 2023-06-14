@@ -34,7 +34,7 @@ import { appConstants } from "~/src/appConstants.ts"
 import { JsonUtil, StrUtil } from "zhi-common"
 import { ElMessage } from "element-plus"
 import { SiyuanDevice } from "zhi-device"
-import picgoUtil from "~/src/service/picgoUtil.js"
+import { PicgoApi } from "~/src/service/picgoApi.js"
 
 /**
  * Picgo与文章交互的通用方法
@@ -44,10 +44,12 @@ export class PicgoPostApi {
   private readonly imageParser: ImageParser
   private readonly siyuanApi: SiyuanKernelApi
   private readonly isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
+  private readonly picgoApi
 
   constructor() {
     this.imageParser = new ImageParser()
     this.siyuanApi = siyuanKernelApi()
+    this.picgoApi = new PicgoApi()
   }
 
   /**
@@ -205,7 +207,12 @@ export class PicgoPostApi {
       const win = SiyuanDevice.siyuanWindow()
       const dataDir: string = win.siyuan.config.system.dataDir
       imageFullPath = `${dataDir}/assets/${imageItem.name}`
-      this.logger.info("Will upload picture from", imageFullPath)
+      this.logger.info(`Will upload picture from ${imageFullPath}, imageItem =>`, imageItem)
+
+      const fs = win.require("fs")
+      if (!fs.existsSync(imageFullPath)) {
+        imageFullPath = imageItem.url
+      }
     } else {
       imageFullPath = imageItem.url
     }
@@ -213,9 +220,9 @@ export class PicgoPostApi {
     filePaths.push(imageFullPath)
 
     // 批量上传
-    const imageJson: any = await picgoUtil.uploadByPicGO(filePaths)
+    const imageJson: any = await this.picgoApi.uploadByPicGO(filePaths)
     this.logger.warn("图片上传完成，imageJson=>", imageJson)
-    const imageJsonObj = JSON.parse(imageJson)
+    const imageJsonObj = JsonUtil.safeParse(imageJson, []) as any
     // 处理后续
     if (imageJsonObj && imageJsonObj.length > 0) {
       const img = imageJsonObj[0]
