@@ -102,6 +102,7 @@ export default {
   "theme.mode.light": "Light mode",
   "setting.conf.export": "Export config",
   "setting.conf.import": "Import config",
+  "setting.conf.clear": "Clear config",
   "setting.conf.transport": "Transport",
   "main.opt.success": "Success",
   "main.opt.failure": "Error",
@@ -115,4 +116,15 @@ export default {
   "main.opt.warning.tip": "This operation cannot be undone, continue?",
   "switch.active.text": "Debug",
   "switch.unactive.text": "Normal",
+  "setting.conf.import.picgo": "Import PicGO configuration",
+  "setting.conf.export.syp.tip":
+    "The corresponding json configuration file will be exported, and regular configuration backup is strongly recommended. In principle, backward compatibility is supported. If there is any incompatibility problem, it will be specially explained.",
+  "setting.conf.export.picgo": "Export PicGO configuration",
+  "setting.conf.import.picgo.tip":
+    "Please select a valid historical backup json file to import. Note: PicGO plug-in registration information will not be imported. For configuration compatibility, please uninstall all plug-ins and then perform PicGO configuration export operation. Uninstalling PicGO plug-ins will not delete the plug-in configuration, only Plug-in files and plug-in registration records will be deleted. Please feel free to uninstall.",
+  "setting.conf.export.picgo.tip":
+    "The corresponding json configuration file will be exported, and regular configuration backup is strongly recommended. In principle, backward compatibility is supported. If there is any incompatibility problem, it will be specially explained.",
+  "setting.conf.clear.picgo": "Clear PicGO configuration",
+  "setting.conf.clear.picgo.tip":
+    "Empty configuration cannot be restored, please operate with caution. It is strongly recommended to back up the configuration first. This operation will delete PicGO related configuration folders, including configuration, plug-ins, cache, etc., and only use it when PicGO loads abnormally and cannot be used at all, otherwise Lost configuration at your own risk!",
 }

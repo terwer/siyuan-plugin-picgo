@@ -7,10 +7,12 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    ClearData: typeof import('./src/components/transport/ClearData.vue')['default']
     ConfigForm: typeof import('./src/components/common/ConfigForm.vue')['default']
     ElAlert: typeof import('element-plus/es')['ElAlert']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElButtonGroup: typeof import('element-plus/es')['ElButtonGroup']
+    ElCard: typeof import('element-plus/es')['ElCard']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
     ElCheckboxGroup: typeof import('element-plus/es')['ElCheckboxGroup']
     ElCol: typeof import('element-plus/es')['ElCol']
@@ -28,6 +30,8 @@ declare module 'vue' {
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    ExportData: typeof import('./src/components/transport/ExportData.vue')['default']
+    ImportData: typeof import('./src/components/transport/ImportData.vue')['default']
     PicbedSetting: typeof import('./src/components/setting/PicbedSetting.vue')['default']
     PicgoConfigSetting: typeof import('./src/components/setting/PicgoConfigSetting.vue')['default']
     PicGoIndex: typeof import('./src/components/PicGoIndex.vue')['default']
@@ -35,6 +39,7 @@ declare module 'vue' {
     PicgoSetting: typeof import('./src/components/PicgoSetting.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TransportSelect: typeof import('./src/components/transport/TransportSelect.vue')['default']
   }
   export interface ComponentCustomProperties {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']

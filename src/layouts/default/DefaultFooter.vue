@@ -44,6 +44,16 @@
           {{ t("setting.conf.transport") }}
         </span>
       </div>
+
+      <!--
+       -----------------------------------------------------------------------------
+       -->
+      <!-- 思源地址设置弹窗 -->
+
+      <!-- 导出导出弹窗 -->
+      <el-dialog v-model="transportFormVisible" :title="$t('setting.conf.transport')">
+        <transport-select />
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -55,6 +65,7 @@ import { version } from "../../../package.json"
 import { createAppLogger } from "~/src/utils/appLogger.ts"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import { DateUtil } from "zhi-common"
+import TransportSelect from "~/src/components/transport/TransportSelect.vue"
 
 const logger = createAppLogger("layouts/default/DefaultFooter")
 const { t } = useVueI18n()
@@ -63,7 +74,6 @@ const isDark = useDark()
 const toggleDark = useToggle(isDark)
 
 const transportFormVisible = ref(false)
-const generalSettingFormVisible = ref(false)
 
 const v = ref(version)
 const nowYear = DateUtil.nowYear()

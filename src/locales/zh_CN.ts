@@ -98,6 +98,7 @@ export default {
   "theme.mode.light": "浅色模式",
   "setting.conf.export": "导出配置",
   "setting.conf.import": "导入配置",
+  "setting.conf.clear": "清空配置",
   "setting.conf.transport": "导入导出",
   "main.opt.success": "操作成功",
   "main.opt.failure": "操作失败",
@@ -111,4 +112,15 @@ export default {
   "main.opt.warning.tip": "此操作不可恢复，是否继续？",
   "switch.active.text": "调试模式",
   "switch.unactive.text": "正常模式",
+  "setting.conf.import.picgo": "导入PicGO配置",
+  "setting.conf.export.syp.tip":
+    "将导出对应的json配置文件，强烈建议定期进行配置备份。原则上支持向后兼容。如有不兼容问题，会特别说明。",
+  "setting.conf.export.picgo": "导出PicGO配置",
+  "setting.conf.import.picgo.tip":
+    "请选择有效的历史备份json文件进行导入。注意：PicGO插件的注册信息不导入。为了配置的兼容性，请卸载所有插件之后，进行PicGO配置导出操作。卸载PicGO插件不会删除插件配置，只会删除插件文件以及插件注册记录。请放心卸载。",
+  "setting.conf.export.picgo.tip":
+    "将导出对应的json配置文件，强烈建议定期进行配置备份。原则上支持向后兼容。如有不兼容问题，会特别说明。",
+  "setting.conf.clear.picgo": "清空PicGO配置",
+  "setting.conf.clear.picgo.tip":
+    "清空配置不可恢复，请谨慎操作。强烈建议先备份配置。此操作会删除PicGO相关配置文件夹，包括配置、插件、缓存等，仅在PicGO加载发生异常，并且完全无法使用的时候使用，否则丢失配置后果自负！",
 }

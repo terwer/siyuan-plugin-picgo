@@ -36,6 +36,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.3",
     "@vueuse/core": "^10.1.2",
     "blueimp-md5-es6": "^2.7.4",
+    "browser-fs-access": "^0.34.1",
     "element-plus": "^2.3.6",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",

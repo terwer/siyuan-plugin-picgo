@@ -23,9 +23,10 @@
  * questions.
  */
 
-import { SiyuanDevice } from "zhi-device"
+import { BrowserUtil, SiyuanDevice } from "zhi-device"
 import { getRawData, trimValues } from "~/src/utils/utils"
 import idUtil from "~/src/utils/idUtil"
+import { downloadFileFromJson, importJSONData } from "~/src/utils/configUtil"
 
 /**
  * 获取当前可用图床
@@ -596,7 +597,7 @@ const backupPicgoCfg = () => {
   const cfgPath = getPicgoCfgPath()
   const json = syPicgo.readFileAsJson(cfgPath)
   const filename = "sy-picgo-cfg-v" + picgo.GUI_VERSION + ".json"
-  configUtil.downloadFileFromJson(json, filename)
+  downloadFileFromJson(json, filename)
 }
 
 /**
@@ -626,7 +627,7 @@ const importPicgoCfg = async () => {
     const jsonstr = JSON.stringify(data)
     syPicgo.restoreCfg(jsonstr, cfgPath)
 
-    browserUtil.reloadPageWithMessage("导入成功")
+    BrowserUtil.reloadPageWithMessageCallback("导入成功", undefined)
   })
 }
 
