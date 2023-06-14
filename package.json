@@ -11,6 +11,9 @@
     "siyuanDev": "vue-tsc && vite build --watch",
     "siyuanBuild": "vue-tsc && vite build",
     "siyuanSync": "cp -r ./dist/* /Users/terwer/Documents/mydocs/SiYuanWorkspace/public/data/plugins/siyuan-plugin-picgo",
+    "syncVersion": "python scripts/version.py",
+    "parseChangelog": "python scripts/parse_changelog.py",
+    "prepareRelease": "pnpm syncVersion && pnpm parseChangelog",
     "package": "python scripts/package.py",
     "preview": "vite preview"
   },
