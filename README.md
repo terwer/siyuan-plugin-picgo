@@ -8,7 +8,7 @@ Your favorite PicGo image bed and PicGo plugins are still available in siyuan-no
 
 ## Changelog
 
-Please refer to [CHANGELOG](https://github.com/terwer/siyuan-plugin-kanban-girl/blob/main/CHANGELOG.md)
+Please refer to [CHANGELOG](https://github.com/terwer/siyuan-plugin-picgo/blob/main/CHANGELOG.md)
 
 ## Donate
 

@@ -8,7 +8,7 @@
 
 ## 更新历史
 
-请参考 [CHANGELOG](https://github.com/terwer/siyuan-plugin-kanban-girl/blob/main/CHANGELOG.md)
+请参考 [CHANGELOG](https://github.com/terwer/siyuan-plugin-picgo/blob/main/CHANGELOG.md)
 
 ## 捐赠
 
