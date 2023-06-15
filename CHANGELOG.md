@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.0.0...v1.1.0) (2023-06-15)
+
+
+### Features
+
+* PicGO 插件第一版-syPicgo.js 更新到 1.2.5 ([dd9e364](https://github.com/terwer/siyuan-plugin-picgo/commit/dd9e3646a40b4e83cfa3a48b7b32d9e18fba4776))
+
+
+### Miscellaneous
+
+* add LICENSE ([3e51524](https://github.com/terwer/siyuan-plugin-picgo/commit/3e51524ca897dcbc1bc606e00b93ff05b35c07e6))
+
 ## 1.0.0 (2023-06-14)
 ### Features
 * picgo 插件第一版 ([ed0d114](https://github.com/terwer/siyuan-plugin-picgo/commit/ed0d114e82d83a835919b9516b5a47d64e1574a0))
