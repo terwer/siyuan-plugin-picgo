@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 build
+__ptcache__
 
 # Editor directories and files
 .vscode/*
