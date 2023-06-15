@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.0.0 (2023-06-14)
+## [1.1.0](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.0.0...v1.1.0) (2023-06-15)
 ### Features
+* picgo 插件第一版-sypicgo.js 更新到 1.2.5 ([dd9e364](https://github.com/terwer/siyuan-plugin-picgo/commit/dd9e3646a40b4e83cfa3a48b7b32d9e18fba4776))
+### Miscellaneous
+* add license ([3e51524](https://github.com/terwer/siyuan-plugin-picgo/commit/3e51524ca897dcbc1bc606e00b93ff05b35c07e6))
+## 1.0.0 (2023-06-14)
 * picgo 插件第一版 ([ed0d114](https://github.com/terwer/siyuan-plugin-picgo/commit/ed0d114e82d83a835919b9516b5a47d64e1574a0))
 * picgo 插件第一版-ui 调整 ([77d3bc5](https://github.com/terwer/siyuan-plugin-picgo/commit/77d3bc5e7546c72490776b3ae5dfd5f7fb9c06d0))
 * picgo 插件第一版-优化页面跳转与路由 ([815ebb0](https://github.com/terwer/siyuan-plugin-picgo/commit/815ebb0ab3cb0b83bea2b257dffc9874cf1c8a62))
@@ -18,5 +22,4 @@
 * picgo 插件第一版-新增预览图 ([dab14a3](https://github.com/terwer/siyuan-plugin-picgo/commit/dab14a3a999d5e89e5458d2feb0c43b4387edeb0))
 * picgo 插件第一版-显示图片列表 ([85d2694](https://github.com/terwer/siyuan-plugin-picgo/commit/85d26946be9bfcacebd1225e5e3c13cf0e4a866e))
 * 初始化 picgo 插件 ([ee4727d](https://github.com/terwer/siyuan-plugin-picgo/commit/ee4727d4cd5e475224b1a828921884a4019df74b))
-### Miscellaneous
 * update deps ([5426b05](https://github.com/terwer/siyuan-plugin-picgo/commit/5426b05a48cf0e4a334b2bc8d908e7cc05f5a8b0))
