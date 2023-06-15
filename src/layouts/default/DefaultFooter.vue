@@ -62,7 +62,7 @@
 import { useDark, useToggle } from "@vueuse/core"
 import { ref } from "vue"
 import { version } from "../../../package.json"
-import { createAppLogger } from "~/src/utils/appLogger.ts"
+import { createAppLogger } from "~/common/appLogger.ts"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import { DateUtil } from "zhi-common"
 import TransportSelect from "~/src/components/transport/TransportSelect.vue"

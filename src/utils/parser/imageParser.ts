@@ -25,7 +25,7 @@
 
 import { ImageItem } from "~/src/models/imageItem.ts"
 import { type ParsedImage } from "~/src/models/parsedImage.ts"
-import { createAppLogger } from "~/src/utils/appLogger.ts"
+import { createAppLogger } from "~/common/appLogger.ts"
 
 /**
  * 图片解析器

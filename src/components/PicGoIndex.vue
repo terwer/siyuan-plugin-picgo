@@ -24,7 +24,7 @@
   -->
 
 <script setup lang="ts">
-import { createAppLogger } from "../utils/appLogger.ts"
+import { createAppLogger } from "~/common/appLogger.ts"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import { ref } from "vue"
 import { usePicgoCommon } from "~/src/composables/picgo/usePicgoCommon.ts"

@@ -26,7 +26,7 @@
 import App from "./App.vue"
 import { createApp, provide } from "vue"
 import { useVueRouter } from "./composables/useVueRouter.ts"
-import { createAppLogger } from "./utils/appLogger.ts"
+import { createAppLogger } from "../common/appLogger"
 import { InjectKeys } from "./utils/injectKeys.ts"
 import AppInstance from "./appInstance.ts"
 import i18n from "./locales"

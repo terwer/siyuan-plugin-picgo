@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { createAppLogger } from "~/src/utils/appLogger.ts"
+import { createAppLogger } from "~/common/appLogger.ts"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 
 const { t } = useVueI18n()

@@ -23,7 +23,7 @@
  * questions.
  */
 
-import { createAppLogger } from "./utils/appLogger"
+import { createAppLogger } from "~/common/appLogger.ts"
 import { SiyuanDevice } from "zhi-device"
 import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils.ts"
 

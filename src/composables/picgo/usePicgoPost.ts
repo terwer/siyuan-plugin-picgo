@@ -25,7 +25,7 @@
 
 import { reactive } from "vue"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
-import { createAppLogger } from "~/src/utils/appLogger.ts"
+import { createAppLogger } from "~/common/appLogger.ts"
 import { NotImplementedException } from "zhi-lib-base"
 import { ElMessage } from "element-plus"
 

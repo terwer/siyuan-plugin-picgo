@@ -23,7 +23,7 @@
  * questions.
  */
 
-import { createAppLogger } from "~/src/utils/appLogger"
+import { createAppLogger } from "~/common/appLogger"
 import AppInstance from "~/src/appInstance"
 import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils"
 import { PicGoUploadApi } from "~/src/service/picGoUploadApi"

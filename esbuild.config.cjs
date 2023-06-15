@@ -41,7 +41,6 @@ module.exports = {
     outfile: path.join(distDir, "index.js"),
     bundle: true,
     format: "cjs",
-    target: ["es6"],
     external: ["siyuan"],
     define: { "process.env.DEV_MODE": `"${isWatch}"` },
     plugins: [

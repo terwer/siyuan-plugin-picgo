@@ -26,7 +26,7 @@
 <script lang="ts" setup>
 import { onBeforeMount, onBeforeUnmount, reactive, ref } from "vue"
 import { ElDivider, ElMessage } from "element-plus"
-import { createAppLogger } from "~/src/utils/appLogger.ts"
+import { createAppLogger } from "~/common/appLogger.ts"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils.ts"
 import picgoUtil from "~/src/service/picgoUtil.js"

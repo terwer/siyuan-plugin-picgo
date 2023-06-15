@@ -25,7 +25,7 @@
 
 import { ImageParser } from "~/src/utils/parser/imageParser.ts"
 import { SiyuanKernelApi } from "zhi-siyuan-api"
-import { createAppLogger } from "~/src/utils/appLogger.ts"
+import { createAppLogger } from "~/common/appLogger.ts"
 import { isInSiyuanOrSiyuanNewWin, siyuanKernelApi } from "~/src/utils/utils.ts"
 import { ImageItem } from "~/src/models/imageItem.ts"
 import { ParsedImage } from "~/src/models/parsedImage.ts"

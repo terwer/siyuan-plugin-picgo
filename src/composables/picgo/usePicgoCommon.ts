@@ -26,7 +26,7 @@
 import { reactive } from "vue"
 import { ImageItem } from "~/src/models/imageItem.ts"
 import { isDev } from "~/common/Constants.ts"
-import { createAppLogger } from "~/src/utils/appLogger.ts"
+import { createAppLogger } from "~/common/appLogger.ts"
 import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils.ts"
 
 /**

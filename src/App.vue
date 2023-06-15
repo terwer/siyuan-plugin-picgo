@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { BrowserUtil } from "zhi-device"
-import { createAppLogger } from "~/src/utils/appLogger.ts"
+import { createAppLogger } from "../common/appLogger"
 import AppLayout from "~/src/layouts/AppLayout.vue"
 
 // element-plus style

@@ -23,7 +23,7 @@
  * questions.
  */
 
-import { isDev } from "../../common/Constants.ts"
+import { isDev } from "~/common/Constants.ts"
 import { simpleLogger } from "zhi-lib-base"
 
 /**
