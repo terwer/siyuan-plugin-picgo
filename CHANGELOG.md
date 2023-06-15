@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.1.0...v1.1.1) (2023-06-15)
+### Bug Fixes
+* 移除错误弹出 ([11d5aa5](https://github.com/terwer/siyuan-plugin-picgo/commit/11d5aa5da54eee01d01e0a129fb9784a56ce3342))
+* 移除错误弹窗，升级部分依赖 ([2b6b055](https://github.com/terwer/siyuan-plugin-picgo/commit/2b6b05532ebdec1bbe134463dcc377865cac35a2))
 ## [1.1.0](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.0.0...v1.1.0) (2023-06-15)
 ### Features
 * picgo 插件第一版-sypicgo.js 更新到 1.2.5 ([dd9e364](https://github.com/terwer/siyuan-plugin-picgo/commit/dd9e3646a40b4e83cfa3a48b7b32d9e18fba4776))
