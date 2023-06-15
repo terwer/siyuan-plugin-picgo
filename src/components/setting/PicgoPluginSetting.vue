@@ -264,8 +264,6 @@ onBeforeMount(() => {
     } else {
       ElMessage.error(errMsg)
     }
-
-    BrowserUtil.reloadPage()
   })
 
   picgoUtil.ipcRegisterEvent("picgoHandlePluginIng", (evt, data) => {
@@ -334,8 +332,6 @@ onBeforeMount(() => {
 
     showPluginConfigForm.value = false
     loading.value = false
-
-    BrowserUtil.reloadPage()
   })
 
   picgoUtil.ipcRegisterEvent("picgoConfigPlugin", (evt, data) => {
