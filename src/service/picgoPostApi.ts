@@ -97,7 +97,7 @@ export class PicgoPostApi {
       ret.push(imageItem)
     }
 
-    console.error("ret=>", ret)
+    this.logger.debug("ret=>", ret)
     return ret
   }
 
