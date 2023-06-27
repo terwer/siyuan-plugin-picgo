@@ -37,7 +37,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/vue-fontawesome": "^3.0.3",
-    "@vueuse/core": "^10.1.2",
+    "@vueuse/core": "^10.2.0",
     "blueimp-md5-es6": "^2.7.4",
     "browser-fs-access": "^0.34.1",
     "element-plus": "^2.3.6",
