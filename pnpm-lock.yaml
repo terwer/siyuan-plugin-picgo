@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -30,8 +30,8 @@ dependencies:
     specifier: ^0.34.1
     version: 0.34.1
   element-plus:
-    specifier: ^2.3.6
-    version: 2.3.6(vue@3.3.4)
+    specifier: ^2.3.8
+    version: 2.3.8(vue@3.3.4)
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
@@ -1604,8 +1604,8 @@ packages:
       jake: 10.8.7
     dev: true
 
-  /element-plus@2.3.6(vue@3.3.4):
-    resolution: {integrity: sha512-GLz0pXUYI2zRfIgyI6W7SWmHk6dSEikP9yR++hsQUyy63+WjutoiGpA3SZD4cGPSXUzRFeKfVr8CnYhK5LqXZw==}
+  /element-plus@2.3.8(vue@3.3.4):
+    resolution: {integrity: sha512-yHQR0/tG2LvPkpGUt7Te/hPmP2XW/BytBNUbx+EFO54VnGCOE3upmQcVffNp1PLgwg9sthYDXontUWpnpmLPJw==}
     peerDependencies:
       vue: ^3.2.0
     dependencies:
