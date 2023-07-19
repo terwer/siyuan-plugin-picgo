@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -42,8 +42,8 @@ dependencies:
     specifier: ^2.1.4
     version: 2.1.4(typescript@5.1.3)(vue@3.3.4)
   siyuan:
-    specifier: ^0.7.4
-    version: 0.7.4
+    specifier: ^0.7.8
+    version: 0.7.8
   uuid:
     specifier: ^9.0.0
     version: 9.0.0
@@ -3315,8 +3315,8 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
-  /siyuan@0.7.4:
-    resolution: {integrity: sha512-Lj+GgxRqjB0YZt4XmBBOgoMrZ9Cwd82h/CxHACi2t23baXC7W2zYG8eYWkZMDcLy50gQC94PzuLZrq9pZIeasw==}
+  /siyuan@0.7.8:
+    resolution: {integrity: sha512-49aQRgva9Cj5u1PuXPAfsug6GHeuhdrb7AnWBqJKyPRaVI2IskmPuisIDWIkG7JhVJ1e1KCg813a2G9QOpYRkQ==}
     dev: false
 
   /slash@3.0.0:
