@@ -183,6 +183,9 @@ const onSubmit = async () => {
         picgoUtil.savePicgoConfig(`transformer.${props.configId}`, result)
         break
     }
+  } else {
+    ElMessage.error(t("main.opt.failure"))
+    return
   }
 
   onBack()
