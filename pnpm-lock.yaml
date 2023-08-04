@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -66,8 +66,8 @@ dependencies:
     specifier: ^0.1.14
     version: 0.1.14
   zhi-lib-base:
-    specifier: ^0.2.6
-    version: 0.2.6
+    specifier: ^0.4.3
+    version: 0.4.3
   zhi-siyuan-api:
     specifier: ^1.9.5
     version: 1.9.5
@@ -3986,12 +3986,12 @@ packages:
       zhi-lib-base: 0.3.1
     dev: false
 
-  /zhi-lib-base@0.2.6:
-    resolution: {integrity: sha512-FJvbCIFFRHsPkC//2JXdktLcvIubDt7ZARQvlOLhBa9RzKXH8dEgFg8BAsD+F864+RpwdgkQ5MNtZ6eU4oGewg==}
-    dev: false
-
   /zhi-lib-base@0.3.1:
     resolution: {integrity: sha512-DYN8ebg9c18zBdpQvFtriWmrpYRyaYCJA6cG7ho57zPP4v4yhXWCn4NkPy2rOo9dJAkT57viHfrQp+GJbG6lVw==}
+    dev: false
+
+  /zhi-lib-base@0.4.3:
+    resolution: {integrity: sha512-jahOcJ4MjJ9gAPM/nwgF65p2dPyggRgKFJPT0WDtyoabQw4sCUSOJ1Cps18Rq6lt4agH5yqAObz/mPdVz/bHWw==}
     dev: false
 
   /zhi-siyuan-api@1.9.5:
