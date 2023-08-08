@@ -49,7 +49,7 @@
     "vue": "^3.3.4",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.2.2",
-    "zhi-common": "^1.11.0",
+    "zhi-common": "^1.14.0",
     "zhi-device": "^2.3.0",
     "zhi-fetch-middleware": "^0.1.14",
     "zhi-lib-base": "^0.2.6",
