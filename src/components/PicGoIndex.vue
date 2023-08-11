@@ -80,25 +80,29 @@ logger.info("This is picgo index page")
         multiple
         @change="picgoUploadMethods.doUploadPicSelected"
       />
+      <!--
       <el-tooltip class="box-item" effect="dark" :content="t('picgo.upload.select.pic')" placement="top-start">
         <el-button type="warning" @click="picgoUploadMethods.bindFileControl">
           <font-awesome-icon icon="fa-solid fa-file-import" />
         </el-button>
       </el-tooltip>
+      -->
+      <el-button type="warning" @click="picgoUploadMethods.bindFileControl">
+        <font-awesome-icon icon="fa-solid fa-file-import" />
+        &nbsp;{{ t("picgo.upload.select.pic") }}
+      </el-button>
 
       <!-- 剪贴板上传 -->
-      <el-tooltip class="box-item" effect="dark" :content="t('picgo.upload.clipboard')" placement="top-start">
-        <el-button type="primary" @click="picgoUploadMethods.doUploadPicFromClipboard">
-          <font-awesome-icon icon="fa-solid fa-paste" />
-        </el-button>
-      </el-tooltip>
+      <el-button type="primary" @click="picgoUploadMethods.doUploadPicFromClipboard">
+        <font-awesome-icon icon="fa-solid fa-paste" />
+        &nbsp;{{ t("picgo.upload.clipboard") }}
+      </el-button>
 
-      <!-- 上传所有图到图床 -->
-      <el-tooltip class="box-item" effect="dark" :content="t('picgo.upload.onclick')" placement="top-start">
-        <el-button type="success" @click="picgoManageMethods.handleUploadAllImagesToBed">
-          <font-awesome-icon icon="fa-solid fa-upload" />
-        </el-button>
-      </el-tooltip>
+      <!-- 上传所有图片到图床 -->
+      <el-button type="success" @click="picgoManageMethods.handleUploadAllImagesToBed">
+        <font-awesome-icon icon="fa-solid fa-upload" />
+        &nbsp;{{ t("picgo.upload.onclick") }}
+      </el-button>
 
       <!-- 下载所有远程图片 -->
       <el-tooltip
@@ -114,11 +118,10 @@ logger.info("This is picgo index page")
       </el-tooltip>
 
       <!-- 图床设置 -->
-      <el-tooltip class="box-item" effect="dark" :content="t('picgo.pic.setting')" placement="top-start">
-        <el-button type="info" @click="picgoUploadMethods.handlePicgoSetting">
-          <font-awesome-icon icon="fa-solid fa-gear" />
-        </el-button>
-      </el-tooltip>
+      <el-button type="info" @click="picgoUploadMethods.handlePicgoSetting">
+        <font-awesome-icon icon="fa-solid fa-gear" />
+        &nbsp;{{ t("picgo.pic.setting") }}
+      </el-button>
 
       <!-- 调试模式 -->
       <span class="box-item switch-item">
@@ -138,17 +141,10 @@ logger.info("This is picgo index page")
         <div><img :src="f.url" :alt="f.name" /></div>
         <div>
           <!-- 上传本地图片到图床 -->
-          <el-tooltip
-            :content="f.isLocal ? t('picgo.download.local.to.bed') : '重新上传'"
-            class="box-item"
-            effect="dark"
-            placement="bottom"
-            popper-class="publish-menu-tooltip"
-          >
-            <el-button @click="picgoManageMethods.handleUploadCurrentImageToBed(f)">
-              <font-awesome-icon :icon="f.isLocal ? 'fa-solid fa-upload' : 'fa-solid fa-arrow-rotate-right'" />
-            </el-button>
-          </el-tooltip>
+          <el-button class="file-list-action" @click="picgoManageMethods.handleUploadCurrentImageToBed(f)">
+            <font-awesome-icon :icon="f.isLocal ? 'fa-solid fa-upload' : 'fa-solid fa-arrow-rotate-right'" />
+            &nbsp;{{ f.isLocal ? t("picgo.download.local.to.bed") : "重新上传" }}
+          </el-button>
 
           <!-- 下载远程图片到本地 -->
           <el-tooltip
@@ -173,24 +169,18 @@ logger.info("This is picgo index page")
             :content="f.url"
           >
             <template #reference>
-              <el-button @click="picgoManageMethods.onImageUrlCopy(f.url)">
+              <el-button class="file-list-action" @click="picgoManageMethods.onImageUrlCopy(f.url)">
                 <font-awesome-icon icon="fa-solid fa-file-lines" />
+                &nbsp;{{ t("setting.picgo.index.copy.link") }}
               </el-button>
             </template>
           </el-popover>
 
           <!-- 图片预览 -->
-          <el-tooltip
-            :content="t('picgo.pic.preview')"
-            class="box-item"
-            effect="dark"
-            placement="bottom"
-            popper-class="publish-menu-tooltip"
-          >
-            <el-button @click="picgoManageMethods.handlePictureCardPreview(f.url)">
-              <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
-            </el-button>
-          </el-tooltip>
+          <el-button class="file-list-action" @click="picgoManageMethods.handlePictureCardPreview(f.url)">
+            <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
+            &nbsp;{{ t("picgo.pic.preview") }}
+          </el-button>
         </div>
       </li>
     </ul>
@@ -288,11 +278,22 @@ input[type="file"] {
   padding: 8px;
   border: solid 1px var(--el-color-primary);
   border-radius: var(--el-input-border-radius, var(--el-border-radius-base));
+  width: calc(25% - 38px);
+}
+
+.file-list li:last-child {
+  margin-right: 0; /* 最后一个元素去除右侧间距 */
 }
 
 .file-list li img {
-  width: 160px;
-  height: 140px;
+  width: 100%;
+  height: 150px;
+}
+
+.file-list li .file-list-action {
+  display: flex;
+  margin: 6px 0;
+  width: 100%;
 }
 
 .one-local-to-bed {

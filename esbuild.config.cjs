@@ -31,7 +31,8 @@ const args = minimist(process.argv.slice(2))
 const isWatch = args.watch || args.w || false
 
 const baseDir = isWatch
-  ? "/Users/terwer/Documents/mydocs/SiYuanWorkspace/public/data/plugins/siyuan-plugin-picgo"
+  ? "/Users/terwer/Documents/mydocs/SiYuanWorkspace/test/data/plugins/siyuan-plugin-picgo"
+  // ? "/Users/terwer/Documents/mydocs/SiYuanWorkspace/public/data/plugins/siyuan-plugin-picgo"
   : "./"
 const distDir = isWatch ? baseDir : path.join(baseDir, "dist")
 

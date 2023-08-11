@@ -32,7 +32,6 @@ import { ParsedImage } from "~/src/models/parsedImage.ts"
 import { PicgoPostResult } from "~/src/models/picgoPostResult.ts"
 import { appConstants } from "~/src/appConstants.ts"
 import { JsonUtil, StrUtil } from "zhi-common"
-import { ElMessage } from "element-plus"
 import { SiyuanDevice } from "zhi-device"
 import { PicgoApi } from "~/src/service/picgoApi.js"
 
@@ -44,12 +43,17 @@ export class PicgoPostApi {
   private readonly imageParser: ImageParser
   private readonly siyuanApi: SiyuanKernelApi
   private readonly isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
-  private readonly picgoApi
+  private readonly picgoApi: PicgoApi
 
-  constructor() {
+  /**
+   * 初始化思源笔记图床插件
+   *
+   * @param kernelApi - 可选，若不传递，使用默认的
+   */
+  constructor(kernelApi?: SiyuanKernelApi) {
     this.imageParser = new ImageParser()
-    this.siyuanApi = siyuanKernelApi()
     this.picgoApi = new PicgoApi()
+    this.siyuanApi = kernelApi ?? siyuanKernelApi()
   }
 
   /**
@@ -58,7 +62,7 @@ export class PicgoPostApi {
    * @param attrs 文章属性
    * @param retImgs  字符串数组格式的图片信息
    */
-  public async doConvertImagesToImagesItemArray(attrs, retImgs: ParsedImage[]): Promise<ImageItem[]> {
+  public async doConvertImagesToImagesItemArray(attrs: any, retImgs: ParsedImage[]): Promise<ImageItem[]> {
     const ret = [] as ImageItem[]
     for (let i = 0; i < retImgs.length; i++) {
       const retImg = retImgs[i]
@@ -102,7 +106,8 @@ export class PicgoPostApi {
   }
 
   /**
-   * 上传当前文章图片到图床
+   * 上传当前文章图片到图床（提供给外部调用）
+   *
    * @param pageId 文章ID
    * @param attrs 文章属性
    * @param mdContent 文章的Markdown文本
@@ -159,7 +164,8 @@ export class PicgoPostApi {
       }
 
       if (!hasLocalImages) {
-        ElMessage.warning("未发现本地图片，不上传")
+        // ElMessage.info("未发现本地图片，不上传！若之前上传过，将做链接替换")
+        this.logger.warn("未发现本地图片，不上传！若之前上传过，将做链接替换")
       }
 
       // 处理链接替换
@@ -180,6 +186,7 @@ export class PicgoPostApi {
 
   /**
    * 上传单张图片到图床
+   *
    * @param pageId 文章ID
    * @param attrs 文章属性
    * @param imageItem 图片信息
@@ -202,7 +209,7 @@ export class PicgoPostApi {
       return
     }
 
-    let imageFullPath
+    let imageFullPath: string
     if (this.isSiyuanOrSiyuanNewWin) {
       const win = SiyuanDevice.siyuanWindow()
       const dataDir: string = win.siyuan.config.system.dataDir

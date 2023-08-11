@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 build
+lib
 __pycache__
 
 # Editor directories and files

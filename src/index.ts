@@ -23,43 +23,6 @@
  * questions.
  */
 
-import { reactive } from "vue"
-import { ImageItem } from "~/src/models/imageItem.ts"
-import { isDev } from "~/common/Constants.ts"
-import { createAppLogger } from "~/common/appLogger.ts"
-import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils.ts"
+import { PicgoPostApi } from "./service/picgoPostApi"
 
-/**
- * Picgo公共组件
- *
- * @author terwer
- * @since 0.6.1
- */
-export const usePicgoCommon = () => {
-  // private data
-  const logger = createAppLogger("picgo-common")
-
-  // public data
-  const picgoCommonData = reactive({
-    isUploadLoading: false,
-    popWidth: 400,
-    showDebugMsg: isDev,
-    loggerMsg: "",
-    isSiyuanOrSiyuanNewWin: isInSiyuanOrSiyuanNewWin(),
-    fileList: {
-      files: <ImageItem[]>[],
-    },
-  })
-
-  // public methods
-  const picgoCommonMethods = {
-    getPicgoCommonData: () => {
-      return picgoCommonData
-    },
-  }
-
-  return {
-    picgoCommonData,
-    picgoCommonMethods,
-  }
-}
+export { PicgoPostApi }

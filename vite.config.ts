@@ -12,9 +12,11 @@ const debugMode = false
 const isWatch = args.watch || args.w || false
 const isDev = isWatch || debugMode
 const isWindows = process.platform === "win32"
-let devDistDir = "/Users/terwer/Documents/mydocs/SiYuanWorkspace/public/data/plugins/siyuan-plugin-picgo"
+let devDistDir = "/Users/terwer/Documents/mydocs/SiYuanWorkspace/test/data/plugins/siyuan-plugin-picgo"
+// let devDistDir = "/Users/terwer/Documents/mydocs/SiYuanWorkspace/public/data/plugins/siyuan-plugin-picgo"
 if (isWindows) {
-  devDistDir = "C:\\Users\\terwer\\Documents\\mydocs\\SiyuanWorkspace\\public\\data\\plugins\\siyuan-plugin-picgo"
+  devDistDir = "C:\\Users\\terwer\\Documents\\mydocs\\SiyuanWorkspace\\test\\data\\plugins\\siyuan-plugin-picgo"
+  // devDistDir = "C:\\Users\\terwer\\Documents\\mydocs\\SiyuanWorkspace\\public\\data\\plugins\\siyuan-plugin-picgo"
 }
 const distDir = isWatch ? devDistDir : "./dist"
 
