@@ -26,7 +26,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref, toRaw, watch } from "vue"
 import { ElCard, ElMessage } from "element-plus"
-import { usePicbedStore } from "~/src/stores/picbedStore.ts"
+import { usePicbedStore } from "~/src/stores/usePicbedStore.ts"
 import ConfigForm from "~/src/components/common/ConfigForm.vue"
 import { createAppLogger } from "~/common/appLogger.ts"
 import { DateUtil } from "zhi-common"

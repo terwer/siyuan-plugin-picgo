@@ -28,13 +28,14 @@ import { onBeforeMount, onBeforeUnmount, reactive, ref } from "vue"
 import { ElDivider, ElMessage } from "element-plus"
 import { createAppLogger } from "~/common/appLogger.ts"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
-import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils.ts"
 import picgoUtil from "~/src/service/picgoUtil.js"
 import electronUtil from "~/src/service/electronUtil.js"
+import { useSiyuanDevice } from "~/src/composables/useSiyuanDevice.ts"
 
 const logger = createAppLogger("picgo-config-setting")
 
 const { t } = useVueI18n()
+const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
 const isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
 
 const DEFAULT_NPM_REGISTRY = "https://registry.npmmirror.com"
