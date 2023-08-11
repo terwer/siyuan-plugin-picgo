@@ -4,6 +4,10 @@
   "type": "module",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
+  "repository": "terwer/siyuan-plugin-picgo",
+  "homepage": "https://github.com/terwer/siyuan-plugin-picgo",
+  "author": "terwer",
+  "license": "MIT",
   "files": [
     "lib",
     "README.md"
