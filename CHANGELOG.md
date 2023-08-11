@@ -1,16 +1,11 @@
 # Changelog
 
 ## [1.3.0](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.2.0...v1.3.0) (2023-08-11)
-
-
 ### Features
-
 * 单个图片上传失败不能影响整体 ([63950dd](https://github.com/terwer/siyuan-plugin-picgo/commit/63950dddd1ccf84ff3dd9ba3dbc978b36049663f))
 * 导出图片解析模块给其他插件使用 ([ecc082a](https://github.com/terwer/siyuan-plugin-picgo/commit/ecc082af8e2575b33d8b784382eb1ab562bf4065))
 * 解析图片链接 ([fbdbaad](https://github.com/terwer/siyuan-plugin-picgo/commit/fbdbaad30fe295de1ce51081f65ebfda6399acb5))
-
 ## [1.2.0](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.1.1...v1.2.0) (2023-08-11)
-### Features
 * 支持作为 npm 类库给其他插件使用 ([8326245](https://github.com/terwer/siyuan-plugin-picgo/commit/83262450a8a68fb4a57367feff56fc35d214218e))
 ### Bug Fixes
 * 优化项目依赖 ([48b45cf](https://github.com/terwer/siyuan-plugin-picgo/commit/48b45cf5b6142e856718fecc1a14d05dd7fd30b2))
