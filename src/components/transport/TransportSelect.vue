@@ -35,7 +35,7 @@ const activeName = ref("export")
 </script>
 
 <template>
-  <div>
+  <back-page title="PicGO配置导入导入">
     <el-tabs v-model="activeName" class="transport-tabs">
       <el-tab-pane :label="t('setting.conf.export')" name="export">
         <export-data />
@@ -47,5 +47,5 @@ const activeName = ref("export")
         <clear-data />
       </el-tab-pane>
     </el-tabs>
-  </div>
+  </back-page>
 </template>
