@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.2.0](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.1.1...v1.2.0) (2023-08-11)
+
+
+### Features
+
+* 支持作为 npm 类库给其他插件使用 ([8326245](https://github.com/terwer/siyuan-plugin-picgo/commit/83262450a8a68fb4a57367feff56fc35d214218e))
+
+
+### Bug Fixes
+
+* 优化项目依赖 ([8b6908e](https://github.com/terwer/siyuan-plugin-picgo/commit/8b6908ebd94be13d9b207db27506a3b1d9d6396c))
+* 优化项目依赖 ([df0c3fe](https://github.com/terwer/siyuan-plugin-picgo/commit/df0c3fec1312814cdef855f8e46aa91cf05bb8cc))
+* 优化项目依赖 ([e81beee](https://github.com/terwer/siyuan-plugin-picgo/commit/e81beee706de6da866685e799e4673405bb48720))
+* 优化项目依赖 ([48b45cf](https://github.com/terwer/siyuan-plugin-picgo/commit/48b45cf5b6142e856718fecc1a14d05dd7fd30b2))
+* 修复配置错误校验结果未阻止的问题 ([d287be6](https://github.com/terwer/siyuan-plugin-picgo/commit/d287be6f4e8a2a8c045dea24c321d5ac27d3a6fb))
+* 按钮名称直接显示，目前的操作不够直观，后续考虑抽象成菜单或许更好 ([9243ea9](https://github.com/terwer/siyuan-plugin-picgo/commit/9243ea97612e8b93b4b3b784eef573f0822a7c72))
+
 ## [1.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.1.0...v1.1.1) (2023-06-15)
 ### Bug Fixes
 * 移除错误弹出 ([11d5aa5](https://github.com/terwer/siyuan-plugin-picgo/commit/11d5aa5da54eee01d01e0a129fb9784a56ce3342))
