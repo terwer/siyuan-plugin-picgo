@@ -61,8 +61,13 @@ export class PicgoPostApi {
    *
    * @param attrs 文章属性
    * @param retImgs  字符串数组格式的图片信息
+   * @param imageBaseUrl - 本地图片前缀，一般是思源的地址
    */
-  public async doConvertImagesToImagesItemArray(attrs: any, retImgs: ParsedImage[]): Promise<ImageItem[]> {
+  public async doConvertImagesToImagesItemArray(
+    attrs: any,
+    retImgs: ParsedImage[],
+    imageBaseUrl?: string
+  ): Promise<ImageItem[]> {
     const ret = [] as ImageItem[]
     for (let i = 0; i < retImgs.length; i++) {
       const retImg = retImgs[i]
@@ -80,10 +85,7 @@ export class PicgoPostApi {
       // 处理思源本地图片预览
       // 这个是从思源查出来解析的是否是本地
       if (retImg.isLocal) {
-        let baseUrl = ""
-        if (BrowserUtil.isInBrowser) {
-          baseUrl = window.location.origin
-        }
+        let baseUrl = imageBaseUrl ?? ""
         imgUrl = StrUtil.pathJoin(baseUrl, "/" + imgUrl)
       }
 
