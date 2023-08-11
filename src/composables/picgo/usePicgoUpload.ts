@@ -26,7 +26,7 @@
 import { reactive } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
-import { createAppLogger } from "~/src/utils/appLogger.ts"
+import { createAppLogger } from "~/common/appLogger.ts"
 import { ImageItem } from "~/src/models/imageItem.ts"
 import { PicgoApi } from "~/src/service/picgoApi.js"
 import { useRouter } from "vue-router"

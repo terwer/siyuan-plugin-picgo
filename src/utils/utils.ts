@@ -26,7 +26,7 @@
 import { SiyuanConfig, SiyuanKernelApi } from "zhi-siyuan-api"
 import { ElMessage } from "element-plus"
 import { DeviceDetection, DeviceTypeEnum } from "zhi-device"
-import { createAppLogger } from "~/src/utils/appLogger.ts"
+import { createAppLogger } from "~/common/appLogger.ts"
 import { isReactive, isRef, toRaw, unref } from "vue"
 
 const logger = createAppLogger("utils")

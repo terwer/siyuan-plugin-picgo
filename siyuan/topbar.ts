@@ -44,7 +44,7 @@ export function initTopbar(pluginInstance: PicgoPlugin) {
     callback: () => {},
   })
 
-  topBarElement.addEventListener("click", async () => {
+  topBarElement.addEventListener("click", () => {
     showPage(pluginInstance, PageRoute.Page_Home)
   })
 }

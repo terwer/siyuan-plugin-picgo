@@ -80,7 +80,7 @@ export default {
   "setting.picgo.manage": "图床管理",
   "picgo.chrome.tip":
     "您当前使用的是浏览器插件，需要从这里下载配置 PicGO 客户端：https://github.com/Molunerfinn/PicGo/releases",
-  "picgo.siyuan.tip": "您当前使用的是思源笔记挂件，PicGO已内置，只需配置即可",
+  "picgo.siyuan.tip": "您当前使用的是思源笔记PC客户端，PicGO已内置，只需配置即可",
   "picgo.upload.status": "上传状态",
   "picgo.upload.select.pic": "选择图片",
   "picgo.upload.clipboard": "剪贴板图片",

@@ -24,7 +24,7 @@
  */
 
 import { ObjectUtil } from "zhi-common"
-import { createAppLogger } from "~/src/utils/appLogger.ts"
+import { createAppLogger } from "~/common/appLogger.ts"
 
 /**
  * PicGO上传Api

@@ -23,6 +23,39 @@
   - questions.
   -->
 
+<script lang="ts" setup>
+import { useDark, useToggle } from "@vueuse/core"
+import { ref } from "vue"
+import { version } from "../../../package.json"
+import { createAppLogger } from "~/common/appLogger.ts"
+import { useVueI18n } from "~/src/composables/useVueI18n.ts"
+import { DateUtil } from "zhi-common"
+import TransportSelect from "~/src/components/transport/TransportSelect.vue"
+
+const logger = createAppLogger("layouts/default/DefaultFooter")
+const { t } = useVueI18n()
+
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
+
+const transportFormVisible = ref(false)
+
+const v = ref(version)
+const nowYear = DateUtil.nowYear()
+
+const goGithub = () => {
+  window.open("https://github.com/terwer/siyuan-plugin-picgo")
+}
+
+const goAbout = () => {
+  window.open("https://blog.terwer.space/about")
+}
+
+const openTransportSetting = () => {
+  transportFormVisible.value = true
+}
+</script>
+
 <template>
   <div>
     <div class="footer">
@@ -57,39 +90,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts" setup>
-import { useDark, useToggle } from "@vueuse/core"
-import { ref } from "vue"
-import { version } from "../../../package.json"
-import { createAppLogger } from "~/src/utils/appLogger.ts"
-import { useVueI18n } from "~/src/composables/useVueI18n.ts"
-import { DateUtil } from "zhi-common"
-import TransportSelect from "~/src/components/transport/TransportSelect.vue"
-
-const logger = createAppLogger("layouts/default/DefaultFooter")
-const { t } = useVueI18n()
-
-const isDark = useDark()
-const toggleDark = useToggle(isDark)
-
-const transportFormVisible = ref(false)
-
-const v = ref(version)
-const nowYear = DateUtil.nowYear()
-
-const goGithub = () => {
-  window.open("https://github.com/terwer/siyuan-plugin-picgo")
-}
-
-const goAbout = () => {
-  window.open("https://blog.terwer.space/about")
-}
-
-const openTransportSetting = () => {
-  transportFormVisible.value = true
-}
-</script>
 
 <style scoped>
 .footer {

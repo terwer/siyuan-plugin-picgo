@@ -28,10 +28,9 @@ import { ArrowLeft } from "@element-plus/icons-vue"
 import { reactive, ref, toRaw, watch } from "vue"
 import { FormInstance } from "element-plus"
 import { cloneDeep, union } from "lodash-es"
-import { createAppLogger } from "~/src/utils/appLogger.ts"
+import { createAppLogger } from "~/common/appLogger.ts"
 import picgoUtil from "~/src/service/picgoUtil.js"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
-
 
 const logger = createAppLogger("picbed-config-form")
 const { t } = useVueI18n()
@@ -184,6 +183,9 @@ const onSubmit = async () => {
         picgoUtil.savePicgoConfig(`transformer.${props.configId}`, result)
         break
     }
+  } else {
+    ElMessage.error(t("main.opt.failure"))
+    return
   }
 
   onBack()
