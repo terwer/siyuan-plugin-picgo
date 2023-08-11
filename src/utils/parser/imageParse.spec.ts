@@ -23,10 +23,14 @@
  * questions.
  */
 
-import { PicgoPostApi } from "./service/picgoPostApi"
-import { ImageParser } from "./utils/parser/imageParser"
-import { ImageItem } from "./models/imageItem"
-import { ParsedImage } from "./models/parsedImage"
+import { describe, it } from "vitest"
+import { ImageParser } from "~/src/utils/parser/imageParser"
 
-export { PicgoPostApi }
-export { ImageParser, ParsedImage, ImageItem }
+describe("test imageParser", () => {
+  it("test parseImagesToArray", () => {
+    const md = "# test"
+    const imageParser = new ImageParser()
+    const images = imageParser.parseImagesToArray(md)
+    console.log(images)
+  })
+})
