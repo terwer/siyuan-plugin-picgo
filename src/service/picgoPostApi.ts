@@ -32,7 +32,7 @@ import { ParsedImage } from "~/src/models/parsedImage.ts"
 import { PicgoPostResult } from "~/src/models/picgoPostResult.ts"
 import { appConstants } from "~/src/appConstants.ts"
 import { JsonUtil, StrUtil } from "zhi-common"
-import { SiyuanDevice } from "zhi-device"
+import { BrowserUtil, SiyuanDevice } from "zhi-device"
 import { PicgoApi } from "~/src/service/picgoApi.js"
 
 /**
@@ -80,7 +80,10 @@ export class PicgoPostApi {
       // 处理思源本地图片预览
       // 这个是从思源查出来解析的是否是本地
       if (retImg.isLocal) {
-        const baseUrl = ""
+        let baseUrl = ""
+        if (BrowserUtil.isInBrowser) {
+          baseUrl = window.location.origin
+        }
         imgUrl = StrUtil.pathJoin(baseUrl, "/" + imgUrl)
       }
 
@@ -148,19 +151,24 @@ export class PicgoPostApi {
 
         hasLocalImages = true
 
-        // 实际上传逻辑
-        await this.uploadSingleImageToBed(pageId, attrs, imageItem)
-        // 上传完成，需要获取最新链接
-        const newattrs = await this.siyuanApi.getBlockAttrs(pageId)
-        const newfileMap = JsonUtil.safeParse(newattrs[appConstants.PICGO_FILE_MAP_KEY], {})
-        const newImageItem: ImageItem = newfileMap[imageItem.hash]
-        replaceMap[imageItem.hash] = new ImageItem(
-          newImageItem.originUrl,
-          newImageItem.url,
-          false,
-          newImageItem.alt,
-          newImageItem.title
-        )
+        try {
+          // 实际上传逻辑
+          await this.uploadSingleImageToBed(pageId, attrs, imageItem)
+          // 上传完成，需要获取最新链接
+          const newattrs = await this.siyuanApi.getBlockAttrs(pageId)
+          const newfileMap = JsonUtil.safeParse(newattrs[appConstants.PICGO_FILE_MAP_KEY], {})
+          const newImageItem: ImageItem = newfileMap[imageItem.hash]
+          replaceMap[imageItem.hash] = new ImageItem(
+            newImageItem.originUrl,
+            newImageItem.url,
+            false,
+            newImageItem.alt,
+            newImageItem.title
+          )
+        } catch (e) {
+          this.logger.error("单个图片上传异常", { pageId, attrs, imageItem })
+          this.logger.error("单个图片上传失败，错误信息如下", e)
+        }
       }
 
       if (!hasLocalImages) {

@@ -23,10 +23,12 @@
  * questions.
  */
 
-import { PicgoPostApi } from "./service/picgoPostApi"
-import { ImageParser } from "./utils/parser/imageParser"
-import { ImageItem } from "./models/imageItem"
-import { ParsedImage } from "./models/parsedImage"
+import { afterEach, beforeEach } from "vitest"
 
-export { PicgoPostApi }
-export { ImageParser, ParsedImage, ImageItem }
+beforeEach(async () => {
+  console.log("======test is starting...======")
+})
+
+afterEach(() => {
+  console.log("======test is finished.========")
+})

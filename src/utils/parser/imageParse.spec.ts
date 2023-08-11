@@ -23,10 +23,40 @@
  * questions.
  */
 
-import { PicgoPostApi } from "./service/picgoPostApi"
-import { ImageParser } from "./utils/parser/imageParser"
-import { ImageItem } from "./models/imageItem"
-import { ParsedImage } from "./models/parsedImage"
+import { describe, it } from "vitest"
+import { ImageParser } from "~/src/utils/parser/imageParser"
+import { ParsedImage, PicgoPostApi } from "~/src"
+import { siyuanKernelApi } from "~/src/utils/utils.ts"
 
-export { PicgoPostApi }
-export { ImageParser, ParsedImage, ImageItem }
+describe("test imageParser", () => {
+  it("test parseImagesToArray", async () => {
+    const imageParser = new ImageParser()
+    const picgoPostApi = new PicgoPostApi()
+    const siyuanApi = siyuanKernelApi()
+
+    const pageId = "20230810225224-zpeipef"
+    const md = `
+​![image](assets/image-20230810225235-fdkcky0.png)
+
+大风歌V的覆盖的发
+
+‍
+
+​![image](assets/image-20230810233815-92emvkt.png)​​
+
+地方个地
+
+‍
+
+​![image](assets/image-20230811154614-oh2revw.png)​`
+    const attrs = await siyuanApi.getBlockAttrs(pageId)
+
+    let retImgs: ParsedImage[] = []
+    const parsedImages = imageParser.parseImagesToArray(md)
+    retImgs = [...new Set([...retImgs, ...parsedImages])]
+    console.log("retImgs=>", retImgs)
+
+    const imageItemArray = await picgoPostApi.doConvertImagesToImagesItemArray(attrs, retImgs)
+    console.log("imageItemArray=>", imageItemArray)
+  })
+})

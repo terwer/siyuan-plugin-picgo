@@ -31,6 +31,7 @@ import { createAppLogger } from "~/common/appLogger.ts"
  * 图片解析器
  * 自动解析文章中的img标签
  * 自动处理src外链、base64数据
+ *
  * @author terwer
  * @since 0.1.0
  */
@@ -39,6 +40,7 @@ export class ImageParser {
 
   /**
    * 检测是否有外链图片
+   *
    * @param content 文章正文
    */
   public hasExternalImages(content: string): boolean {
@@ -61,6 +63,7 @@ export class ImageParser {
 
   /**
    * 剔除外链图片
+   *
    * @param content 文章正文
    */
   public removeImages(content: string): string {
@@ -73,6 +76,7 @@ export class ImageParser {
 
   /**
    * 解析图片块为图片链接
+   *
    * @param content 图片块
    * @private
    */
@@ -180,6 +184,7 @@ export class ImageParser {
 
   /**
    * 将外链外链图片替换为图床链接
+   *
    * @param content 正文
    * @param replaceMap 替换信息
    */
@@ -229,12 +234,14 @@ export class ImageParser {
 
   /**
    * 下载图片到本地并打包成zip
+   *
    * @@deprecated 不再支持
    */
   // public async downloadMdWithImages(): Promise<void> {}
 
   /**
    * 下载图片到本地并保存到思源
+   *
    * @deprecated 思源笔记已经有此功能
    */
   // public async downloadImagesToSiyuan(): Promise<void> {
