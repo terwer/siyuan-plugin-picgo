@@ -28,7 +28,20 @@ import { ImageParser } from "~/src/utils/parser/imageParser"
 
 describe("test imageParser", () => {
   it("test parseImagesToArray", () => {
-    const md = "# test"
+    const md = `
+​![image](assets/image-20230810225235-fdkcky0.png)
+
+大风歌V的覆盖的发
+
+‍
+
+​![image](assets/image-20230810233815-92emvkt.png)​​
+
+地方个地
+
+‍
+
+​![image](assets/image-20230811154614-oh2revw.png)​`
     const imageParser = new ImageParser()
     const images = imageParser.parseImagesToArray(md)
     console.log(images)

@@ -148,19 +148,24 @@ export class PicgoPostApi {
 
         hasLocalImages = true
 
-        // 实际上传逻辑
-        await this.uploadSingleImageToBed(pageId, attrs, imageItem)
-        // 上传完成，需要获取最新链接
-        const newattrs = await this.siyuanApi.getBlockAttrs(pageId)
-        const newfileMap = JsonUtil.safeParse(newattrs[appConstants.PICGO_FILE_MAP_KEY], {})
-        const newImageItem: ImageItem = newfileMap[imageItem.hash]
-        replaceMap[imageItem.hash] = new ImageItem(
-          newImageItem.originUrl,
-          newImageItem.url,
-          false,
-          newImageItem.alt,
-          newImageItem.title
-        )
+        try {
+          // 实际上传逻辑
+          await this.uploadSingleImageToBed(pageId, attrs, imageItem)
+          // 上传完成，需要获取最新链接
+          const newattrs = await this.siyuanApi.getBlockAttrs(pageId)
+          const newfileMap = JsonUtil.safeParse(newattrs[appConstants.PICGO_FILE_MAP_KEY], {})
+          const newImageItem: ImageItem = newfileMap[imageItem.hash]
+          replaceMap[imageItem.hash] = new ImageItem(
+            newImageItem.originUrl,
+            newImageItem.url,
+            false,
+            newImageItem.alt,
+            newImageItem.title
+          )
+        } catch (e) {
+          this.logger.error("单个图片上传异常", { pageId, attrs, imageItem })
+          this.logger.error("单个图片上传失败，错误信息如下", e)
+        }
       }
 
       if (!hasLocalImages) {
