@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.3.1](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.3.0...v1.3.1) (2023-08-11)
+### Bug Fixes
+* 图片转换支持自定义本地图片前缀 ([cccb511](https://github.com/terwer/siyuan-plugin-picgo/commit/cccb511bcb28ec5fc34cd41839ae5d88b6c2f067))
 ## [1.3.0](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.2.0...v1.3.0) (2023-08-11)
 ### Features
 * 单个图片上传失败不能影响整体 ([63950dd](https://github.com/terwer/siyuan-plugin-picgo/commit/63950dddd1ccf84ff3dd9ba3dbc978b36049663f))
@@ -7,7 +10,6 @@
 * 解析图片链接 ([fbdbaad](https://github.com/terwer/siyuan-plugin-picgo/commit/fbdbaad30fe295de1ce51081f65ebfda6399acb5))
 ## [1.2.0](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.1.1...v1.2.0) (2023-08-11)
 * 支持作为 npm 类库给其他插件使用 ([8326245](https://github.com/terwer/siyuan-plugin-picgo/commit/83262450a8a68fb4a57367feff56fc35d214218e))
-### Bug Fixes
 * 优化项目依赖 ([48b45cf](https://github.com/terwer/siyuan-plugin-picgo/commit/48b45cf5b6142e856718fecc1a14d05dd7fd30b2))
 * 修复配置错误校验结果未阻止的问题 ([d287be6](https://github.com/terwer/siyuan-plugin-picgo/commit/d287be6f4e8a2a8c045dea24c321d5ac27d3a6fb))
 * 按钮名称直接显示，目前的操作不够直观，后续考虑抽象成菜单或许更好 ([9243ea9](https://github.com/terwer/siyuan-plugin-picgo/commit/9243ea97612e8b93b4b3b784eef573f0822a7c72))
