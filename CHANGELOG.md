@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.3.0...v1.3.1) (2023-08-11)
+
+
+### Bug Fixes
+
+* 图片转换支持自定义本地图片前缀 ([cccb511](https://github.com/terwer/siyuan-plugin-picgo/commit/cccb511bcb28ec5fc34cd41839ae5d88b6c2f067))
+
 ## [1.3.0](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.2.0...v1.3.0) (2023-08-11)
 ### Features
 * 单个图片上传失败不能影响整体 ([63950dd](https://github.com/terwer/siyuan-plugin-picgo/commit/63950dddd1ccf84ff3dd9ba3dbc978b36049663f))
