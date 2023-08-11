@@ -32,7 +32,7 @@ import { ParsedImage } from "~/src/models/parsedImage.ts"
 import { PicgoPostResult } from "~/src/models/picgoPostResult.ts"
 import { appConstants } from "~/src/appConstants.ts"
 import { JsonUtil, StrUtil } from "zhi-common"
-import { BrowserUtil, SiyuanDevice } from "zhi-device"
+import { SiyuanDevice } from "zhi-device"
 import { PicgoApi } from "~/src/service/picgoApi.js"
 
 /**
@@ -153,24 +153,31 @@ export class PicgoPostApi {
 
         hasLocalImages = true
 
+        let newattrs: any
+        let isLocal = true
         try {
           // 实际上传逻辑
           await this.uploadSingleImageToBed(pageId, attrs, imageItem)
           // 上传完成，需要获取最新链接
-          const newattrs = await this.siyuanApi.getBlockAttrs(pageId)
-          const newfileMap = JsonUtil.safeParse(newattrs[appConstants.PICGO_FILE_MAP_KEY], {})
-          const newImageItem: ImageItem = newfileMap[imageItem.hash]
-          replaceMap[imageItem.hash] = new ImageItem(
-            newImageItem.originUrl,
-            newImageItem.url,
-            false,
-            newImageItem.alt,
-            newImageItem.title
-          )
+          newattrs = await this.siyuanApi.getBlockAttrs(pageId)
+          isLocal = false
         } catch (e) {
+          newattrs = attrs
+          isLocal = true
           this.logger.error("单个图片上传异常", { pageId, attrs, imageItem })
           this.logger.error("单个图片上传失败，错误信息如下", e)
         }
+
+        // 无论成功失败都要保存元数据，失败了当做本地图片
+        const newfileMap = JsonUtil.safeParse(newattrs[appConstants.PICGO_FILE_MAP_KEY], {})
+        const newImageItem: ImageItem = newfileMap[imageItem.hash]
+        replaceMap[imageItem.hash] = new ImageItem(
+          newImageItem.originUrl,
+          newImageItem.url,
+          isLocal,
+          newImageItem.alt,
+          newImageItem.title
+        )
       }
 
       if (!hasLocalImages) {
