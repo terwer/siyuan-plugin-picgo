@@ -26,13 +26,15 @@
 import { describe, it } from "vitest"
 import { ImageParser } from "~/src/utils/parser/imageParser"
 import { ParsedImage, PicgoPostApi } from "~/src"
-import { siyuanKernelApi } from "~/src/utils/utils.ts"
+import { useSiyuanApi } from "~/src/composables/useSiyuanApi.ts"
 
 describe("test imageParser", () => {
   it("test parseImagesToArray", async () => {
+    const { kernelApi } = useSiyuanApi()
+
+    const siyuanApi = kernelApi
     const imageParser = new ImageParser()
     const picgoPostApi = new PicgoPostApi()
-    const siyuanApi = siyuanKernelApi()
 
     const pageId = "20230810225224-zpeipef"
     const md = `

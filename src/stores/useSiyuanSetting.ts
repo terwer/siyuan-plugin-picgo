@@ -23,10 +23,32 @@
  * questions.
  */
 
-/**
- * 依赖注入 key 通用定义
- */
-export enum InjectKeys {
-  // VUE_INSTANCE = "vueInstance",
-  // APP_INSTANCE = "appInstance",
+import { SiyuanConfig } from "zhi-siyuan-api"
+import { RemovableRef, StorageSerializers, useLocalStorage } from "@vueuse/core"
+import { DeviceDetection, DeviceTypeEnum } from "zhi-device"
+
+const useSiyuanSetting = () => {
+  const storageKey = "siyuan-cfg"
+
+  /**
+   * 获取思源笔记配置
+   *
+   * @author terwer
+   * @since 0.6.0
+   */
+  const getSiyuanSetting = (): RemovableRef<SiyuanConfig> => {
+    let baseUrl = "http://127.0.0.1:6806"
+    let token = ""
+    let middlewareUrl = "https://api.terwer.space/api/middleware"
+    const initialValue = new SiyuanConfig(baseUrl, token)
+    initialValue.middlewareUrl = middlewareUrl
+    const siyuanConfig = useLocalStorage<SiyuanConfig>(storageKey, initialValue, {
+      serializer: StorageSerializers.object,
+    })
+    return siyuanConfig
+  }
+
+  return { getSiyuanSetting }
 }
+
+export { useSiyuanSetting }

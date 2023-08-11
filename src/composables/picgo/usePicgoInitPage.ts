@@ -28,15 +28,17 @@ import { ImageParser } from "~/src/utils/parser/imageParser.ts"
 import { PicgoPostApi } from "~/src/service/picgoPostApi.ts"
 import { ParsedImage } from "~/src/models/parsedImage.ts"
 import { createAppLogger } from "~/common/appLogger.ts"
-import { siyuanKernelApi } from "~/src/utils/utils.ts"
+import { useSiyuanApi } from "~/src/composables/useSiyuanApi.ts"
 
 /**
  * Picgo页面初始化组件
  */
 export const usePicgoInitPage = (props, deps) => {
-  // private data
   const logger = createAppLogger("picgo-common")
-  const siyuanApi = siyuanKernelApi()
+  const { kernelApi } = useSiyuanApi()
+
+  // private data
+  const siyuanApi = kernelApi
   const picgoPostApi = new PicgoPostApi()
   const imageParser = new ImageParser()
 

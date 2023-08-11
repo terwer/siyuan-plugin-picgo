@@ -26,14 +26,15 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from "vue"
 import picgoUtil from "~/src/service/picgoUtil.js"
-import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils.ts"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import { ArrowLeft } from "@element-plus/icons-vue"
 import { useRoute, useRouter } from "vue-router"
+import { useSiyuanDevice } from "~/src/composables/useSiyuanDevice.ts"
 
 const { t } = useVueI18n()
 const router = useRouter()
 const { query } = useRoute()
+const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
 
 const isReload = ref(false)
 const picgoVersion = ref("")
@@ -158,7 +159,7 @@ onBeforeMount(() => {
   margin-top: 20px;
   margin-bottom: 16px;
 }
-.page-head{
+.page-head {
   margin-bottom: 16px;
   margin-left: 20px;
 }

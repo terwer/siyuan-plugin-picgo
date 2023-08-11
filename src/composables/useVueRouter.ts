@@ -26,10 +26,16 @@
 import { createRouter, createWebHashHistory, Router, RouteRecordRaw } from "vue-router"
 import PicGoIndex from "~/src/components/PicGoIndex.vue"
 import PicgoSetting from "~/src/components/PicgoSetting.vue"
+import ExternalPicgoSetting from "~/src/components/setting/ExternalPicgoSetting.vue"
+import SiyuanSetting from "~/src/components/setting/SiyuanSetting.vue"
+import TransportSelect from "~/src/components/transport/TransportSelect.vue"
 
 const routes: RouteRecordRaw[] = [
   { path: "/", component: PicGoIndex },
   { path: "/setting", component: PicgoSetting },
+  { path: "/setting/external", component: ExternalPicgoSetting },
+  { path: "/setting/transport", component: TransportSelect },
+  { path: "/setting/siyuan", component: SiyuanSetting },
 ]
 
 export const useVueRouter = (): Router => {

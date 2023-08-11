@@ -44,9 +44,9 @@ const logger = createAppLogger("vue-main-entry")
  */
 const createVueApp = async () => {
   // appInstance
-  const appInstance = await AppInstance.getInstance()
-  provide(InjectKeys.APP_INSTANCE, appInstance)
-  logger.info("appInstance provided =>", appInstance)
+  // const appInstance = await AppInstance.getInstance()
+  // provide(InjectKeys.APP_INSTANCE, appInstance)
+  // logger.info("appInstance provided =>", appInstance)
 
   // 初始化 vue 实例
   // https://stackoverflow.com/a/62383325/4037224
@@ -70,8 +70,8 @@ const createVueApp = async () => {
   app.mount("#app")
 
   // 暴露 Vue 实例
-  provide(InjectKeys.VUE_INSTANCE, app)
-  logger.info("vue app created")
+  // provide(InjectKeys.VUE_INSTANCE, app)
+  // logger.info("vue app created")
 }
 
 ;(async () => {

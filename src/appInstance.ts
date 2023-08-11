@@ -25,19 +25,20 @@
 
 import { createAppLogger } from "~/common/appLogger.ts"
 import { SiyuanDevice } from "zhi-device"
-import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils.ts"
+import { useSiyuanDevice } from "~/src/composables/useSiyuanDevice.ts"
 
 class AppInstance {
   private static instance: AppInstance | undefined
   private static logger = createAppLogger("app-instance")
-  private readonly isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
-
+  private isSiyuanOrSiyuanNewWin: boolean
   public syPicgo
 
   public static async getInstance(): Promise<AppInstance> {
     if (!AppInstance.instance) {
       this.logger.info("Unable to obtain appInstance, try to re-initialized")
       AppInstance.instance = new AppInstance()
+      const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
+      AppInstance.instance.isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
       await AppInstance.instance.init()
       this.logger.info("SyPicgo mounted")
     }

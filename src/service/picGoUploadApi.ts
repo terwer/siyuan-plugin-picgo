@@ -25,6 +25,7 @@
 
 import { ObjectUtil } from "zhi-common"
 import { createAppLogger } from "~/common/appLogger.ts"
+import { useExternalPicgoSettingStore } from "~/src/stores/useExternalPicgoSettingStore.ts"
 
 /**
  * PicGO上传Api
@@ -53,6 +54,10 @@ export class PicGoUploadApi {
    * @param input 路径数组，可为空，为空上传剪贴板
    */
   public async upload(input?: any[]): Promise<string> {
+    const { getExternalPicgoSetting } = useExternalPicgoSettingStore()
+    const extPicgoCfg = await getExternalPicgoSetting()
+    this.requestUrl = extPicgoCfg.extPicgoApiUrl ?? "http://127.0.0.1:36677"
+
     let ret = JSON.stringify([])
 
     const fetchOptions = {
@@ -66,7 +71,7 @@ export class PicGoUploadApi {
     }
 
     // 数据不为空才传递
-    if (ObjectUtil.isEmptyObject(data)) {
+    if (!ObjectUtil.isEmptyObject(data)) {
       Object.assign(fetchOptions, {
         body: JSON.stringify(data),
       })

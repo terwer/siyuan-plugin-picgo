@@ -24,9 +24,26 @@
  */
 
 /**
- * 依赖注入 key 通用定义
+ * 外部 Picgo 配置接口
  */
-export enum InjectKeys {
-  // VUE_INSTANCE = "vueInstance",
-  // APP_INSTANCE = "appInstance",
+interface IExternalPicgoConfig {
+  useBundledPicgo?: boolean
+
+  /**
+   * extPicgoApiUrl 是一个字符串，表示外部 Picgo API 的 URL
+   */
+  extPicgoApiUrl?: string
+
+  /**
+   * 其他配置项，可以是任意类型
+   */
+  [key: string]: any
+}
+
+/**
+ * 外部 Picgo 配置实例
+ */
+export const ExternalPicgoConfig: IExternalPicgoConfig = {
+  useBundledPicgo: true,
+  extPicgoApiUrl: "http://127.0.0.1:36677",
 }

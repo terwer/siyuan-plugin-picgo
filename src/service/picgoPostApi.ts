@@ -24,9 +24,8 @@
  */
 
 import { ImageParser } from "~/src/utils/parser/imageParser.ts"
-import { SiyuanKernelApi } from "zhi-siyuan-api"
+import { SiyuanConfig, SiyuanKernelApi } from "zhi-siyuan-api"
 import { createAppLogger } from "~/common/appLogger.ts"
-import { isInSiyuanOrSiyuanNewWin, siyuanKernelApi } from "~/src/utils/utils.ts"
 import { ImageItem } from "~/src/models/imageItem.ts"
 import { ParsedImage } from "~/src/models/parsedImage.ts"
 import { PicgoPostResult } from "~/src/models/picgoPostResult.ts"
@@ -34,6 +33,9 @@ import { appConstants } from "~/src/appConstants.ts"
 import { JsonUtil, StrUtil } from "zhi-common"
 import { SiyuanDevice } from "zhi-device"
 import { PicgoApi } from "~/src/service/picgoApi.js"
+import { useExternalPicgoSettingStore } from "~/src/stores/useExternalPicgoSettingStore.ts"
+import { useSiyuanDevice } from "~/src/composables/useSiyuanDevice.ts"
+import { useSiyuanApi } from "~/src/composables/useSiyuanApi.ts"
 
 /**
  * Picgo与文章交互的通用方法
@@ -42,18 +44,23 @@ export class PicgoPostApi {
   private readonly logger = createAppLogger("picgo-post-api")
   private readonly imageParser: ImageParser
   private readonly siyuanApi: SiyuanKernelApi
-  private readonly isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
+  private readonly siyuanConfig: SiyuanConfig
+  private readonly isSiyuanOrSiyuanNewWin: boolean
   private readonly picgoApi: PicgoApi
 
   /**
    * 初始化思源笔记图床插件
    *
-   * @param kernelApi - 可选，若不传递，使用默认的
+   * @param kApi - 可选，若不传递，使用默认的
    */
-  constructor(kernelApi?: SiyuanKernelApi) {
+  constructor(kApi?: SiyuanKernelApi) {
     this.imageParser = new ImageParser()
     this.picgoApi = new PicgoApi()
-    this.siyuanApi = kernelApi ?? siyuanKernelApi()
+    const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
+    this.isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
+    const { siyuanConfig, kernelApi } = useSiyuanApi()
+    this.siyuanConfig = siyuanConfig
+    this.siyuanApi = kApi ?? kernelApi
   }
 
   /**
@@ -85,7 +92,7 @@ export class PicgoPostApi {
       // 处理思源本地图片预览
       // 这个是从思源查出来解析的是否是本地
       if (retImg.isLocal) {
-        let baseUrl = imageBaseUrl ?? ""
+        let baseUrl = imageBaseUrl ?? this.siyuanConfig.apiUrl ?? ""
         imgUrl = StrUtil.pathJoin(baseUrl, "/" + imgUrl)
       }
 

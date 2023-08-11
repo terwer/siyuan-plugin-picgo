@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    BackPage: typeof import('./src/components/common/BackPage.vue')['default']
     ClearData: typeof import('./src/components/transport/ClearData.vue')['default']
     ConfigForm: typeof import('./src/components/common/ConfigForm.vue')['default']
     ElAlert: typeof import('element-plus/es')['ElAlert']
@@ -31,6 +32,7 @@ declare module 'vue' {
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ExportData: typeof import('./src/components/transport/ExportData.vue')['default']
+    ExternalPicgoSetting: typeof import('./src/components/setting/ExternalPicgoSetting.vue')['default']
     ImportData: typeof import('./src/components/transport/ImportData.vue')['default']
     PicbedSetting: typeof import('./src/components/setting/PicbedSetting.vue')['default']
     PicgoConfigSetting: typeof import('./src/components/setting/PicgoConfigSetting.vue')['default']
@@ -39,6 +41,7 @@ declare module 'vue' {
     PicgoSetting: typeof import('./src/components/PicgoSetting.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SiyuanSetting: typeof import('./src/components/setting/SiyuanSetting.vue')['default']
     TransportSelect: typeof import('./src/components/transport/TransportSelect.vue')['default']
   }
   export interface ComponentCustomProperties {
