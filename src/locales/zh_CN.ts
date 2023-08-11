@@ -89,7 +89,7 @@ export default {
   "picgo.download.local.to.bed": "上传本地图片到图床",
   "picgo.download.bed.to.local": "下载远程图片到本地",
   "picgo.pic.preview": "图片预览",
-  "picgo.pic.setting": "图床设置",
+  "picgo.pic.setting": "内置PicGO设置",
   "picgo.pic.setting.no.tip":
     "由于您当前使用的是浏览器环境，无法直接集成 PicGO ，只能通过 HTTP 请求间接调用本地 PicGO 客户端上图片，请直接在本地 PicGO 客户端进行设置。如需体验更加完整的功能，请通过PC客户端使用。",
   "syp.about": "关于作者",
@@ -107,6 +107,7 @@ export default {
   "main.opt.loading": "操作中...",
   "main.opt.warning": "警告信息",
   "main.opt.tip": "温馨提示",
+  "main.opt.save": "保存",
   "main.opt.ok": "确认",
   "main.opt.cancel": "取消",
   "main.opt.warning.tip": "此操作不可恢复，是否继续？",
@@ -123,4 +124,15 @@ export default {
   "setting.conf.clear.picgo": "清空PicGO配置",
   "setting.conf.clear.picgo.tip":
     "清空配置不可恢复，请谨慎操作。强烈建议先备份配置。此操作会删除PicGO相关配置文件夹，包括配置、插件、缓存等，仅在PicGO加载发生异常，并且完全无法使用的时候使用，否则丢失配置后果自负！",
+  "picgo.type.switch.active.text": "切换到内置PicGO",
+  "picgo.type.switch.unactive.text": "切换到外部PicGO",
+  "picgo.type.external.title": "外部PicGO设置",
+  "setting.picgo.external.setting.apiurl": "API地址",
+  "setting.picgo.external.setting.apiurl.tip": "请输入外部外部PicGO的API地址，默认是：http://127.0.0.1:36677",
+  "siyuan.config.setting": "思源设置",
+  "setting.blog.siyuan.apiurl": "思源API地址",
+  "setting.blog.siyuan.apiurl.tip": "思源API地址，默认是：http://127.0.0.1:6806",
+  "setting.blog.siyuan.password": "思源Token",
+  "setting.blog.siyuan.password.tip": "思源Token，默认是空",
+  "form.validate.name.required": "请输入名称",
 }

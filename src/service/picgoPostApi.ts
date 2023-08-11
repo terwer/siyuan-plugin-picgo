@@ -24,16 +24,18 @@
  */
 
 import { ImageParser } from "~/src/utils/parser/imageParser.ts"
-import { SiyuanKernelApi } from "zhi-siyuan-api"
+import { SiyuanConfig, SiyuanKernelApi } from "zhi-siyuan-api"
 import { createAppLogger } from "~/common/appLogger.ts"
-import { isInSiyuanOrSiyuanNewWin, siyuanKernelApi } from "~/src/utils/utils.ts"
 import { ImageItem } from "~/src/models/imageItem.ts"
 import { ParsedImage } from "~/src/models/parsedImage.ts"
 import { PicgoPostResult } from "~/src/models/picgoPostResult.ts"
 import { appConstants } from "~/src/appConstants.ts"
 import { JsonUtil, StrUtil } from "zhi-common"
-import { BrowserUtil, SiyuanDevice } from "zhi-device"
+import { SiyuanDevice } from "zhi-device"
 import { PicgoApi } from "~/src/service/picgoApi.js"
+import { useExternalPicgoSettingStore } from "~/src/stores/useExternalPicgoSettingStore.ts"
+import { useSiyuanDevice } from "~/src/composables/useSiyuanDevice.ts"
+import { useSiyuanApi } from "~/src/composables/useSiyuanApi.ts"
 
 /**
  * Picgo与文章交互的通用方法
@@ -42,18 +44,23 @@ export class PicgoPostApi {
   private readonly logger = createAppLogger("picgo-post-api")
   private readonly imageParser: ImageParser
   private readonly siyuanApi: SiyuanKernelApi
-  private readonly isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
+  private readonly siyuanConfig: SiyuanConfig
+  private readonly isSiyuanOrSiyuanNewWin: boolean
   private readonly picgoApi: PicgoApi
 
   /**
    * 初始化思源笔记图床插件
    *
-   * @param kernelApi - 可选，若不传递，使用默认的
+   * @param kApi - 可选，若不传递，使用默认的
    */
-  constructor(kernelApi?: SiyuanKernelApi) {
+  constructor(kApi?: SiyuanKernelApi) {
     this.imageParser = new ImageParser()
     this.picgoApi = new PicgoApi()
-    this.siyuanApi = kernelApi ?? siyuanKernelApi()
+    const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
+    this.isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
+    const { siyuanConfig, kernelApi } = useSiyuanApi()
+    this.siyuanConfig = siyuanConfig
+    this.siyuanApi = kApi ?? kernelApi
   }
 
   /**
@@ -85,7 +92,7 @@ export class PicgoPostApi {
       // 处理思源本地图片预览
       // 这个是从思源查出来解析的是否是本地
       if (retImg.isLocal) {
-        let baseUrl = imageBaseUrl ?? ""
+        let baseUrl = imageBaseUrl ?? this.siyuanConfig.apiUrl ?? ""
         imgUrl = StrUtil.pathJoin(baseUrl, "/" + imgUrl)
       }
 
@@ -153,24 +160,31 @@ export class PicgoPostApi {
 
         hasLocalImages = true
 
+        let newattrs: any
+        let isLocal = true
         try {
           // 实际上传逻辑
           await this.uploadSingleImageToBed(pageId, attrs, imageItem)
           // 上传完成，需要获取最新链接
-          const newattrs = await this.siyuanApi.getBlockAttrs(pageId)
-          const newfileMap = JsonUtil.safeParse(newattrs[appConstants.PICGO_FILE_MAP_KEY], {})
-          const newImageItem: ImageItem = newfileMap[imageItem.hash]
-          replaceMap[imageItem.hash] = new ImageItem(
-            newImageItem.originUrl,
-            newImageItem.url,
-            false,
-            newImageItem.alt,
-            newImageItem.title
-          )
+          newattrs = await this.siyuanApi.getBlockAttrs(pageId)
+          isLocal = false
         } catch (e) {
+          newattrs = attrs
+          isLocal = true
           this.logger.error("单个图片上传异常", { pageId, attrs, imageItem })
           this.logger.error("单个图片上传失败，错误信息如下", e)
         }
+
+        // 无论成功失败都要保存元数据，失败了当做本地图片
+        const newfileMap = JsonUtil.safeParse(newattrs[appConstants.PICGO_FILE_MAP_KEY], {})
+        const newImageItem: ImageItem = newfileMap[imageItem.hash]
+        replaceMap[imageItem.hash] = new ImageItem(
+          newImageItem.originUrl,
+          newImageItem.url,
+          isLocal,
+          newImageItem.alt,
+          newImageItem.title
+        )
       }
 
       if (!hasLocalImages) {

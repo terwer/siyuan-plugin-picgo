@@ -30,18 +30,21 @@ import { version } from "../../../package.json"
 import { createAppLogger } from "~/common/appLogger.ts"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import { DateUtil } from "zhi-common"
-import TransportSelect from "~/src/components/transport/TransportSelect.vue"
+import { useRouter } from "vue-router"
+import { useSiyuanDevice } from "~/src/composables/useSiyuanDevice.ts"
 
 const logger = createAppLogger("layouts/default/DefaultFooter")
 const { t } = useVueI18n()
+const router = useRouter()
+const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
 
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
 
-const transportFormVisible = ref(false)
-
 const v = ref(version)
 const nowYear = DateUtil.nowYear()
+
+const isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
 
 const goGithub = () => {
   window.open("https://github.com/terwer/siyuan-plugin-picgo")
@@ -51,8 +54,18 @@ const goAbout = () => {
   window.open("https://blog.terwer.space/about")
 }
 
-const openTransportSetting = () => {
-  transportFormVisible.value = true
+const handleTransportSetting = async () => {
+  await router.push({
+    path: "/setting/transport",
+    query: { showBack: "true" },
+  })
+}
+
+const handleSiyuanSetting = async () => {
+  await router.push({
+    path: "/setting/siyuan",
+    query: { showBack: "true" },
+  })
 }
 </script>
 
@@ -72,21 +85,16 @@ const openTransportSetting = () => {
           isDark ? t("theme.mode.light") : t("theme.mode.dark")
         }}</span>
 
-        <span class="text">.</span>
-        <span class="text s-dark" @click="openTransportSetting">
+        <span class="text" v-if="isSiyuanOrSiyuanNewWin">.</span>
+        <span class="text s-dark" @click="handleTransportSetting" v-if="isSiyuanOrSiyuanNewWin">
           {{ t("setting.conf.transport") }}
         </span>
+
+        <span class="text">.</span>
+        <span class="text s-dark" @click="handleSiyuanSetting">
+          {{ t("siyuan.config.setting") }}
+        </span>
       </div>
-
-      <!--
-       -----------------------------------------------------------------------------
-       -->
-      <!-- 思源地址设置弹窗 -->
-
-      <!-- 导出导出弹窗 -->
-      <el-dialog v-model="transportFormVisible" :title="$t('setting.conf.transport')">
-        <transport-select />
-      </el-dialog>
     </div>
   </div>
 </template>
@@ -106,9 +114,5 @@ const openTransportSetting = () => {
 .s-dark {
   color: var(--el-color-primary);
   cursor: pointer;
-}
-
-.middleware-tip {
-  text-align: left;
 }
 </style>

@@ -26,20 +26,24 @@
 import { reactive } from "vue"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import { createAppLogger } from "~/common/appLogger.ts"
-import { copyToClipboardInBrowser, siyuanKernelApi } from "~/src/utils/utils.ts"
+import { copyToClipboardInBrowser } from "~/src/utils/utils.ts"
 import { PicgoPostApi } from "~/src/service/picgoPostApi.ts"
 import { ElMessage, ElMessageBox } from "element-plus"
 import { BrowserUtil } from "zhi-device"
 import { ImageItem } from "~/src/models/imageItem.ts"
+import { useSiyuanApi } from "~/src/composables/useSiyuanApi.ts"
 
 /**
  * Picgo图片管理组件
  */
 export const usePicgoManage = (props, deps) => {
-  // private data
   const logger = createAppLogger("picgo-manage")
+
+  // private data
   const { t } = useVueI18n()
-  const siyuanApi = siyuanKernelApi()
+  const { kernelApi } = useSiyuanApi()
+
+  const siyuanApi = kernelApi
   const picgoPostApi = new PicgoPostApi()
 
   // public data
@@ -59,6 +63,14 @@ export const usePicgoManage = (props, deps) => {
   const picgoManageMethods = {
     handleUploadAllImagesToBed: async () => {
       picgoCommonData.isUploadLoading = true
+
+      if (!picgoCommonData.isSiyuanOrSiyuanNewWin) {
+        const errMsg = "由于浏览器的安全限制，无法获取本地文件的完整路径，因此非electron环境只能通过剪贴板上传"
+        ElMessage.error(errMsg)
+        picgoCommonData.loggerMsg = t("main.opt.failure") + "=>" + errMsg
+        picgoCommonData.isUploadLoading = false
+        return
+      }
 
       try {
         let hasLocalImages = false
@@ -95,6 +107,14 @@ export const usePicgoManage = (props, deps) => {
 
     handleUploadCurrentImageToBed: async (imageItem: ImageItem) => {
       picgoCommonData.isUploadLoading = true
+
+      if (!picgoCommonData.isSiyuanOrSiyuanNewWin) {
+        const errMsg = "由于浏览器的安全限制，无法获取本地文件的完整路径，因此非electron环境只能通过剪贴板上传"
+        ElMessage.error(errMsg)
+        picgoCommonData.loggerMsg = t("main.opt.failure") + "=>" + errMsg
+        picgoCommonData.isUploadLoading = false
+        return
+      }
 
       if (!imageItem.isLocal) {
         ElMessageBox.confirm("已经是远程图片，是否仍然覆盖上传？", t("main.opt.warning"), {

@@ -27,7 +27,7 @@ import { reactive } from "vue"
 import { ImageItem } from "~/src/models/imageItem.ts"
 import { isDev } from "~/common/Constants.ts"
 import { createAppLogger } from "~/common/appLogger.ts"
-import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils.ts"
+import { useSiyuanDevice } from "~/src/composables/useSiyuanDevice.ts"
 
 /**
  * Picgo公共组件
@@ -38,6 +38,7 @@ import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils.ts"
 export const usePicgoCommon = () => {
   // private data
   const logger = createAppLogger("picgo-common")
+  const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
 
   // public data
   const picgoCommonData = reactive({

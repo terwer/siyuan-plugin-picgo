@@ -61,9 +61,15 @@ logger.info("This is picgo index page")
 
 <template>
   <div class="picgo-body">
-    <!--
-    <el-alert :title="t('setting.picgo.index.tip')" type="warning" :closable="false" />
-    -->
+    <el-alert
+      :title="
+        '当前PicGO为 ' +
+        (picgoUploadData.extPicgoCfg.useBundledPicgo ? '内置PicGO' : '外部PicGO') +
+        ' ，您可以在下面选择使用内置PicGO还是外部PicGO'
+      "
+      type="warning"
+      :closable="false"
+    />
 
     <!-- 上传状态 -->
     <div class="upload-status">
@@ -87,7 +93,11 @@ logger.info("This is picgo index page")
         </el-button>
       </el-tooltip>
       -->
-      <el-button type="warning" @click="picgoUploadMethods.bindFileControl">
+      <el-button
+        v-if="picgoCommonData.isSiyuanOrSiyuanNewWin"
+        type="warning"
+        @click="picgoUploadMethods.bindFileControl"
+      >
         <font-awesome-icon icon="fa-solid fa-file-import" />
         &nbsp;{{ t("picgo.upload.select.pic") }}
       </el-button>
@@ -99,7 +109,11 @@ logger.info("This is picgo index page")
       </el-button>
 
       <!-- 上传所有图片到图床 -->
-      <el-button type="success" @click="picgoManageMethods.handleUploadAllImagesToBed">
+      <el-button
+        v-if="picgoCommonData.isSiyuanOrSiyuanNewWin"
+        type="success"
+        @click="picgoManageMethods.handleUploadAllImagesToBed"
+      >
         <font-awesome-icon icon="fa-solid fa-upload" />
         &nbsp;{{ t("picgo.upload.onclick") }}
       </el-button>
@@ -120,10 +134,24 @@ logger.info("This is picgo index page")
       <!-- 图床设置 -->
       <el-button type="info" @click="picgoUploadMethods.handlePicgoSetting">
         <font-awesome-icon icon="fa-solid fa-gear" />
-        &nbsp;{{ t("picgo.pic.setting") }}
+        &nbsp;{{
+          picgoUploadData.extPicgoCfg.useBundledPicgo ? t("picgo.pic.setting") : t("picgo.type.external.title")
+        }}
       </el-button>
 
-      <!-- 调试模式 -->
+      <!-- 使用外部 Picgo -->
+      <span class="box-item switch-item">
+        <el-switch
+          v-model="picgoUploadData.extPicgoCfg.useBundledPicgo"
+          class="picgo-type-switch"
+          inline-prompt
+          size="large"
+          @change="picgoUploadMethods.onPicgoTypeChange"
+        ></el-switch>
+        切换PicGO类型
+      </span>
+
+      <!-- 调试模式
       <span class="box-item switch-item">
         <el-switch
           v-model="picgoCommonData.showDebugMsg"
@@ -133,6 +161,7 @@ logger.info("This is picgo index page")
           :inactive-text="t('switch.unactive.text')"
         ></el-switch>
       </span>
+      -->
     </blockquote>
 
     <!-- 图片列表 -->
@@ -141,7 +170,11 @@ logger.info("This is picgo index page")
         <div><img :src="f.url" :alt="f.name" /></div>
         <div>
           <!-- 上传本地图片到图床 -->
-          <el-button class="file-list-action" @click="picgoManageMethods.handleUploadCurrentImageToBed(f)">
+          <el-button
+            v-if="picgoCommonData.isSiyuanOrSiyuanNewWin"
+            class="file-list-action"
+            @click="picgoManageMethods.handleUploadCurrentImageToBed(f)"
+          >
             <font-awesome-icon :icon="f.isLocal ? 'fa-solid fa-upload' : 'fa-solid fa-arrow-rotate-right'" />
             &nbsp;{{ f.isLocal ? t("picgo.download.local.to.bed") : "重新上传" }}
           </el-button>
@@ -214,101 +247,89 @@ logger.info("This is picgo index page")
   </div>
 </template>
 
-<style>
-.picgo-body {
-  padding: 16px;
-}
+<style lang="stylus" scoped>
+.picgo-body
+  padding: 16px
 
-.picgo-body .picgo-opt-btn {
-  display: block;
-  border: solid 1px green;
-  border-radius: 4px;
-  padding: 10px;
-  background: var(--custom-app-bg-color);
-  margin: 16px 0 16px;
-}
+  .picgo-opt-btn
+    display: block
+    border: solid 1px green
+    border-radius: 4px
+    padding: 10px
+    background: var(--custom-app-bg-color)
+    margin: 16px 0 16px
 
-.upload-status {
-  margin-top: 10px;
-}
+.upload-status
+  margin-top: 10px
 
-.upload-btn-list {
-}
+.upload-btn-list
 
-.upload-control {
-  display: inline-block;
-  margin: 10px 16px 10px 0;
-}
+.upload-control
+  display: inline-block
+  margin: 10px 16px 10px 0
 
-.log-msg {
-  margin: 10px 0;
-}
+.log-msg
+  margin: 10px 0
 
-input[type="file"] {
-  /* 隐藏原有的文件选择按钮 */
-  display: none;
-}
+input[type="file"]
+  // 隐藏原有的文件选择按钮
+  display: none
 
-/* 创建自定义的文件选择按钮 */
-.custom-file-input {
-  display: inline-block;
-  padding: 0.35em 0.5em;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  color: #333;
-  cursor: pointer;
-}
+// 创建自定义的文件选择按钮
+.custom-file-input
+  display: inline-block
+  padding: 0.35em 0.5em
+  border: 1px solid #ccc
+  border-radius: 4px
+  background-color: #fff
+  color: #333
+  cursor: pointer
 
-/* 文件选择按钮的悬停样式 */
-.custom-file-input:hover {
-  background-color: #eee;
-}
+  // 文件选择按钮的悬停样式
+  &:hover
+    background-color: #eee
 
-.file-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+.file-list
+  list-style: none
+  margin: 0
+  padding: 0
 
-.file-list li {
-  display: inline-block;
-  margin-right: 10px;
-  margin-bottom: 16px;
-  padding: 8px;
-  border: solid 1px var(--el-color-primary);
-  border-radius: var(--el-input-border-radius, var(--el-border-radius-base));
-  width: calc(25% - 38px);
-}
+.file-list li
+  display: inline-block
+  margin-right: 10px
+  margin-bottom: 16px
+  padding: 8px
+  border: solid 1px var(--el-color-primary)
+  border-radius: var(--el-input-border-radius, var(--el-border-radius-base))
+  width: calc(25% - 38px)
 
-.file-list li:last-child {
-  margin-right: 0; /* 最后一个元素去除右侧间距 */
-}
+  &:last-child
+    margin-right: 0 // 最后一个元素去除右侧间距
 
-.file-list li img {
-  width: 100%;
-  height: 150px;
-}
+.file-list li img
+  width: 100%
+  height: 150px
 
-.file-list li .file-list-action {
-  display: flex;
-  margin: 6px 0;
-  width: 100%;
-}
+.file-list li .file-list-action
+  display: flex
+  margin: 6px 0
+  width: 100%
 
-.one-local-to-bed {
-  margin-bottom: 12px;
-}
+.one-local-to-bed
+  margin-bottom: 12px
 
-.one-bed-to-local {
-  margin-bottom: 16px;
-}
+.one-bed-to-local
+  margin-bottom: 16px
 
-.img-big-preview {
-  max-width: 100%;
-}
+.img-big-preview
+  max-width: 100%
 
-.switch-item {
-  margin-left: 16px;
-}
+.switch-item
+  margin-left: 16px
+
+:deep(.picgo-type-switch .el-switch__core)
+  border-radius: 5px
+  height 28px
+:deep(.picgo-type-switch .el-switch__core .is-text)
+  padding-left 2px
 </style>

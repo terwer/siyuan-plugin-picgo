@@ -23,13 +23,15 @@
  * questions.
  */
 
-import { reactive } from "vue"
+import { onMounted, reactive } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import { createAppLogger } from "~/common/appLogger.ts"
 import { ImageItem } from "~/src/models/imageItem.ts"
 import { PicgoApi } from "~/src/service/picgoApi.js"
 import { useRouter } from "vue-router"
+import { useExternalPicgoSettingStore } from "~/src/stores/useExternalPicgoSettingStore.ts"
+import { ExternalPicgoConfig } from "~/external-picgo.config.ts"
 
 /**
  * Picgo上传组件
@@ -39,10 +41,13 @@ export const usePicgoUpload = (props, deps, refs) => {
   const logger = createAppLogger("picgo-upload")
   const { t } = useVueI18n()
   const router = useRouter()
+  const { getExternalPicgoSetting, updateExternalPicgoSetting } = useExternalPicgoSettingStore()
   const picgoApi = new PicgoApi()
 
   // public data
-  const picgoUploadData = reactive({})
+  const picgoUploadData = reactive({
+    extPicgoCfg: {} as typeof ExternalPicgoConfig,
+  })
 
   // deps
   const picgoCommonMethods = deps.picgoCommonMethods
@@ -56,6 +61,7 @@ export const usePicgoUpload = (props, deps, refs) => {
   // private methods
   /**
    * 处理图片后续
+   *
    * @param imgInfos
    */
   const doAfterUpload = (imgInfos) => {
@@ -84,17 +90,17 @@ export const usePicgoUpload = (props, deps, refs) => {
   // public methods
   const picgoUploadMethods = {
     handlePicgoSetting: async () => {
-      if (!picgoCommonData.isSiyuanOrSiyuanNewWin) {
-        await ElMessageBox.alert(t("picgo.pic.setting.no.tip"), t("main.opt.tip"), {
-          confirmButtonText: t("main.opt.ok"),
+      if (picgoCommonData.isSiyuanOrSiyuanNewWin && picgoUploadData.extPicgoCfg.useBundledPicgo) {
+        await router.push({
+          path: "/setting",
+          query: { showBack: "true" },
         })
-        return
+      } else {
+        await router.push({
+          path: "/setting/external",
+          query: { showBack: "true" },
+        })
       }
-
-      await router.push({
-        path: "/setting",
-        query: { showBack: "true" },
-      })
     },
     bindFileControl: () => {
       refSelectedFiles.value.click()
@@ -170,7 +176,28 @@ export const usePicgoUpload = (props, deps, refs) => {
         picgoCommonData.isUploadLoading = false
       }
     },
+    onPicgoTypeChange: async (val: boolean) => {
+      if (picgoCommonData.isSiyuanOrSiyuanNewWin) {
+        picgoUploadData.extPicgoCfg.useBundledPicgo = val
+        await updateExternalPicgoSetting(picgoUploadData.extPicgoCfg)
+      } else {
+        picgoUploadData.extPicgoCfg.useBundledPicgo = false
+        await ElMessageBox.alert(t("picgo.pic.setting.no.tip"), t("main.opt.tip"), {
+          confirmButtonText: t("main.opt.ok"),
+        })
+        return
+      }
+    },
   }
+
+  onMounted(async () => {
+    if (picgoCommonData.isSiyuanOrSiyuanNewWin) {
+      picgoUploadData.extPicgoCfg = await getExternalPicgoSetting()
+      logger.debug("extPicgoCfg =>", picgoUploadData.extPicgoCfg)
+    } else {
+      picgoUploadData.extPicgoCfg.useBundledPicgo = false
+    }
+  })
 
   return {
     picgoUploadData,

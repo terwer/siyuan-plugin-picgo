@@ -111,6 +111,7 @@ export default {
   "main.opt.loading": "In operation...",
   "main.opt.warning": "Warn tips",
   "main.opt.tip": "Kind tips",
+  "main.opt.save": "Save",
   "main.opt.ok": "Confirm",
   "main.opt.cancel": "Cancel",
   "main.opt.warning.tip": "This operation cannot be undone, continue?",
@@ -127,4 +128,16 @@ export default {
   "setting.conf.clear.picgo": "Clear PicGO configuration",
   "setting.conf.clear.picgo.tip":
     "Empty configuration cannot be restored, please operate with caution. It is strongly recommended to back up the configuration first. This operation will delete PicGO related configuration folders, including configuration, plug-ins, cache, etc., and only use it when PicGO loads abnormally and cannot be used at all, otherwise Lost configuration at your own risk!",
+  "picgo.type.switch.active.text": "Use the built-in PicGO",
+  "picgo.type.switch.unactive.text": "Use an external PicGo",
+  "picgo.type.external.title": "External PicGO settings",
+  "setting.picgo.external.setting.apiurl": "API address",
+  "setting.picgo.external.setting.apiurl.tip":
+    "Please enter the API address of the external external PicGO, the default is: http://127.0.0.1:36677",
+  "siyuan.config.setting": "Source settings",
+  "setting.blog.siyuan.apiurl": "Siyuan API address",
+  "setting.blog.siyuan.apiurl.tip": "The default address of Siyuan API is: http://127.0.0.1;6806",
+  "setting.blog.siyuan.password": "Siyuan Token",
+  "setting.blog.siyuan.password.tip": "Siyuan Token, which is empty by default",
+  "form.validate.name.required": "Please enter a name",
 }

@@ -24,11 +24,12 @@
   -->
 
 <script lang="ts" setup>
-import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils.ts"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import picgoUtil from "~/src/service/picgoUtil.js"
+import { useSiyuanDevice } from "~/src/composables/useSiyuanDevice.ts"
 
 const { t } = useVueI18n()
+const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
 const isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
 
 const handleImportPicgo = async () => {

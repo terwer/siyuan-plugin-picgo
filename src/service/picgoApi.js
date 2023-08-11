@@ -25,8 +25,9 @@
 
 import { createAppLogger } from "~/common/appLogger"
 import AppInstance from "~/src/appInstance"
-import { isInSiyuanOrSiyuanNewWin } from "~/src/utils/utils"
 import { PicGoUploadApi } from "~/src/service/picGoUploadApi"
+import { useSiyuanDevice } from "~/src/composables/useSiyuanDevice"
+import { useExternalPicgoSettingStore } from "~/src/stores/useExternalPicgoSettingStore"
 
 /**
  * 内置的 PicGo 桥接 API
@@ -46,13 +47,21 @@ export class PicgoApi {
    */
   async uploadByPicGO(input) {
     const appInstance = await AppInstance.getInstance()
+
+    const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
+    const isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
+
+    const { getExternalPicgoSetting } = useExternalPicgoSettingStore()
+    const extPicgoCfg = await getExternalPicgoSetting()
+    this.logger.debug("extPicgoCfg=>", { extPicgoCfg })
+
     const syPicgo = appInstance.syPicgo
     this.logger.debug("appInstance=>", appInstance)
     this.logger.debug("appInstance.picgo=>", appInstance.picgo)
 
     this.logger.debug("input=>", input)
     if (input) {
-      if (isInSiyuanOrSiyuanNewWin()) {
+      if (isSiyuanOrSiyuanNewWin && extPicgoCfg.useBundledPicgo) {
         return syPicgo.upload(input)
       } else {
         // HTTP调用本地客户端上传
@@ -60,7 +69,7 @@ export class PicgoApi {
       }
     } else {
       // 通过PicGO上传剪贴板图片
-      if (isInSiyuanOrSiyuanNewWin()) {
+      if (isSiyuanOrSiyuanNewWin && extPicgoCfg.useBundledPicgo) {
         return syPicgo.uploadFormClipboard()
       } else {
         // HTTP调用本地客户端上传
