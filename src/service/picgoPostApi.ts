@@ -32,7 +32,7 @@ import { ParsedImage } from "~/src/models/parsedImage.ts"
 import { PicgoPostResult } from "~/src/models/picgoPostResult.ts"
 import { appConstants } from "~/src/appConstants.ts"
 import { JsonUtil, StrUtil } from "zhi-common"
-import { SiyuanDevice } from "zhi-device"
+import { BrowserUtil, SiyuanDevice } from "zhi-device"
 import { PicgoApi } from "~/src/service/picgoApi.js"
 
 /**
@@ -80,7 +80,10 @@ export class PicgoPostApi {
       // 处理思源本地图片预览
       // 这个是从思源查出来解析的是否是本地
       if (retImg.isLocal) {
-        const baseUrl = ""
+        let baseUrl = ""
+        if (BrowserUtil.isInBrowser) {
+          baseUrl = window.location.origin
+        }
         imgUrl = StrUtil.pathJoin(baseUrl, "/" + imgUrl)
       }
 

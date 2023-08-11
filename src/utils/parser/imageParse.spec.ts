@@ -25,9 +25,16 @@
 
 import { describe, it } from "vitest"
 import { ImageParser } from "~/src/utils/parser/imageParser"
+import { ParsedImage, PicgoPostApi } from "~/src"
+import { siyuanKernelApi } from "~/src/utils/utils.ts"
 
 describe("test imageParser", () => {
-  it("test parseImagesToArray", () => {
+  it("test parseImagesToArray", async () => {
+    const imageParser = new ImageParser()
+    const picgoPostApi = new PicgoPostApi()
+    const siyuanApi = siyuanKernelApi()
+
+    const pageId = "20230810225224-zpeipef"
     const md = `
 ​![image](assets/image-20230810225235-fdkcky0.png)
 
@@ -42,8 +49,14 @@ describe("test imageParser", () => {
 ‍
 
 ​![image](assets/image-20230811154614-oh2revw.png)​`
-    const imageParser = new ImageParser()
-    const images = imageParser.parseImagesToArray(md)
-    console.log(images)
+    const attrs = await siyuanApi.getBlockAttrs(pageId)
+
+    let retImgs: ParsedImage[] = []
+    const parsedImages = imageParser.parseImagesToArray(md)
+    retImgs = [...new Set([...retImgs, ...parsedImages])]
+    console.log("retImgs=>", retImgs)
+
+    const imageItemArray = await picgoPostApi.doConvertImagesToImagesItemArray(attrs, retImgs)
+    console.log("imageItemArray=>", imageItemArray)
   })
 })
