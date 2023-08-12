@@ -1,11 +1,13 @@
 # Changelog
 
+## [1.4.1](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.0...v1.4.1) (2023-08-12)
+### Bug Fixes
+* 修复单个上传错误的问题 ([7c4163d](https://github.com/terwer/siyuan-plugin-picgo/commit/7c4163deeb8c84a835414760bece1553885caa8f))
 ## [1.4.0](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.3.1...v1.4.0) (2023-08-11)
 ### Features
 * 优化配置导入导出交互 ([41d3901](https://github.com/terwer/siyuan-plugin-picgo/commit/41d39018acb04606433183bf035aed2713b7987b))
 * 支持内置picgo和外部picgo切换 ([ae833cc](https://github.com/terwer/siyuan-plugin-picgo/commit/ae833cc69fb69830b59e846c2244c870b10b4d1d))
 * 支持配置思源地址 ([a3e49ea](https://github.com/terwer/siyuan-plugin-picgo/commit/a3e49ea3a83803841e76b5dfb614236923363764))
-### Bug Fixes
 * 上传失败也要保存元数据 ([2265a25](https://github.com/terwer/siyuan-plugin-picgo/commit/2265a2551b4e4d5a4bf48c3450689f675b2cb392))
 ## [1.3.1](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.3.0...v1.3.1) (2023-08-11)
 * 图片转换支持自定义本地图片前缀 ([cccb511](https://github.com/terwer/siyuan-plugin-picgo/commit/cccb511bcb28ec5fc34cd41839ae5d88b6c2f067))
