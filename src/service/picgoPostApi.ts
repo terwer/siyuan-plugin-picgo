@@ -154,7 +154,7 @@ export class PicgoPostApi {
         }
 
         if (!imageItem.isLocal) {
-          this.logger.warn("已经上传过图床，请勿重复上传=>", imageItem.originUrl)
+          this.logger.debug("已经上传过图床，请勿重复上传=>", imageItem.originUrl)
           continue
         }
 
