@@ -3,6 +3,7 @@ import minimist from "minimist"
 import path, { join, resolve } from "path"
 import { viteStaticCopy } from "vite-plugin-static-copy"
 import dts from "vite-plugin-dts"
+import vue from "@vitejs/plugin-vue"
 
 const args = minimist(process.argv.slice(2))
 const debugMode = false
@@ -17,7 +18,10 @@ console.log("distDir=>", distDir)
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // https://github.com/vuejs/pinia/discussions/2051
   plugins: [
+    vue(),
+
     dts({
       entryRoot: "src",
       tsconfigPath: join(__dirname, "tsconfig.json"),
@@ -51,6 +55,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "~": path.resolve(__dirname, "./"),
+      vue: "vue/dist/vue.esm-bundler.js",
+      pinia: "pinia/dist/pinia.esm-browser.js",
+      "vue-router": "vue-router/dist/vue-router.esm-bundler.js",
     },
   },
 
@@ -68,12 +75,14 @@ export default defineConfig({
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ["vue"],
+      external: ["vue", "pinia", "vue-router"],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps
         globals: {
           vue: "Vue",
+          pinia: "Pinia",
+          "vue-router": "VueRouter",
         },
       },
     },
