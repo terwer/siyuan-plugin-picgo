@@ -1,14 +1,9 @@
 # Changelog
 
 ## [1.4.2](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.1...v1.4.2) (2023-08-12)
-
-
 ### Bug Fixes
-
 * 修复pinia错误 ([0bb2569](https://github.com/terwer/siyuan-plugin-picgo/commit/0bb256971f4f73c94efaf8fd153526a9d176c0d6))
-
 ## [1.4.1](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.0...v1.4.1) (2023-08-12)
-### Bug Fixes
 * 修复单个上传错误的问题 ([7c4163d](https://github.com/terwer/siyuan-plugin-picgo/commit/7c4163deeb8c84a835414760bece1553885caa8f))
 ## [1.4.0](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.3.1...v1.4.0) (2023-08-11)
 ### Features
