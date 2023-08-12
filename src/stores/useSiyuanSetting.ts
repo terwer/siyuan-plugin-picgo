@@ -25,7 +25,6 @@
 
 import { SiyuanConfig } from "zhi-siyuan-api"
 import { RemovableRef, StorageSerializers, useLocalStorage } from "@vueuse/core"
-import { DeviceDetection, DeviceTypeEnum } from "zhi-device"
 
 const useSiyuanSetting = () => {
   const storageKey = "siyuan-cfg"
