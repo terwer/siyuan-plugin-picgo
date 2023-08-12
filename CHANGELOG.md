@@ -1,7 +1,9 @@
 # Changelog
 
-## [1.4.3](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.2...v1.4.3) (2023-08-12)
+## [1.4.4](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.3...v1.4.4) (2023-08-12)
 ### Bug Fixes
+* 紧急修复 picgo 插件初始化失败问题 ([3937259](https://github.com/terwer/siyuan-plugin-picgo/commit/3937259e78ef637118c78ec55df890ee1e39b0a9))
+## [1.4.3](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.2...v1.4.3) (2023-08-12)
 * 优化部分日志级别 ([2d09312](https://github.com/terwer/siyuan-plugin-picgo/commit/2d093128a0f1e5d032ed9ce2f3d6c3e6cb43240c))
 ## [1.4.2](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.1...v1.4.2) (2023-08-12)
 * 修复pinia错误 ([0bb2569](https://github.com/terwer/siyuan-plugin-picgo/commit/0bb256971f4f73c94efaf8fd153526a9d176c0d6))
