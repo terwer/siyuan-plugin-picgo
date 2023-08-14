@@ -1,8 +1,17 @@
 {
   "name": "siyuan-plugin-picgo",
-  "private": true,
   "version": "1.4.4",
   "type": "module",
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
+  "repository": "terwer/siyuan-plugin-picgo",
+  "homepage": "https://github.com/terwer/siyuan-plugin-picgo",
+  "author": "terwer",
+  "license": "MIT",
+  "files": [
+    "lib",
+    "README.md"
+  ],
   "scripts": {
     "serve": "vite",
     "dev": "pnpm pluginBuild && pnpm siyuanSync && pnpm siyuanDev",
@@ -13,14 +22,12 @@
     "pluginBuild": "zhi-build --production",
     "siyuanDev": "vue-tsc && vite build --watch",
     "siyuanBuild": "vue-tsc && vite build",
-    "ensureDir": "mkdir -p /Users/terwer/Documents/mydocs/SiYuanWorkspace/test/data/plugins/siyuan-plugin-picgo",
-    "siyuanSync": "pnpm ensureDir && cp -r ./dist/* /Users/terwer/Documents/mydocs/SiYuanWorkspace/test/data/plugins/siyuan-plugin-picgo",
+    "siyuanSync": "cp -r ./dist/* /Users/terwer/Documents/mydocs/SiYuanWorkspace/test/data/plugins/siyuan-plugin-picgo",
     "syncVersion": "python scripts/version.py",
     "parseChangelog": "python scripts/parse_changelog.py",
     "prepareRelease": "pnpm syncVersion && pnpm parseChangelog",
     "package": "python scripts/package.py",
-    "preview": "vite preview",
-    "pubishLib": "bash scripts/publish_lib.sh"
+    "preview": "vite preview"
   },
   "devDependencies": {
     "@terwer/esbuild-config-custom": "^1.2.0",
