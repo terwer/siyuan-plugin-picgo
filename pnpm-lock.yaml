@@ -107,8 +107,8 @@ devDependencies:
     specifier: ^4.4.9
     version: 4.4.9(@types/node@20.4.9)(stylus@0.59.0)
   vite-plugin-dts:
-    specifier: ^3.5.1
-    version: 3.5.1(typescript@5.1.6)(vite@4.4.9)
+    specifier: ^3.5.2
+    version: 3.5.2(typescript@5.1.6)(vite@4.4.9)
   vite-plugin-html:
     specifier: ^3.2.0
     version: 3.2.0(vite@4.4.9)
@@ -4551,8 +4551,8 @@ packages:
       - terser
     dev: true
 
-  /vite-plugin-dts@3.5.1(typescript@5.1.6)(vite@4.4.9):
-    resolution: {integrity: sha512-wrrIvRTWq9xL0HKOUvJyJ+wivEoLsZ2GU2I2000v5tAAUtu9gE+5OUmUJ9yNkmyYz3tSPedkkiXHeb5jnnSXhg==}
+  /vite-plugin-dts@3.5.2(typescript@5.1.6)(vite@4.4.9):
+    resolution: {integrity: sha512-iKc851+jdHEoN1ifbOEsoMs+/Zg26PE1EyO2Jc+4apOWRoaeK2zRJnaStgUuJaVaEcAjTqWzpNgCAMq7iO6DWA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
       typescript: '*'

@@ -41,7 +41,7 @@
     "unplugin-auto-import": "^0.16.6",
     "unplugin-vue-components": "^0.25.1",
     "vite": "^4.4.9",
-    "vite-plugin-dts": "^3.5.1",
+    "vite-plugin-dts": "^3.5.2",
     "vite-plugin-html": "^3.2.0",
     "vite-plugin-static-copy": "^0.17.0",
     "vitest": "^0.34.1",
