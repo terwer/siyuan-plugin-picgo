@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.5](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.4...v1.4.5) (2023-08-14)
+
+
+### Bug Fixes
+
+* 紧急修复 PicGO 插件无法打开的问题 ([6f0f6c1](https://github.com/terwer/siyuan-plugin-picgo/commit/6f0f6c16c4fb95717a00deefdc8e10c79d67d743))
+
 ## [1.4.4](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.3...v1.4.4) (2023-08-12)
 ### Bug Fixes
 * 紧急修复 picgo 插件初始化失败问题 ([3937259](https://github.com/terwer/siyuan-plugin-picgo/commit/3937259e78ef637118c78ec55df890ee1e39b0a9))
