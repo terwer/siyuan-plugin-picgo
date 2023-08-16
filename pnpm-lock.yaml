@@ -42,8 +42,8 @@ dependencies:
     specifier: ^2.1.6
     version: 2.1.6(typescript@5.1.6)(vue@3.3.4)
   siyuan:
-    specifier: ^0.7.9
-    version: 0.7.9
+    specifier: ^0.8.0
+    version: 0.8.0
   uuid:
     specifier: ^9.0.0
     version: 9.0.0
@@ -4014,8 +4014,8 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
-  /siyuan@0.7.9:
-    resolution: {integrity: sha512-X5olBQhfkgyPRF+d8agpcbAaFnCSvSkN3LWX7XU9jApmCfpJ/4PAmK7mKPfR1YGBpjFLRa/xTrv11BQ3hxN15Q==}
+  /siyuan@0.8.0:
+    resolution: {integrity: sha512-QbT/6YKetvmJ/1D7OaqF/zIK+TUXI6eUPJ48qlbqdJtN8/aN809+hsMz+2xUO5pxq5nc3+hSGomia5sBoXQRwQ==}
     dev: false
 
   /slash@3.0.0:
