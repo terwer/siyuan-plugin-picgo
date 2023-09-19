@@ -69,8 +69,8 @@ dependencies:
     specifier: ^0.4.4
     version: 0.4.4
   zhi-siyuan-api:
-    specifier: ^2.0.27
-    version: 2.0.27
+    specifier: ^2.10.2
+    version: 2.10.2
 
 devDependencies:
   '@terwer/esbuild-config-custom':
@@ -4910,10 +4910,11 @@ packages:
       commander: 9.5.0
     dev: true
 
-  /zhi-blog-api@1.20.22:
-    resolution: {integrity: sha512-Qkx502WIJfMUA2IlrYWyQCwGMYGIEFIK4/Yb3iarpEkjV22Z1dOsvTmym8K1ugJb+8gwotcj6ZlgJ+74k36s1Q==}
+  /zhi-blog-api@1.44.2:
+    resolution: {integrity: sha512-f/JQYZ4tKYNUf5ZXalt8TeiEFcLTQ2MaHp0heP3D4rZchkAC9wezQZD6DKQkIit3n+f7GbiMeOE2IeVt/BYiIQ==}
     dependencies:
-      zhi-lib-base: 0.4.4
+      zhi-common: 1.23.7
+      zhi-lib-base: 0.5.0
     dev: false
 
   /zhi-common@1.14.2:
@@ -4924,6 +4925,16 @@ packages:
       transliteration: 2.3.5
       vue: 3.3.4
       zhi-lib-base: 0.4.4
+    dev: false
+
+  /zhi-common@1.23.7:
+    resolution: {integrity: sha512-wv8tuadOCD1/OzzRWX4wfac7mqyREXhOQQe5cD1xzTrJMriX5zYFQ51gM8uF6HQvxu9G2JzRuRE0kv4oMeahmw==}
+    dependencies:
+      js-yaml: 4.1.0
+      shorthash2: 1.0.3
+      transliteration: 2.3.5
+      vue: 3.3.4
+      zhi-lib-base: 0.5.0
     dev: false
 
   /zhi-device@2.3.0:
@@ -4942,10 +4953,14 @@ packages:
     resolution: {integrity: sha512-adu1KXVDRjsE/tshAXUeRW62VkaNIb0AOcYXnjgHODsw2gJlkxbvVn2wISuboCiwKv1JsD5gbmxdzSkRyJiC5Q==}
     dev: false
 
-  /zhi-siyuan-api@2.0.27:
-    resolution: {integrity: sha512-V9nteLQHm3Vbu0ANvGUGlCap+I5+BqWTFFcWyqR3Bl9cl1wSKlB2vRV285l8KQecvNSJ21J7bvCuYyFWOeqmpQ==}
+  /zhi-lib-base@0.5.0:
+    resolution: {integrity: sha512-56QfNhYA5HgmnTWRmOxD4UDpOplR0dcpmdq4ZxRFqBtr3eyHdEmm0qBITJt6kk7lzbPNPD2wgsuHq7pnz+9OQg==}
+    dev: false
+
+  /zhi-siyuan-api@2.10.2:
+    resolution: {integrity: sha512-mSmjVf9wk7iAGrQG/zWPwHoKQ9OPz5J9Zjp4apoc07zTXuaVyQIwdggHK5383GIiB7fAAAUOuA6de9dazzXLug==}
     dependencies:
-      zhi-blog-api: 1.20.22
-      zhi-common: 1.14.2
-      zhi-lib-base: 0.4.4
+      zhi-blog-api: 1.44.2
+      zhi-common: 1.23.7
+      zhi-lib-base: 0.5.0
     dev: false
