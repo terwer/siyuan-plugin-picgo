@@ -489,7 +489,7 @@ const buildPluginMenu = (plugin, i18nFunc) => {
         [`picgoPlugins.${plugin.fullName}`]: true,
       })
 
-      BrowserUtil.reloadPageWithMessage("插件已启用，即将刷新页面...")
+      BrowserUtil.reloadPageWithMessageCallback("插件已启用，即将刷新页面...")
     },
   }
 
@@ -510,7 +510,7 @@ const buildPluginMenu = (plugin, i18nFunc) => {
         handleRestoreState("uploader", plugin.config.uploader.name)
       }
 
-      BrowserUtil.reloadPageWithMessage("插件已禁用，即将刷新页面...")
+      BrowserUtil.reloadPageWithMessageCallback("插件已禁用，即将刷新页面...")
     },
   }
 
