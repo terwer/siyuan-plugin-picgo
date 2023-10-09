@@ -1,7 +1,13 @@
 # Changelog
 
-## [1.4.5](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.4...v1.4.5) (2023-08-14)
+## [1.5.0](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.5...v1.5.0) (2023-10-09)
+### Features
+* [#164](https://github.com/terwer/siyuan-plugin-picgo/issues/164) 解决插件与最新版思源笔记的兼容问题 ([f530adb](https://github.com/terwer/siyuan-plugin-picgo/commit/f530adba90bc7c263ac029d28dd546ddc28961be))
 ### Bug Fixes
+* 修复 picgo 插件菜单显示异常问题 ([8179a20](https://github.com/terwer/siyuan-plugin-picgo/commit/8179a20a519fcf7b1980a9f46afae361eac0024d))
+* 修复部分提示未展示问题 ([57718f8](https://github.com/terwer/siyuan-plugin-picgo/commit/57718f8e428cc7cf12a01ee2970614943cdb03a2))
+* 修复页面刷新错误 ([dbc9883](https://github.com/terwer/siyuan-plugin-picgo/commit/dbc9883dccb128b1a3d5b28f358889d22a5bf5f7))
+## [1.4.5](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.4...v1.4.5) (2023-08-14)
 * 紧急修复 picgo 插件无法打开的问题 ([6f0f6c1](https://github.com/terwer/siyuan-plugin-picgo/commit/6f0f6c16c4fb95717a00deefdc8e10c79d67d743))
 ## [1.4.4](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.3...v1.4.4) (2023-08-12)
 * 紧急修复 picgo 插件初始化失败问题 ([3937259](https://github.com/terwer/siyuan-plugin-picgo/commit/3937259e78ef637118c78ec55df890ee1e39b0a9))
@@ -12,7 +18,6 @@
 ## [1.4.1](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.0...v1.4.1) (2023-08-12)
 * 修复单个上传错误的问题 ([7c4163d](https://github.com/terwer/siyuan-plugin-picgo/commit/7c4163deeb8c84a835414760bece1553885caa8f))
 ## [1.4.0](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.3.1...v1.4.0) (2023-08-11)
-### Features
 * 优化配置导入导出交互 ([41d3901](https://github.com/terwer/siyuan-plugin-picgo/commit/41d39018acb04606433183bf035aed2713b7987b))
 * 支持内置picgo和外部picgo切换 ([ae833cc](https://github.com/terwer/siyuan-plugin-picgo/commit/ae833cc69fb69830b59e846c2244c870b10b4d1d))
 * 支持配置思源地址 ([a3e49ea](https://github.com/terwer/siyuan-plugin-picgo/commit/a3e49ea3a83803841e76b5dfb614236923363764))
