@@ -6,6 +6,11 @@
 
 您喜爱的 PicGo 图床与 PicGo 插件，在思源笔记依然可用，没想到吧~
 
+> 重要提示：
+> 
+> 思源笔记 `2.10.8` 之前的版本请不要升级本插件，最高只能使用使用 `1.4.5` 版本。
+> `2.10.8` 之后的版本可升级到最新版 PicGO 插件。
+
 ## 更新历史
 
 请参考 [CHANGELOG](https://github.com/terwer/siyuan-plugin-picgo/blob/main/CHANGELOG.md)

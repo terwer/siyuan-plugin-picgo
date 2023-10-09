@@ -27,6 +27,7 @@ import { BrowserUtil, SiyuanDevice } from "zhi-device"
 import { getRawData, trimValues } from "~/src/utils/utils"
 import idUtil from "~/src/utils/idUtil"
 import { downloadFileFromJson, importJSONData } from "~/src/utils/configUtil"
+import { PicgoPageMenuType } from "~/src/models/picgoPlugin"
 
 /**
  * 获取当前可用图床
@@ -488,7 +489,7 @@ const buildPluginMenu = (plugin, i18nFunc) => {
         [`picgoPlugins.${plugin.fullName}`]: true,
       })
 
-      browserUtil.reloadPageWithMessage("插件已启用，即将刷新页面...")
+      BrowserUtil.reloadPageWithMessageCallback("插件已启用，即将刷新页面...")
     },
   }
 
@@ -509,7 +510,7 @@ const buildPluginMenu = (plugin, i18nFunc) => {
         handleRestoreState("uploader", plugin.config.uploader.name)
       }
 
-      browserUtil.reloadPageWithMessage("插件已禁用，即将刷新页面...")
+      BrowserUtil.reloadPageWithMessageCallback("插件已禁用，即将刷新页面...")
     },
   }
 
@@ -572,11 +573,10 @@ const buildPluginMenu = (plugin, i18nFunc) => {
     }
   }
 
-  const menu = syWin.syp.buildMenu(template, syWin)
-
   // 显示菜单
-  const { getCurrentWindow } = syWin.require("@electron/remote")
+  const { Menu, getCurrentWindow } = syWin.require("@electron/remote")
   const elecWin = getCurrentWindow()
+  const menu = Menu.buildFromTemplate(template)
   menu.popup({
     elecWin,
   })

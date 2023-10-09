@@ -10,6 +10,7 @@ if __name__ == "__main__":
     cwd = scriptutils.get_workdir()
 
     dist_folder = "./dist"
+    os.makedirs(dist_folder, exist_ok=True)
     data = scriptutils.read_json_file(cwd + "package.json")
     v = data["version"]
 
