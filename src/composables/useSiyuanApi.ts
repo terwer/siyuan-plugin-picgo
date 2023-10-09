@@ -40,7 +40,6 @@ export const useSiyuanApi = () => {
   const siyuanAuthToken = siyuanSetting.value.password
   const siyuanConfig = new SiyuanConfig(siyuanApiUrl, siyuanAuthToken)
   siyuanConfig.cookie = siyuanSetting.value.cookie
-  siyuanConfig.fixTitle = true
 
   const blogApi = new SiYuanApiAdaptor(siyuanConfig)
   const kernelApi = new SiyuanKernelApi(siyuanConfig)
