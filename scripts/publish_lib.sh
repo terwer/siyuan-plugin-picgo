@@ -1,4 +1,4 @@
-#!/bin/sn
+#!/bin/sh
 
 cp package.json package.bak.json
 cp ./package.lib.json package.json

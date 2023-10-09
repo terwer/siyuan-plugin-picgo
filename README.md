@@ -6,6 +6,11 @@
 
 Your favorite PicGo image bed and PicGo plugins are still available in siyuan-notes, wuhu~
 
+> Important Note:
+>
+> Please refrain from updating this plugin for versions of siyuan-note prior to `2.10.8`. The maximum compatible version is `1.4.5`.
+> For versions `2.10.8` and later, you can upgrade to the latest PicGO plugin.
+
 ## Changelog
 
 Please refer to [CHANGELOG](https://github.com/terwer/siyuan-plugin-picgo/blob/main/CHANGELOG.md)

@@ -103,7 +103,7 @@ onBeforeMount(() => {
         </blockquote>
         <div class="version-tip">
           当前PicGo版本为
-          <a href="https://github.com/terwer/Electron-PicGo-Core" target="_blank">electron-picgo</a>
+          <a href="https://github.com/terwer/zhi/tree/main/libs/zhi-picgo-core" target="_blank">zhi-picgo-core</a>
           v{{ picgoVersion }} ， 对 Electron 环境进行了更好的适配 ，由
           <a href="https://github.com/terwer" target="_blank">terwer</a> 负责维护 。感谢原始
           <a href="https://github.com/PicGo/PicGo-Core" target="_blank">PicGo-Core</a>
