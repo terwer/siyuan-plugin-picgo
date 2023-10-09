@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.5.1](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.5.0...v1.5.1) (2023-10-09)
+
+
+### Bug Fixes
+
+* **deps:** bump siyuan from 0.7.9 to 0.8.4 ([a4330d5](https://github.com/terwer/siyuan-plugin-picgo/commit/a4330d50195337c7c04e39c1d88b266faeeef7bd))
+* **deps:** bump zhi-fetch-middleware from 0.2.21 to 0.6.5 ([0b7223c](https://github.com/terwer/siyuan-plugin-picgo/commit/0b7223c58d61f1953c347be9dbf3ac5563d66d03))
+* fix typo ([b857b0e](https://github.com/terwer/siyuan-plugin-picgo/commit/b857b0e552ee09b74be80238418bb126866f7c03))
+* fix typo ([b304a1c](https://github.com/terwer/siyuan-plugin-picgo/commit/b304a1c5809ae26e6392e38d718fb5ef55661495))
+* fix typo ([c0c82a7](https://github.com/terwer/siyuan-plugin-picgo/commit/c0c82a79de2ef8d2b082fbc482f5b1b5f4051dcf))
+
 ## [1.5.0](https://github.com/terwer/siyuan-plugin-picgo/compare/v1.4.5...v1.5.0) (2023-10-09)
 ### Features
 * [#164](https://github.com/terwer/siyuan-plugin-picgo/issues/164) 解决插件与最新版思源笔记的兼容问题 ([f530adb](https://github.com/terwer/siyuan-plugin-picgo/commit/f530adba90bc7c263ac029d28dd546ddc28961be))
