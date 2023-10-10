@@ -27,8 +27,8 @@ dependencies:
     specifier: ^2.7.4
     version: 2.7.4
   browser-fs-access:
-    specifier: ^0.34.1
-    version: 0.34.1
+    specifier: ^0.35.0
+    version: 0.35.0
   element-plus:
     specifier: ^2.3.14
     version: 2.3.14(vue@3.3.4)
@@ -1744,8 +1744,8 @@ packages:
       fill-range: 7.0.1
     dev: true
 
-  /browser-fs-access@0.34.1:
-    resolution: {integrity: sha512-HPaRf2yimp8kWSuWJXc8Mi78dPbDzfduA+Gyq14H4jlMvd6XNfIRm36Y2yRLaa4x0gwcGuepj4zf14oiTlxrxQ==}
+  /browser-fs-access@0.35.0:
+    resolution: {integrity: sha512-sLoadumpRfsjprP8XzVjpQc0jK8yqHBx0PtUTGYj2fftT+P/t+uyDAQdMgGAPKD011in/O+YYGh7fIs0oG/viw==}
     dev: false
 
   /buffer-from@1.1.2:
