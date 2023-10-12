@@ -69,8 +69,8 @@ dependencies:
     specifier: ^0.5.0
     version: 0.5.0
   zhi-siyuan-api:
-    specifier: ^2.10.5
-    version: 2.10.5
+    specifier: ^2.11.0
+    version: 2.11.0
 
 devDependencies:
   '@terwer/esbuild-config-custom':
@@ -4900,8 +4900,8 @@ packages:
       commander: 9.5.0
     dev: true
 
-  /zhi-blog-api@1.45.0:
-    resolution: {integrity: sha512-NCUS/vfUHT+3wtA3gJDkSbUHVX9nKCpRoc+UJI/w6nIutTLNnKTF8MJm1AeJc6+g3AJw3R0abTl+XS5H6MgxqQ==}
+  /zhi-blog-api@1.46.0:
+    resolution: {integrity: sha512-KM+ZjcH4/xMvGWtcel+y8dbpgPv6rqFst0QPUaGpt6QxX/gGhRMvwMISzVcr/j1lphyymdPMrVN1odL9/y6a5w==}
     dependencies:
       zhi-common: 1.24.0
       zhi-lib-base: 0.5.0
@@ -4933,10 +4933,10 @@ packages:
     resolution: {integrity: sha512-56QfNhYA5HgmnTWRmOxD4UDpOplR0dcpmdq4ZxRFqBtr3eyHdEmm0qBITJt6kk7lzbPNPD2wgsuHq7pnz+9OQg==}
     dev: false
 
-  /zhi-siyuan-api@2.10.5:
-    resolution: {integrity: sha512-hNggum06YZIHd9+GnWNSEAdoSDeiVOCSKhuQe7tYNFd9fnvKZNkkWAUiHOH88XRRT5aSIB6VKP9PqC6D1PPqrw==}
+  /zhi-siyuan-api@2.11.0:
+    resolution: {integrity: sha512-rVWtYST9ELaFJPRKepDBfQel4H4Opcu0dnN89DoYBuwE2cyDZf9kMOyIlYa/tpwKO78eNboAcn2Z0eXVs4SVzA==}
     dependencies:
-      zhi-blog-api: 1.45.0
+      zhi-blog-api: 1.46.0
       zhi-common: 1.24.0
       zhi-lib-base: 0.5.0
     dev: false
