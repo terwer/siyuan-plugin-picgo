@@ -30,8 +30,8 @@ dependencies:
     specifier: ^0.34.1
     version: 0.34.1
   element-plus:
-    specifier: ^2.3.14
-    version: 2.3.14(vue@3.3.4)
+    specifier: ^2.4.0
+    version: 2.4.0(vue@3.3.4)
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
@@ -2090,8 +2090,8 @@ packages:
       jake: 10.8.7
     dev: true
 
-  /element-plus@2.3.14(vue@3.3.4):
-    resolution: {integrity: sha512-9yvxUaU4jXf2ZNPdmIxoj/f8BG8CDcGM6oHa9JIqxLjQlfY4bpzR1E5CjNimnOX3rxO93w1TQ0jTVt0RSxh9kA==}
+  /element-plus@2.4.0(vue@3.3.4):
+    resolution: {integrity: sha512-yJEa8LXkGOOgkfkeqMMEdeX/Dc8EH9qPcRuX91dlhSXxgCKKbp9tH3QFTOG99ibZsrN/Em62nh7ddvbc7I1frw==}
     peerDependencies:
       vue: ^3.2.0
     dependencies:
