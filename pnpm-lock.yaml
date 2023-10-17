@@ -60,8 +60,8 @@ dependencies:
     specifier: ^1.24.0
     version: 1.24.0
   zhi-device:
-    specifier: ^2.3.1
-    version: 2.3.1
+    specifier: ^2.6.0
+    version: 2.6.0
   zhi-fetch-middleware:
     specifier: ^0.6.5
     version: 0.6.5
@@ -4919,6 +4919,10 @@ packages:
 
   /zhi-device@2.3.1:
     resolution: {integrity: sha512-HLNroA/bIHrEPQTaOC0gZyR42FpaxSJb/lc+LqWvtlazsxeOiYAc9HhFHBwJFdbikMqCogFWVFtGG7OMLYmaKg==}
+    dev: false
+
+  /zhi-device@2.6.0:
+    resolution: {integrity: sha512-Xyju0hxbpVpxAcyYl9DnIjbgskZglAO5gBLdzWq7BXbT/d4TvovkfWjuYf76VqGxRCD545q0FEIF4Gt6XKed8w==}
     dev: false
 
   /zhi-fetch-middleware@0.6.5:
