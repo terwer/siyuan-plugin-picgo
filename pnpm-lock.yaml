@@ -60,8 +60,8 @@ dependencies:
     specifier: ^1.24.0
     version: 1.24.0
   zhi-device:
-    specifier: ^2.3.1
-    version: 2.3.1
+    specifier: ^2.10.0
+    version: 2.10.0
   zhi-fetch-middleware:
     specifier: ^0.6.5
     version: 0.6.5
@@ -4915,6 +4915,10 @@ packages:
       transliteration: 2.3.5
       vue: 3.3.4
       zhi-lib-base: 0.5.0
+    dev: false
+
+  /zhi-device@2.10.0:
+    resolution: {integrity: sha512-E6ODo/AGvlWJiMnDCCUSvceoAPCPiq0DocLp2lzOA/8DYIECRmeQMtzkmy/vgXzniR3+qUGDYJ8cT0/v0nOozA==}
     dev: false
 
   /zhi-device@2.3.1:
