@@ -57,8 +57,8 @@ dependencies:
     specifier: ^4.2.5
     version: 4.2.5(vue@3.3.4)
   zhi-common:
-    specifier: ^1.24.0
-    version: 1.24.0
+    specifier: ^1.26.1
+    version: 1.26.1
   zhi-device:
     specifier: ^2.3.1
     version: 2.3.1
@@ -4917,6 +4917,16 @@ packages:
       zhi-lib-base: 0.5.0
     dev: false
 
+  /zhi-common@1.26.1:
+    resolution: {integrity: sha512-gfHt4SXxSWnQwdlT0aVvAwEJA7V8XjTDfeIj+smO4Ef3f9KmMQPHuXvW+1J/6LU0Hyt6P9HCV5/tcb5CADky7A==}
+    dependencies:
+      js-yaml: 4.1.0
+      shorthash2: 1.0.3
+      transliteration: 2.3.5
+      vue: 3.3.4
+      zhi-lib-base: 0.8.0
+    dev: false
+
   /zhi-device@2.3.1:
     resolution: {integrity: sha512-HLNroA/bIHrEPQTaOC0gZyR42FpaxSJb/lc+LqWvtlazsxeOiYAc9HhFHBwJFdbikMqCogFWVFtGG7OMLYmaKg==}
     dev: false
@@ -4931,6 +4941,10 @@ packages:
 
   /zhi-lib-base@0.5.0:
     resolution: {integrity: sha512-56QfNhYA5HgmnTWRmOxD4UDpOplR0dcpmdq4ZxRFqBtr3eyHdEmm0qBITJt6kk7lzbPNPD2wgsuHq7pnz+9OQg==}
+    dev: false
+
+  /zhi-lib-base@0.8.0:
+    resolution: {integrity: sha512-3Ky5p6KvLWpXy2tlb/JIfSEKLSe5w43PBLM6g+hNcWwpL9S62emgcpUAHzGWBbC0vlLBLungt2LOsmwAfhrZ0w==}
     dev: false
 
   /zhi-siyuan-api@2.10.5:
