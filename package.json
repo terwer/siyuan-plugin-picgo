@@ -62,6 +62,6 @@
     "zhi-device": "^2.3.1",
     "zhi-fetch-middleware": "^0.6.5",
     "zhi-lib-base": "^0.5.0",
-    "zhi-siyuan-api": "^2.10.5"
+    "zhi-siyuan-api": "^2.12.5"
   }
 }
