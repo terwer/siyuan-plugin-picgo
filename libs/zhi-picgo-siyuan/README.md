@@ -1,46 +1,41 @@
-# sy-picgo
+# zhi-picgo-siyuan
 
-A PicGo library for SiYuan Note widgets
+picgo core for siyuan
+
+## Usage
+
+```js
+// usage
+```
+
+## Deps
+
+```
+## Congregations! zhi-picgo-siyuan need no deps, it is just pure js code 🎉
+```
 
 ## Dev
 
 ```bash
-pnpm install
-pnpm dev -F zhi-siyuan-picgo
+pnpm dev -F zhi-picgo-siyuan
 ```
 
 ## Build
 
 ```bash
-pnpm build
+pnpm build -F zhi-picgo-siyuan
 ```
 
-## Test from electron
+## Test
 
-```ts
-const initSyPicgo = () => {
-    const workspaceDir = "/Users/terwer/Documents/mydocs/zhi-framework/zhi"
-    const libsBase = `${workspaceDir}/libs/zhi-siyuan-picgo/dist`
-    
-    const picgoExtension = require(`${libsBase}/index.cjs`).default
-    console.log("picgoExtension=>", picgoExtension)
-    const cfgfolder = `/Users/terwer/Downloads`
-    const picgo_cfg = cfgfolder + "/picgo.cfg.json"
-    
-    const appFolder = picgoExtension.getCrossPlatformAppDataFolder()
-    console.log("appFolder=>", appFolder)
-    
-    // 初始化
-    const picgo = picgoExtension.initPicgo(picgo_cfg)
-    console.log(picgo)
-    return picgo
-}
-initSyPicgo()
+Execute the unit tests via [vitest](https://vitest.dev)
+
+```bash
+pnpm test -F zhi-picgo-siyuan
 ```
 
-## Thanks
+## Publish
 
-- [siyuan-note](https://github.com/siyuan-note/siyuan)
-- [PicGo-Core](https://github.com/PicGo/PicGo-Core)
-- [vs-picgo](https://github.com/PicGo/vs-picgo)
-- [esbuild](https://github.com/evanw/esbuild)
+```bash
+pnpm publish -F zhi-picgo-siyuan --tag latest
+```

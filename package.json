@@ -1,8 +1,8 @@
 {
-  "name": "siyuan-plugin-picgo",
-  "version": "1.5.1",
+  "name": "siyuan-plugin-picgo-workspace",
   "description": "picgo plugin for siyuan-note",
   "scripts": {
+    "serve": "turbo run serve",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
