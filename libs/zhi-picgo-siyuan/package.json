@@ -1,0 +1,28 @@
+{
+  "name": "zhi-picgo-siyuan",
+  "version": "1.4.0",
+  "description": "a picgo lib for siyuan-note",
+  "type": "module",
+  "scripts": {
+    "dev": "zhi-build --watch",
+    "build": "zhi-build --production",
+    "test": "vitest"
+  },
+  "keywords": [
+    "picgo",
+    "siyuan"
+  ],
+  "author": "terwer",
+  "license": "MIT",
+  "dependencies": {
+    "zhi-picgo-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@terwer/eslint-config-custom": "1.3.6",
+    "@terwer/esbuild-config-custom": "2.0.0",
+    "zhi-device": "2.11.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
