@@ -23,52 +23,42 @@
  * questions.
  */
 
-import App from "./App.vue"
-import { createApp } from "vue"
-import { createAppLogger } from "../common/appLogger.ts"
-// import { useVueRouter } from "./composables/useVueRouter.ts"
-// import AppInstance from "./appInstance.ts"
-// import i18n from "./locales"
-// import FontAwesome from "~/src/composables/useFontAwesome.ts"
-// import { createPinia } from "pinia"
+import { isDev } from "./Constants"
+import { simpleLogger } from "zhi-lib-base"
 
-const logger = createAppLogger("vue-main-entry")
+const win = window as any
 
 /**
- * Vue 入口
- *
- * @author terwer
- * @version 0.9.0
- * @since 0.0.1
+ * 使用 eruda 更好的控制日志
  */
-const createVueApp = async () => {
-  // appInstance
-  // const appInstance = await AppInstance.getInstance()
-  // logger.info("appInstance inited =>", appInstance)
+alert(isDev)
+window.console = isDev ? win?.eruda?.get("console") : window.console
+win?.eruda.init()
 
-  // 初始化 vue 实例
-  // https://stackoverflow.com/a/62383325/4037224
-  const app = createApp(App)
-
-  // // pinia
-  // const pinia = createPinia()
-  // app.use(pinia)
-
-  // // 国际化
-  // app.use(i18n)
-  //
-  // // font-awesome
-  // app.use(FontAwesome)
-  //
-  // // router
-  // const router = useVueRouter()
-  // app.use(router)
-
-  // 挂载 vue app
-  app.mount("#app")
-  logger.info("vue app created")
+/**
+ * 简单的日志接口
+ */
+interface ILogger {
+  debug: (msg: string, obj?: any) => void
+  info: (msg: string, obj?: any) => void
+  warn: (msg: string, obj?: any) => void
+  error: (msg: string | Error, obj?: any) => void
 }
 
-;(async () => {
-  await createVueApp()
-})()
+/**
+ * 一个简单轻量级的日志记录器
+ *
+ * @author terwer
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+export const createAppLogger = (name: string): ILogger => {
+  return simpleLogger(name, "picgo-plugin-app", isDev)
+}
+
+/**
+ * 销毁日志
+ */
+export const destroyLogger = (): void => {
+  win.eruda.destroy()
+}
