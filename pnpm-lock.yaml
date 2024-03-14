@@ -142,8 +142,8 @@ importers:
         specifier: ^4.0.5
         version: 4.0.9
       '@types/lodash':
-        specifier: ^4.14.175
-        version: 4.14.202
+        specifier: ^4.17.0
+        version: 4.17.0
       '@types/md5':
         specifier: ^2.1.32
         version: 2.3.5
@@ -1833,7 +1833,7 @@ packages:
       '@commonify/steno': 2.1.0
       '@types/bson': 4.2.0
       '@types/graceful-fs': 4.1.9
-      '@types/lodash': 4.14.202
+      '@types/lodash': 4.17.0
       comment-json: 4.2.3
       fflate: 0.7.4
       lodash: 4.17.21
@@ -2450,8 +2450,8 @@ packages:
     resolution: {integrity: sha512-PecSzorDGdabF57OBeQO/xFbAkYWo88g4Xvnsx7LRwqLC17I7OoKtA3bQB9uXkY6UkMWCOsA8HSVpaoitscdXw==}
     dev: true
 
-  /@types/lodash@4.14.202:
-    resolution: {integrity: sha512-OvlIYQK9tNneDlS0VN54LLd5uiPCBOp7gS5Z0f1mjoJYBrtStzgmJBxONW3U6OZqdtNzZPmn9BS/7WI7BFFcFQ==}
+  /@types/lodash@4.17.0:
+    resolution: {integrity: sha512-t7dhREVv6dbNj0q17X12j7yDG4bD/DHYX7o5/DbDxobP0HnGPgpRz2Ej77aL7TZT3DSw13fqUTj8J4mMnqa7WA==}
 
   /@types/md5@2.3.5:
     resolution: {integrity: sha512-/i42wjYNgE6wf0j2bcTX6kuowmdL/6PE4IVitMpm2eYKBUuYCprdcWVK+xEF0gcV6ufMCRhtxmReGfc6hIK7Jw==}

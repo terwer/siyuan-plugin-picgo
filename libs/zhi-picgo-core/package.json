@@ -52,7 +52,7 @@
     "@types/image-size": "^0.0.29",
     "@types/inquirer": "^0.0.42",
     "@types/js-yaml": "^4.0.5",
-    "@types/lodash": "^4.14.175",
+    "@types/lodash": "^4.17.0",
     "@types/md5": "^2.1.32",
     "@types/mime-types": "^2.1.0",
     "@types/minimatch": "^3.0.3",
