@@ -112,7 +112,7 @@
     "lodash": "^4.17.21",
     "md5": "^2.2.1",
     "mime-types": "2.1.33",
-    "minimatch": "^3.0.4",
+    "minimatch": "^9.0.3",
     "minimist": "^1.2.5",
     "qiniu": "^7.2.1",
     "resolve": "^1.8.1",
