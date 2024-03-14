@@ -11,11 +11,11 @@ import { defineConfig } from "vite"
 import vue from "@vitejs/plugin-vue"
 import minimist from "minimist"
 import { createHtmlPlugin } from "vite-plugin-html"
+import path from "path"
 
 const args = minimist(process.argv.slice(2))
-const debugMode = true
 const isWatch = args.watch || args.w || false
-const isDev = isWatch || debugMode
+const isDev = isWatch
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -66,5 +66,18 @@ export default defineConfig({
   // 在这里自定义变量
   define: {
     "process.env.DEV_MODE": `"${isDev}"`,
+  },
+
+  resolve: {
+    alias: {
+      "~": path.resolve(__dirname, "./"),
+      "@": path.resolve(__dirname, "./src/"),
+      $routes: path.resolve(__dirname, "./src/routes"),
+      $pages: path.resolve(__dirname, "./src/pages"),
+      $lib: path.resolve(__dirname, "./src/lib"),
+      $assets: path.resolve(__dirname, "./src/assets"),
+      $components: path.resolve(__dirname, "./src/components"),
+      $composables: path.resolve(__dirname, "./src/composables"),
+    },
   },
 })

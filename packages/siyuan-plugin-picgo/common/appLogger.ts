@@ -31,9 +31,7 @@ const win = window as any
 /**
  * 使用 eruda 更好的控制日志
  */
-alert(isDev)
 window.console = isDev ? win?.eruda?.get("console") : window.console
-win?.eruda.init()
 
 /**
  * 简单的日志接口
@@ -59,6 +57,6 @@ export const createAppLogger = (name: string): ILogger => {
 /**
  * 销毁日志
  */
-export const destroyLogger = (): void => {
-  win.eruda.destroy()
-}
+// export const destroyLogger = (): void => {
+//   win.eruda.destroy()
+// }

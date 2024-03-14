@@ -25,12 +25,7 @@
 
 import App from "./App.vue"
 import { createApp } from "vue"
-import { createAppLogger } from "../common/appLogger.ts"
-// import { useVueRouter } from "./composables/useVueRouter.ts"
-// import AppInstance from "./appInstance.ts"
-// import i18n from "./locales"
-// import FontAwesome from "~/src/composables/useFontAwesome.ts"
-// import { createPinia } from "pinia"
+import { createAppLogger } from "~/common/appLogger.ts"
 
 const logger = createAppLogger("vue-main-entry")
 
@@ -42,27 +37,9 @@ const logger = createAppLogger("vue-main-entry")
  * @since 0.0.1
  */
 const createVueApp = async () => {
-  // appInstance
-  // const appInstance = await AppInstance.getInstance()
-  // logger.info("appInstance inited =>", appInstance)
-
   // 初始化 vue 实例
   // https://stackoverflow.com/a/62383325/4037224
   const app = createApp(App)
-
-  // // pinia
-  // const pinia = createPinia()
-  // app.use(pinia)
-
-  // // 国际化
-  // app.use(i18n)
-  //
-  // // font-awesome
-  // app.use(FontAwesome)
-  //
-  // // router
-  // const router = useVueRouter()
-  // app.use(router)
 
   // 挂载 vue app
   app.mount("#app")

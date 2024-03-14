@@ -4,8 +4,8 @@
   "version": "1.5.1",
   "type": "module",
   "scripts": {
-    "serve": "vite",
-    "dev": "vue-tsc && vite build --wach",
+    "serve": "python -u scripts/serve.py && vite",
+    "dev": "python -u scripts/dev.py &&vue-tsc && vite build --wach",
     "build": "vue-tsc && vite build",
     "preview": "vite preview"
   },
