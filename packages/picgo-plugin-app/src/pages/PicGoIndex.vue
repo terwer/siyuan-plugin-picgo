@@ -8,14 +8,14 @@
   -->
 
 <script setup lang="ts">
-import SyPicgo from "../../../../libs/Universal-PicGo-Core"
+import { UniversalPicGo } from "universal-picgo"
 import { createAppLogger } from "@/utils/appLogger.ts"
 
 const logger = createAppLogger("picgo-index")
 
 const handleTest = () => {
-  const api = new SyPicgo()
-  logger.debug("api =>", api)
+  const picgo = new UniversalPicGo()
+  logger.debug("picgo =>", picgo)
 }
 </script>
 
