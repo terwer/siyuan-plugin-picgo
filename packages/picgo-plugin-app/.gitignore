@@ -26,3 +26,4 @@ components.d.ts
 *.sln
 *.sw?
 coverage
+auto-imports.d.ts

@@ -15,4 +15,12 @@
 
 <script setup lang="ts">
 import AppLayout from "@/layouts/AppLayout.vue"
+
+// element-plus style
+import "element-plus/dist/index.css"
+import "element-plus/theme-chalk/dark/css-vars.css"
+
+// global style
+import "~/src/assets/style.css"
+import "~/src/assets/style.dark.css"
 </script>
