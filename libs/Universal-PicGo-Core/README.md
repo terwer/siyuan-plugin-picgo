@@ -17,13 +17,13 @@ picgo lib for node, browser and electron
 ## Dev
 
 ```bash
-pnpm dev -F Universal-PicGo-Core
+pnpm dev -F universal-picgo
 ```
 
 ## Build
 
 ```bash
-pnpm build -F Universal-PicGo-Core
+pnpm build -F universal-picgo
 ```
 
 ## Test
@@ -31,11 +31,11 @@ pnpm build -F Universal-PicGo-Core
 Execute the unit tests via [vitest](https://vitest.dev)
 
 ```bash
-pnpm test -F Universal-PicGo-Core
+pnpm test -F universal-picgo
 ```
 
 ## Publish
 
 ```bash
-pnpm publish -F Universal-PicGo-Core --tag latest
+pnpm publish -F universal-picgo --tag latest
 ```
