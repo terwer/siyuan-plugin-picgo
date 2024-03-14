@@ -35,6 +35,6 @@
   },
   "dependencies": {
     "zhi-device": "^2.11.0",
-    "zhi-lib-base": "^0.2.4"
+    "zhi-lib-base": "^0.8.0"
   }
 }
