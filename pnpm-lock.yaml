@@ -151,8 +151,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.2
       '@types/tunnel':
-        specifier: ^0.0.3
-        version: 0.0.3
+        specifier: ^0.0.7
+        version: 0.0.7
       '@typescript-eslint/eslint-plugin':
         specifier: '3'
         version: 3.10.1(@typescript-eslint/parser@3.10.1)(eslint@7.32.0)(typescript@4.9.5)
@@ -2450,8 +2450,8 @@ packages:
       '@types/node': 16.11.7
     dev: true
 
-  /@types/tunnel@0.0.3:
-    resolution: {integrity: sha512-sOUTGn6h1SfQ+gbgqC364jLFBw2lnFqkgF3q0WovEHRLMrVD1sd5aufqi/aJObLekJO+Aq5z646U4Oxy6shXMA==}
+  /@types/tunnel@0.0.7:
+    resolution: {integrity: sha512-VYKjZSmb2PvUwXoux4Gy4LAk7kzOB1ktkjyL4lxvpkqL2adgR+Qrh/yFyWluvJgIXWFicqs7XuzPI2NbTO/r3Q==}
     dependencies:
       '@types/node': 16.11.7
     dev: true
