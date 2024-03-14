@@ -6,6 +6,7 @@ import { viteStaticCopy } from "vite-plugin-static-copy"
 import dts from "vite-plugin-dts"
 import minimist from "minimist"
 import livereload from "rollup-plugin-livereload"
+import { nodePolyfills, PolyfillOptions } from "vite-plugin-node-polyfills"
 
 const args = minimist(process.argv.slice(2))
 const isWatch = args.watch || args.w || false
@@ -19,6 +20,11 @@ console.log("distDir=>", distDir)
 export default defineConfig({
   plugins: [
     dts(),
+
+    nodePolyfills({
+      // Whether to polyfill `node:` protocol imports.
+      protocolImports: true,
+    }) as any,
 
     viteStaticCopy({
       targets: [
