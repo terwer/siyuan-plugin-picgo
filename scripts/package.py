@@ -9,14 +9,17 @@ if __name__ == "__main__":
     # 获取当前工作空间
     cwd = scriptutils.get_workdir()
 
-    dist_folder = "./dist"
+    os.system("pnpm build -F picgo-plugin-app")
+    os.system("pnpm build -F picgo-plugin-bootstrap")
+
+    dist_folder = "./artifacts/siyuan-plugin-picgo/dist"
     data = scriptutils.read_json_file(cwd + "package.json")
     v = data["version"]
 
     src_folder = dist_folder
-    tmp_folder_name = "./siyuan-plugin-demo"
+    tmp_folder_name = "./siyuan-plugin-picgo"
     build_zip_path = "./build"
-    build_zip_name = "siyuan-plugin-demo-" + v + ".zip"
+    build_zip_name = "siyuan-plugin-picgo-" + v + ".zip"
 
     try:
         # 压缩dist为zip

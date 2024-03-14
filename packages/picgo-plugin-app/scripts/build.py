@@ -6,9 +6,5 @@ import os
 # Windows 必须添加此设置
 sys.stdout.reconfigure(encoding="utf-8")
 
-# siyuan-plugin-bootstrap
-# os.system("")
-
-# picgo-app
 os.system("vue-tsc && vite build")
-print"PicGO plugin build success")
+print("PicGO plugin build success")

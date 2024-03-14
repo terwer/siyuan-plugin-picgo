@@ -1,5 +1,6 @@
 {
   "name": "siyuan-plugin-picgo-workspace",
+  "version": "1.5.1",
   "description": "picgo plugin for siyuan-note",
   "scripts": {
     "serve": "turbo run serve",
@@ -7,8 +8,11 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "cz": "git-cz",
-    "makeLink": "python make_dev_link.py",
-    "package": "python package.py"
+    "makeLink": "python scripts/make_dev_link.py",
+    "syncVersion": "python scripts/version.py",
+    "parseChangelog": "python scripts/parse_changelog.py",
+    "prepareRelease": "pnpm syncVersion && pnpm parseChangelog",
+    "package": "python scripts/package.py"
   },
   "config": {
     "commitizen": {

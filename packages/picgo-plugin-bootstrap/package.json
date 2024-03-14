@@ -8,15 +8,10 @@
   "author": "terwer",
   "license": "MIT",
   "scripts": {
-    "serve": "vite",
     "dev": "vite build --watch",
     "build": "vite build",
     "start": "vite preview",
-    "test": "vitest --watch",
-    "syncVersion": "python scripts/version.py",
-    "parseChangelog": "python scripts/parse_changelog.py",
-    "prepareRelease": "pnpm syncVersion && pnpm parseChangelog",
-    "package": "python scripts/package.py"
+    "test": "vitest --watch"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.4.1",
