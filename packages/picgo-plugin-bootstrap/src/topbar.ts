@@ -7,7 +7,7 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { icons } from "../../picgo-plugin-app/siyuan/utils/svg"
+import { icons } from "./utils/svg"
 import PicgoPlugin from "./index"
 import { showPage } from "./dialog"
 import { PageRoute } from "./pageRoute"

@@ -18,6 +18,7 @@ dev
 
 ```bash
 pnpm dev -F picgo-plugin-app
+pnpm dev -F picgo-plugin-bootstrap
 ```
 
 ## Build

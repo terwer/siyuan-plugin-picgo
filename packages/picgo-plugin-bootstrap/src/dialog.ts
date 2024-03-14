@@ -8,11 +8,11 @@
  */
 
 import PicgoPlugin from "./index"
-import { Dialog } from p/siyuan"
+import { Dialog } from "siyuan"
 import { PageRoute } from "./pageRoute"
 import { BrowserUtil } from "zhi-device"
-import { createAppLogger } from "/src/utils/appLogger"
-import PageUtil from "/utils/pageUtil"
+import { createAppLogger } from "./appLogger"
+import PageUtil from "./utils/pageUtil"
 
 const logger = createAppLogger("page-util")
 

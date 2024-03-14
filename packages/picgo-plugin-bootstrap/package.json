@@ -1,6 +1,6 @@
 {
-  "name": "siyuan-plugin-bootstrap",
-  "version": "0.0.1",
+  "name": "picgo-plugin-bootstrap",
+  "version": "1.5.1",
   "description": "plugin bootstrap for siyuan-note",
   "type": "module",
   "repository": "terwer/siyuan-plugin-bootstrap",
@@ -39,6 +39,7 @@
     "vitest": "^0.32.0"
   },
   "dependencies": {
+    "zhi-device": "^2.11.0",
     "zhi-lib-base": "^0.2.4"
   }
 }

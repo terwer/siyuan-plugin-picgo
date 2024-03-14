@@ -6,7 +6,8 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "cz": "git-cz"
+    "cz": "git-cz",
+    "makeLink": "python make_dev_link.py"
   },
   "config": {
     "commitizen": {

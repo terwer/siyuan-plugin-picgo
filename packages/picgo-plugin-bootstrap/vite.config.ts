@@ -1,3 +1,12 @@
+/*
+ *            GNU GENERAL PUBLIC LICENSE
+ *               Version 3, 29 June 2007
+ *
+ *  Copyright (C) 2024 Terwer, Inc. <https://terwer.space/>
+ *  Everyone is permitted to copy and distribute verbatim copies
+ *  of this license document, but changing it is not allowed.
+ */
+
 import { resolve } from "path"
 import { defineConfig, loadEnv } from "vite"
 import minimist from "minimist"
@@ -8,12 +17,7 @@ import fg from "fast-glob"
 
 const args = minimist(process.argv.slice(2))
 const isWatch = args.watch || args.w || false
-const isWindows = process.platform === "win32"
-let devDistDir = "/Users/terwer/Documents/mydocs/SiYuanWorkspace/public/data/plugins/siyuan-plugin-random-doc"
-if (isWindows) {
-  devDistDir = "C:\\Users\\terwer\\Documents\\mydocs\\SiyuanWorkspace\\public\\data\\plugins\\siyuan-plugin-random-doc"
-}
-const distDir = isWatch ? devDistDir : "./dist"
+const distDir = "../../artifacts/siyuan-plugin-picgo/dist"
 
 console.log("isWatch=>", isWatch)
 console.log("distDir=>", distDir)
@@ -25,23 +29,23 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: "./README*.md",
+          src: "../../README*.md",
           dest: "./",
         },
         {
-          src: "./LICENSE",
+          src: "../../LICENSE",
           dest: "./",
         },
         {
-          src: "./icon.png",
+          src: "../../icon.png",
           dest: "./",
         },
         {
-          src: "./preview.png",
+          src: "../../preview.png",
           dest: "./",
         },
         {
-          src: "./plugin.json",
+          src: "../../plugin.json",
           dest: "./",
         },
         {
@@ -85,7 +89,7 @@ export default defineConfig({
       plugins: [
         ...(isWatch
           ? [
-              livereload(devDistDir),
+              livereload(distDir),
               {
                 //监听静态资源文件
                 name: "watch-external",
@@ -98,7 +102,7 @@ export default defineConfig({
               },
             ]
           : []),
-      ],
+      ] as any,
 
       // make sure to externalize deps that shouldn't be bundled
       // into your library

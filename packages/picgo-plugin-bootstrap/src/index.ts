@@ -7,15 +7,16 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { App, IObject, Plugin } from "src/index"
+import { App, IObject, Plugin } from "siyuan"
 import { simpleLogger } from "zhi-lib-base"
-import { isDev } from "../../picgo-plugin-app/src/utils/Constants"
+import { isDev } from "./Constants"
 import { initTopbar } from "./topbar"
 import { showPage } from "./dialog"
 import { PageRoute } from "./pageRoute"
+import { ILogger } from "./appLogger"
 
 export default class PicgoPlugin extends Plugin {
-  private logger
+  private logger: ILogger
 
   constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
     super(options)

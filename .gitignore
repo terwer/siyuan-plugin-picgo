@@ -37,3 +37,6 @@ yarn-error.log*
 
 # IDE
 .idea
+artifacts
+cookie.txt
+token.txt

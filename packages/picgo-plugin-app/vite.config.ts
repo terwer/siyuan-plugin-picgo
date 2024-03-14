@@ -23,7 +23,7 @@ const isWatch = args.watch || args.w || false
 const isDev = isServe || isWatch
 const outDir = args.o || args.outDir
 
-const distDir = outDir || "./dist"
+const distDir = "../../artifacts/siyuan-plugin-picgo/dist"
 
 // https://vitejs.dev/config/
 export default defineConfig(() => ({

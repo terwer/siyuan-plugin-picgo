@@ -1,5 +1,3 @@
-[中文](README_zh_CN.md)
+# picgo-plugin-bootstrap
 
-# siyuan-plugin-bootstrap
-
-plugin bootstrap for siyuan-note
+picgo plugin bootstrap for siyuan-note
