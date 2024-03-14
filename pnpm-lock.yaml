@@ -194,7 +194,7 @@ importers:
         version: 7.32.0
       eslint-config-standard-with-typescript:
         specifier: ^18.0.2
-        version: 18.0.2(@typescript-eslint/eslint-plugin@3.10.1)(eslint-plugin-import@2.29.1)(eslint-plugin-node@11.1.0)(eslint-plugin-promise@4.3.1)(eslint-plugin-standard@4.1.0)(eslint@7.32.0)(typescript@4.9.5)
+        version: 18.0.2(@typescript-eslint/eslint-plugin@3.10.1)(eslint-plugin-import@2.29.1)(eslint-plugin-node@11.1.0)(eslint-plugin-promise@4.3.1)(eslint-plugin-standard@5.0.0)(eslint@7.32.0)(typescript@4.9.5)
       eslint-plugin-import:
         specifier: '2'
         version: 2.29.1(@typescript-eslint/parser@3.10.1)(eslint@7.32.0)
@@ -205,8 +205,8 @@ importers:
         specifier: '4'
         version: 4.3.1
       eslint-plugin-standard:
-        specifier: '4'
-        version: 4.1.0(eslint@7.32.0)
+        specifier: '5'
+        version: 5.0.0(eslint@7.32.0)
       execa:
         specifier: ^5.1.1
         version: 5.1.1
@@ -5826,7 +5826,7 @@ packages:
       eslint: 8.57.0
     dev: true
 
-  /eslint-config-standard-with-typescript@18.0.2(@typescript-eslint/eslint-plugin@3.10.1)(eslint-plugin-import@2.29.1)(eslint-plugin-node@11.1.0)(eslint-plugin-promise@4.3.1)(eslint-plugin-standard@4.1.0)(eslint@7.32.0)(typescript@4.9.5):
+  /eslint-config-standard-with-typescript@18.0.2(@typescript-eslint/eslint-plugin@3.10.1)(eslint-plugin-import@2.29.1)(eslint-plugin-node@11.1.0)(eslint-plugin-promise@4.3.1)(eslint-plugin-standard@5.0.0)(eslint@7.32.0)(typescript@4.9.5):
     resolution: {integrity: sha512-6D++u/gifJgj2hQ13e+YRyNs+1v3oihkfsL36P6HjeQjiOBdhRC/0wq3PRqfOwFA0hMCkcWBvhfO0GXWtGW9bg==}
     peerDependencies:
       '@typescript-eslint/eslint-plugin': '>=3.0.1'
@@ -5840,17 +5840,17 @@ packages:
       '@typescript-eslint/eslint-plugin': 3.10.1(@typescript-eslint/parser@3.10.1)(eslint@7.32.0)(typescript@4.9.5)
       '@typescript-eslint/parser': 3.10.1(eslint@7.32.0)(typescript@4.9.5)
       eslint: 7.32.0
-      eslint-config-standard: 14.1.1(eslint-plugin-import@2.29.1)(eslint-plugin-node@11.1.0)(eslint-plugin-promise@4.3.1)(eslint-plugin-standard@4.1.0)(eslint@7.32.0)
+      eslint-config-standard: 14.1.1(eslint-plugin-import@2.29.1)(eslint-plugin-node@11.1.0)(eslint-plugin-promise@4.3.1)(eslint-plugin-standard@5.0.0)(eslint@7.32.0)
       eslint-plugin-import: 2.29.1(@typescript-eslint/parser@3.10.1)(eslint@7.32.0)
       eslint-plugin-node: 11.1.0(eslint@7.32.0)
       eslint-plugin-promise: 4.3.1
-      eslint-plugin-standard: 4.1.0(eslint@7.32.0)
+      eslint-plugin-standard: 5.0.0(eslint@7.32.0)
       typescript: 4.9.5
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /eslint-config-standard@14.1.1(eslint-plugin-import@2.29.1)(eslint-plugin-node@11.1.0)(eslint-plugin-promise@4.3.1)(eslint-plugin-standard@4.1.0)(eslint@7.32.0):
+  /eslint-config-standard@14.1.1(eslint-plugin-import@2.29.1)(eslint-plugin-node@11.1.0)(eslint-plugin-promise@4.3.1)(eslint-plugin-standard@5.0.0)(eslint@7.32.0):
     resolution: {integrity: sha512-Z9B+VR+JIXRxz21udPTL9HpFMyoMUEeX1G251EQ6e05WD9aPVtVBn09XUmZ259wCMlCDmYDSZG62Hhm+ZTJcUg==}
     peerDependencies:
       eslint: '>=6.2.2'
@@ -5863,7 +5863,7 @@ packages:
       eslint-plugin-import: 2.29.1(@typescript-eslint/parser@3.10.1)(eslint@7.32.0)
       eslint-plugin-node: 11.1.0(eslint@7.32.0)
       eslint-plugin-promise: 4.3.1
-      eslint-plugin-standard: 4.1.0(eslint@7.32.0)
+      eslint-plugin-standard: 5.0.0(eslint@7.32.0)
     dev: true
 
   /eslint-config-turbo@1.12.5(eslint@7.32.0):
@@ -6023,8 +6023,9 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /eslint-plugin-standard@4.1.0(eslint@7.32.0):
-    resolution: {integrity: sha512-ZL7+QRixjTR6/528YNGyDotyffm5OQst/sGxKDwGb9Uqs4In5Egi4+jbobhqJoyoCM6/7v/1A5fhQ7ScMtDjaQ==}
+  /eslint-plugin-standard@5.0.0(eslint@7.32.0):
+    resolution: {integrity: sha512-eSIXPc9wBM4BrniMzJRBm2uoVuXz2EPa+NXPk2+itrVt+r5SbKFERx/IgrK/HmfjddyKVz2f+j+7gBRvu19xLg==}
+    deprecated: 'standard 16.0.0 and eslint-config-standard 16.0.0 no longer require the eslint-plugin-standard package. You can remove it from your dependencies with ''npm rm eslint-plugin-standard''. More info here: https://github.com/standard/standard/issues/1316'
     peerDependencies:
       eslint: '>=5.0.0'
     dependencies:
