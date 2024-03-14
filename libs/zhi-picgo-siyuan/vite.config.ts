@@ -50,7 +50,7 @@ export default defineConfig({
       formats: ["es"],
     },
     rollupOptions: {
-      plugins: [...(isWatch ? [livereload(devDistDir)] : [])],
+      plugins: [...(isWatch ? [livereload(devDistDir)] : [])] as any,
       // make sure to externalize deps that shouldn't be bundled
       // into your library
       external: [],
