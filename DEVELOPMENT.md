@@ -11,13 +11,13 @@ pnpm install
 serve
 
 ```bash
-pnpm serve -F siyuan-plugin-picgo
+pnpm serve -F picgo-plugin-app
 ```
 
 dev
 
 ```bash
-pnpm dev -F siyuan-plugin-picgo
+pnpm dev -F picgo-plugin-app
 ```
 
 ## Build
