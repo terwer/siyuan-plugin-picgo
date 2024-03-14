@@ -28,6 +28,12 @@ const nowYear = DateUtil.nowYear()
 
 const isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
 
+const goHome = async () => {
+  await router.push({
+    path: "/",
+  })
+}
+
 const goGithub = () => {
   window.open("https://github.com/terwer/siyuan-plugin-picgo")
 }
@@ -58,7 +64,7 @@ const handleSiyuanSetting = async () => {
         <span class="text"> &copy;2011-{{ nowYear }} </span>
         <span class="text s-dark" @click="goGithub()">&nbsp;siyuan-plugin-picgo&nbsp;</span>
 
-        <span class="text">v{{ v }}&nbsp;</span>
+        <span class="text" @click="goHome">v{{ v }}&nbsp;</span>
 
         <span class="text s-dark" @click="goAbout()">{{ t("syp.about") }}</span>
 

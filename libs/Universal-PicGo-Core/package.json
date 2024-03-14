@@ -1,0 +1,38 @@
+{
+  "name": "universal-picgo",
+  "version": "1.5.1",
+  "type": "module",
+  "description": "picgo lib for node, browser and electron",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "repository": "terwer/siyuan-plugin-picgo",
+  "homepage": "https://github.com/terwer/siyuan-plugin-picgo/tree/main/libs/Universal-PicGo-Core",
+  "author": "terwer",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "zhi",
+    "lib"
+  ],
+  "scripts": {
+    "serve": "vite",
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "start": "vite preview",
+    "test": "npx vitest --watch"
+  },
+  "devDependencies": {
+    "@terwer/eslint-config-custom": "^1.3.6",
+    "@terwer/vite-config-custom": "^0.7.6",
+    "vite-plugin-node-polyfills": "^0.21.0"
+  },
+  "dependencies": {
+    "zhi-lib-base": "^0.8.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

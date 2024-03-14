@@ -1,0 +1,33 @@
+{
+    "files.trimTrailingWhitespace": true,
+    "editor.formatOnSave": false,
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "eslint.enable": true,
+    "eslint.alwaysShowStatus": true,
+    "editor.tabSize": 2,
+    "cSpell.words": [
+        "aliyun",
+        "applescript",
+        "commitlint",
+        "copyfiles",
+        "imgur",
+        "Molunerfinn",
+        "picgo",
+        "qiniu",
+        "smms",
+        "tcyun",
+        "uploader",
+        "uploaders",
+        "upyun",
+        "weibo"
+    ],
+    "typescript.tsdk": "node_modules/typescript/lib"
+}

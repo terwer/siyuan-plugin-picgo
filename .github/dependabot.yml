@@ -39,7 +39,7 @@ updates:
       - "picgo-core"
 
   - package-ecosystem: npm
-    directory: "/libs/zhi-picgo-siyuan"
+    directory: "/libs/Universal-PicGo-Core"
     schedule:
       interval: daily
       time: "00:00"
