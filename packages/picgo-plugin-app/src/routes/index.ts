@@ -7,7 +7,7 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import PicGoIndex from "$components/PicGoIndex.vue"
+import PicGoIndex from "$pages/PicGoIndex.vue"
 import PicgoSetting from "$components/PicgoSetting.vue"
 import ExternalPicgoSetting from "$components/ExternalPicgoSetting.vue"
 import SiyuanSetting from "$components/SiyuanSetting.vue"

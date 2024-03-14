@@ -10,7 +10,10 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div>PicGO index</div>
+  <div>
+    <h1>PicGO index</h1>
+    <el-button type="primary">测试</el-button>
+  </div>
 </template>
 
 <style scoped></style>
