@@ -15,7 +15,7 @@ import { simpleLogger } from "zhi-lib-base"
  * @version 1.6.0
  * @since 1.4.5
  */
-class SyPicgo {
+class UniversalPicGo {
   private logger = simpleLogger("siyuan-picgo-api", "siyuan-picgo", false)
 
   constructor() {
@@ -23,4 +23,4 @@ class SyPicgo {
   }
 }
 
-export default SyPicgo
+export default UniversalPicGo
