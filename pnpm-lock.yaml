@@ -187,8 +187,8 @@ importers:
         specifier: ^7.0.3
         version: 7.0.3
       cz-customizable:
-        specifier: ^5.10.0
-        version: 5.10.0
+        specifier: ^7.0.0
+        version: 7.0.0
       eslint:
         specifier: '7'
         version: 7.32.0
@@ -4846,6 +4846,18 @@ packages:
 
   /cz-customizable@5.10.0:
     resolution: {integrity: sha512-8fzzmoXXAg3ydu5Uhx4g+XwgWNdjmvm/zycKzZejnhQn8Z+kvnqKwXhwm9thmFE67MIXDMS7n+A1wuMAEplddQ==}
+    dependencies:
+      editor: 1.0.0
+      find-config: 1.0.0
+      inquirer: 6.5.2
+      lodash: 4.17.21
+      temp: 0.9.4
+      word-wrap: 1.2.5
+    dev: true
+
+  /cz-customizable@7.0.0:
+    resolution: {integrity: sha512-pQKkGSm+8SY9VY/yeJqDOla1MjrGaG7WG4EYLLEV4VNctGO7WdzdGtWEr2ydKSkrpmTs7f8fmBksg/FaTrUAyw==}
+    hasBin: true
     dependencies:
       editor: 1.0.0
       find-config: 1.0.0
