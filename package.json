@@ -1,67 +1,27 @@
 {
-  "name": "siyuan-plugin-picgo",
-  "private": true,
+  "name": "siyuan-plugin-picgo-workspace",
   "version": "1.5.1",
-  "type": "module",
+  "description": "picgo plugin for siyuan-note",
   "scripts": {
-    "serve": "vite",
-    "dev": "pnpm pluginBuild && pnpm siyuanSync && pnpm siyuanDev",
-    "test": "vitest",
-    "coverage": "vitest run --coverage",
-    "build": "pnpm pluginBuild && pnpm siyuanBuild",
-    "buildLib": "vue-tsc && vite build -c vite.lib.config.ts",
-    "pluginBuild": "zhi-build --production",
-    "siyuanDev": "vue-tsc && vite build --watch",
-    "siyuanBuild": "vue-tsc && vite build",
-    "ensureDir": "mkdir -p /Users/terwer/Documents/mydocs/SiYuanWorkspace/test/data/plugins/siyuan-plugin-picgo",
-    "siyuanSync": "pnpm ensureDir && cp -r ./dist/* /Users/terwer/Documents/mydocs/SiYuanWorkspace/test/data/plugins/siyuan-plugin-picgo",
+    "serve": "turbo run serve",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "cz": "git-cz",
+    "makeLink": "python scripts/make_dev_link.py",
     "syncVersion": "python scripts/version.py",
     "parseChangelog": "python scripts/parse_changelog.py",
     "prepareRelease": "pnpm syncVersion && pnpm parseChangelog",
-    "package": "python scripts/package.py",
-    "preview": "vite preview",
-    "pubishLib": "bash scripts/publish_lib.sh"
+    "package": "python scripts/package.py"
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
   },
   "devDependencies": {
-    "@terwer/esbuild-config-custom": "^1.2.0",
+    "@terwer/commit-config-custom": "^1.0.9",
     "@terwer/eslint-config-custom": "^1.3.6",
-    "@vitejs/plugin-vue": "^4.4.0",
-    "@vitest/coverage-v8": "^0.34.6",
-    "esbuild-plugin-copy": "^2.1.1",
-    "esbuild-style-plugin": "^1.6.2",
-    "minimist": "^1.2.8",
-    "typescript": "^5.2.2",
-    "unplugin-auto-import": "^0.16.6",
-    "unplugin-vue-components": "^0.25.2",
-    "vite": "^4.4.11",
-    "vite-plugin-dts": "^3.6.0",
-    "vite-plugin-html": "^3.2.0",
-    "vite-plugin-static-copy": "^0.17.0",
-    "vitest": "^0.34.6",
-    "vue-tsc": "^1.8.18"
-  },
-  "dependencies": {
-    "@element-plus/icons-vue": "^2.1.0",
-    "@fortawesome/fontawesome-svg-core": "^6.4.2",
-    "@fortawesome/free-brands-svg-icons": "^6.4.2",
-    "@fortawesome/free-solid-svg-icons": "^6.4.2",
-    "@fortawesome/vue-fontawesome": "^3.0.3",
-    "@vueuse/core": "^10.5.0",
-    "blueimp-md5-es6": "^2.7.4",
-    "browser-fs-access": "^0.34.1",
-    "element-plus": "^2.3.14",
-    "lodash": "^4.17.21",
-    "lodash-es": "^4.17.21",
-    "pinia": "^2.1.6",
-    "siyuan": "^0.8.4",
-    "uuid": "^9.0.1",
-    "vue": "^3.3.4",
-    "vue-i18n": "^9.5.0",
-    "vue-router": "^4.2.5",
-    "zhi-common": "^1.24.0",
-    "zhi-device": "^2.3.1",
-    "zhi-fetch-middleware": "^0.6.5",
-    "zhi-lib-base": "^0.5.0",
-    "zhi-siyuan-api": "^2.10.5"
+    "turbo": "^1.12.5"
   }
 }

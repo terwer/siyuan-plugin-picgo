@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "sourceMap": true,
+    "target": "es2017",
+    "declaration": true,
+    "outDir": "dist",
+    // "skipLibCheck": true,
+    // "baseUrl": "src",
+    "rootDir": "src",
+    // "typeRoots": [
+    //   "./node_modules/@types",
+    //   "./src/types",
+    // ],
+    // "paths": {
+    //   "*": ["*", "./src/types/*"]
+    // },
+    "lib": [
+      "es2017",
+      "es2015",
+      "es6"
+    ],
+  },
+  "exclude": [ "node_modules", "dist"]
+}
