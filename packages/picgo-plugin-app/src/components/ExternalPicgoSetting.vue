@@ -2,17 +2,15 @@
   -            GNU GENERAL PUBLIC LICENSE
   -               Version 3, 29 June 2007
   -
-  -  Copyright (C) 2023-2024 Terwer, Inc. <https://terwer.space/>
+  -  Copyright (C) 2024 Terwer, Inc. <https://terwer.space/>
   -  Everyone is permitted to copy and distribute verbatim copies
   -  of this license document, but changing it is not allowed.
   -->
 
+<script setup lang="ts"></script>
+
 <template>
-  <app-layout>
-    <router-view></router-view>
-  </app-layout>
+  <div>External picgo setting</div>
 </template>
 
-<script setup lang="ts">
-import AppLayout from "@/layouts/AppLayout.vue"
-</script>
+<style scoped></style>

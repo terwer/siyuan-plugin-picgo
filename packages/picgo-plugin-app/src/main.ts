@@ -10,6 +10,8 @@
 import App from "./App.vue"
 import { createApp } from "vue"
 import { createAppLogger } from "@/utils/appLogger.ts"
+import i18n from "@/i18n"
+import { useVueRouter } from "$composables/useVueRouter.ts"
 
 const logger = createAppLogger("vue-main-entry")
 
@@ -24,6 +26,13 @@ const createVueApp = async () => {
   // 初始化 vue 实例
   // https://stackoverflow.com/a/62383325/4037224
   const app = createApp(App)
+
+  // router
+  const router = useVueRouter()
+  app.use(router)
+
+  // 国际化
+  app.use(i18n)
 
   // 挂载 vue app
   app.mount("#app")
