@@ -96,7 +96,7 @@
     "@picgo/i18n": "^1.0.0",
     "@picgo/store": "^2.0.2",
     "axios": "^0.27.2",
-    "chalk": "^2.4.1",
+    "chalk": "^5.3.0",
     "commander": "^8.1.0",
     "comment-json": "^2.3.1",
     "cross-spawn": "^6.0.5",
