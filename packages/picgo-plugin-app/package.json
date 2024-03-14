@@ -32,6 +32,6 @@
     "vue-router": "^4.3.0",
     "zhi-common": "^1.31.0",
     "zhi-lib-base": "^0.8.0",
-    "zhi-picgo-siyuan": "workspace:*"
+    "universal-picgo": "workspace:*"
   }
 }

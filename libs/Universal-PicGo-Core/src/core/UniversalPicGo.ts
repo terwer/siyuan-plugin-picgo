@@ -16,11 +16,11 @@ import { simpleLogger } from "zhi-lib-base"
  * @since 1.4.5
  */
 class UniversalPicGo {
-  private logger = simpleLogger("siyuan-picgo-api", "siyuan-picgo", false)
+  private logger = simpleLogger("universal-picgo-api", "universal-picgo", false)
 
   constructor() {
-    this.logger.info("siyuan-note PicGO inited")
+    this.logger.info("UniversalPicGo inited")
   }
 }
 
-export default UniversalPicGo
+export { UniversalPicGo }
