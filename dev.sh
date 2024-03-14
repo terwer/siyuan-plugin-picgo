@@ -1,4 +1,4 @@
 #/bin/sh
 
-pnpm build -F zhi-picgo-siyuan
+pnpm build -F universal-picgo
 pnpm serve -F picgo-plugin-app

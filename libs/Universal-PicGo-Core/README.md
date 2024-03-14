@@ -1,6 +1,6 @@
-# zhi-picgo-siyuan
+# universal-picgo
 
-picgo lib for siyuan-note
+picgo lib for node, browser and electron
 
 ## Usage
 
@@ -11,7 +11,7 @@ picgo lib for siyuan-note
 ## Deps
 
 ```
-## Congregations! zhi-picgo-siyuan need no deps, it is just pure js code 🎉
+## Congregations! universal-picgo need no deps, it is just pure js code 🎉
 ```
 
 ## Dev
