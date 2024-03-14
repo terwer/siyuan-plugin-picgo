@@ -23,8 +23,16 @@ pnpm dev -F picgo-plugin-bootstrap
 
 ## Build
 
+build
+
 ```bash
 pnpm build
+```
+
+package
+
+```bash
+pnpm package
 ```
 
 artifacts structure

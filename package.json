@@ -7,7 +7,8 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "cz": "git-cz",
-    "makeLink": "python make_dev_link.py"
+    "makeLink": "python make_dev_link.py",
+    "package": "python package.py"
   },
   "config": {
     "commitizen": {
