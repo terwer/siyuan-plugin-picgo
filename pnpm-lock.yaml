@@ -175,8 +175,8 @@ importers:
         specifier: ^10.1.0
         version: 10.1.0(eslint@7.32.0)
       builtins:
-        specifier: ^4.0.0
-        version: 4.1.0
+        specifier: ^5.0.1
+        version: 5.0.1
       conventional-changelog:
         specifier: ^3.0.6
         version: 3.1.25
@@ -3915,8 +3915,8 @@ packages:
   /builtin-status-codes@3.0.0:
     resolution: {integrity: sha512-HpGFw18DgFWlncDfjTa2rcQ4W88O1mC8e8yZ2AvQY5KDaktSTwo+KRf6nHK6FRI5FyRyb/5T6+TSxfP7QyGsmQ==}
 
-  /builtins@4.1.0:
-    resolution: {integrity: sha512-1bPRZQtmKaO6h7qV1YHXNtr6nCK28k0Zo95KM4dXfILcZZwoHJBN1m3lfLv9LPkcOZlrSr+J1bzMaZFO98Yq0w==}
+  /builtins@5.0.1:
+    resolution: {integrity: sha512-qwVpFEHNfhYJIzNRBvd2C1kyo6jz3ZSMPyyuR47OPdiKWlbYnZNyDWuyR175qDnAJLiCo5fBBqPb3RiXgWlkOQ==}
     dependencies:
       semver: 7.6.0
     dev: true
