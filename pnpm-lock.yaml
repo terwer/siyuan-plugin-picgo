@@ -256,7 +256,7 @@ importers:
     devDependencies:
       '@terwer/esbuild-config-custom':
         specifier: 2.0.0
-        version: 2.0.0(@types/minimist@1.2.2)(dotenv@16.4.5)(esbuild-plugin-copy@2.1.1)(esbuild-plugin-d.ts@1.2.3)(esbuild-plugin-ifdef@1.0.1)(esbuild-plugin-inline-image@0.0.9)(esbuild-plugin-vue3@0.3.2)(esbuild-style-plugin@1.6.3)(esbuild@0.17.19)(minimist@1.2.8)(rimraf@4.4.1)(stylus@0.59.0)
+        version: 2.0.0(@types/minimist@1.2.5)(dotenv@16.4.5)(esbuild-plugin-copy@2.1.1)(esbuild-plugin-d.ts@1.2.3)(esbuild-plugin-ifdef@1.0.1)(esbuild-plugin-inline-image@0.0.9)(esbuild-plugin-vue3@0.3.2)(esbuild-style-plugin@1.6.3)(esbuild@0.17.19)(minimist@1.2.8)(rimraf@4.4.1)(stylus@0.59.0)
       '@terwer/eslint-config-custom':
         specifier: ^1.3.6
         version: 1.3.6(@nuxt/eslint-config@0.1.1)(@typescript-eslint/eslint-plugin@5.62.0)(astro-eslint-parser@0.13.3)(eslint-config-prettier@8.10.0)(eslint-config-turbo@1.12.5)(eslint-plugin-prettier@4.2.1)(eslint-plugin-svelte@2.35.1)(eslint-plugin-vue@9.23.0)(eslint@8.57.0)(prettier-plugin-svelte@2.10.1)(prettier@2.8.8)(typescript@5.4.2)
@@ -307,8 +307,8 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1
       '@types/minimist':
-        specifier: 1.2.2
-        version: 1.2.2
+        specifier: 1.2.5
+        version: 1.2.5
       fast-glob:
         specifier: ^3.2.12
         version: 3.3.2
@@ -2192,7 +2192,7 @@ packages:
       is-ci: 3.0.1
     dev: true
 
-  /@terwer/esbuild-config-custom@2.0.0(@types/minimist@1.2.2)(dotenv@16.4.5)(esbuild-plugin-copy@2.1.1)(esbuild-plugin-d.ts@1.2.3)(esbuild-plugin-ifdef@1.0.1)(esbuild-plugin-inline-image@0.0.9)(esbuild-plugin-vue3@0.3.2)(esbuild-style-plugin@1.6.3)(esbuild@0.17.19)(minimist@1.2.8)(rimraf@4.4.1)(stylus@0.59.0):
+  /@terwer/esbuild-config-custom@2.0.0(@types/minimist@1.2.5)(dotenv@16.4.5)(esbuild-plugin-copy@2.1.1)(esbuild-plugin-d.ts@1.2.3)(esbuild-plugin-ifdef@1.0.1)(esbuild-plugin-inline-image@0.0.9)(esbuild-plugin-vue3@0.3.2)(esbuild-style-plugin@1.6.3)(esbuild@0.17.19)(minimist@1.2.8)(rimraf@4.4.1)(stylus@0.59.0):
     resolution: {integrity: sha512-Uyt/ccoxlnjtxQAL3poCvZVfRr4Img49Y+DDOHFO4qd9zmcYC2WH9f/kBobqxPBAdslHm3n++U85/or4gAZO4w==}
     hasBin: true
     peerDependencies:
@@ -2209,7 +2209,7 @@ packages:
       rimraf: ^4.4.1
       stylus: ^0.59.0
     dependencies:
-      '@types/minimist': 1.2.2
+      '@types/minimist': 1.2.5
       dotenv: 16.4.5
       esbuild: 0.17.19
       esbuild-plugin-copy: 2.1.1(esbuild@0.17.19)
@@ -2471,6 +2471,10 @@ packages:
 
   /@types/minimist@1.2.2:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
+    dev: true
+
+  /@types/minimist@1.2.5:
+    resolution: {integrity: sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==}
     dev: true
 
   /@types/node@16.11.7:
@@ -8366,7 +8370,7 @@ packages:
     resolution: {integrity: sha512-r85E3NdZ+mpYk1C6RjPFEMSE+s1iZMuHtsHAqY0DT3jZczl0diWUZ8g6oU7h0M9cD2EL+PzaYghhCLzR0ZNn5Q==}
     engines: {node: '>=10'}
     dependencies:
-      '@types/minimist': 1.2.2
+      '@types/minimist': 1.2.5
       camelcase-keys: 6.2.2
       decamelize-keys: 1.1.1
       hard-rejection: 2.1.0
