@@ -14,6 +14,9 @@ import minimist from "minimist"
 import fg from "fast-glob"
 import { createHtmlPlugin } from "vite-plugin-html"
 import path from "path"
+import AutoImport from "unplugin-auto-import/vite"
+import Components from "unplugin-vue-components/vite"
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
 
 // config
 const args = minimist(process.argv.slice(2))
@@ -29,6 +32,13 @@ const distDir = "../../artifacts/siyuan-plugin-picgo/dist"
 export default defineConfig(() => ({
   plugins: [
     vue(),
+
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
+    }),
 
     createHtmlPlugin({
       minify: !isDev,
@@ -91,7 +101,7 @@ export default defineConfig(() => ({
 
   build: {
     // 输出路径
-    outDir: distDir,
+    outDir: outDir || distDir,
     emptyOutDir: false,
 
     // 构建后是否生成 source map 文件
@@ -139,7 +149,9 @@ export default defineConfig(() => ({
       "utils/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
     ],
     server: {
-      deps: {},
+      deps: {
+        inline: ["element-plus"],
+      },
     },
   },
 }))
