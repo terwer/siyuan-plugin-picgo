@@ -8,7 +8,7 @@
   -->
 
 <script setup lang="ts">
-import SyPicgo from "zhi-picgo-siyuan"
+import SyPicgo from "../../../../libs/Universal-PicGo-Core"
 import { createAppLogger } from "@/utils/appLogger.ts"
 
 const logger = createAppLogger("picgo-index")

@@ -17,13 +17,13 @@ picgo lib for siyuan-note
 ## Dev
 
 ```bash
-pnpm dev -F zhi-picgo-siyuan
+pnpm dev -F Universal-PicGo-Core
 ```
 
 ## Build
 
 ```bash
-pnpm build -F zhi-picgo-siyuan
+pnpm build -F Universal-PicGo-Core
 ```
 
 ## Test
@@ -31,11 +31,11 @@ pnpm build -F zhi-picgo-siyuan
 Execute the unit tests via [vitest](https://vitest.dev)
 
 ```bash
-pnpm test -F zhi-picgo-siyuan
+pnpm test -F Universal-PicGo-Core
 ```
 
 ## Publish
 
 ```bash
-pnpm publish -F zhi-picgo-siyuan --tag latest
+pnpm publish -F Universal-PicGo-Core --tag latest
 ```

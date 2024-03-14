@@ -1,8 +1,8 @@
 {
-  "name": "zhi-picgo-siyuan",
+  "name": "universal-picgo",
   "version": "1.5.1",
   "type": "module",
-  "description": "picgo lib for siyuan-note",
+  "description": "picgo lib for node, browser and electron",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "repository": "terwer/zhi",
