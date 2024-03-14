@@ -1,6 +1,6 @@
 {
   "name": "siyuan-plugin-picgo-workspace",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "picgo plugin for siyuan-note",
   "scripts": {
     "serve": "turbo run serve",
