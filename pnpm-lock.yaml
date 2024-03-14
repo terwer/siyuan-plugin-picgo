@@ -322,8 +322,8 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5
       siyuan:
-        specifier: ^0.7.2
-        version: 0.7.9
+        specifier: ^0.9.5
+        version: 0.9.5
       stylus:
         specifier: ^0.59.0
         version: 0.59.0
@@ -10099,8 +10099,8 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
-  /siyuan@0.7.9:
-    resolution: {integrity: sha512-X5olBQhfkgyPRF+d8agpcbAaFnCSvSkN3LWX7XU9jApmCfpJ/4PAmK7mKPfR1YGBpjFLRa/xTrv11BQ3hxN15Q==}
+  /siyuan@0.9.5:
+    resolution: {integrity: sha512-txDJp+uSmnAoCz4aDw6a3lCz2h4eRhyx5wgInCmSglQx7aoOpMK57nU31N3FY1NVREQcNV0OG6fJZ0iJJOkrag==}
     dev: true
 
   /slash@2.0.0:
