@@ -42,8 +42,8 @@ importers:
         specifier: ^8.1.0
         version: 8.3.0
       comment-json:
-        specifier: ^2.3.1
-        version: 2.4.2
+        specifier: ^4.2.3
+        version: 4.2.3
       cross-spawn:
         specifier: ^6.0.5
         version: 6.0.5
@@ -4220,16 +4220,6 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
-
-  /comment-json@2.4.2:
-    resolution: {integrity: sha512-T+iXox779qsqneMYx/x5BZyz4xjCeQRmuNVzz8tko7qZUs3MlzpA3RAs+O1XsgcKToNBMIvfVzafGOeiU7RggA==}
-    engines: {node: '>= 6'}
-    dependencies:
-      core-util-is: 1.0.3
-      esprima: 4.0.1
-      has-own-prop: 2.0.0
-      repeat-string: 1.6.1
-    dev: false
 
   /comment-json@4.2.3:
     resolution: {integrity: sha512-SsxdiOf064DWoZLH799Ata6u7iV658A11PlWtZATDlXPpKGJnbJZ5Z24ybixAi+LUUqJ/GKowAejtC5GFUG7Tw==}
