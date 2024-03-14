@@ -6,7 +6,6 @@ node_modules
 
 # Ignore all dts files:
 *.d.ts
-vite.config.ts
 
 # lib
 /pnpm-lock.yaml

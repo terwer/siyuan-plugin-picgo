@@ -11,19 +11,19 @@ pnpm install
 serve
 
 ```bash
-pnpm serve -F app
+pnpm serve -F siyuan-plugin-picgo
 ```
 
 dev
 
 ```bash
-pnpm dev
+pnpm dev -F siyuan-plugin-picgo
 ```
 
 ## Build
 
 ```bash
-pnpm package
+pnpm build
 ```
 
 artifacts structure

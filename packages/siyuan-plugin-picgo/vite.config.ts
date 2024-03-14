@@ -9,16 +9,24 @@
 
 import { defineConfig } from "vite"
 import vue from "@vitejs/plugin-vue"
+import livereload from "rollup-plugin-livereload"
 import minimist from "minimist"
+import fg from "fast-glob"
 import { createHtmlPlugin } from "vite-plugin-html"
 import path from "path"
 
+// config
 const args = minimist(process.argv.slice(2))
+// 开启之后可以同eruda接管日志
+const isServe = process.env.IS_SERVE
 const isWatch = args.watch || args.w || false
-const isDev = isWatch
+const isDev = isServe || isWatch
+const outDir = args.o || args.outDir
+
+const distDir = outDir || "./dist"
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(() => ({
   plugins: [
     vue(),
 
@@ -80,4 +88,58 @@ export default defineConfig({
       $composables: path.resolve(__dirname, "./src/composables"),
     },
   },
-})
+
+  build: {
+    // 输出路径
+    outDir: distDir,
+    emptyOutDir: false,
+
+    // 构建后是否生成 source map 文件
+    sourcemap: false,
+
+    // 设置为 false 可以禁用最小化混淆
+    // 或是用来指定是应用哪种混淆器
+    // boolean | 'terser' | 'esbuild'
+    // 不压缩，用于调试
+    minify: !isDev,
+
+    rollupOptions: {
+      plugins: [
+        ...(isWatch
+          ? [
+              livereload(distDir),
+              {
+                //监听静态资源文件
+                name: "watch-external",
+                async buildStart() {
+                  const files = await fg(["src/assets/*", "./README*.md", "./widget.json"])
+                  for (const file of files) {
+                    const that = this as any
+                    that.addWatchFile(file)
+                  }
+                },
+              },
+            ]
+          : []),
+      ] as any,
+
+      // make sure to externalize deps that shouldn't be bundled into your library
+      external: [],
+    },
+  },
+
+  test: {
+    globals: true,
+    environment: "jsdom",
+    // environment: "node",
+    // environment: "happy-dom",
+    setupFiles: ["./src/setup.ts"],
+    include: [
+      "src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+      "common/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+    ],
+    server: {
+      deps: {},
+    },
+  },
+}))

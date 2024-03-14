@@ -27,4 +27,3 @@ components.d.ts
 *.sln
 *.sw?
 coverage
-vite.config.ts
