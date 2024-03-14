@@ -1,14 +1,6 @@
-import { simpleLogger, MainFunction } from "zhi-lib-base"
+import SyPicgo from "./lib/syPicgo"
 
 /**
- * 初始化入口
- *
- * @param args
+ * 思源笔记 PicGO API 入口
  */
-const main: MainFunction = async (args: any[]) => {
-  const logger = simpleLogger("main", "zhi", false)
-  logger.info(`main start ${args}`)
-  return "ok"
-}
-
-export default main
+export default SyPicgo

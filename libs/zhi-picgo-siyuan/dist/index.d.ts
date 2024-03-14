@@ -1,8 +1,5 @@
-import { MainFunction } from "zhi-lib-base";
+import SyPicgo from "./lib/syPicgo";
 /**
- * 初始化入口
- *
- * @param args
+ * 思源笔记 PicGO API 入口
  */
-declare const main: MainFunction;
-export default main;
+export default SyPicgo;

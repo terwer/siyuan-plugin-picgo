@@ -7,13 +7,26 @@
   -  of this license document, but changing it is not allowed.
   -->
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import SyPicgo from "zhi-picgo-siyuan"
+import { createAppLogger } from "@/utils/appLogger.ts"
+
+const logger = createAppLogger("picgo-index")
+
+const handleTest = () => {
+  const api = new SyPicgo()
+  logger.debug("api =>", api)
+}
+</script>
 
 <template>
-  <div>
+  <div class="picgo-body">
     <h1>PicGO index</h1>
-    <el-button type="primary">测试</el-button>
+    <el-button type="primary" @click="handleTest">测试</el-button>
   </div>
 </template>
 
-<style scoped></style>
+<style lang="stylus" scoped>
+.picgo-body
+  padding: 16px
+</style>
