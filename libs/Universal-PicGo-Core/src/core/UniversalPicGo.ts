@@ -27,6 +27,9 @@ import { PluginHandler } from "../lib/PluginHandler"
 import _ from "lodash-es"
 import getClipboardImage from "../utils/getClipboardImage"
 import { IBuildInEvent } from "../utils/enums"
+import DB from "../utils/db"
+import { hasNodeEnv, win } from "universal-picgo-store"
+import { ensureFileSync, pathExistsSync } from "../utils/nodeUtils"
 
 /*
  * 通用 PicGO 对象定义
@@ -37,6 +40,7 @@ import { IBuildInEvent } from "../utils/enums"
 class UniversalPicGo extends EventEmitter implements IPicGo {
   private _config!: IConfig
   private lifecycle!: Lifecycle
+  private db!: DB
   private _pluginLoader!: PluginLoader
   configPath: string
   baseDir!: string
@@ -48,6 +52,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   pluginHandler: PluginHandler
   i18n!: II18nManager
   VERSION: string = process.env.PICGO_VERSION ?? "unknown"
+
   // GUI_VERSION?: string
 
   get pluginLoader(): IPluginLoader {
@@ -196,9 +201,37 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
 
   // ===================================================================================================================
 
-  private initConfigPath(): void {}
+  private initConfigPath(): void {
+    console.log("win =>", win)
+    console.log("hasNodeEnv =>", hasNodeEnv)
+    if (hasNodeEnv) {
+      const os = win.require("os")
+      const fs = win.fs
+      const path = win.require("path")
+      const { homedir } = os
+      if (this.configPath === "") {
+        this.configPath = homedir() + "/.picgo/config.json"
+      }
+      if (path.extname(this.configPath).toUpperCase() !== ".JSON") {
+        this.configPath = ""
+        throw Error("The configuration file only supports JSON format.")
+      }
+      this.baseDir = path.dirname(this.configPath)
+      const exist = pathExistsSync(fs, path, this.configPath)
+      if (!exist) {
+        ensureFileSync(fs, path, `${this.configPath}`)
+      }
+    } else {
+      if (this.configPath === "") {
+        this.configPath = `picgo-config-${this.VERSION}.json`
+      }
+    }
+  }
 
-  private initConfig(): void {}
+  private initConfig(): void {
+    // this.db = new DB(this)
+    // this._config = this.db.read(true) as IConfig
+  }
 
   private init(): void {}
 }

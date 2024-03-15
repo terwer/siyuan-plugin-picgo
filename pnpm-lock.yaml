@@ -20,6 +20,9 @@ importers:
 
   libs/Universal-PicGo-Core:
     dependencies:
+      universal-picgo-store:
+        specifier: workspace:*
+        version: link:../Universal-PicGo-Store
       zhi-lib-base:
         specifier: ^0.8.0
         version: 0.8.0

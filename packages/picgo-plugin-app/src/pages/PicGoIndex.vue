@@ -10,14 +10,20 @@
 <script setup lang="ts">
 import { UniversalPicGo } from "universal-picgo"
 import { createAppLogger } from "@/utils/appLogger.ts"
+import { ElMessage } from "element-plus"
 
 const logger = createAppLogger("picgo-index")
 
 const handleTest = () => {
-  const picgo = new UniversalPicGo()
-  logger.debug("picgo =>", picgo)
+  try {
+    const picgo = new UniversalPicGo()
+    logger.debug("picgo =>", picgo)
 
-  picgo.upload()
+    picgo.upload()
+    ElMessage.success("success")
+  } catch (e: any) {
+    ElMessage.error(e.toString())
+  }
 }
 </script>
 
