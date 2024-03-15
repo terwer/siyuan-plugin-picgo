@@ -16,6 +16,8 @@ const logger = createAppLogger("picgo-index")
 const handleTest = () => {
   const picgo = new UniversalPicGo()
   logger.debug("picgo =>", picgo)
+
+  picgo.test()
 }
 </script>
 

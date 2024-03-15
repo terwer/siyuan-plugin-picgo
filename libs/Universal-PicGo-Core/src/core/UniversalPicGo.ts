@@ -9,19 +9,31 @@
 
 import { simpleLogger } from "zhi-lib-base"
 import { EventEmitter } from "../utils/nodePolyfill"
+import { IPicGo } from "../types"
 
 /*
- * 思源笔记内部 PicGO 对象定义
+ * 通用 PicGO 对象定义
  *
  * @version 1.6.0
  * @since 1.4.5
  */
-class UniversalPicGo extends EventEmitter {
+class UniversalPicGo extends EventEmitter implements IPicGo {
   private logger = simpleLogger("universal-picgo-api", "universal-picgo", false)
+  configPath: string
+  baseDir!: string
 
-  constructor() {
+  constructor(configPath = "") {
     super()
+    this.configPath = configPath
     this.logger.info("UniversalPicGo inited")
+
+    this.on("testEvent", () => {
+      this.logger.info("testEvent triggered")
+    })
+  }
+
+  public test() {
+    this.emit("testEvent")
   }
 }
 
