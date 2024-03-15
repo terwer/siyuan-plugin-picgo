@@ -17,7 +17,7 @@ const handleTest = () => {
   const picgo = new UniversalPicGo()
   logger.debug("picgo =>", picgo)
 
-  picgo.test()
+  picgo.upload()
 }
 </script>
 

@@ -7,9 +7,26 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { simpleLogger } from "zhi-lib-base"
+import { ILogger, simpleLogger } from "zhi-lib-base"
 import { EventEmitter } from "../utils/nodePolyfill"
-import { IPicGo } from "../types"
+import {
+  IConfig,
+  IHelper,
+  II18nManager,
+  IImgInfo,
+  IPicGo,
+  IPicGoPlugin,
+  IPicGoPluginInterface,
+  IPluginLoader,
+  IStringKeyMap,
+} from "../types"
+import { Lifecycle } from "./Lifecycle"
+import { PluginLoader } from "../lib/PluginLoader"
+import { LifecyclePlugins } from "../lib/LifecyclePlugins"
+import { PluginHandler } from "../lib/PluginHandler"
+import _ from "lodash-es"
+import getClipboardImage from "../utils/getClipboardImage"
+import { IBuildInEvent } from "../utils/enums"
 
 /*
  * 通用 PicGO 对象定义
@@ -18,23 +35,172 @@ import { IPicGo } from "../types"
  * @since 1.4.5
  */
 class UniversalPicGo extends EventEmitter implements IPicGo {
-  private logger = simpleLogger("universal-picgo-api", "universal-picgo", false)
+  private _config!: IConfig
+  private lifecycle!: Lifecycle
+  private _pluginLoader!: PluginLoader
   configPath: string
   baseDir!: string
+  helper!: IHelper
+  log: ILogger
+  // cmd: Commander
+  output: IImgInfo[]
+  input: any[]
+  pluginHandler: PluginHandler
+  i18n!: II18nManager
+  VERSION: string = process.env.PICGO_VERSION ?? "unknown"
+  // GUI_VERSION?: string
 
-  constructor(configPath = "") {
+  get pluginLoader(): IPluginLoader {
+    return this._pluginLoader
+  }
+
+  constructor(configPath = "", isDev?: boolean) {
     super()
+    this.log = simpleLogger("universal-picgo-api", "universal-picgo", isDev ?? false)
     this.configPath = configPath
-    this.logger.info("UniversalPicGo inited")
+    this.output = []
+    this.input = []
+    this.helper = {
+      transformer: new LifecyclePlugins("transformer"),
+      uploader: new LifecyclePlugins("uploader"),
+      beforeTransformPlugins: new LifecyclePlugins("beforeTransformPlugins"),
+      beforeUploadPlugins: new LifecyclePlugins("beforeUploadPlugins"),
+      afterUploadPlugins: new LifecyclePlugins("afterUploadPlugins"),
+    }
+    this.initConfigPath()
+    // this.cmd = new Commander(this)
+    this.pluginHandler = new PluginHandler(this)
+    this.initConfig()
+    this.init()
 
-    this.on("testEvent", () => {
-      this.logger.info("testEvent triggered")
-    })
+    this.log.info("UniversalPicGo inited")
   }
 
-  public test() {
-    this.emit("testEvent")
+  /**
+   * easily mannually load a plugin
+   * if provide plugin name, will register plugin by name
+   * or just instantiate a plugin
+   */
+  use(plugin: IPicGoPlugin, name?: string): IPicGoPluginInterface {
+    if (name) {
+      this.pluginLoader.registerPlugin(name, plugin)
+      return this.pluginLoader.getPlugin(name)!
+    } else {
+      const pluginInstance = plugin(this)
+      return pluginInstance
+    }
   }
+
+  // registerCommands(): void {
+  //   if (this.configPath !== "") {
+  //     this.cmd.init()
+  //     this.cmd.loadCommands()
+  //   }
+  // }
+
+  getConfig<T>(name?: string): T {
+    if (!name) {
+      return this._config as unknown as T
+    } else {
+      return _.get(this._config, name)
+    }
+  }
+
+  saveConfig(config: IStringKeyMap<any>): void {
+    // if (!isInputConfigValid(config)) {
+    //   this.log.warn("the format of config is invalid, please provide object")
+    //   return
+    // }
+    // this.setConfig(config)
+    // this.db.saveConfig(config)
+  }
+
+  removeConfig(key: string, propName: string): void {
+    // if (!key || !propName) return
+    // if (isConfigKeyInBlackList(key)) {
+    //   this.log.warn(`the config.${key} can't be removed`)
+    //   return
+    // }
+    // this.unsetConfig(key, propName)
+    // this.db.unset(key, propName)
+  }
+
+  setConfig(config: IStringKeyMap<any>): void {
+    // if (!isInputConfigValid(config)) {
+    //   this.log.warn("the format of config is invalid, please provide object")
+    //   return
+    // }
+    // Object.keys(config).forEach((name: string) => {
+    //   if (isConfigKeyInBlackList(name)) {
+    //     this.log.warn(`the config.${name} can't be modified`)
+    //     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    //     delete config[name]
+    //   }
+    //   set(this._config, name, config[name])
+    //   eventBus.emit(IBusEvent.CONFIG_CHANGE, {
+    //     configName: name,
+    //     value: config[name],
+    //   })
+    // })
+  }
+
+  unsetConfig(key: string, propName: string): void {
+    // if (!key || !propName) return
+    // if (isConfigKeyInBlackList(key)) {
+    //   this.log.warn(`the config.${key} can't be unset`)
+    //   return
+    // }
+    // unset(this.getConfig(key), propName)
+  }
+
+  async upload(input?: any[]): Promise<IImgInfo[] | Error> {
+    if (this.configPath === "") {
+      this.log.error("The configuration file only supports JSON format.")
+      return []
+    }
+    // upload from clipboard
+    if (input === undefined || input.length === 0) {
+      try {
+        const { imgPath, shouldKeepAfterUploading } = await getClipboardImage(this)
+        if (imgPath === "no image") {
+          throw new Error("image not found in clipboard")
+        } else {
+          this.once(IBuildInEvent.FAILED, () => {
+            if (!shouldKeepAfterUploading) {
+              // 删除 picgo 生成的图片文件，例如 `~/.picgo/20200621205720.png`
+              // fs.remove(imgPath).catch((e) => {
+              //   this.log.error(e)
+              // })
+            }
+          })
+          this.once("finished", () => {
+            if (!shouldKeepAfterUploading) {
+              // fs.remove(imgPath).catch((e) => {
+              //   this.log.error(e)
+              // })
+            }
+          })
+          const { output } = await this.lifecycle.start([imgPath])
+          return output
+        }
+      } catch (e) {
+        this.emit(IBuildInEvent.FAILED, e)
+        throw e
+      }
+    } else {
+      // upload from path
+      const { output } = await this.lifecycle.start(input)
+      return output
+    }
+  }
+
+  // ===================================================================================================================
+
+  private initConfigPath(): void {}
+
+  private initConfig(): void {}
+
+  private init(): void {}
 }
 
 export { UniversalPicGo }

@@ -6,7 +6,12 @@
  *  Everyone is permitted to copy and distribute verbatim copies
  *  of this license document, but changing it is not allowed.
  */
-import { EventEmitter } from "node:events"
-import { Buffer } from "node:buffer"
 
-export { EventEmitter, Buffer }
+import { EventEmitter } from "../utils/nodePolyfill"
+import { IPicGo } from "../types"
+
+export class Lifecycle extends EventEmitter {
+  async start(input: any[]): Promise<IPicGo> {
+    throw new Error("Lifecycle.start is not implemented")
+  }
+}
