@@ -11,12 +11,13 @@
 import { UniversalPicGo } from "universal-picgo"
 import { createAppLogger } from "@/utils/appLogger.ts"
 import { ElMessage } from "element-plus"
+import { isDev } from "@/utils/Constants.ts"
 
 const logger = createAppLogger("picgo-index")
 
 const handleTest = () => {
   try {
-    const picgo = new UniversalPicGo()
+    const picgo = new UniversalPicGo("", isDev)
     logger.debug("picgo =>", picgo)
 
     picgo.upload()
