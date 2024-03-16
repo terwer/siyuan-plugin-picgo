@@ -29,6 +29,7 @@
     "@terwer/vite-config-custom": "^0.7.6"
   },
   "dependencies": {
+    "localforage": "^1.10.0",
     "zhi-lib-base": "^0.8.0"
   },
   "publishConfig": {

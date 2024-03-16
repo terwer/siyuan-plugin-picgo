@@ -229,8 +229,8 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   }
 
   private initConfig(): void {
-    // this.db = new DB(this)
-    // this._config = this.db.read(true) as IConfig
+    this.db = new DB(this)
+    this._config = this.db.read(true) as IConfig
   }
 
   private init(): void {}

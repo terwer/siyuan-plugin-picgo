@@ -8,12 +8,20 @@
  */
 
 import { IJSON } from "../types"
+import localForage from "localforage"
+import { hasNodeEnv } from "./utils"
 
 class JSONStore {
   constructor(dbPath: string) {
     if (!dbPath) {
       throw Error("Please provide valid dbPath")
     }
+
+    if (hasNodeEnv) {
+
+    } else {
+    }
+    alert(1)
   }
 
   read(flush = false): IJSON {
