@@ -59,7 +59,7 @@ export default defineConfig({
       plugins: [...(isWatch ? [livereload(devDistDir)] : [])] as any,
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: [],
+      external: ["worker_threads"],
       output: {
         entryFileNames: "[name].js",
       },
