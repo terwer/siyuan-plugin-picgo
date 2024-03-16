@@ -116,18 +116,18 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     //   this.log.warn("the format of config is invalid, please provide object")
     //   return
     // }
-    // this.setConfig(config)
-    // this.db.saveConfig(config)
+    this.setConfig(config)
+    this.db.saveConfig(config)
   }
 
   removeConfig(key: string, propName: string): void {
-    // if (!key || !propName) return
+    if (!key || !propName) return
     // if (isConfigKeyInBlackList(key)) {
     //   this.log.warn(`the config.${key} can't be removed`)
     //   return
     // }
-    // this.unsetConfig(key, propName)
-    // this.db.unset(key, propName)
+    this.unsetConfig(key, propName)
+    this.db.unset(key, propName)
   }
 
   setConfig(config: IStringKeyMap<any>): void {
@@ -135,27 +135,27 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     //   this.log.warn("the format of config is invalid, please provide object")
     //   return
     // }
-    // Object.keys(config).forEach((name: string) => {
-    //   if (isConfigKeyInBlackList(name)) {
-    //     this.log.warn(`the config.${name} can't be modified`)
-    //     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-    //     delete config[name]
-    //   }
-    //   set(this._config, name, config[name])
-    //   eventBus.emit(IBusEvent.CONFIG_CHANGE, {
-    //     configName: name,
-    //     value: config[name],
-    //   })
-    // })
+    Object.keys(config).forEach((name: string) => {
+      // if (isConfigKeyInBlackList(name)) {
+      //   this.log.warn(`the config.${name} can't be modified`)
+      //   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      //   delete config[name]
+      // }
+      _.set(this._config, name, config[name])
+      // eventBus.emit(IBusEvent.CONFIG_CHANGE, {
+      //   configName: name,
+      //   value: config[name],
+      // })
+    })
   }
 
   unsetConfig(key: string, propName: string): void {
-    // if (!key || !propName) return
+    if (!key || !propName) return
     // if (isConfigKeyInBlackList(key)) {
     //   this.log.warn(`the config.${key} can't be unset`)
     //   return
     // }
-    // unset(this.getConfig(key), propName)
+    _.unset(this.getConfig(key), propName)
   }
 
   async upload(input?: any[]): Promise<IImgInfo[] | Error> {
