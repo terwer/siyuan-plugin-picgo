@@ -203,7 +203,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
 
   private initConfigPath(): void {
     this.log.debug("win =>", win)
-    this.log.info("hasNodeEnv =>", hasNodeEnv)
+    this.log.info(`hasNodeEnv => ${hasNodeEnv}`)
     if (hasNodeEnv) {
       const os = win.require("os")
       const fs = win.fs
