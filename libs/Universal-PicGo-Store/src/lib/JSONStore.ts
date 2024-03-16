@@ -3,7 +3,7 @@ import { JSONAdapter } from "./adapters/JSONAdapter"
 import _ from "lodash"
 import { IJSON } from "../types"
 import { hasNodeEnv } from "./utils"
-import { LocalForgeAdapter } from "./adapters/LocalForgeAdapter"
+import { LocalStorageAdapter } from "./adapters/LocalStorageAdapter"
 
 class LowWithLodash<T> extends LowSync<T> {
   chain: _.ExpChain<this["data"]> = _.chain(this).get("data")
@@ -21,7 +21,7 @@ class JSONStore {
     if (hasNodeEnv) {
       adapter = new JSONAdapter(dbPath)
     } else {
-      adapter = new LocalForgeAdapter(dbPath)
+      adapter = new LocalStorageAdapter(dbPath)
     }
     this.db = new LowWithLodash(adapter)
     this.read()
