@@ -1,10 +1,10 @@
 import { IConfig, IPicGo } from "../types"
-import { JSONStore } from "universal-picgo-store/src"
-import { IJSON } from "universal-picgo-store"
+import { IJSON, JSONStore } from "universal-picgo-store"
 
 class DB {
   private readonly ctx: IPicGo
   private readonly db: JSONStore
+
   constructor(ctx: IPicGo) {
     this.ctx = ctx
     this.db = new JSONStore(this.ctx.configPath)

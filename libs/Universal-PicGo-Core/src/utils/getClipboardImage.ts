@@ -11,7 +11,7 @@ import { IClipboardImage, IPicGo } from "../types"
 
 // Thanks to vs-picgo: https://github.com/Spades-S/vs-picgo/blob/master/src/extension.ts
 const getClipboardImage = async (ctx: IPicGo): Promise<IClipboardImage> => {
-  throw new Error("Not Implemented")
+  throw new Error("getClipboardImage Not Implemented")
 }
 
 export default getClipboardImage

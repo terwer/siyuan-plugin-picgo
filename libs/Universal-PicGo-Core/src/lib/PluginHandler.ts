@@ -21,11 +21,11 @@ export class PluginHandler implements IPluginHandler {
     options: IPluginHandlerOptions,
     env: IProcessEnv | undefined
   ): Promise<IPluginHandlerResult<boolean>> {
-    throw new Error("Method not implemented")
+    throw new Error("PluginHandler.install not implemented")
   }
 
   uninstall(plugins: string[]): Promise<IPluginHandlerResult<boolean>> {
-    throw new Error("Method not implemented")
+    throw new Error("PluginHandler.uninstall not implemented")
   }
 
   update(
@@ -33,6 +33,6 @@ export class PluginHandler implements IPluginHandler {
     options: IPluginHandlerOptions,
     env: IProcessEnv | undefined
   ): Promise<IPluginHandlerResult<boolean>> {
-    throw new Error("Method not implemented")
+    throw new Error("PluginHandler.update not implemented")
   }
 }
