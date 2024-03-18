@@ -220,6 +220,20 @@ export interface IConfig {
   [configOptions: string]: any
 }
 
+/**
+ * for an uploader/transformer/beforeTransformHandler/beforeUploadHandler/afterUploadHandler
+ */
+export interface IPlugin {
+  handle: ((ctx: IPicGo) => Promise<any>) | ((ctx: IPicGo) => void)
+  /** The name of this handler */
+  name?: string
+  /** The config of this handler */
+  config?: (ctx: IPicGo) => IPluginConfig[]
+  [propName: string]: any
+}
+
+export type IPluginNameType = 'simple' | 'scope' | 'normal' | 'unknown'
+
 export interface ILocale {
   [key: string]: any
 }

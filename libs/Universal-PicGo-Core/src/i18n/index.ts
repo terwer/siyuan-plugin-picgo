@@ -17,7 +17,7 @@ import _ from "lodash-es"
 import { hasNodeEnv, win } from "universal-picgo-store"
 import { ensureFileSync, pathExistsSync } from "../utils/nodeUtils"
 import { browserPathJoin } from "../utils/browserUtils"
-import BrowserI18nDb from "./browserI18nDb"
+import BrowserI18nDb from "../db/browserI18nDb"
 
 const languageList: IStringKeyMap<IStringKeyMap<string>> = {
   "zh-CN": ZH_CN,

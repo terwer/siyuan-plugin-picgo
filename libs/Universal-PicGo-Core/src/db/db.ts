@@ -1,3 +1,12 @@
+/*
+ *            GNU GENERAL PUBLIC LICENSE
+ *               Version 3, 29 June 2007
+ *
+ *  Copyright (C) 2024 Terwer, Inc. <https://terwer.space/>
+ *  Everyone is permitted to copy and distribute verbatim copies
+ *  of this license document, but changing it is not allowed.
+ */
+
 import { IConfig, IPicGo } from "../types"
 import { IJSON, JSONStore } from "universal-picgo-store"
 
@@ -9,25 +18,11 @@ class DB {
     this.ctx = ctx
     this.db = new JSONStore(this.ctx.configPath)
 
-    if (!this.db.has("picBed")) {
-      try {
-        this.db.set("picBed", {
-          uploader: "smms",
-          current: "smms",
-        })
-      } catch (e: any) {
-        this.ctx.log.error(e)
-        throw e
-      }
-    }
-    if (!this.db.has("picgoPlugins")) {
-      try {
-        this.db.set("picgoPlugins", {})
-      } catch (e: any) {
-        this.ctx.log.error(e)
-        throw e
-      }
-    }
+    this.safeSet("picBed", {
+      uploader: "smms",
+      current: "smms",
+    })
+    this.safeSet("picgoPlugins", {})
   }
 
   read(flush?: boolean): IJSON {
@@ -64,6 +59,18 @@ class DB {
     Object.keys(config).forEach((name: string) => {
       this.unset(name, config[name])
     })
+  }
+
+  // ===================================================================================================================
+  safeSet(key: string, value: any) {
+    if (!this.db.has(key)) {
+      try {
+        this.db.set(key, value)
+      } catch (e: any) {
+        this.ctx.log.error(e)
+        throw e
+      }
+    }
   }
 }
 

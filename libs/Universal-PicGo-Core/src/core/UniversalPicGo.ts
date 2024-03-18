@@ -27,11 +27,12 @@ import { PluginHandler } from "../lib/PluginHandler"
 import _ from "lodash-es"
 import getClipboardImage from "../utils/getClipboardImage"
 import { IBuildInEvent } from "../utils/enums"
-import DB from "../utils/db"
+import DB from "../db/db"
 import { hasNodeEnv, win } from "universal-picgo-store"
 import { ensureFileSync, pathExistsSync } from "../utils/nodeUtils"
 import { I18nManager } from "../i18n"
-import { getBrowserDirectoryPath } from "../utils/browserUtils"
+import { browserPathJoin, getBrowserDirectoryPath } from "../utils/browserUtils"
+import { isConfigKeyInBlackList, isInputConfigValid } from "../utils/common"
 
 /*
  * 通用 PicGO 对象定义
@@ -114,35 +115,35 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   }
 
   saveConfig(config: IStringKeyMap<any>): void {
-    // if (!isInputConfigValid(config)) {
-    //   this.log.warn("the format of config is invalid, please provide object")
-    //   return
-    // }
+    if (!isInputConfigValid(config)) {
+      this.log.warn("the format of config is invalid, please provide object")
+      return
+    }
     this.setConfig(config)
     this.db.saveConfig(config)
   }
 
   removeConfig(key: string, propName: string): void {
     if (!key || !propName) return
-    // if (isConfigKeyInBlackList(key)) {
-    //   this.log.warn(`the config.${key} can't be removed`)
-    //   return
-    // }
+    if (isConfigKeyInBlackList(key)) {
+      this.log.warn(`the config.${key} can't be removed`)
+      return
+    }
     this.unsetConfig(key, propName)
     this.db.unset(key, propName)
   }
 
   setConfig(config: IStringKeyMap<any>): void {
-    // if (!isInputConfigValid(config)) {
-    //   this.log.warn("the format of config is invalid, please provide object")
-    //   return
-    // }
+    if (!isInputConfigValid(config)) {
+      this.log.warn("the format of config is invalid, please provide object")
+      return
+    }
     Object.keys(config).forEach((name: string) => {
-      // if (isConfigKeyInBlackList(name)) {
-      //   this.log.warn(`the config.${name} can't be modified`)
-      //   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      //   delete config[name]
-      // }
+      if (isConfigKeyInBlackList(name)) {
+        this.log.warn(`the config.${name} can't be modified`)
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete config[name]
+      }
       _.set(this._config, name, config[name])
       // eventBus.emit(IBusEvent.CONFIG_CHANGE, {
       //   configName: name,
@@ -153,10 +154,10 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
 
   unsetConfig(key: string, propName: string): void {
     if (!key || !propName) return
-    // if (isConfigKeyInBlackList(key)) {
-    //   this.log.warn(`the config.${key} can't be unset`)
-    //   return
-    // }
+    if (isConfigKeyInBlackList(key)) {
+      this.log.warn(`the config.${key} can't be unset`)
+      return
+    }
     _.unset(this.getConfig(key), propName)
   }
 
@@ -225,8 +226,8 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       }
     } else {
       if (this.configPath === "") {
-        this.baseDir = ""
-        this.configPath = `universal-picgo-config.json`
+        this.baseDir = "universal-picgo"
+        this.configPath = browserPathJoin(this.baseDir, "config.json")
       } else {
         // 模拟 path.dirname 的功能，获取路径的目录部分赋值给 baseDir
         this.baseDir = getBrowserDirectoryPath(this.configPath)
@@ -243,6 +244,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     try {
       // init 18n at first
       this.i18n = new I18nManager(this)
+      this._pluginLoader = new PluginLoader(this)
     } catch (e: any) {
       this.emit(IBuildInEvent.UPLOAD_PROGRESS, -1)
       this.log.error(e)

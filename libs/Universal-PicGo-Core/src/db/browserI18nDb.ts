@@ -8,7 +8,7 @@
  */
 
 import { IBrowserLocal, IPicGo } from "../types"
-import { IJSON, JSONStore } from "universal-picgo-store"
+import { JSONStore } from "universal-picgo-store"
 import _ from "lodash-es"
 import { browserPathJoin } from "../utils/browserUtils"
 
@@ -20,17 +20,10 @@ class BrowserI18nDb {
 
   constructor(ctx: IPicGo) {
     this.ctx = ctx
-    const browserI18nForder = browserPathJoin(this.ctx.baseDir, "picgo-i18n-cli")
+    const browserI18nForder = browserPathJoin(this.ctx.baseDir, "i18n-cli")
     this.db = new JSONStore(browserI18nForder)
 
-    if (!this.db.has(this.i18nKey)) {
-      try {
-        this.db.set(this.i18nKey, [])
-      } catch (e: any) {
-        this.ctx.log.error(e)
-        throw e
-      }
-    }
+    this.safeSet(this.i18nKey, [])
   }
 
   read(flush?: boolean): IBrowserLocal[] {
@@ -53,6 +46,18 @@ class BrowserI18nDb {
 
   has(key: string): boolean {
     throw new Error("has is not supported by BrowserI18nDb")
+  }
+
+  // ===================================================================================================================
+  safeSet(key: string, value: any) {
+    if (!this.db.has(key)) {
+      try {
+        this.db.set(key, value)
+      } catch (e: any) {
+        this.ctx.log.error(e)
+        throw e
+      }
+    }
   }
 }
 
