@@ -224,6 +224,17 @@ export interface ILocale {
   [key: string]: any
 }
 
+export interface IBrowserLocal {
+  /**
+   * local name
+   */
+  name: string;
+  /**
+   * local string in yaml format
+   */
+  yaml: string;
+}
+
 /**
  * for uploading image info
  */

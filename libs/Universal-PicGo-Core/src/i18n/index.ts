@@ -7,9 +7,9 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { II18nManager, ILocale, IPicGo, IStringKeyMap } from "../types"
-import { ObjectAdapter, I18n } from "@picgo/i18n"
-import { ZH_CN, ILocalesKey, ILocales } from "./zh-CN"
+import { IBrowserLocal, II18nManager, ILocale, IPicGo, IStringKeyMap } from "../types"
+import { I18n, ObjectAdapter } from "@picgo/i18n"
+import { ILocales, ILocalesKey, ZH_CN } from "./zh-CN"
 import { EN } from "./en"
 import { ZH_TW } from "./zh-TW"
 import yaml from "js-yaml"
@@ -17,6 +17,7 @@ import _ from "lodash-es"
 import { hasNodeEnv, win } from "universal-picgo-store"
 import { ensureFileSync, pathExistsSync } from "../utils/nodeUtils"
 import { browserPathJoin } from "../utils/browserUtils"
+import BrowserI18nDb from "./browserI18nDb"
 
 const languageList: IStringKeyMap<IStringKeyMap<string>> = {
   "zh-CN": ZH_CN,
@@ -28,8 +29,13 @@ class I18nManager implements II18nManager {
   private readonly i18n: I18n
   private readonly objectAdapter: ObjectAdapter
   private readonly ctx: IPicGo
+  private readonly browserI18nDb?: BrowserI18nDb
+
   constructor(ctx: IPicGo) {
     this.ctx = ctx
+    if (!hasNodeEnv) {
+      this.browserI18nDb = new BrowserI18nDb(this.ctx)
+    }
     this.objectAdapter = new ObjectAdapter(languageList)
     let language = this.ctx.getConfig<string>("settings.language") || "zh-CN"
     if (!languageList[language]) {
@@ -88,17 +94,17 @@ class I18nManager implements II18nManager {
         ensureFileSync(fs, path, i18nFolder)
       }
     } else {
-      i18nFolder = browserPathJoin(this.ctx.baseDir, "i18n-cli")
+      i18nFolder = browserPathJoin(this.ctx.baseDir, "picgo-i18n-cli")
     }
 
     return i18nFolder
   }
 
   private loadOutterI18n(): void {
-    const i18nFolder = this.getOutterI18nFolder()
     if (hasNodeEnv) {
       const fs = win.fs
       const path = win.require("path")
+      const i18nFolder = this.getOutterI18nFolder()
       const files = fs.readdirSync(i18nFolder, {
         withFileTypes: true,
       })
@@ -115,7 +121,17 @@ class I18nManager implements II18nManager {
         }
       })
     } else {
-      throw new Error("load outer i18n is not support in browser")
+      // "i18n": [
+      //    {
+      //      name: "zh-CN",
+      //      yaml: "---ILocales str---",
+      //    }
+      // ]
+      const i18ns = this.browserI18nDb?.read() ?? []
+      i18ns.forEach((i18n: IBrowserLocal) => {
+        const i18nFileObj = yaml.load(i18n.yaml) as ILocales
+        languageList[i18n.name] = i18nFileObj
+      })
     }
   }
 }
