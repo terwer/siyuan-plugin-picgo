@@ -1,7 +1,7 @@
 import { IJSON } from "../../types"
-import { TextFileSync } from "@commonify/lowdb"
+import { TextFileSync } from "../base/electron/TextFile"
 import json from "comment-json"
-import writeFile from "write-file-atomic"
+import { writeFileSync } from "../base/electron/writeFileAtomic"
 
 export class JSONAdapter {
   private readonly adapter: TextFileSync
@@ -36,6 +36,6 @@ export class JSONAdapter {
   }
 
   write(obj: any): void {
-    writeFile.sync(this.dbPath, json.stringify(obj, null, 2))
+    writeFileSync(this.dbPath, json.stringify(obj, null, 2))
   }
 }

@@ -108,18 +108,20 @@ class I18nManager implements II18nManager {
       const files = fs.readdirSync(i18nFolder, {
         withFileTypes: true,
       })
-      files.forEach((file: any) => {
-        if (file.isFile() && file.name.endsWith(".yml")) {
-          const i18nFilePath = path.join(i18nFolder, file.name)
-          const i18nFile = fs.readFileSync(i18nFilePath, "utf8")
-          try {
-            const i18nFileObj = yaml.load(i18nFile) as ILocales
-            languageList[file.name.replace(/\.yml$/, "")] = i18nFileObj
-          } catch (e) {
-            console.error(e)
-          }
-        }
-      })
+      // files.forEach((file: any) => {
+      //   if (file.isFile() && file.name.endsWith(".yml")) {
+      //     const i18nFilePath = path.join(i18nFolder, file.name)
+      //     alert(i18nFilePath)
+      //     alert(fs)
+      //     const i18nFile = fs.readFileSync(i18nFilePath, "utf8")
+      //     try {
+      //       const i18nFileObj = yaml.load(i18nFile) as ILocales
+      //       languageList[file.name.replace(/\.yml$/, "")] = i18nFileObj
+      //     } catch (e) {
+      //       console.error(e)
+      //     }
+      //   }
+      // })
     } else {
       // "i18n": [
       //    {

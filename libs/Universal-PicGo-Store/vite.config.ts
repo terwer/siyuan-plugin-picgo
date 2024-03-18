@@ -19,7 +19,10 @@ console.log("distDir=>", distDir)
 
 export default defineConfig({
   plugins: [
-    dts(),
+    dts({
+      insertTypesEntry: true,
+      // rollupTypes: true,
+    }),
 
     nodePolyfills({
       // Whether to polyfill `node:` protocol imports.
@@ -47,6 +50,7 @@ export default defineConfig({
 
     // 构建后是否生成 source map 文件
     sourcemap: false,
+    minify: false,
 
     lib: {
       // Could also be a dictionary or array of multiple entry points
@@ -59,7 +63,7 @@ export default defineConfig({
       plugins: [...(isWatch ? [livereload(devDistDir)] : [])] as any,
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ["worker_threads"],
+      external: [],
       output: {
         entryFileNames: "[name].js",
       },

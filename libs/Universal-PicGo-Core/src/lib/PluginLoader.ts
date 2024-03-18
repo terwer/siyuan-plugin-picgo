@@ -8,7 +8,7 @@
  */
 
 import { IPicGo, IPicGoPlugin, IPicGoPluginInterface, IPluginLoader } from "../types"
-import { hasNodeEnv, win } from "universal-picgo-store/src"
+import { hasNodeEnv, win } from "universal-picgo-store"
 import BrowserPluginLoaderDb from "../db/browserPluginLoderDb"
 
 /**

@@ -61,7 +61,10 @@ console.log("distDir=>", distDir)
 
 export default defineConfig({
   plugins: [
-    dts(),
+    dts({
+      insertTypesEntry: true,
+      // rollupTypes: true,
+    }),
 
     nodePolyfills({
       // Whether to polyfill `node:` protocol imports.

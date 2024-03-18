@@ -24,6 +24,7 @@ const handleTest = () => {
     ElMessage.success("success")
   } catch (e: any) {
     ElMessage.error(e.toString())
+    logger.error(e)
   }
 }
 </script>
