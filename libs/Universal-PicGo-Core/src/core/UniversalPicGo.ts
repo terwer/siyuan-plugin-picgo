@@ -30,6 +30,8 @@ import { IBuildInEvent } from "../utils/enums"
 import DB from "../utils/db"
 import { hasNodeEnv, win } from "universal-picgo-store"
 import { ensureFileSync, pathExistsSync } from "../utils/nodeUtils"
+import { I18nManager } from "../i18n"
+import { getBrowserDirectoryPath } from "../utils/browserUtils"
 
 /*
  * 通用 PicGO 对象定义
@@ -223,7 +225,11 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       }
     } else {
       if (this.configPath === "") {
+        this.baseDir = ""
         this.configPath = `universal-picgo-config.json`
+      } else {
+        // 模拟 path.dirname 的功能，获取路径的目录部分赋值给 baseDir
+        this.baseDir = getBrowserDirectoryPath(this.configPath)
       }
     }
   }
@@ -233,7 +239,16 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     this._config = this.db.read(true) as IConfig
   }
 
-  private init(): void {}
+  private init(): void {
+    try {
+      // init 18n at first
+      this.i18n = new I18nManager(this)
+    } catch (e: any) {
+      this.emit(IBuildInEvent.UPLOAD_PROGRESS, -1)
+      this.log.error(e)
+      throw e
+    }
+  }
 }
 
 export { UniversalPicGo }

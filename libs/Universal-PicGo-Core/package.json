@@ -30,8 +30,10 @@
     "vite-plugin-node-polyfills": "^0.21.0"
   },
   "dependencies": {
-    "zhi-lib-base": "^0.8.0",
-    "universal-picgo-store": "workspace:*"
+    "@picgo/i18n": "^1.0.0",
+    "js-yaml": "^4.1.0",
+    "universal-picgo-store": "workspace:*",
+    "zhi-lib-base": "^0.8.0"
   },
   "publishConfig": {
     "access": "public"
