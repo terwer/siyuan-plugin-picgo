@@ -210,7 +210,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       const path = win.require("path")
       const { homedir } = os
       if (this.configPath === "") {
-        this.configPath = homedir() + "/.picgo/config.json"
+        this.configPath = homedir() + "/.universal-picgo/config.json"
       }
       if (path.extname(this.configPath).toUpperCase() !== ".JSON") {
         this.configPath = ""
@@ -223,7 +223,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       }
     } else {
       if (this.configPath === "") {
-        this.configPath = `picgo-config-${this.VERSION}.json`
+        this.configPath = `universal-picgo-config.json`
       }
     }
   }
