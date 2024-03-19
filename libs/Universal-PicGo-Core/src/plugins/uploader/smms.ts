@@ -10,26 +10,25 @@
 import { ILocalesKey } from "../../i18n/zh-CN"
 import { IPicGo, IPluginConfig, ISmmsConfig } from "../../types"
 import { IBuildInEvent } from "../../utils/enums"
+import { AxiosRequestConfig } from "axios"
 
-const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDomain = ""): IOldReqOptions => {
+const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDomain = ""): AxiosRequestConfig => {
   const domain = backupDomain || "sm.ms"
+
+  const formData = new FormData()
+  formData.append("smfile", new Blob([image], { type: "image/png" }), fileName)
+  formData.append("ssl", "true")
+
   return {
     method: "POST",
     url: `https://${domain}/api/v2/upload`,
     headers: {
-      contentType: "multipart/form-data",
+      "Content-Type": "multipart/form-data",
       "User-Agent": "PicGo",
       Authorization: apiToken,
     },
-    formData: {
-      smfile: {
-        value: image,
-        options: {
-          filename: fileName,
-        },
-      },
-      ssl: "true",
-    },
+    data: formData,
+    responseType: "json",
   }
 }
 

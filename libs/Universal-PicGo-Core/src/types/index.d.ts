@@ -10,6 +10,7 @@
 
 import { EventEmitter, Buffer } from "../utils/nodePolyfill"
 import { ILogger } from "zhi-lib-base"
+import {AxiosRequestConfig} from "axios";
 
 export interface IPicGo extends EventEmitter {
   /**
@@ -46,6 +47,10 @@ export interface IPicGo extends EventEmitter {
    * install\uninstall\update picgo's plugin via npm
    */
   pluginHandler: IPluginHandler
+  /**
+   * request based on axios
+   */
+  request: IPicGoRequest
   /**
    * plugin system core part transformer\uploader\beforeTransformPlugins...
    */
@@ -454,3 +459,59 @@ export interface IImgSize {
 export interface IPathTransformedImgInfo extends IImgInfo {
   success: boolean
 }
+
+// =====================================================================================================================
+// request start
+
+export type IPicGoRequest = <T, U extends  AxiosRequestConfig>(config: U) => Promise<IResponse<T, U>>
+
+/**
+ * for PicGo new request api, the response will be json format
+ */
+export type IReqOptions<T = any> = AxiosRequestConfig<T> & {
+  resolveWithFullResponse: true
+}
+
+/**
+ * for PicGo new request api, the response will be Buffer
+ */
+export type IReqOptionsWithArrayBufferRes<T = any> = IReqOptions<T> & {
+  responseType: 'arraybuffer'
+}
+
+/**
+ * for PicGo new request api, the response will be just response data. (not statusCode, headers, etc.)
+ */
+export type IReqOptionsWithBodyResOnly<T = any> = AxiosRequestConfig<T>
+
+export type IFullResponse<T = any, U = any> = AxiosResponse<T, U> & {
+  statusCode: number
+  body: T
+}
+
+type AxiosResponse<T = any, U = any> = import('axios').AxiosResponse<T, U>
+
+type AxiosRequestConfig<T = any> = import('axios').AxiosRequestConfig<T>
+
+interface IRequestOptionsWithFullResponse {
+  resolveWithFullResponse: true
+}
+
+interface IRequestOptionsWithJSON {
+  json: true
+}
+
+interface IRequestOptionsWithResponseTypeArrayBuffer {
+  responseType: 'arraybuffer'
+}
+
+/**
+ * T is the response data type
+ * U is the config type
+ */
+export type IResponse<T, U> = U extends IRequestOptionsWithFullResponse ? IFullResponse<T, U>
+    : U extends IRequestOptionsWithJSON ? T
+        : U extends IRequestOptionsWithResponseTypeArrayBuffer ? Buffer
+          : U extends IReqOptionsWithBodyResOnly ? T
+              : string
+// request end

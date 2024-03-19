@@ -17,6 +17,7 @@ import {
   IPicGo,
   IPicGoPlugin,
   IPicGoPluginInterface,
+  IPicGoRequest,
   IPluginLoader,
   IStringKeyMap,
 } from "../types"
@@ -36,6 +37,7 @@ import { I18nManager } from "../i18n"
 import { browserPathJoin, getBrowserDirectoryPath } from "../utils/browserUtils"
 import { isConfigKeyInBlackList, isInputConfigValid } from "../utils/common"
 import { eventBus } from "../utils/eventBus"
+import { PicGoRequest } from "../lib/PicGoRequest"
 
 /*
  * 通用 PicGO 对象定义
@@ -56,6 +58,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   output: IImgInfo[]
   input: any[]
   pluginHandler: PluginHandler
+  request: IPicGoRequest
   i18n!: II18nManager
   VERSION: string = process.env.PICGO_VERSION ?? "unknown"
   private readonly isDev: boolean
@@ -87,6 +90,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     this.initConfigPath()
     // this.cmd = new Commander(this)
     this.pluginHandler = new PluginHandler(this)
+    this.request = PicGoRequest
     this.initConfig()
     this.init()
 

@@ -50,63 +50,67 @@ export const getFSFile = async (filePath: string): Promise<IPathTransformedImgIn
 
 export const getURLFile = async (url: string, ctx: IPicGo): Promise<IPathTransformedImgInfo> => {
   url = handleUrlEncode(url)
-  const isImage = false
-  const extname = ""
+  let isImage = false
+  let extname = ""
   let timeoutId: any
 
-  throw new Error("getURLFile is not implemented")
-  // const requestFn = new Promise<IPathTransformedImgInfo>((resolve, reject) => {
-  //   ;(async () => {
-  //     try {
-  //       const res = await ctx
-  //         .request({
-  //           method: "get",
-  //           url,
-  //           resolveWithFullResponse: true,
-  //           responseType: "arraybuffer",
-  //         })
-  //         .then((resp: any) => {
-  //           const contentType = resp.headers["content-type"]
-  //           if (contentType?.includes("image")) {
-  //             isImage = true
-  //             extname = `.${contentType.split("image/")[1]}`
-  //           }
-  //           return resp.data as Buffer
-  //         })
-  //       clearTimeout(timeoutId)
-  //       if (isImage) {
-  //         const urlPath = new URL(url).pathname
-  //         resolve({
-  //           buffer: res,
-  //           fileName: path.basename(urlPath),
-  //           extname,
-  //           success: true,
-  //         })
-  //       } else {
-  //         resolve({
-  //           success: false,
-  //           reason: `${url} is not image`,
-  //         })
-  //       }
-  //     } catch (error: any) {
-  //       clearTimeout(timeoutId)
-  //       resolve({
-  //         success: false,
-  //         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  //         reason: `request ${url} error, ${error?.message ?? ""}`,
-  //       })
-  //     }
-  //   })().catch(reject)
-  // })
-  // const timeoutPromise = new Promise<IPathTransformedImgInfo>((resolve): void => {
-  //   timeoutId = setTimeout(() => {
-  //     resolve({
-  //       success: false,
-  //       reason: `request ${url} timeout`,
-  //     })
-  //   }, 10000)
-  // })
-  // return Promise.race([requestFn, timeoutPromise])
+  const requestFn = new Promise<IPathTransformedImgInfo>((resolve, reject) => {
+    ;(async () => {
+      try {
+        const res = await ctx
+          .request({
+            method: "get",
+            url,
+            resolveWithFullResponse: true,
+            responseType: "arraybuffer",
+          })
+          .then((resp: any) => {
+            const contentType = resp.headers["content-type"]
+            if (contentType?.includes("image")) {
+              isImage = true
+              extname = `.${contentType.split("image/")[1]}`
+            }
+            return resp.data as Buffer
+          })
+        clearTimeout(timeoutId)
+        if (isImage) {
+          const urlPath = new URL(url).pathname
+          const fileName = urlPath.split("/").pop()
+          // if (hasNodeEnv) {
+          //   const path = win.require("path")
+          //   fileName = path.basename(urlPath)
+          // }
+          resolve({
+            buffer: res,
+            fileName: fileName,
+            extname,
+            success: true,
+          })
+        } else {
+          resolve({
+            success: false,
+            reason: `${url} is not image`,
+          })
+        }
+      } catch (error: any) {
+        clearTimeout(timeoutId)
+        resolve({
+          success: false,
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          reason: `request ${url} error, ${error?.message ?? ""}`,
+        })
+      }
+    })().catch(reject)
+  })
+  const timeoutPromise = new Promise<IPathTransformedImgInfo>((resolve): void => {
+    timeoutId = setTimeout(() => {
+      resolve({
+        success: false,
+        reason: `request ${url} timeout`,
+      })
+    }, 10000)
+  })
+  return Promise.race([requestFn, timeoutPromise])
 }
 
 /**
