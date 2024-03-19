@@ -460,6 +460,11 @@ export interface IPathTransformedImgInfo extends IImgInfo {
   success: boolean
 }
 
+export interface IConfigChangePayload<T> {
+  configName: string
+  value: T
+}
+
 // =====================================================================================================================
 // request start
 

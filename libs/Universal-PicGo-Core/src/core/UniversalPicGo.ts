@@ -37,7 +37,7 @@ import { I18nManager } from "../i18n"
 import { browserPathJoin, getBrowserDirectoryPath } from "../utils/browserUtils"
 import { isConfigKeyInBlackList, isInputConfigValid } from "../utils/common"
 import { eventBus } from "../utils/eventBus"
-import { PicGoRequest } from "../lib/PicGoRequest"
+import { PicGoRequestWrapper } from "../lib/PicGoRequest"
 
 /*
  * 通用 PicGO 对象定义
@@ -58,7 +58,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   output: IImgInfo[]
   input: any[]
   pluginHandler: PluginHandler
-  request: IPicGoRequest
+  requestWrapper: PicGoRequestWrapper
   i18n!: II18nManager
   VERSION: string = process.env.PICGO_VERSION ?? "unknown"
   private readonly isDev: boolean
@@ -71,6 +71,10 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
 
   public getLogger(name?: string): ILogger {
     return simpleLogger(name ?? "universal-picgo", "universal-picgo", this.isDev)
+  }
+
+  get request(): PicGoRequestWrapper["PicGoRequest"] {
+    return this.requestWrapper.PicGoRequest.bind(this.requestWrapper)
   }
 
   constructor(configPath = "", isDev?: boolean) {
@@ -90,7 +94,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     this.initConfigPath()
     // this.cmd = new Commander(this)
     this.pluginHandler = new PluginHandler(this)
-    this.request = PicGoRequest
+    this.requestWrapper = new PicGoRequestWrapper(this)
     this.initConfig()
     this.init()
 

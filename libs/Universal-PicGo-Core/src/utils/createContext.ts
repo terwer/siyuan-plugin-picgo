@@ -24,7 +24,7 @@ const createContext = (ctx: IPicGo): IPicGo => {
     input: [],
     pluginLoader: ctx.pluginLoader,
     pluginHandler: ctx.pluginHandler,
-    request: ctx.request.bind(ctx),
+    request: ctx.request,
     helper: ctx.helper,
     VERSION: ctx.VERSION,
     // GUI_VERSION: ctx.GUI_VERSION,
