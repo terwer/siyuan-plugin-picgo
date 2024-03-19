@@ -106,7 +106,7 @@ async function writeFileAsync(filename: string, data: any, options = {} as any) 
           options.mode = stats.mode
         }
 
-        if (options.chown == null && process.getuid) {
+        if (options.chown == null && win.process.getuid) {
           options.chown = { uid: stats.uid, gid: stats.gid }
         }
       }
