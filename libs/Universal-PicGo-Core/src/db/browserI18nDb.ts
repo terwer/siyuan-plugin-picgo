@@ -20,8 +20,8 @@ class BrowserI18nDb {
 
   constructor(ctx: IPicGo) {
     this.ctx = ctx
-    const browserI18nForder = browserPathJoin(this.ctx.baseDir, "i18n-cli", "i18n.json")
-    this.db = new JSONStore(browserI18nForder)
+    const browserI18nPath = browserPathJoin(this.ctx.baseDir, "i18n-cli", "i18n.json")
+    this.db = new JSONStore(browserI18nPath)
 
     this.safeSet(this.i18nKey, [])
   }
