@@ -9,7 +9,7 @@
 
 import { ILifecyclePlugins, IPlugin } from "../types"
 
-export class LifecyclePlugins implements ILifecyclePlugins {
+class LifecyclePlugins implements ILifecyclePlugins {
   static currentPlugin: string | null
   private readonly list: Map<string, IPlugin>
   private readonly pluginIdMap: Map<string, string[]>
@@ -21,27 +21,52 @@ export class LifecyclePlugins implements ILifecyclePlugins {
     this.pluginIdMap = new Map()
   }
 
-  get(id: string): IPlugin | undefined {
-    return undefined
+  getName(): string {
+    return this.name
   }
 
-  getIdList(): string[] {
-    return []
+  get(id: string): IPlugin | undefined {
+    return this.list.get(id)
   }
 
   getList(): IPlugin[] {
-    return []
+    return [...this.list.values()]
   }
 
-  getName(): string {
-    return ""
+  getIdList(): string[] {
+    return [...this.list.keys()]
   }
 
   register(id: string, plugin: IPlugin): void {
-    return
+    if (!id) throw new TypeError("id is required!")
+    if (typeof plugin.handle !== "function") throw new TypeError("plugin.handle must be a function!")
+    if (this.list.has(id)) throw new TypeError(`${this.name} duplicate id: ${id}!`)
+    this.list.set(id, plugin)
+    if (LifecyclePlugins.currentPlugin) {
+      if (this.pluginIdMap.has(LifecyclePlugins.currentPlugin)) {
+        this.pluginIdMap.get(LifecyclePlugins.currentPlugin)?.push(id)
+      } else {
+        this.pluginIdMap.set(LifecyclePlugins.currentPlugin, [id])
+      }
+    }
   }
 
-  unregister(id: string): void {
-    return
+  unregister(pluginName: string): void {
+    if (this.pluginIdMap.has(pluginName)) {
+      const pluginList = this.pluginIdMap.get(pluginName)
+      pluginList?.forEach((plugin: string) => {
+        this.list.delete(plugin)
+      })
+    }
   }
 }
+
+export const setCurrentPluginName = (name: string | null = null): void => {
+  LifecyclePlugins.currentPlugin = name
+}
+
+export const getCurrentPluginName = (): string | null => {
+  return LifecyclePlugins.currentPlugin
+}
+
+export { LifecyclePlugins }

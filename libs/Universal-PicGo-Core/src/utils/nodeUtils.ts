@@ -48,11 +48,27 @@ export const ensureFileSync = (fs: any, path: any, filePath: string) => {
  * 确保目录存在
  *
  * @param fs
- * @param path
  * @param dir
  */
-export const ensureFolderSync = (fs: any, path: any, dir: string) => {
+export const ensureFolderSync = (fs: any, dir: string) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true })
+  }
+}
+
+/**
+ * 同步读取 JSON 文件的方法
+ *
+ * @param fs - fs 模块
+ * @param filePath - JSON 文件路径
+ * @returns  - JSON 文件内容转换后的对象，如果出错则返回空对象 {}
+ */
+export const readJSONSync = (fs: any, filePath: string): any => {
+  try {
+    const data = fs.readFileSync(filePath, "utf8")
+    return JSON.parse(data)
+  } catch (err: any) {
+    console.error(`Error reading JSON file: ${err.message}`)
+    return {}
   }
 }

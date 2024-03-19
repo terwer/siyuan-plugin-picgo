@@ -61,6 +61,12 @@ export interface IPicGo extends EventEmitter {
   i18n: II18nManager
 
   /**
+   * get logger for debug
+   *
+   * @param name - logger bame
+   */
+  getLogger: (name?: string) => ILogger
+  /**
    * get picgo config
    */
   getConfig: <T>(name?: string) => T

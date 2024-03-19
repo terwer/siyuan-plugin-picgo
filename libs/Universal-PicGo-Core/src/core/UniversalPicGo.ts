@@ -21,18 +21,21 @@ import {
   IStringKeyMap,
 } from "../types"
 import { Lifecycle } from "./Lifecycle"
+import uploaders from "../plugins/uploader"
+import transformers from "../plugins/transformer"
 import { PluginLoader } from "../lib/PluginLoader"
-import { LifecyclePlugins } from "../lib/LifecyclePlugins"
+import { LifecyclePlugins, setCurrentPluginName } from "../lib/LifecyclePlugins"
 import { PluginHandler } from "../lib/PluginHandler"
 import _ from "lodash-es"
 import getClipboardImage from "../utils/getClipboardImage"
-import { IBuildInEvent } from "../utils/enums"
+import { IBuildInEvent, IBusEvent } from "../utils/enums"
 import ConfigDb from "../db/config"
 import { hasNodeEnv, win } from "universal-picgo-store"
 import { ensureFileSync, pathExistsSync } from "../utils/nodeUtils"
 import { I18nManager } from "../i18n"
 import { browserPathJoin, getBrowserDirectoryPath } from "../utils/browserUtils"
 import { isConfigKeyInBlackList, isInputConfigValid } from "../utils/common"
+import { eventBus } from "../utils/eventBus"
 
 /*
  * 通用 PicGO 对象定义
@@ -55,6 +58,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   pluginHandler: PluginHandler
   i18n!: II18nManager
   VERSION: string = process.env.PICGO_VERSION ?? "unknown"
+  private readonly isDev: boolean
 
   // GUI_VERSION?: string
 
@@ -62,9 +66,14 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     return this._pluginLoader
   }
 
+  public getLogger(name?: string): ILogger {
+    return simpleLogger(name ?? "universal-picgo", "universal-picgo", this.isDev)
+  }
+
   constructor(configPath = "", isDev?: boolean) {
     super()
-    this.log = simpleLogger("universal-picgo-api", "universal-picgo", isDev ?? false)
+    this.isDev = isDev ?? false
+    this.log = this.getLogger()
     this.configPath = configPath
     this.output = []
     this.input = []
@@ -145,10 +154,10 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
         delete config[name]
       }
       _.set(this._config, name, config[name])
-      // eventBus.emit(IBusEvent.CONFIG_CHANGE, {
-      //   configName: name,
-      //   value: config[name],
-      // })
+      eventBus.emit(IBusEvent.CONFIG_CHANGE, {
+        configName: name,
+        value: config[name],
+      })
     })
   }
 
@@ -174,18 +183,24 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
           throw new Error("image not found in clipboard")
         } else {
           this.once(IBuildInEvent.FAILED, () => {
-            if (!shouldKeepAfterUploading) {
-              // 删除 picgo 生成的图片文件，例如 `~/.picgo/20200621205720.png`
-              // fs.remove(imgPath).catch((e) => {
-              //   this.log.error(e)
-              // })
+            if (hasNodeEnv) {
+              const fs = win.fs
+              if (!shouldKeepAfterUploading) {
+                // 删除 picgo 生成的图片文件，例如 `~/.picgo/20200621205720.png`
+                fs.remove(imgPath).catch((e: any) => {
+                  this.log.error(e)
+                })
+              }
             }
           })
           this.once("finished", () => {
-            if (!shouldKeepAfterUploading) {
-              // fs.remove(imgPath).catch((e) => {
-              //   this.log.error(e)
-              // })
+            if (hasNodeEnv) {
+              const fs = win.fs
+              if (!shouldKeepAfterUploading) {
+                fs.remove(imgPath).catch((e: any) => {
+                  this.log.error(e)
+                })
+              }
             }
           })
           const { output } = await this.lifecycle.start([imgPath])
@@ -245,6 +260,14 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       // init 18n at first
       this.i18n = new I18nManager(this)
       this._pluginLoader = new PluginLoader(this)
+      // load self plugins
+      setCurrentPluginName("picgo")
+      uploaders(this).register(this)
+      transformers(this).register(this)
+      setCurrentPluginName("")
+      // load third-party plugins
+      this._pluginLoader.load()
+      this.lifecycle = new Lifecycle(this)
     } catch (e: any) {
       this.emit(IBuildInEvent.UPLOAD_PROGRESS, -1)
       this.log.error(e)
