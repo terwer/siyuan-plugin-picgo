@@ -15,7 +15,7 @@ import { ZH_TW } from "./zh-TW"
 import yaml from "js-yaml"
 import _ from "lodash-es"
 import { hasNodeEnv, win } from "universal-picgo-store"
-import { ensureFileSync, pathExistsSync } from "../utils/nodeUtils"
+import { ensureFolderSync, pathExistsSync } from "../utils/nodeUtils"
 import { browserPathJoin } from "../utils/browserUtils"
 import BrowserI18nDb from "../db/browserI18nDb"
 
@@ -91,10 +91,10 @@ class I18nManager implements II18nManager {
       const path = win.require("path")
       i18nFolder = path.join(this.ctx.baseDir, "i18n-cli")
       if (!pathExistsSync(fs, path, i18nFolder)) {
-        ensureFileSync(fs, path, i18nFolder)
+        ensureFolderSync(fs, path, i18nFolder)
       }
     } else {
-      i18nFolder = browserPathJoin(this.ctx.baseDir, "picgo-i18n-cli")
+      i18nFolder = browserPathJoin(this.ctx.baseDir, "i18n-cli", "i18n.json")
     }
 
     return i18nFolder
@@ -108,20 +108,18 @@ class I18nManager implements II18nManager {
       const files = fs.readdirSync(i18nFolder, {
         withFileTypes: true,
       })
-      // files.forEach((file: any) => {
-      //   if (file.isFile() && file.name.endsWith(".yml")) {
-      //     const i18nFilePath = path.join(i18nFolder, file.name)
-      //     alert(i18nFilePath)
-      //     alert(fs)
-      //     const i18nFile = fs.readFileSync(i18nFilePath, "utf8")
-      //     try {
-      //       const i18nFileObj = yaml.load(i18nFile) as ILocales
-      //       languageList[file.name.replace(/\.yml$/, "")] = i18nFileObj
-      //     } catch (e) {
-      //       console.error(e)
-      //     }
-      //   }
-      // })
+      files.forEach((file: any) => {
+        if (file.isFile() && file.name.endsWith(".yml")) {
+          const i18nFilePath = path.join(i18nFolder, file.name)
+          const i18nFile = fs.readFileSync(i18nFilePath, "utf8")
+          try {
+            const i18nFileObj = yaml.load(i18nFile) as ILocales
+            languageList[file.name.replace(/\.yml$/, "")] = i18nFileObj
+          } catch (e) {
+            console.error(e)
+          }
+        }
+      })
     } else {
       // "i18n": [
       //    {

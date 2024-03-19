@@ -52,23 +52,8 @@ export default defineConfig(() => ({
                 },
                 injectTo: "head-prepend",
               },
-              {
-                tag: "script",
-                attrs: {
-                  src: "./libs/imurmurhash-js/imurmurhash.js",
-                },
-                injectTo: "head-prepend",
-              },
             ]
-          : [
-              {
-                tag: "script",
-                attrs: {
-                  src: "./libs/imurmurhash-js/imurmurhash.js",
-                },
-                injectTo: "head-prepend",
-              },
-            ],
+          : [],
         data: {
           title: "eruda",
           injectScript: isDev ? `<script>eruda.init();</script>` : "",

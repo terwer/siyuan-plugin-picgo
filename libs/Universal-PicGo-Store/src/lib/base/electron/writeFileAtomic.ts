@@ -9,11 +9,10 @@
 
 import { win } from "../../utils"
 import { onExit } from "./signalExitShim"
+import MurmurHash3 from "./Murmurhash3"
 
 const fs = win.fs
-const MurmurHash3 = win.MurmurHash3
-const path = win.require("path")
-const { promisify } = win.require("util")
+const murmurHash3 = new MurmurHash3(win.__filename)
 const activeFiles = {} as any
 
 // if we run inside of a worker_thread, `process.pid` is not unique
@@ -35,7 +34,7 @@ function getTmpname(filename: string) {
   return (
     filename +
     "." +
-    MurmurHash3(win.__filename).hash(String(process.pid)).hash(String(threadId)).hash(String(++invocations)).result()
+    murmurHash3.hash(String(win.process.pid)).hash(String(threadId)).hash(String(++invocations)).result()
   )
 }
 
@@ -69,7 +68,7 @@ function isChownErrOk(err: any) {
     return true
   }
 
-  const nonroot = !process.getuid || process.getuid() !== 0
+  const nonroot = !win.process.getuid || win.process.getuid() !== 0
   if (nonroot) {
     if (err.code === "EINVAL" || err.code === "EPERM") {
       return true
@@ -80,6 +79,9 @@ function isChownErrOk(err: any) {
 }
 
 async function writeFileAsync(filename: string, data: any, options = {} as any) {
+  const path = win.require("path")
+  const { promisify } = win.require("util")
+
   if (typeof options === "string") {
     options = { encoding: options }
   }
@@ -203,7 +205,7 @@ function writeFileSync(filename: string, data: any, options?: any) {
       if (!options.mode) {
         options.mode = stats.mode
       }
-      if (!options.chown && process.getuid) {
+      if (!options.chown && win.process.getuid) {
         options.chown = { uid: stats.uid, gid: stats.gid }
       }
     } catch (ex) {

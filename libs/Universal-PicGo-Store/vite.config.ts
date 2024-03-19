@@ -9,7 +9,9 @@ import livereload from "rollup-plugin-livereload"
 import { nodePolyfills } from "vite-plugin-node-polyfills"
 
 const args = minimist(process.argv.slice(2))
+const isServe = process.env.IS_SERVE
 const isWatch = args.watch || args.w || false
+const isDev = isServe || isWatch
 const devDistDir = "./dist"
 const distDir = isWatch ? devDistDir : "./dist"
 // const distDir = devDistDir
@@ -50,7 +52,7 @@ export default defineConfig({
 
     // 构建后是否生成 source map 文件
     sourcemap: false,
-    minify: false,
+    minify: !isDev,
 
     lib: {
       // Could also be a dictionary or array of multiple entry points

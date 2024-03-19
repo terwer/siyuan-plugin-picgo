@@ -100,6 +100,7 @@ export default defineConfig({
 
     // 构建后是否生成 source map 文件
     sourcemap: false,
+    minify: !isDev,
 
     lib: {
       // Could also be a dictionary or array of multiple entry points

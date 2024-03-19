@@ -43,3 +43,16 @@ export const ensureFileSync = (fs: any, path: any, filePath: string) => {
     fs.writeFileSync(filePath, "")
   }
 }
+
+/**
+ * 确保目录存在
+ *
+ * @param fs
+ * @param path
+ * @param dir
+ */
+export const ensureFolderSync = (fs: any, path: any, dir: string) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true })
+  }
+}
