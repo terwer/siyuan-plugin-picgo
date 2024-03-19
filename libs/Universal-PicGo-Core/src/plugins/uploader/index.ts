@@ -8,10 +8,12 @@
  */
 
 import { IPicGo, IPicGoPlugin } from "../../types"
-
+import SMMSUploader from "./smms"
 const buildInUploaders: IPicGoPlugin = () => {
   return {
-    register(ctx: IPicGo) {},
+    register(ctx: IPicGo) {
+      SMMSUploader(ctx)
+    },
   }
 }
 
