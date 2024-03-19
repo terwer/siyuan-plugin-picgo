@@ -10,6 +10,9 @@
 
 import { AxiosRequestConfig } from "axios"
 import { IResponse } from "../types"
+import { simpleLogger } from "zhi-lib-base"
+
+const logger = simpleLogger("picgo-request", "universal-picgo")
 
 // #64 dynamic get proxy value
 /**
@@ -19,6 +22,7 @@ import { IResponse } from "../types"
  * @constructor
  */
 function PicGoRequest<T, U extends AxiosRequestConfig>(options: U): Promise<IResponse<T, U>> {
+  logger.info("PicGoRequest start request", options)
   throw new Error("PicGoRequest is not implemented")
 }
 
