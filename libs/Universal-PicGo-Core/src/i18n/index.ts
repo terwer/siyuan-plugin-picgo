@@ -90,9 +90,7 @@ class I18nManager implements II18nManager {
       const fs = win.fs
       const path = win.require("path")
       i18nFolder = path.join(this.ctx.baseDir, "i18n-cli")
-      if (!pathExistsSync(fs, path, i18nFolder)) {
-        ensureFolderSync(fs, i18nFolder)
-      }
+      ensureFolderSync(fs, i18nFolder)
     } else {
       i18nFolder = browserPathJoin(this.ctx.baseDir, "i18n-cli", "i18n.json")
     }

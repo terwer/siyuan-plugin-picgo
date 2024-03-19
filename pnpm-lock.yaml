@@ -23,6 +23,9 @@ importers:
       '@picgo/i18n':
         specifier: ^1.0.0
         version: 1.0.0
+      dayjs:
+        specifier: ^1.11.10
+        version: 1.11.10
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.0

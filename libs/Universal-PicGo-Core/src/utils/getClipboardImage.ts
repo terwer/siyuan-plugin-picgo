@@ -8,10 +8,17 @@
  */
 
 import { IClipboardImage, IPicGo } from "../types"
+import { hasNodeEnv } from "universal-picgo-store"
+import { getClipboardImageElectron } from "./clipboard/electron"
+import { getClipboardImageBrowser } from "./clipboard/browser"
 
 // Thanks to vs-picgo: https://github.com/Spades-S/vs-picgo/blob/master/src/extension.ts
 const getClipboardImage = async (ctx: IPicGo): Promise<IClipboardImage> => {
-  throw new Error("getClipboardImage Not Implemented")
+  if (hasNodeEnv) {
+    return await getClipboardImageElectron(ctx)
+  } else {
+    return await getClipboardImageBrowser(ctx)
+  }
 }
 
 export default getClipboardImage

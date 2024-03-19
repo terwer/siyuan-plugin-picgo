@@ -10,6 +10,23 @@
 import { IPluginNameType } from "../types"
 import { hasNodeEnv, win } from "universal-picgo-store"
 
+export const isUrlEncode = (url: string): boolean => {
+  url = url || ""
+  try {
+    // the whole url encode or decode shold not use encodeURIComponent or decodeURIComponent
+    return url !== decodeURI(url)
+  } catch (e) {
+    // if some error caught, try to let it go
+    return false
+  }
+}
+export const handleUrlEncode = (url: string): string => {
+  if (!isUrlEncode(url)) {
+    url = encodeURI(url)
+  }
+  return url
+}
+
 /**
  * detect the input string's type
  * for example

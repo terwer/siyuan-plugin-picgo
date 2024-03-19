@@ -13,12 +13,14 @@ import { hasNodeEnv, win } from "universal-picgo-store/src"
 import { readJSONSync } from "../utils/nodeUtils"
 import { IBuildInEvent } from "../utils/enums"
 import { setCurrentPluginName } from "./LifecyclePlugins"
+import { ILogger } from "zhi-lib-base"
 
 /**
  * Local plugin loader, file system is required
  */
 export class PluginLoader implements IPluginLoader {
   private readonly ctx: IPicGo
+  private readonly logger: ILogger
   private db: PluginLoaderDb
   private list: string[] = []
   private readonly fullList: Set<string> = new Set()
@@ -26,6 +28,7 @@ export class PluginLoader implements IPluginLoader {
 
   constructor(ctx: IPicGo) {
     this.ctx = ctx
+    this.logger = ctx.getLogger("plugin-loader")
     this.db = new PluginLoaderDb(this.ctx)
     this.init()
   }
@@ -54,7 +57,8 @@ export class PluginLoader implements IPluginLoader {
       }
       return true
     } else {
-      throw new Error("load is not supported in browser")
+      this.logger.warn("load is not supported in browser")
+      return false
     }
   }
 
