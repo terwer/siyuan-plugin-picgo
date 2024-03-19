@@ -126,7 +126,11 @@ export class Lifecycle extends EventEmitter {
       delete ctx.output[i].buffer
     }
     ctx.emit(IBuildInEvent.FINISHED, ctx)
-    ctx.log.info(`\n${msg}`)
+    if (msg === "") {
+      ctx.log.warn("[after-upload] image upload occured an error, please read log for details")
+    } else {
+      ctx.log.info(`[after-upload] upload finishied => \n${msg}`)
+    }
     return ctx
   }
 

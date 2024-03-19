@@ -7,8 +7,11 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { IPluginNameType } from "../types"
+import { IImgSize, IPathTransformedImgInfo, IPicGo, IPluginNameType } from "../types"
 import { hasNodeEnv, win } from "universal-picgo-store"
+import imageSize from "./image-size"
+
+export const isUrl = (url: string): boolean => url.startsWith("http://") || url.startsWith("https://")
 
 export const isUrlEncode = (url: string): boolean => {
   url = url || ""
@@ -25,6 +28,85 @@ export const handleUrlEncode = (url: string): string => {
     url = encodeURI(url)
   }
   return url
+}
+
+export const getFSFile = async (filePath: string): Promise<IPathTransformedImgInfo> => {
+  try {
+    const fs = win.fs
+    const path = win.require("path")
+    return {
+      extname: path.extname(filePath),
+      fileName: path.basename(filePath),
+      buffer: await fs.promises.readFile(filePath),
+      success: true,
+    }
+  } catch {
+    return {
+      reason: `read file ${filePath} error`,
+      success: false,
+    }
+  }
+}
+
+export const getURLFile = async (url: string, ctx: IPicGo): Promise<IPathTransformedImgInfo> => {
+  url = handleUrlEncode(url)
+  const isImage = false
+  const extname = ""
+  let timeoutId: any
+
+  throw new Error("getURLFile is not implemented")
+  // const requestFn = new Promise<IPathTransformedImgInfo>((resolve, reject) => {
+  //   ;(async () => {
+  //     try {
+  //       const res = await ctx
+  //         .request({
+  //           method: "get",
+  //           url,
+  //           resolveWithFullResponse: true,
+  //           responseType: "arraybuffer",
+  //         })
+  //         .then((resp: any) => {
+  //           const contentType = resp.headers["content-type"]
+  //           if (contentType?.includes("image")) {
+  //             isImage = true
+  //             extname = `.${contentType.split("image/")[1]}`
+  //           }
+  //           return resp.data as Buffer
+  //         })
+  //       clearTimeout(timeoutId)
+  //       if (isImage) {
+  //         const urlPath = new URL(url).pathname
+  //         resolve({
+  //           buffer: res,
+  //           fileName: path.basename(urlPath),
+  //           extname,
+  //           success: true,
+  //         })
+  //       } else {
+  //         resolve({
+  //           success: false,
+  //           reason: `${url} is not image`,
+  //         })
+  //       }
+  //     } catch (error: any) {
+  //       clearTimeout(timeoutId)
+  //       resolve({
+  //         success: false,
+  //         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  //         reason: `request ${url} error, ${error?.message ?? ""}`,
+  //       })
+  //     }
+  //   })().catch(reject)
+  // })
+  // const timeoutPromise = new Promise<IPathTransformedImgInfo>((resolve): void => {
+  //   timeoutId = setTimeout(() => {
+  //     resolve({
+  //       success: false,
+  //       reason: `request ${url} timeout`,
+  //     })
+  //   }, 10000)
+  // })
+  // return Promise.race([requestFn, timeoutPromise])
 }
 
 /**
@@ -196,3 +278,25 @@ export const forceNumber = (num: string | number = 0): number => {
 // export const isProd = (): boolean => {
 //   return process.env.NODE_ENV === 'production'
 // }
+
+export const getImageSize = (file: typeof win.Buffer): IImgSize => {
+  try {
+    const { width = 0, height = 0, type } = imageSize(file)
+    const extname = type ? `.${type}` : ".png"
+    return {
+      real: true,
+      width,
+      height,
+      extname,
+    }
+  } catch (e) {
+    console.error(e)
+    // fallback to 200 * 200
+    return {
+      real: false,
+      width: 200,
+      height: 200,
+      extname: ".png",
+    }
+  }
+}

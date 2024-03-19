@@ -55,6 +55,7 @@ const getClipboardImageElectron = async (ctx: IPicGo): Promise<IClipboardImage> 
   const fs = win.fs
   const path = win.require("path")
   const { spawn } = win.require("child_process")
+  const logger = ctx.getLogger("get-clipboard-image-electron")
 
   createImageFolder(ctx)
   // add an clipboard image folder to control the image cache file
@@ -101,6 +102,8 @@ const getClipboardImageElectron = async (ctx: IPicGo): Promise<IClipboardImage> 
         }
       }
       const imgPath = data.toString().trim()
+      logger.debug("spawn data imgPath =>", imgPath)
+      logger.debug("imagePathgPath =>", imagePath)
 
       // if the filePath is the real file in system
       // we should keep it instead of removing
@@ -114,8 +117,17 @@ const getClipboardImageElectron = async (ctx: IPicGo): Promise<IClipboardImage> 
           shouldKeepAfterUploading = true
         }
       }
+
+      // no image
+      if (imgPath === "no image") {
+        resolve({
+          imgPath,
+          shouldKeepAfterUploading,
+        })
+      }
+
       // if the imgPath is invalid
-      if (imgPath !== "no image" && !fs.existsSync(imgPath)) {
+      if (!fs.existsSync(imgPath)) {
         return reject(new Error(`Can't find ${imgPath}`))
       }
 
@@ -123,6 +135,28 @@ const getClipboardImageElectron = async (ctx: IPicGo): Promise<IClipboardImage> 
         imgPath,
         shouldKeepAfterUploading,
       })
+
+      // // resolve with timeout
+      // const startTime = Date.now()
+      // const checkFileInterval = setInterval(() => {
+      //   if (fs.existsSync(imagePath)) {
+      //     clearInterval(checkFileInterval)
+      //
+      //     const imgPath = imagePath
+      //     logger.info("File exists at path: " + imgPath)
+      //     resolve({
+      //       imgPath,
+      //       shouldKeepAfterUploading: shouldKeepAfterUploading,
+      //     })
+      //   } else {
+      //     logger.debug("File doesn't exist yet, continuing to wait...")
+      //
+      //     if (Date.now() - startTime > 10000) {
+      //       clearInterval(checkFileInterval)
+      //       reject(new Error("File not found within 10 seconds"))
+      //     }
+      //   }
+      // }, 500) // Check every 500 milliseconds if the file exists
     })
   })
 }

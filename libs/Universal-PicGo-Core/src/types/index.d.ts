@@ -440,3 +440,17 @@ export interface II18nManager {
    */
   getLanguageList: () => string[]
 }
+
+/**
+ * for transformer - path
+ */
+export interface IImgSize {
+  width: number
+  height: number
+  real?: boolean
+  extname?: string
+}
+
+export interface IPathTransformedImgInfo extends IImgInfo {
+  success: boolean
+}

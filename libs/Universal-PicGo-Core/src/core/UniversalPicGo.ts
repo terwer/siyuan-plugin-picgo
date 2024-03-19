@@ -187,7 +187,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
               const fs = win.fs
               if (!shouldKeepAfterUploading) {
                 // 删除 picgo 生成的图片文件，例如 `~/.picgo/20200621205720.png`
-                fs.remove(imgPath).catch((e: any) => {
+                fs.promises.rm(imgPath).catch((e: any) => {
                   this.log.error(e)
                 })
               }
@@ -197,7 +197,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
             if (hasNodeEnv) {
               const fs = win.fs
               if (!shouldKeepAfterUploading) {
-                fs.remove(imgPath).catch((e: any) => {
+                fs.promises.rm(imgPath).catch((e: any) => {
                   this.log.error(e)
                 })
               }

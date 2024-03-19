@@ -11,7 +11,6 @@ import { win } from "../../utils"
 import { onExit } from "./signalExitShim"
 import MurmurHash3 from "./Murmurhash3"
 
-const fs = win.fs
 const murmurHash3 = new MurmurHash3(win.__filename)
 const activeFiles = {} as any
 
@@ -41,6 +40,7 @@ function getTmpname(filename: string) {
 function cleanupOnExit(tmpfile: any) {
   return () => {
     try {
+      const fs = win.fs
       fs.unlinkSync(typeof tmpfile === "function" ? tmpfile() : tmpfile)
     } catch {
       // ignore errors
@@ -79,6 +79,7 @@ function isChownErrOk(err: any) {
 }
 
 async function writeFileAsync(filename: string, data: any, options = {} as any) {
+  const fs = win.fs
   const path = win.require("path")
   const { promisify } = win.require("util")
 
@@ -184,6 +185,8 @@ async function writeFile(filename: string, data: any, options: any, callback: an
 }
 
 function writeFileSync(filename: string, data: any, options?: any) {
+  const fs = win.fs
+
   if (typeof options === "string") {
     options = { encoding: options }
   } else if (!options) {

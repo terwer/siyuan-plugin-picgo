@@ -9,7 +9,7 @@
 
 import { IPicGo, IPicGoPlugin, IPicGoPluginInterface, IPluginLoader } from "../types"
 import PluginLoaderDb from "../db/pluginLoder"
-import { hasNodeEnv, win } from "universal-picgo-store/src"
+import { hasNodeEnv, win } from "universal-picgo-store"
 import { readJSONSync } from "../utils/nodeUtils"
 import { IBuildInEvent } from "../utils/enums"
 import { setCurrentPluginName } from "./LifecyclePlugins"
