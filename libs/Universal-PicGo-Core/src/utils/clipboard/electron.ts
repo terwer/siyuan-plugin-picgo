@@ -18,6 +18,7 @@ import windowsClipboardScript from "./script/windows.ps1?raw"
 import windows10ClipboardScript from "./script/windows10.ps1?raw"
 import linuxClipboardScript from "./script/linux.sh?raw"
 import wslClipboardScript from "./script/wsl.sh?raw"
+import { IBuildInEvent } from "../enums"
 
 const platform2ScriptContent: {
   [key in Platform]: string
@@ -53,6 +54,7 @@ const createImageFolder = (ctx: IPicGo): void => {
 const getClipboardImageElectron = async (ctx: IPicGo): Promise<IClipboardImage> => {
   const fs = win.fs
   const path = win.require("path")
+  const { spawn } = win.require("child_process")
 
   createImageFolder(ctx)
   // add an clipboard image folder to control the image cache file
@@ -65,7 +67,63 @@ const getClipboardImageElectron = async (ctx: IPicGo): Promise<IClipboardImage> 
       fs.writeFileSync(scriptPath, platform2ScriptContent[platform], "utf8")
     }
 
-    throw new Error("开发中...")
+    let execution
+    if (platform === "darwin") {
+      execution = spawn("osascript", [scriptPath, imagePath])
+    } else if (platform === "win32" || platform === "win10") {
+      execution = spawn("powershell", [
+        "-noprofile",
+        "-noninteractive",
+        "-nologo",
+        "-sta",
+        "-executionpolicy",
+        "unrestricted",
+        // fix windows 10 native cmd crash bug when "picgo upload"
+        // https://github.com/PicGo/PicGo-Core/issues/32
+        // '-windowstyle','hidden',
+        // '-noexit',
+        "-file",
+        scriptPath,
+        imagePath,
+      ])
+    } else {
+      execution = spawn("sh", [scriptPath, imagePath])
+    }
+
+    execution.stdout.on("data", (data: typeof win.Buffer) => {
+      if (platform === "linux") {
+        if (data.toString().trim() === "no xclip or wl-clipboard") {
+          ctx.emit(IBuildInEvent.NOTIFICATION, {
+            title: "xclip or wl-clipboard not found",
+            body: "Please install xclip(for x11) or wl-clipboard(for wayland) before run picgo",
+          })
+          return reject(new Error("Please install xclip(for x11) or wl-clipboard(for wayland) before run picgo"))
+        }
+      }
+      const imgPath = data.toString().trim()
+
+      // if the filePath is the real file in system
+      // we should keep it instead of removing
+      let shouldKeepAfterUploading = false
+
+      // in macOS if your copy the file in system, it's basename will not equal to our default basename
+      if (path.basename(imgPath) !== path.basename(imagePath)) {
+        // if the path is not generate by picgo
+        // but the path exists, we should keep it
+        if (fs.existsSync(imgPath)) {
+          shouldKeepAfterUploading = true
+        }
+      }
+      // if the imgPath is invalid
+      if (imgPath !== "no image" && !fs.existsSync(imgPath)) {
+        return reject(new Error(`Can't find ${imgPath}`))
+      }
+
+      resolve({
+        imgPath,
+        shouldKeepAfterUploading,
+      })
+    })
   })
 }
 

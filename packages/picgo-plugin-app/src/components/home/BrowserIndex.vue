@@ -15,16 +15,17 @@ import { UniversalPicGo } from "universal-picgo"
 
 const logger = createAppLogger("picgo-browser-index")
 
-const handleTest = () => {
+const handleTest = async () => {
   try {
     const picgo = new UniversalPicGo("", isDev)
     logger.debug("picgo =>", picgo)
 
-    picgo.upload()
-    ElMessage.success("success")
+    const result = await picgo.upload()
+    logger.info("upload success =>", result)
+    ElMessage.success("upload success")
   } catch (e: any) {
-    ElMessage.error(e.toString())
     logger.error(e)
+    ElMessage.error(e.toString())
   }
 }
 </script>
