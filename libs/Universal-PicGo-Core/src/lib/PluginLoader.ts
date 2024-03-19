@@ -8,21 +8,21 @@
  */
 
 import { IPicGo, IPicGoPlugin, IPicGoPluginInterface, IPluginLoader } from "../types"
-import { hasNodeEnv, win } from "universal-picgo-store"
-import BrowserPluginLoaderDb from "../db/browserPluginLoderDb"
+import PluginLoaderDb from "../db/pluginLoder"
 
 /**
  * Local plugin loader, file system is required
  */
 export class PluginLoader implements IPluginLoader {
   private readonly ctx: IPicGo
-  private browserPluginLoaderDb?: BrowserPluginLoaderDb
+  private db: PluginLoaderDb
   private list: string[] = []
   private readonly fullList: Set<string> = new Set()
   private readonly pluginMap: Map<string, IPicGoPluginInterface> = new Map()
 
   constructor(ctx: IPicGo) {
     this.ctx = ctx
+    this.db = new PluginLoaderDb(this.ctx)
     this.init()
   }
 
@@ -52,23 +52,5 @@ export class PluginLoader implements IPluginLoader {
 
   // ===================================================================================================================
 
-  private init(): void {
-    if (hasNodeEnv) {
-      const fs = win.fs
-      const path = win.require("path")
-
-      const packagePath = path.join(this.ctx.baseDir, "package.json")
-      if (!fs.existsSync(packagePath)) {
-        const pkg = {
-          name: "picgo-plugins",
-          description: "picgo-plugins",
-          repository: "https://github.com/PicGo/PicGo-Core",
-          license: "MIT",
-        }
-        fs.writeFileSync(packagePath, JSON.stringify(pkg), "utf8")
-      }
-    } else {
-      this.browserPluginLoaderDb = new BrowserPluginLoaderDb(this.ctx)
-    }
-  }
+  private init(): void {}
 }

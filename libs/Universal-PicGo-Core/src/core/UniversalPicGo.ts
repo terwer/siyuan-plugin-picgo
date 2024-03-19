@@ -27,7 +27,7 @@ import { PluginHandler } from "../lib/PluginHandler"
 import _ from "lodash-es"
 import getClipboardImage from "../utils/getClipboardImage"
 import { IBuildInEvent } from "../utils/enums"
-import DB from "../db/db"
+import ConfigDb from "../db/config"
 import { hasNodeEnv, win } from "universal-picgo-store"
 import { ensureFileSync, pathExistsSync } from "../utils/nodeUtils"
 import { I18nManager } from "../i18n"
@@ -43,7 +43,7 @@ import { isConfigKeyInBlackList, isInputConfigValid } from "../utils/common"
 class UniversalPicGo extends EventEmitter implements IPicGo {
   private _config!: IConfig
   private lifecycle!: Lifecycle
-  private db!: DB
+  private db!: ConfigDb
   private _pluginLoader!: PluginLoader
   configPath: string
   baseDir!: string
@@ -236,7 +236,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   }
 
   private initConfig(): void {
-    this.db = new DB(this)
+    this.db = new ConfigDb(this)
     this._config = this.db.read(true) as IConfig
   }
 

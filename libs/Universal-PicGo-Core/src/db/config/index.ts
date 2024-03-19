@@ -7,29 +7,22 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { IConfig, IPicGo } from "../types"
+import { IConfig, IPicGo } from "../../types"
 import { IJSON, JSONStore } from "universal-picgo-store"
-import { browserPathJoin } from "../utils/browserUtils"
 
-class BrowserPluginLoaderDb {
+class ConfigDb {
   private readonly ctx: IPicGo
   private readonly db: JSONStore
 
   constructor(ctx: IPicGo) {
     this.ctx = ctx
-    const packagePath = browserPathJoin(this.ctx.baseDir, "package.json")
-    this.db = new JSONStore(packagePath)
+    this.db = new JSONStore(this.ctx.configPath)
 
-    // const pkg = {
-    //    name: "picgo-plugins",
-    //    description: "picgo-plugins",
-    //    repository: "https://github.com/PicGo/PicGo-Core",
-    //    license: "MIT",
-    // }
-    this.safeSet("name", "picgo-plugins")
-    this.safeSet("description", "picgo-plugins")
-    this.safeSet("repository", "https://github.com/terwer/siyuan-plugin-picgo/tree/main/libs/Universal-PicGo-Core")
-    this.safeSet("license", "MIT")
+    this.safeSet("picBed", {
+      uploader: "smms",
+      current: "smms",
+    })
+    this.safeSet("picgoPlugins", {})
   }
 
   read(flush?: boolean): IJSON {
@@ -81,4 +74,4 @@ class BrowserPluginLoaderDb {
   }
 }
 
-export default BrowserPluginLoaderDb
+export default ConfigDb
