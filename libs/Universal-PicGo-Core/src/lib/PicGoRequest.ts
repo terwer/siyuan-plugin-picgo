@@ -226,7 +226,7 @@ class PicGoRequestWrapper {
       return obj
     })
     if ("resolveWithFullResponse" in userOptions && userOptions.resolveWithFullResponse) {
-      const resp = instance.request(opt) as Promise<IResponse<T, U>>
+      const resp = (await instance.request(opt)) as Promise<IResponse<T, U>>
       that.logger.debug("PicGoRequest request interceptor resolveWithFullResponse, resp", resp)
       return resp
     } else {
