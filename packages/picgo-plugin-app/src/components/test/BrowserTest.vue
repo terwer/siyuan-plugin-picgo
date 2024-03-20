@@ -46,14 +46,14 @@ const handleTest5 = async () => {
 </script>
 
 <template>
-  <div>
+  <back-page title="浏览器测试">
     <div class="action-item">
       <el-button type="primary" @click="handleTest2">测试浏览器远程图片</el-button>
     </div>
     <div class="action-item">
       <el-button type="primary" @click="handleTest5">测试浏览器图片Base64</el-button>
     </div>
-  </div>
+  </back-page>
 </template>
 
 <style lang="stylus" scoped>

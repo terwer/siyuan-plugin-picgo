@@ -98,26 +98,28 @@ const handleTest5 = async () => {
 </script>
 
 <template>
-  <div v-if="hasNodeEnv">
-    <h1>PicGO index</h1>
-    <div class="action-item">
-      <el-button type="primary" @click="handleTest">测试electron剪切板图片</el-button>
+  <back-page title="Electron测试">
+    <div v-if="hasNodeEnv">
+      <h1>PicGO index</h1>
+      <div class="action-item">
+        <el-button type="primary" @click="handleTest">测试electron剪切板图片</el-button>
+      </div>
+      <div class="action-item">
+        <el-button type="primary" @click="handleTest2">测试electron远程图片</el-button>
+      </div>
+      <div class="action-item">
+        <el-button type="primary" @click="handleTest3">测试electron本地图片路径</el-button>
+      </div>
+      <div class="action-item">
+        <input type="file" @change="onImageSelect" />
+        <el-button type="primary" @click="handleTest4">测试electron本地图片File</el-button>
+      </div>
+      <div class="action-item">
+        <el-button type="primary" @click="handleTest5">测试electron本地图片Base64</el-button>
+      </div>
     </div>
-    <div class="action-item">
-      <el-button type="primary" @click="handleTest2">测试electron远程图片</el-button>
-    </div>
-    <div class="action-item">
-      <el-button type="primary" @click="handleTest3">测试electron本地图片路径</el-button>
-    </div>
-    <div class="action-item">
-      <input type="file" @change="onImageSelect" />
-      <el-button type="primary" @click="handleTest4">测试electron本地图片File</el-button>
-    </div>
-    <div class="action-item">
-      <el-button type="primary" @click="handleTest5">测试electron本地图片Base64</el-button>
-    </div>
-  </div>
-  <div v-else>electron is not supported in browser</div>
+    <div v-else>electron is not supported in browser</div>
+  </back-page>
 </template>
 
 <style lang="stylus" scoped>

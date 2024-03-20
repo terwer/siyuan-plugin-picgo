@@ -7,10 +7,60 @@
   -  of this license document, but changing it is not allowed.
   -->
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useVueI18n } from "$composables/useVueI18n.ts"
+import { reactive } from "vue"
+import { PicgoTypeEnum } from "@/utils/enums.ts"
+import { hasNodeEnv } from "universal-picgo"
+
+const { t } = useVueI18n()
+
+const formData = reactive({
+  picgoType: PicgoTypeEnum.Bundled,
+  picgoTypeList: [
+    {
+      value: PicgoTypeEnum.Bundled,
+      label: t("upload.adaptor.bundled"),
+    },
+    {
+      value: PicgoTypeEnum.App,
+      label: t("upload.adaptor.app"),
+    },
+    // {
+    //   value: PicgoTypeEnum.Core,
+    //   label: t("upload.adaptor.core"),
+    // },
+  ],
+  proxy: "",
+})
+
+const handlePicgoTypeChange = (_val: any) => {}
+</script>
 
 <template>
-  <div>PicGO setting</div>
+  <div>
+    <el-form label-width="100px">
+      <el-form-item :label="t('upload.default.adaptor')">
+        <el-select v-model="formData.picgoType" :placeholder="t('common.select')" @change="handlePicgoTypeChange">
+          <el-option v-for="item in formData.picgoTypeList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+      <el-form-item v-if="!hasNodeEnv && formData.picgoType === PicgoTypeEnum.Bundled" :label="t('setting.cors.title')">
+        <el-input v-model="formData.proxy" :placeholder="t('setting.cors.title.tip')" />
+        <div>
+          <a href="https://blog.terwer.space/static/20240312140915-rvxrqp2" target="_blank">
+            {{ t("setting.picgo.refer.to.here") }}
+          </a>
+        </div>
+      </el-form-item>
+      <div v-if="formData.picgoType === PicgoTypeEnum.Bundled">
+        <el-form-item> 内置picgo 配置 </el-form-item>
+      </div>
+      <div v-else>
+        <external-picgo-setting />
+      </div>
+    </el-form>
+  </div>
 </template>
 
 <style scoped></style>

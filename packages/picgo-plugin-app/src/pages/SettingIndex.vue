@@ -7,10 +7,23 @@
   -  of this license document, but changing it is not allowed.
   -->
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useVueI18n } from "$composables/useVueI18n.ts"
+
+const { t } = useVueI18n()
+</script>
 
 <template>
-  <div>Setting index</div>
+  <div>
+    <el-tabs tab-position="left">
+      <el-tab-pane :label="t('setting.picgo.picbed')">
+        <picgo-setting />
+      </el-tab-pane>
+      <el-tab-pane :label="t('siyuan.config.setting')">
+        <siyuan-setting />
+      </el-tab-pane>
+    </el-tabs>
+  </div>
 </template>
 
 <style scoped></style>

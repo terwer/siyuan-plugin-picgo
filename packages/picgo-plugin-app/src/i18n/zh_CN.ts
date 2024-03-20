@@ -8,6 +8,9 @@
  */
 
 export default {
+  "common.back": "返回",
+  "common.select": "请选择",
+  "setting.picgo.refer.to.here": "详情请参考这里",
   "setting.picgo.refer.to": "详情请参考：",
   "setting.picgo.refer.to.online.doc": "PicGO配置在线文档",
   "setting.picgo.picbed": "图床设置",
@@ -125,4 +128,11 @@ export default {
   "upload.tab.upload": "图片上传",
   "upload.tab.setting": "插件设置",
   "component.test": "组件测试",
+  "siyuan.setting.title": "思源笔记设置",
+  "upload.default.adaptor": "默认上传器",
+  "upload.adaptor.bundled": "内置PicGO",
+  "upload.adaptor.app": "PicGO(app)",
+  "upload.adaptor.core": "PicGO-Core",
+  "setting.cors.title": "CORS 代理",
+  "setting.cors.title.tip": "CORS 代理，浏览器和 dcoker 环境必备，如有需要可付费咨询 youweics@163.com",
 }

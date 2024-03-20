@@ -28,14 +28,14 @@ const handleTestElectron = async () => {
 </script>
 
 <template>
-  <div>
+  <back-page title="组件测试">
     <div class="action-item">
       <el-button type="primary" @click="handleTestBrowser">测试浏览器</el-button>
     </div>
     <div class="action-item">
       <el-button type="primary" @click="handleTestElectron">测试Electron</el-button>
     </div>
-  </div>
+  </back-page>
 </template>
 
 <style lang="stylus" scoped>

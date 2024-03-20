@@ -8,6 +8,9 @@
  */
 
 export default {
+  "common.back": "Back",
+  "common.select": "Select",
+  "setting.picgo.refer.to.here": "For details, please refer here",
   "setting.picgo.refer.to": "For details, please refer to:",
   "setting.picgo.refer.to.online.doc": "Picgo configuration online documentation",
   "setting.picgo.picbed": "Picbed setting",
@@ -130,4 +133,11 @@ export default {
   "upload.tab.upload": "Picture upload",
   "upload.tab.setting": "Plugin setting",
   "component.test": "Component test",
+  "siyuan.setting.title": "Siyuan setting",
+  "upload.adaptor.bundled": "Bundled PicGO",
+  "upload.adaptor.app": "PicGO(app)",
+  "upload.adaptor.core": "PicGO-Core",
+  "setting.cors.title": "CORS Proxy",
+  "setting.cors.title.tip":
+    "The CORS proxy is essential for browsers and Docker environments. For further consultation, feel free to contact youweics@163.com.",
 }

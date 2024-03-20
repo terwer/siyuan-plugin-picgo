@@ -18,6 +18,7 @@ import { retrieveImageFromClipboardAsBlob } from "@/utils/browserClipboard.ts"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import MaterialSymbolsImageSearchRounded from "~icons/material-symbols/image-search-rounded"
 import MaterialSymbolsSettingsAccountBoxOutlineSharp from "~icons/material-symbols/settings-account-box-outline-sharp"
+import SettingIndex from "$pages/SettingIndex.vue"
 
 const logger = createAppLogger("picgo-browser-index")
 const { t } = useVueI18n()
@@ -134,7 +135,7 @@ onBeforeUnmount(() => {
             <i class="el-icon"><MaterialSymbolsSettingsAccountBoxOutlineSharp /></i> {{ t("upload.tab.setting") }}
           </span>
         </template>
-        {{ t("upload.tab.setting") }}
+        <setting-index />
       </el-tab-pane>
     </el-tabs>
   </div>
