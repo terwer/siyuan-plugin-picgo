@@ -28,13 +28,44 @@ const handleTest = async () => {
     ElMessage.error(e.toString())
   }
 }
+
+const handleTest2 = async () => {
+  try {
+    const picgo = new UniversalPicGo("", isDev)
+    logger.debug("picgo =>", picgo)
+
+    const result = await picgo.upload(["https://s2.loli.net/2024/03/20/VDRXZnkBaKWFhpt.png"])
+    logger.info("upload success =>", result)
+    ElMessage.success("upload success")
+  } catch (e: any) {
+    logger.error(e)
+    ElMessage.error(e.toString())
+  }
+}
 </script>
 
 <template>
   <div>
     <h1>PicGO index</h1>
-    <el-button type="primary" @click="handleTest">测试electron</el-button>
+    <div class="action-item">
+      <el-button type="primary" @click="handleTest">测试electron剪切板图片</el-button>
+    </div>
+    <div class="action-item">
+      <el-button type="primary" @click="handleTest2">测试electron远程图片</el-button>
+    </div>
+    <div class="action-item">
+      <el-button type="primary" @click="handleTest3">测试electron本地图片路径</el-button>
+    </div>
+    <div class="action-item">
+      <el-button type="primary" @click="handleTest4">测试electron本地图片File</el-button>
+    </div>
+    <div class="action-item">
+      <el-button type="primary" @click="handleTest4">测试electron本地图片Base64</el-button>
+    </div>
   </div>
 </template>
 
-<style scoped></style>
+<style lang="stylus" scoped>
+.action-item
+  margin 10px
+</style>

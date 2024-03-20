@@ -70,7 +70,7 @@ export const getURLFile = async (url: string, ctx: IPicGo): Promise<IPathTransfo
               isImage = true
               extname = `.${contentType.split("image/")[1]}`
             }
-            return resp.data as Buffer
+            return resp.data as typeof win.ArrayBuffer
           })
         clearTimeout(timeoutId)
         if (isImage) {
@@ -81,7 +81,7 @@ export const getURLFile = async (url: string, ctx: IPicGo): Promise<IPathTransfo
           //   fileName = path.basename(urlPath)
           // }
           resolve({
-            buffer: res,
+            buffer: win.Buffer.from(res),
             fileName: fileName,
             extname,
             success: true,
