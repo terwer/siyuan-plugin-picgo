@@ -123,5 +123,6 @@ export default {
   "upload.select.tip2": "选择图片",
   "upload.select.limit": "支持jp(e)g/png/gif/svg/webp 格式，大小不超过 500kb, 单次最大上传图片数量限制为",
   "upload.tab.upload": "图片上传",
-  "upload.tab.setting": "图床设置",
+  "upload.tab.setting": "插件设置",
+  "component.test": "组件测试",
 }

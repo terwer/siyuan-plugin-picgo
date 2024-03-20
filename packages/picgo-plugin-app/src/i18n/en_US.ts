@@ -128,5 +128,6 @@ export default {
   "upload.select.tip2": "click to upload",
   "upload.select.limit": "jp(e)g/png/gif/svg/webp files with a size less than 500kb, max upload size is",
   "upload.tab.upload": "Picture upload",
-  "upload.tab.setting": "Picture setting",
+  "upload.tab.setting": "Plugin setting",
+  "component.test": "Component test",
 }
