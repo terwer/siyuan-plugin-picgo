@@ -12,7 +12,7 @@ import { ILifecyclePlugins, IPicGo, IPlugin, Undefinable } from "../types"
 import { ILogger } from "zhi-lib-base"
 import { createContext } from "../utils/createContext"
 import { IBuildInEvent } from "../utils/enums"
-import { autoDetectImageType, handleUrlEncode } from "../utils/common"
+import { handleUrlEncode } from "../utils/common"
 
 export class Lifecycle extends EventEmitter {
   private readonly ctx: IPicGo
