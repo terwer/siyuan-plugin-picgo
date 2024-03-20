@@ -1,5 +1,5 @@
 import { UniversalPicGo } from "./core/UniversalPicGo"
-import { win, hasNodeEnv } from "universal-picgo-store"
+import { win, currentWin, parentWin, hasNodeEnv } from "universal-picgo-store"
 
 export { UniversalPicGo }
-export { win, hasNodeEnv }
+export { win, currentWin, parentWin, hasNodeEnv }

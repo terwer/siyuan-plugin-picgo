@@ -100,6 +100,39 @@ export const getFSFile = async (filePath: string): Promise<IPathTransformedImgIn
   }
 }
 
+function isBlob(val: any) {
+  return toString.call(val) === "[object Blob]"
+}
+
+function isFile(val: any) {
+  return toString.call(val) === "[object File]"
+}
+
+export const isFileOrBlob = (val: any): boolean => {
+  return isBlob(val) || isFile(val)
+}
+
+/**
+ * 将 file 对象转换为 Buffer
+ *
+ * @param file - file
+ * @author terwer
+ * @version 0.9.0
+ * @since 0.9.0
+ */
+export const fileToBuffer = async (file: any): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e: any) => {
+      // 将 ArrayBuffer 转换成 Buffer 对象
+      const buffer = win.Buffer.from(e.target.result)
+      resolve(buffer)
+    }
+    reader.onerror = reject
+    reader.readAsArrayBuffer(file)
+  })
+}
+
 export const getURLFile = async (url: string, ctx: IPicGo): Promise<IPathTransformedImgInfo> => {
   url = handleUrlEncode(url)
   let isImage = false

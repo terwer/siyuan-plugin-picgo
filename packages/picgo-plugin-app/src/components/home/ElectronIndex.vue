@@ -12,9 +12,11 @@ import { createAppLogger } from "@/utils/appLogger.ts"
 import { isDev } from "@/utils/Constants.ts"
 import { ElMessage } from "element-plus"
 import { UniversalPicGo } from "universal-picgo"
-import { Buffer } from "universal-picgo/src/utils/nodePolyfill.ts"
+import { ref } from "vue"
 
 const logger = createAppLogger("picgo-electron-index")
+
+const paramFile = ref(null as any)
 
 const handleTest = async () => {
   try {
@@ -58,6 +60,27 @@ const handleTest3 = async () => {
   }
 }
 
+const onImageSelect = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  if (input.files && input.files[0]) {
+    paramFile.value = input.files[0]
+  }
+}
+
+const handleTest4 = async () => {
+  try {
+    const picgo = new UniversalPicGo("", isDev)
+    logger.debug("picgo =>", picgo)
+
+    const result = await picgo.upload([paramFile.value])
+    logger.info("upload success =>", result)
+    ElMessage.success("upload success")
+  } catch (e: any) {
+    logger.error(e)
+    ElMessage.error(e.toString())
+  }
+}
+
 const handleTest5 = async () => {
   try {
     const picgo = new UniversalPicGo("", isDev)
@@ -87,6 +110,7 @@ const handleTest5 = async () => {
       <el-button type="primary" @click="handleTest3">测试electron本地图片路径</el-button>
     </div>
     <div class="action-item">
+      <input type="file" @change="onImageSelect" />
       <el-button type="primary" @click="handleTest4">测试electron本地图片File</el-button>
     </div>
     <div class="action-item">
