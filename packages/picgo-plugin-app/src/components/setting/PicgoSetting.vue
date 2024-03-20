@@ -45,16 +45,15 @@ const handlePicgoTypeChange = (_val: any) => {}
           <el-option v-for="item in formData.picgoTypeList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="!hasNodeEnv && formData.picgoType === PicgoTypeEnum.Bundled" :label="t('setting.cors.title')">
-        <el-input v-model="formData.proxy" :placeholder="t('setting.cors.title.tip')" />
-        <div>
-          <a href="https://blog.terwer.space/static/20240312140915-rvxrqp2" target="_blank">
-            {{ t("setting.picgo.refer.to.here") }}
-          </a>
-        </div>
-      </el-form-item>
       <div v-if="formData.picgoType === PicgoTypeEnum.Bundled">
-        <el-form-item> 内置picgo 配置 </el-form-item>
+        <el-form-item v-if="!hasNodeEnv" :label="t('setting.cors.title')">
+          <el-input v-model="formData.proxy" :placeholder="t('setting.cors.title.tip')" />
+          <div>
+            <a href="https://blog.terwer.space/static/20240312140915-rvxrqp2" target="_blank">
+              {{ t("setting.picgo.refer.to.here") }}
+            </a>
+          </div>
+        </el-form-item>
       </div>
       <div v-else>
         <external-picgo-setting />
