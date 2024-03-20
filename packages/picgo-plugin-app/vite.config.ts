@@ -43,7 +43,6 @@ export default defineConfig(() => ({
     createHtmlPlugin({
       minify: !isDev,
       inject: {
-        // 在 body 标签底部插入指定的 JavaScript 文件
         tags: isDev
           ? [
               {

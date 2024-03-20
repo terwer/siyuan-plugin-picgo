@@ -6,12 +6,23 @@ picgo lib for node, browser and electron
 
 ```js
 // usage
+import { UniversalPicGo } from "universal-picgo"
+
+try {
+  const picgo = new UniversalPicGo()
+  console.log("picgo =>", picgo)
+
+  const result = await picgo.upload()
+  console.log("upload success =>", result)
+} catch (e: any) {
+  console.error(e)
+}
 ```
 
 ## Deps
 
 ```
-## Congregations! universal-picgo need no deps, it is just pure js code 🎉
+├── universal-picgo-store
 ```
 
 ## Dev

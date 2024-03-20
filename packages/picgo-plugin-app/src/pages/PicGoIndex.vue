@@ -8,21 +8,13 @@
   -->
 
 <script setup lang="ts">
-import { UniversalPicGo } from "universal-picgo"
-import { createAppLogger } from "@/utils/appLogger.ts"
-
-const logger = createAppLogger("picgo-index")
-
-const handleTest = () => {
-  const picgo = new UniversalPicGo()
-  logger.debug("picgo =>", picgo)
-}
+import { hasNodeEnv } from "universal-picgo"
 </script>
 
 <template>
   <div class="picgo-body">
-    <h1>PicGO index</h1>
-    <el-button type="primary" @click="handleTest">测试</el-button>
+    <electron-index v-if="hasNodeEnv" />
+    <browser-index v-else />
   </div>
 </template>
 

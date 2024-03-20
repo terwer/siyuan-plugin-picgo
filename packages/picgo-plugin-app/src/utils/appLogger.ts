@@ -10,12 +10,12 @@
 import { isDev } from "./Constants.ts"
 import { simpleLogger } from "zhi-lib-base"
 
-const win = window as any
+// const win = window as any
 
 /**
  * 使用 eruda 更好的控制日志
  */
-window.console = isDev ? win?.eruda?.get("console") : window.console
+// window.console = isDev ? win?.eruda?.get("console") : window.console
 
 /**
  * 简单的日志接口
