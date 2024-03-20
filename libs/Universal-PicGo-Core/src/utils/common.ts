@@ -10,6 +10,7 @@
 import { IImgSize, IPathTransformedImgInfo, IPicGo, IPluginNameType } from "../types"
 import { hasNodeEnv, win } from "universal-picgo-store"
 import imageSize from "./image-size"
+import { calculateHash } from "./hashUtil"
 
 export const isUrl = (url: string): boolean => url.startsWith("http://") || url.startsWith("https://")
 
@@ -28,6 +29,57 @@ export const handleUrlEncode = (url: string): string => {
     url = encodeURI(url)
   }
   return url
+}
+
+/**
+ * 检测输入是否为 base64 编码的字符串
+ *
+ * @param  input - 输入字符串或 Buffer
+ * @returns- 如果是 base64 编码则返回 true，否则返回 false
+ */
+export const isBase64 = (input: any) => {
+  if (typeof input === "string") {
+    // 检查字符串是否为 base64 编码
+    return /^data:image\/[a-zA-Z]*;base64,/.test(input)
+  }
+
+  // 如果输入不是字符串，则直接返回 false
+  return false
+}
+
+function extractImageInfoFromBase64(base64ImageData: string): any {
+  const mimeAndBase64Regex = new RegExp("data:([^;]+);base64,(.+)")
+  const match = base64ImageData.match(mimeAndBase64Regex)
+
+  if (match) {
+    const mimeType = match[1]
+    const base64Data = match[2]
+
+    // 提取 mime 类型的基础文件扩展名
+    const ext = mimeType.split("/")[1]
+
+    // 使用 HashUtil.calculateHash 函数生成默认图片名称
+    const imageName = `${calculateHash(base64Data)}.${ext}`
+
+    return {
+      mimeType,
+      imageBase64: base64Data,
+      imageName,
+    }
+  } else {
+    throw new Error("Mime type and base64 data extraction failed")
+  }
+}
+
+export const getBase64File = async (base64: string): Promise<IPathTransformedImgInfo> => {
+  const imgInfo = extractImageInfoFromBase64(base64)
+  const imageBuffer = win.Buffer.from(imgInfo.imageBase64, "base64")
+  return {
+    success: true,
+    buffer: imageBuffer,
+    fileName: "", // will use getImageSize result
+    extname: "", // will use getImageSize result
+  }
 }
 
 export const getFSFile = async (filePath: string): Promise<IPathTransformedImgInfo> => {

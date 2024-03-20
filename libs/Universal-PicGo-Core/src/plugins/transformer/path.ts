@@ -10,7 +10,7 @@
 import dayjs from "dayjs"
 import { IImgInfo, IImgSize, IPathTransformedImgInfo, IPicGo } from "../../types"
 import { win } from "universal-picgo-store"
-import { getFSFile, getImageSize, getURLFile, isUrl } from "../../utils/common"
+import { getBase64File, getFSFile, getImageSize, getURLFile, isBase64, isUrl } from "../../utils/common"
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const results: IImgInfo[] = ctx.output
@@ -18,6 +18,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
     ctx.input.map(async (item: string | typeof win.Buffer, index: number) => {
       let info: IPathTransformedImgInfo
       if (win.Buffer.isBuffer(item)) {
+        ctx.log.debug("using buffer in path transform")
         info = {
           success: true,
           buffer: item,
@@ -25,8 +26,13 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           extname: "", // will use getImageSize result
         }
       } else if (isUrl(item)) {
+        ctx.log.debug("using image url in path transform")
         info = await getURLFile(item, ctx)
+      } else if (isBase64(item)) {
+        ctx.log.debug("using image base64 in path transform")
+        info = await getBase64File(item)
       } else {
+        ctx.log.debug("using fs in path transform")
         info = await getFSFile(item)
       }
       if (info.success && info.buffer) {
@@ -41,6 +47,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
         }
       } else {
         ctx.log.error(info.reason)
+        throw new Error(info.reason)
       }
     })
   )

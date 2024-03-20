@@ -40,10 +40,14 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   }
   const imgList = ctx.output
   for (const img of imgList) {
-    if (img.fileName && img.buffer) {
+    if (img.fileName) {
       let image = img.buffer
       if (!image && img.base64Image) {
         image = Buffer.from(img.base64Image, "base64")
+      }
+      if(!image){
+        ctx.log.error("Can not find image buffer")
+        throw new Error("Can not find image buffer")
       }
       const postConfig = postOptions(img.fileName, image, smmsConfig?.token, smmsConfig?.backupDomain)
       try {

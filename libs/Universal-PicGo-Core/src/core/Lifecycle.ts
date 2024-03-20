@@ -12,7 +12,7 @@ import { ILifecyclePlugins, IPicGo, IPlugin, Undefinable } from "../types"
 import { ILogger } from "zhi-lib-base"
 import { createContext } from "../utils/createContext"
 import { IBuildInEvent } from "../utils/enums"
-import { handleUrlEncode } from "../utils/common"
+import { autoDetectImageType, handleUrlEncode } from "../utils/common"
 
 export class Lifecycle extends EventEmitter {
   private readonly ctx: IPicGo
@@ -129,6 +129,7 @@ export class Lifecycle extends EventEmitter {
     ctx.emit(IBuildInEvent.FINISHED, ctx)
     if (msg === "") {
       ctx.log.warn("[after-upload] image upload occured an error, please read log for details")
+      throw new Error("image upload occured an error, please read log for details")
     } else {
       ctx.log.info(`[after-upload] upload finishied => \n${msg}`)
     }
