@@ -112,4 +112,8 @@ export const ZH_TW: ILocales = {
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED: "插件更新失敗",
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED_REASON: "插件更新失敗，失敗碼為${code}，錯誤紀錄為 \n ${data}",
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED_VALID: "插件更新失敗，請輸入正確的插件名稱",
+
+  // CORS
+  CORS_ANYWHERE_REQUIRED:
+    "在Docker或瀏覽器中使用內建的PicGo之前，您必須配置CORS代理，如需獲取更多詳情，請聯繫youweics@163.com。",
 }

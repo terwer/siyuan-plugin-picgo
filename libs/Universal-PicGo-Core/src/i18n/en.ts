@@ -115,4 +115,8 @@ export const EN: ILocales = {
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED: "Plugin update failed",
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED_REASON: "Plugin update failed, error code is ${code}, error log is \n ${data}",
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED_VALID: "Plugin update failed, please enter a valid plugin name",
+
+  // CORS
+  CORS_ANYWHERE_REQUIRED:
+    "You must config cors proxy before using bundled picgo in docker or browser, moredetail please contact youweics@163.com",
 }

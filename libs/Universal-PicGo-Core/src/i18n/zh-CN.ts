@@ -110,6 +110,10 @@ export const ZH_CN = {
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED: "插件更新失败",
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED_REASON: "插件更新失败，失败码为${code}，错误日志为 \n ${data}",
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED_VALID: "插件更新失败，请输入合法插件名",
+
+  // CORS
+  CORS_ANYWHERE_REQUIRED:
+    "在Docker或浏览器中使用内置的PicGo之前，您必须配置CORS代理，如需获取更多详情，请联系youweics@163.com。",
 }
 
 export type ILocalesKey = keyof typeof ZH_CN
