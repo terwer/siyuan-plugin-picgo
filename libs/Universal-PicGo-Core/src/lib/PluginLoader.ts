@@ -39,7 +39,7 @@ export class PluginLoader implements IPluginLoader {
       const fs = win.fs
       const path = win.require("path")
       const packagePath = path.join(this.ctx.baseDir, "package.json")
-      const pluginDir = path.join(this.ctx.baseDir, "node_modules/")
+      const pluginDir = path.join(this.ctx.pluginBaseDir, "node_modules/")
       // Thanks to hexo -> https://github.com/hexojs/hexo/blob/master/lib/hexo/load_plugins.js
       if (!fs.existsSync(pluginDir)) {
         return false
@@ -138,7 +138,7 @@ export class PluginLoader implements IPluginLoader {
     }
 
     const path = win.require("path")
-    const pluginDir = path.join(this.ctx.baseDir, "node_modules/")
+    const pluginDir = path.join(this.ctx.pluginBaseDir, "node_modules/")
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const plugin = require(pluginDir + name)(this.ctx)
     this.pluginMap.set(name, plugin)
@@ -170,7 +170,7 @@ export class PluginLoader implements IPluginLoader {
   private resolvePlugin(ctx: IPicGo, name: string): string {
     if (hasNodeEnv) {
       const path = win.require("path")
-      return path.join(ctx.baseDir, "node_modules", name)
+      return path.join(ctx.pluginBaseDir, "node_modules", name)
     } else {
       throw new Error("resolvePlugin is not supported in browser")
     }

@@ -10,6 +10,8 @@
 import { IImgInfo, IPicGo } from "../../types"
 import { UniversalPicGo } from "../../core/UniversalPicGo"
 import { ILogger } from "zhi-lib-base"
+import { hasNodeEnv, win } from "universal-picgo-store"
+import { browserPathJoin } from "../../utils/browserUtils"
 
 /**
  * 文章PicGO图片信息Key
@@ -28,8 +30,29 @@ class PicGoUploadApi {
   private readonly logger: ILogger
 
   constructor(isDev?: boolean) {
-    this.picgo = new UniversalPicGo("", isDev)
+    let cfgfolder = ""
+    let picgo_cfg_160 = ""
+    // 初始化思源 PicGO 配置
+    const workspaceDir = win?.siyuan?.config?.system?.workspaceDir
+    if (workspaceDir) {
+      cfgfolder = `${workspaceDir}/data/storage/syp/picgo`
+      picgo_cfg_160 = browserPathJoin(cfgfolder, "picgo.cfg.json")
+    }
+
+    // 初始化 PicGO
+    this.picgo = new UniversalPicGo(picgo_cfg_160, "", isDev)
     this.logger = this.picgo.getLogger("siyuan-picgo-upload-api")
+
+    // 移除旧插件
+    if (hasNodeEnv && cfgfolder !== "") {
+      // 删除 node_modules 文件夹
+      const fs = win.fs
+      const oldPluginDir = browserPathJoin(cfgfolder, "node_modules")
+      this.logger.info(`will remove old plugin dir ${oldPluginDir}`)
+      fs.promises.rm(oldPluginDir).catch((e: any) => {
+        throw e
+      })
+    }
   }
 
   /**

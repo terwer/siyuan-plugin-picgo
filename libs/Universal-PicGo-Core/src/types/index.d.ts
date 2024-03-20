@@ -24,6 +24,12 @@ export interface IPicGo extends EventEmitter {
    */
   baseDir: string
   /**
+   * default is baseDir, when set, using this value
+   *
+   * the picgo plugins baseDir, not to be confused with configPath's baseDir
+   */
+  pluginBaseDir: string
+  /**
    * picgo logger factory
    */
   log: ILogger
