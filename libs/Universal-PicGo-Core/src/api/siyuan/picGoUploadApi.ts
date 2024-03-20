@@ -64,7 +64,8 @@ class PicGoUploadApi {
     if (hasNodeEnv && cfgfolder !== "") {
       // 删除 node_modules 文件夹
       const fs = win.fs
-      const oldPluginDir = browserPathJoin(cfgfolder, "node_modules")
+      const path = win.require("path")
+      const oldPluginDir = path.join(cfgfolder, "node_modules")
       this.logger.info(`will remove old plugin dir ${oldPluginDir}`)
       fs.promises.rm(oldPluginDir).catch((e: any) => {
         throw e
