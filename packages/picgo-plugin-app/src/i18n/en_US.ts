@@ -124,4 +124,9 @@ export default {
   "setting.blog.siyuan.password": "Siyuan Token",
   "setting.blog.siyuan.password.tip": "Siyuan Token, which is empty by default",
   "form.validate.name.required": "Please enter a name",
+  "upload.select.tip1": "Drop file here, Ctrl+V paste image here or",
+  "upload.select.tip2": "click to upload",
+  "upload.select.limit": "jp(e)g/png/gif/svg/webp files with a size less than 500kb, max upload size is",
+  "upload.tab.upload": "Picture upload",
+  "upload.tab.setting": "Picture setting",
 }

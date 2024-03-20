@@ -9,5 +9,5 @@
 
 export const currentWin = (window || globalThis || undefined) as any
 export const parentWin = (window?.parent || window?.top || window?.self || undefined) as any
-export const win = currentWin?.fs ? currentWin : parentWin?.fs ? parentWin : currentWin
-export const hasNodeEnv = typeof win?.fs !== "undefined"
+export const win = currentWin?.fs?.rm ? currentWin : parentWin?.fs?.rm ? parentWin : currentWin
+export const hasNodeEnv = typeof parentWin?.fs?.rm !== "undefined"

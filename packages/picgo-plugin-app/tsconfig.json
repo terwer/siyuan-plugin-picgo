@@ -30,7 +30,9 @@
       "$assets/*": ["src/assets/*"],
       "$components/*": ["src/components/*"],
       "$composables/*": ["src/composables/*"]
-    }
+    },
+
+    "types": ["unplugin-icons/types/vue"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }]

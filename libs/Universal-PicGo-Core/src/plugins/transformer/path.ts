@@ -10,6 +10,7 @@
 import dayjs from "dayjs"
 import { IImgInfo, IImgSize, IPathTransformedImgInfo, IPicGo } from "../../types"
 import { win } from "universal-picgo-store"
+import { Buffer } from "../../utils/nodePolyfill"
 import {
   getBase64File,
   getBlobFile,
@@ -17,6 +18,7 @@ import {
   getImageSize,
   getURLFile,
   isBase64,
+  isBuffer,
   isFileOrBlob,
   isUrl,
 } from "../../utils/common"
@@ -24,12 +26,12 @@ import {
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const results: IImgInfo[] = ctx.output
   await Promise.all(
-    ctx.input.map(async (item: string | typeof win.Buffer, index: number) => {
+    ctx.input.map(async (item: string | Buffer | typeof win.Buffer, index: number) => {
       let info: IPathTransformedImgInfo
       if (isFileOrBlob(item)) {
         ctx.log.debug("using File or Blob in path transform")
         info = await getBlobFile(item)
-      } else if (win.Buffer.isBuffer(item)) {
+      } else if (isBuffer(item)) {
         ctx.log.debug("using buffer in path transform")
         info = {
           success: true,
@@ -68,7 +70,11 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   return ctx
 }
 
-const getImgSize = (ctx: IPicGo, file: typeof win.Buffer, path: string | typeof win.Buffer): IImgSize => {
+const getImgSize = (
+  ctx: IPicGo,
+  file: Buffer | typeof win.Buffer,
+  path: string | Buffer | typeof win.Buffer
+): IImgSize => {
   const imageSize = getImageSize(file)
   if (!imageSize.real) {
     if (typeof path === "string") {

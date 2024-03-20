@@ -57,6 +57,14 @@ export class PluginLoader implements IPluginLoader {
       }
       return true
     } else {
+      const json = this.db.read(true)
+      const deps = Object.keys(json.dependencies || {})
+      const devDeps = Object.keys(json.devDependencies || {})
+      const modules = deps.concat(devDeps).filter((name: string) => {
+        if (!/^picgo-plugin-|^@[^/]+\/picgo-plugin-/.test(name)) return false
+        const path = this.resolvePlugin(this.ctx, name)
+        return false
+      })
       this.logger.warn("load is not supported in browser")
       return false
     }

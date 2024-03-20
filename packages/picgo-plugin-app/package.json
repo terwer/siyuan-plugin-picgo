@@ -24,10 +24,12 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
+    "@iconify/json": "^2.2.193",
     "@vueuse/core": "^10.9.0",
     "element-plus": "^2.6.1",
     "lodash-es": "^4.17.21",
     "universal-picgo": "workspace:*",
+    "unplugin-icons": "^0.18.5",
     "vue": "^3.4.21",
     "vue-i18n": "^9.10.2",
     "vue-router": "^4.3.0",

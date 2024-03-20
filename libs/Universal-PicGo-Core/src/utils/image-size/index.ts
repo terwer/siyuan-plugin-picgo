@@ -120,8 +120,6 @@ export function imageSize(input: string, callback: CallbackFn): void
  * @param {Function=} [callback] - optional function for async detection
  */
 export function imageSize(input: typeof win.Uint8Array | string, callback?: CallbackFn): ISizeCalculationResult | void {
-  const path = win.require("path")
-
   // Handle Uint8Array input
   if (input instanceof win.Uint8Array) {
     return lookup(input)
@@ -133,6 +131,7 @@ export function imageSize(input: typeof win.Uint8Array | string, callback?: Call
   }
 
   // resolve the file path
+  const path = win.require("path")
   const filepath = path.resolve(input)
   if (typeof callback === "function") {
     queue.push(() =>
