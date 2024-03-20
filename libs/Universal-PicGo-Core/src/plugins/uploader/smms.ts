@@ -11,6 +11,7 @@ import { ILocalesKey } from "../../i18n/zh-CN"
 import { IPicGo, IPluginConfig, ISmmsConfig } from "../../types"
 import { IBuildInEvent } from "../../utils/enums"
 import { AxiosRequestConfig } from "axios"
+import { safeParse } from "../../utils/common"
 
 const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDomain = ""): AxiosRequestConfig => {
   const domain = backupDomain || "sm.ms"
@@ -47,7 +48,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
       const postConfig = postOptions(img.fileName, image, smmsConfig?.token, smmsConfig?.backupDomain)
       try {
         const res: string = await ctx.request(postConfig)
-        const body = JSON.parse(res)
+        const body = safeParse<any>(res)
         if (body.code === "success") {
           delete img.base64Image
           delete img.buffer

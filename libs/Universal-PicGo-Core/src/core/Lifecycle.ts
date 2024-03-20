@@ -48,10 +48,11 @@ export class Lifecycle extends EventEmitter {
       ctx.emit(IBuildInEvent.UPLOAD_PROGRESS, -1)
       ctx.emit(IBuildInEvent.FAILED, e)
       ctx.log.error(e)
-      if (ctx.getConfig<Undefinable<string>>("debug")) {
-        throw e
-      }
-      return ctx
+      // if (ctx.getConfig<Undefinable<string>>("debug")) {
+      // }
+      // should throw error to stop the process
+      throw e
+      // return ctx
     }
   }
 
