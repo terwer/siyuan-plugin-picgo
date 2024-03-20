@@ -25,7 +25,7 @@ const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDo
     url: `https://${domain}/api/v2/upload`,
     headers: {
       "Content-Type": "multipart/form-data",
-      "User-Agent": "PicGo",
+      // "User-Agent": "PicGo",
       Authorization: apiToken,
     },
     data: formData,
