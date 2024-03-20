@@ -21,6 +21,23 @@ export const SIYUAN_PICGO_FILE_MAP_KEY = "custom-picgo-file-map-key"
 /**
  * 思源笔记专属的图片上传 API
  *
+ * ```
+ * 默认配置位置
+ *
+ * [工作空间]/data/storage/syp/picgo/picgo.cfg.json
+ *    [工作空间]/data/storage/syp/picgo/package.json
+ *    [工作空间]/data/storage/syp/picgo/mac.applescript
+ *    [工作空间]/data/storage/syp/picgo/i18n-cli
+ *    [工作空间]/data/storage/syp/picgo/picgo-clipboard-images
+ *
+ *
+ * 默认插件位置
+ *
+ * ~/.universal-picgo/node_modules
+ *    ~/.universal-picgo/node_modules/plugin-1
+ *    ~/.universal-picgo/node_modules/plugin-2
+ * ```
+ *
  * @version 1.6.0
  * @since 0.6.0
  * @author terwer
@@ -53,6 +70,18 @@ class PicGoUploadApi {
         throw e
       })
     }
+
+    // 默认配置位置
+    // [工作空间]/data/storage/syp/picgo/picgo.cfg.json
+    //    [工作空间]/data/storage/syp/picgo/package.json
+    //    [工作空间]/data/storage/syp/picgo/mac.applescript
+    //    [工作空间]/data/storage/syp/picgo/i18n-cli
+    //    [工作空间]/data/storage/syp/picgo/picgo-clipboard-images
+    //
+    // 默认插件位置
+    // ~/.universal-picgo/node_modules
+    //    ~/.universal-picgo/node_modules/plugin-1
+    //    ~/.universal-picgo/node_modules/plugin-2
   }
 
   /**
