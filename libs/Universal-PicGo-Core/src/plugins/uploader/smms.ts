@@ -11,7 +11,7 @@ import { ILocalesKey } from "../../i18n/zh-CN"
 import { IPicGo, IPluginConfig, ISmmsConfig } from "../../types"
 import { IBuildInEvent } from "../../utils/enums"
 import { AxiosRequestConfig } from "axios"
-import { safeParse } from "../../utils/common"
+import { base64ToBuffer, safeParse } from "../../utils/common"
 
 const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDomain = ""): AxiosRequestConfig => {
   const domain = backupDomain || "sm.ms"
@@ -43,9 +43,9 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
     if (img.fileName) {
       let image = img.buffer
       if (!image && img.base64Image) {
-        image = Buffer.from(img.base64Image, "base64")
+        image = base64ToBuffer(img.base64Image)
       }
-      if(!image){
+      if (!image) {
         ctx.log.error("Can not find image buffer")
         throw new Error("Can not find image buffer")
       }

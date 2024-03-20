@@ -72,14 +72,19 @@ function extractImageInfoFromBase64(base64ImageData: string): any {
   }
 }
 
-export const getBase64File = async (base64: string): Promise<IPathTransformedImgInfo> => {
-  const imgInfo = extractImageInfoFromBase64(base64)
+export const base64ToBuffer = (base64: string): Buffer | typeof win.Buffer => {
   let imageBuffer
   if (hasNodeEnv) {
-    imageBuffer = win.Buffer.from(imgInfo.imageBase64, "base64")
+    imageBuffer = win.Buffer.from(base64, "base64")
   } else {
-    imageBuffer = Buffer.from(imgInfo.imageBase64, "base64")
+    imageBuffer = Buffer.from(base64, "base64")
   }
+  return imageBuffer
+}
+
+export const getBase64File = async (base64: string): Promise<IPathTransformedImgInfo> => {
+  const imgInfo = extractImageInfoFromBase64(base64)
+  const imageBuffer = base64ToBuffer(imgInfo.imageBase64)
   return {
     success: true,
     buffer: imageBuffer,
