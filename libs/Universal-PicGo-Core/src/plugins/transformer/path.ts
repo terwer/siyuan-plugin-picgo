@@ -9,8 +9,17 @@
 
 import dayjs from "dayjs"
 import { IImgInfo, IImgSize, IPathTransformedImgInfo, IPicGo } from "../../types"
-import { currentWin, parentWin, win } from "universal-picgo-store"
-import { getBase64File, getFSFile, getImageSize, getURLFile, isBase64, isFileOrBlob, isUrl } from "../../utils/common"
+import { win } from "universal-picgo-store"
+import {
+  getBase64File,
+  getBlobFile,
+  getFSFile,
+  getImageSize,
+  getURLFile,
+  isBase64,
+  isFileOrBlob,
+  isUrl,
+} from "../../utils/common"
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const results: IImgInfo[] = ctx.output
@@ -18,7 +27,8 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
     ctx.input.map(async (item: string | typeof win.Buffer, index: number) => {
       let info: IPathTransformedImgInfo
       if (isFileOrBlob(item)) {
-        throw new Error("Blob is not supported")
+        ctx.log.debug("using File or Blob in path transform")
+        info = await getBlobFile(item)
       } else if (win.Buffer.isBuffer(item)) {
         ctx.log.debug("using buffer in path transform")
         info = {

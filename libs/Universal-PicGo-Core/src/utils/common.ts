@@ -122,7 +122,7 @@ export const isFileOrBlob = (val: any): boolean => {
  */
 export const fileToBuffer = async (file: any): Promise<any> => {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader()
+    const reader = new win.FileReader()
     reader.onload = (e: any) => {
       // 将 ArrayBuffer 转换成 Buffer 对象
       const buffer = win.Buffer.from(e.target.result)
@@ -131,6 +131,16 @@ export const fileToBuffer = async (file: any): Promise<any> => {
     reader.onerror = reject
     reader.readAsArrayBuffer(file)
   })
+}
+
+export const getBlobFile = async (blob: any): Promise<IPathTransformedImgInfo> => {
+  const buffer = await fileToBuffer(blob)
+  return {
+    success: true,
+    buffer,
+    fileName: "", // will use getImageSize result
+    extname: "", // will use getImageSize result
+  }
 }
 
 export const getURLFile = async (url: string, ctx: IPicGo): Promise<IPathTransformedImgInfo> => {
