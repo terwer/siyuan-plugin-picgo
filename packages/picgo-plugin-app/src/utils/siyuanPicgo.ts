@@ -7,7 +7,7 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { SiyuanPicGoUploadApi } from "universal-picgo"
+import { SiyuanPicgoPostApi } from "zhi-siyuan-picgo"
 import { isDev } from "@/utils/Constants.ts"
 import { ElMessage } from "element-plus"
 import { createAppLogger } from "@/utils/appLogger.ts"
@@ -18,9 +18,9 @@ import { createAppLogger } from "@/utils/appLogger.ts"
 class SiyuanPicGo {
   private static logger = createAppLogger("siyuan-pigo")
 
-  public static async getInstance(): Promise<SiyuanPicGoUploadApi> {
+  public static async getInstance(): Promise<SiyuanPicgoPostApi> {
     return new Promise((resolve, reject) => {
-      const picgo = new SiyuanPicGoUploadApi(isDev)
+      const picgo = new SiyuanPicgoPostApi(isDev)
       let needUpdate = false
       const checkConfig = () => {
         if (picgo.cfgUpdating) {

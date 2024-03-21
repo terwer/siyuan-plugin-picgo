@@ -80,6 +80,22 @@ importers:
         specifier: ^4.17.12
         version: 4.17.12
 
+  libs/zhi-siyuan-picgo:
+    dependencies:
+      universal-picgo:
+        specifier: workspace:*
+        version: link:../Universal-PicGo-Core
+      zhi-lib-base:
+        specifier: ^0.8.0
+        version: 0.8.0
+    devDependencies:
+      '@terwer/eslint-config-custom':
+        specifier: ^1.3.6
+        version: 1.3.6(@nuxt/eslint-config@0.1.1)(@typescript-eslint/eslint-plugin@5.62.0)(astro-eslint-parser@0.13.3)(eslint-config-prettier@8.10.0)(eslint-config-turbo@1.12.5)(eslint-plugin-prettier@4.2.1)(eslint-plugin-svelte@2.35.1)(eslint-plugin-vue@9.23.0)(eslint@8.57.0)(prettier-plugin-svelte@2.10.1)(prettier@2.8.8)(typescript@5.4.2)
+      '@terwer/vite-config-custom':
+        specifier: ^0.7.6
+        version: 0.7.6(@types/minimist@1.2.2)(jsdom@22.1.0)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@5.4.2)(vite-plugin-dts@2.3.0)(vite-plugin-node-polyfills@0.8.2)(vite-plugin-static-copy@0.15.0)(vite-tsconfig-paths@4.3.2)(vite@4.5.2)(vitest@0.31.4)
+
   packages/picgo-plugin-app:
     dependencies:
       '@element-plus/icons-vue':
@@ -97,9 +113,6 @@ importers:
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
-      universal-picgo:
-        specifier: workspace:*
-        version: link:../../libs/Universal-PicGo-Core
       unplugin-icons:
         specifier: ^0.18.5
         version: 0.18.5
@@ -118,6 +131,9 @@ importers:
       zhi-lib-base:
         specifier: ^0.8.0
         version: 0.8.0
+      zhi-siyuan-picgo:
+        specifier: workspace:*
+        version: link:../../libs/zhi-siyuan-picgo
     devDependencies:
       '@terwer/eslint-config-custom':
         specifier: ^1.3.6

@@ -38,8 +38,8 @@ const handlePicgoTypeChange = (_val: any) => {}
 </script>
 
 <template>
-  <div>
-    <el-form label-width="100px">
+  <back-page :title="t('setting.picgo.picbed')">
+    <el-form label-width="100px" class="picgo-setting-form">
       <el-form-item :label="t('upload.default.adaptor')">
         <el-select v-model="formData.picgoType" :placeholder="t('common.select')" @change="handlePicgoTypeChange">
           <el-option v-for="item in formData.picgoTypeList" :key="item.value" :label="item.label" :value="item.value" />
@@ -59,7 +59,10 @@ const handlePicgoTypeChange = (_val: any) => {}
         <external-picgo-setting />
       </div>
     </el-form>
-  </div>
+  </back-page>
 </template>
 
-<style scoped></style>
+<style lang="stylus" scoped>
+.picgo-setting-form
+  margin-top 20px
+</style>

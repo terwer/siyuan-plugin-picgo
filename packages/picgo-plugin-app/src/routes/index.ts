@@ -10,7 +10,6 @@
 import PicGoIndex from "$pages/PicGoIndex.vue"
 import ExternalPicgoSetting from "$components/setting/ExternalPicgoSetting.vue"
 import SiyuanSetting from "$components/setting/SiyuanSetting.vue"
-import TransportSelect from "$pages/TransportSelect.vue"
 import { RouteRecordRaw } from "vue-router"
 import SettingIndex from "$pages/SettingIndex.vue"
 import PicgoSetting from "$components/setting/PicgoSetting.vue"
@@ -27,7 +26,6 @@ export const routes: RouteRecordRaw[] = [
   { path: "/setting/picgo", component: PicgoSetting },
   { path: "/setting/siyuan", component: SiyuanSetting },
   { path: "/setting/external", component: ExternalPicgoSetting },
-  { path: "/setting/transport", component: TransportSelect },
   { path: "/test", component: TestIndex },
   { path: "/test/browser", component: BrowserTest },
   { path: "/test/electron", component: ElectronTest },

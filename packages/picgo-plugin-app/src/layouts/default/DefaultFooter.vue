@@ -39,13 +39,6 @@ const goAbout = () => {
   window.open("https://blog.terwer.space/about")
 }
 
-const handleTransportSetting = async () => {
-  await router.push({
-    path: "/setting/transport",
-    query: { showBack: "true" },
-  })
-}
-
 const handlePicgoSetting = async () => {
   await router.push({
     path: "/setting/picgo",
@@ -83,11 +76,6 @@ const handleComponentTest = async () => {
         <span class="text s-dark" @click="toggleDark()">{{
           isDark ? t("theme.mode.light") : t("theme.mode.dark")
         }}</span>
-
-        <span class="text">.</span>
-        <span class="text s-dark" @click="handleTransportSetting">
-          {{ t("setting.conf.transport") }}
-        </span>
 
         <span class="text">.</span>
         <span class="text s-dark" @click="handlePicgoSetting">

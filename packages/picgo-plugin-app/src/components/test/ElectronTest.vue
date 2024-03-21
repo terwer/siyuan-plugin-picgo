@@ -10,11 +10,12 @@
 <script setup lang="ts">
 import { createAppLogger } from "@/utils/appLogger.ts"
 import { ElMessage } from "element-plus"
-import { hasNodeEnv } from "universal-picgo"
 import { ref } from "vue"
 import { SiyuanPicGo } from "@/utils/siyuanPicgo.ts"
+import { useSiyuanDevice } from "$composables/useSiyuanDevice.ts"
 
 const logger = createAppLogger("picgo-electron-index")
+const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
 
 const paramFile = ref(null as any)
 
@@ -99,7 +100,7 @@ const handleTest5 = async () => {
 
 <template>
   <back-page title="Electron测试">
-    <div v-if="hasNodeEnv">
+    <div v-if="isInSiyuanOrSiyuanNewWin()">
       <h1>PicGO index</h1>
       <div class="action-item">
         <el-button type="primary" @click="handleTest">测试electron剪切板图片</el-button>
