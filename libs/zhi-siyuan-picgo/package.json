@@ -29,8 +29,12 @@
     "@terwer/vite-config-custom": "^0.7.6"
   },
   "dependencies": {
+    "js-md5": "^0.8.3",
+    "universal-picgo": "workspace:*",
+    "zhi-common": "^1.31.0",
+    "zhi-device": "^2.11.0",
     "zhi-lib-base": "^0.8.0",
-    "universal-picgo": "workspace:*"
+    "zhi-siyuan-api": "^2.18.6"
   },
   "publishConfig": {
     "access": "public"

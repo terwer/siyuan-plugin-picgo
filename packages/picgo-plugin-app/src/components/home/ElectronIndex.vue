@@ -8,13 +8,83 @@
   -->
 
 <script setup lang="ts">
-// import { createAppLogger } from "@/utils/appLogger.ts"
+import PictureList from "$components/home/PictureList.vue"
+import { usePicgoCommon } from "$composables/usePicgoCommon.ts"
+import { useVueI18n } from "$composables/useVueI18n.ts"
+import UploadButton from "$components/home/UploadButton.vue"
+import { ref } from "vue"
+import MaterialSymbolsImageSearchRounded from "~icons/material-symbols/image-search-rounded"
+import MaterialSymbolsSettingsAccountBoxOutlineSharp from "~icons/material-symbols/settings-account-box-outline-sharp"
+import SettingIndex from "$pages/SettingIndex.vue"
+import { BrowserUtil } from "zhi-device"
+import DragUpload from "$components/home/DragUpload.vue"
 
-// const logger = createAppLogger("picgo-electron-index")
+const { t } = useVueI18n()
+const { picgoCommonData, picgoCommonMethods } = usePicgoCommon()
+
+const activeMenu = ref("upload")
+const pageId = ref(BrowserUtil.getQueryParam("pageId"))
 </script>
 
 <template>
-  <div></div>
+  <div>
+    <el-tabs :key="activeMenu" v-model="activeMenu" class="setting-tabs">
+      <el-tab-pane name="upload">
+        <template #label>
+          <span>
+            <i class="el-icon"><MaterialSymbolsImageSearchRounded /></i> {{ t("upload.tab.upload") }}
+          </span>
+        </template>
+        <div class="drag-action">
+          <drag-upload />
+        </div>
+        <div class="upload-action">
+          <!-- 上传状态 -->
+          <div class="upload-status">
+            <el-button text :loading="picgoCommonData.isUploadLoading">{{ t("picgo.upload.status") }} </el-button>
+          </div>
+
+          <!-- 上传按钮 -->
+          <upload-button :picgo-common-data="picgoCommonData" :picgo-common-methods="picgoCommonMethods" />
+
+          <!-- 图片列表 -->
+          <picture-list
+            :picgo-common-data="picgoCommonData"
+            :picgo-common-methods="picgoCommonMethods"
+            :page-id="pageId"
+          />
+
+          <!-- 日志显示 -->
+          <div v-if="picgoCommonData.showDebugMsg" class="page-id">
+            <el-input v-model="pageId" placeholder="页面ID" />
+          </div>
+          <!-- 日志显示 -->
+          <div v-if="picgoCommonData.showDebugMsg" class="log-msg">
+            <el-input
+              v-model="picgoCommonData.loggerMsg"
+              type="textarea"
+              :autosize="{ minRows: 5, maxRows: 10 }"
+              placeholder="日志信息"
+            />
+          </div>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane name="setting">
+        <template #label>
+          <span>
+            <i class="el-icon"><MaterialSymbolsSettingsAccountBoxOutlineSharp /></i> {{ t("upload.tab.setting") }}
+          </span>
+        </template>
+        <setting-index />
+      </el-tab-pane>
+    </el-tabs>
+  </div>
 </template>
 
-<style lang="stylus" scoped></style>
+<style lang="stylus" scoped>
+.page-id
+  margin-bottom 16px
+
+.log-msg
+  margin: 10px 0
+</style>

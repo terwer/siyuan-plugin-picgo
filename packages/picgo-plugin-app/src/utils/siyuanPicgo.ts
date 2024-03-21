@@ -11,6 +11,8 @@ import { SiyuanPicgoPostApi } from "zhi-siyuan-picgo"
 import { isDev } from "@/utils/Constants.ts"
 import { ElMessage } from "element-plus"
 import { createAppLogger } from "@/utils/appLogger.ts"
+import { useSiyuanSetting } from "@/stores/useSiyuanSetting.ts"
+import { toRaw } from "vue"
 
 /**
  * 思源笔记 PicGp 实例
@@ -20,7 +22,9 @@ class SiyuanPicGo {
 
   public static async getInstance(): Promise<SiyuanPicgoPostApi> {
     return new Promise((resolve, reject) => {
-      const picgo = new SiyuanPicgoPostApi(isDev)
+      const { getSiyuanSetting } = useSiyuanSetting()
+      const siyuanConfig = getSiyuanSetting()
+      const picgo = new SiyuanPicgoPostApi(siyuanConfig.value, isDev)
       let needUpdate = false
       const checkConfig = () => {
         if (picgo.cfgUpdating) {

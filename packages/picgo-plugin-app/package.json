@@ -6,7 +6,8 @@
   "scripts": {
     "serve": "python -u scripts/serve.py && vite",
     "dev": "python -u scripts/dev.py",
-    "build": "python -u scripts/build.py"
+    "build": "python -u scripts/build.py",
+    "lint": "vue-tsc --noEmit"
   },
   "devDependencies": {
     "@terwer/eslint-config-custom": "^1.3.6",
@@ -33,7 +34,9 @@
     "vue-i18n": "^9.10.2",
     "vue-router": "^4.3.0",
     "zhi-common": "^1.31.0",
+    "zhi-device": "^2.11.0",
     "zhi-lib-base": "^0.8.0",
+    "zhi-siyuan-api": "^2.18.6",
     "zhi-siyuan-picgo": "workspace:*"
   }
 }

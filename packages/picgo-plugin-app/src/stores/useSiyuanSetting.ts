@@ -7,12 +7,12 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { RemovableRef, StorageSerializers, useLocalStorage } from "@vueuse/core"
-import SiyuanConfig from "@/models/SiyuanConfig.ts"
+import { RemovableRef, StorageSerializers } from "@vueuse/core"
 import { readonly } from "vue"
 import { SiyuanDevice } from "zhi-device"
 import useCommonLocalStorage from "@/stores/common/useCommonLocalStorage.ts"
 import { useSiyuanDevice } from "$composables/useSiyuanDevice.ts"
+import { SiyuanPicgoConfig } from "zhi-siyuan-picgo"
 
 const useSiyuanSetting = () => {
   const filePath = "storage/syp/siyuan-cfg.json"
@@ -25,7 +25,7 @@ const useSiyuanSetting = () => {
    * @author terwer
    * @since 0.6.0
    */
-  const getSiyuanSetting = (): RemovableRef<SiyuanConfig> => {
+  const getSiyuanSetting = (): RemovableRef<SiyuanPicgoConfig> => {
     const baseUrl = "http://127.0.0.1:6806"
     const token = ""
     // PC客户端多个工作空间情况下，自动读取思源地址
@@ -35,9 +35,9 @@ const useSiyuanSetting = () => {
       origin = win?.location.origin
     }
 
-    const initialValue = new SiyuanConfig(origin ?? baseUrl, token)
-    const siyuanConfig = useCommonLocalStorage<SiyuanConfig>(filePath, storageKey, initialValue, {
-      serializer: StorageSerializers.object,
+    const initialValue = new SiyuanPicgoConfig(origin ?? baseUrl, token)
+    const siyuanConfig = useCommonLocalStorage<SiyuanPicgoConfig>(filePath, storageKey, initialValue, {
+      serializer: StorageSerializers.object
     })
 
     // 更新apiUrl

@@ -19,8 +19,9 @@ import {
   PicgoTypeEnum,
   PluginLoaderDb,
 } from "universal-picgo"
+import { SiyuanConfig as SiyuanPicgoConfig } from "zhi-siyuan-api"
 
-export { SiyuanPicgoPostApi }
+export { SiyuanPicgoConfig, SiyuanPicgoPostApi }
 export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
 export { PicgoTypeEnum }
 export { type IPicGo, type IImgInfo, type IPicgoDb, type IConfig, type IExternalPicgoConfig }
