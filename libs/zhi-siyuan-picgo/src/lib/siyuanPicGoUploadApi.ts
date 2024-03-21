@@ -38,8 +38,8 @@ class SiyuanPicGoUploadApi {
   public async upload(input?: any[]): Promise<IImgInfo[] | Error> {
     const useBundledPicgo = this.externalPicGo.db.get("useBundledPicgo")
     if (useBundledPicgo) {
-      const picgoTyype = this.externalPicGo.db.get("picgoTyype")
-      if (picgoTyype !== PicgoTypeEnum.Bundled) {
+      const picgoType = this.externalPicGo.db.get("picgoType")
+      if (picgoType !== PicgoTypeEnum.Bundled) {
         throw new Error("当前配置使用内置PicGo，请先在配置页面选择使用内置PicGo")
       }
       return this.picgo.upload(input)

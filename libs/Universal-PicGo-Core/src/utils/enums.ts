@@ -40,5 +40,5 @@ export enum IBusEvent {
 export enum PicgoTypeEnum {
   Bundled = "bundled",
   App = "app",
-  Core = "core",
+  // Core = "core",
 }
