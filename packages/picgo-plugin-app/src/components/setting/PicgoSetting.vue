@@ -15,10 +15,9 @@ import { useExternalPicGoSetting } from "@/stores/useExternalPicGoSetting.ts"
 import { SiyuanPicGo } from "@/utils/siyuanPicgo.ts"
 import { useBundledPicGoSetting } from "@/stores/useBundledPicGoSetting.ts"
 
+const { t } = useVueI18n()
 const { getBundledPicGoSetting } = useBundledPicGoSetting()
 const { getExternalPicGoSetting } = useExternalPicGoSetting()
-
-const { t } = useVueI18n()
 
 const siyuanPicgo = await SiyuanPicGo.getInstance()
 const ctx = siyuanPicgo.ctx()
@@ -29,17 +28,17 @@ const formData = reactive({
   picgoTypeList: [
     {
       value: PicgoTypeEnum.Bundled,
-      label: t("upload.adaptor.bundled")
+      label: t("upload.adaptor.bundled"),
     },
     {
       value: PicgoTypeEnum.App,
-      label: t("upload.adaptor.app")
-    }
+      label: t("upload.adaptor.app"),
+    },
     // {
     //   value: PicgoTypeEnum.Core,
     //   label: t("upload.adaptor.core"),
     // },
-  ]
+  ],
 })
 
 const handlePicgoTypeChange = (val: any) => {
