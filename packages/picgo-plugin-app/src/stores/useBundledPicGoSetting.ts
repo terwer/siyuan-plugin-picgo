@@ -9,41 +9,41 @@
 
 import { RemovableRef, StorageSerializers } from "@vueuse/core"
 import { readonly } from "vue"
-import { IPicGo, IExternalPicgoConfig, ExternalPicgoConfigDb } from "zhi-siyuan-picgo"
+import { IExternalPicgoConfig, IPicGo, IConfig, ConfigDb } from "zhi-siyuan-picgo"
 import useCommonPicgoStorage from "@/stores/common/useCommonPicgoStorage.ts"
 
 /**
- * 外部PicGo配置
+ * 内置的PicGo配置
  *
  * @author terwer
  */
-const useExternalPicGoSetting = () => {
+const useBundledPicGoSetting = () => {
   /**
-   * 获取外部的 PicGo 的配置
+   * 获取内置的 PicGo 的配置
    *
    * @author terwer
    * @since 0.6.0
    */
-  const getExternalPicGoSetting = (ctx: IPicGo): RemovableRef<IExternalPicgoConfig> => {
-    const externalPicGoConfigDb = new ExternalPicgoConfigDb(ctx)
-    return useCommonPicgoStorage<IExternalPicgoConfig>(externalPicGoConfigDb, {
+  const getBundledPicGoSetting = (ctx: IPicGo): RemovableRef<IConfig> => {
+    const externalPicGoConfigDb = new ConfigDb(ctx)
+    return useCommonPicgoStorage<IConfig>(externalPicGoConfigDb, {
       serializer: StorageSerializers.object,
     })
   }
 
   /**
-   * 获取只读版本的外部 PicGo 配置
+   * 获取只读版本的内置的 PicGo 配置
    *
    * @author terwer
    * @since 0.6.0
    */
-  const getReadOnlytExternalPicGoSetting = (ctx: IPicGo) => {
-    const cfgRef = getExternalPicGoSetting(ctx)
+  const getReadOnlytBundledPicGoSetting = (ctx: IPicGo) => {
+    const cfgRef = getBundledPicGoSetting(ctx)
     const readOnlyCfgRef = readonly(cfgRef)
     return readOnlyCfgRef
   }
 
-  return { getExternalPicGoSetting, getReadOnlytExternalPicGoSetting }
+  return { getBundledPicGoSetting, getReadOnlytBundledPicGoSetting }
 }
 
-export { useExternalPicGoSetting }
+export { useBundledPicGoSetting }

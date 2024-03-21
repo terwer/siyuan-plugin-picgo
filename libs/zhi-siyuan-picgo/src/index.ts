@@ -15,6 +15,7 @@ import {
   IImgInfo,
   IPicGo,
   IPicgoDb,
+  IConfig,
   PicgoTypeEnum,
   PluginLoaderDb,
 } from "universal-picgo"
@@ -22,4 +23,4 @@ import {
 export { SiyuanPicgoPostApi }
 export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
 export { PicgoTypeEnum }
-export { type IPicGo, type IImgInfo, type IPicgoDb, type IExternalPicgoConfig }
+export { type IPicGo, type IImgInfo, type IPicgoDb, type IConfig, type IExternalPicgoConfig }
