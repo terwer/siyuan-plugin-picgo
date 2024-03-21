@@ -7,17 +7,14 @@
   -  of this license document, but changing it is not allowed.
   -->
 
+<script setup lang="ts">
+
+</script>
+
 <template>
-  <Suspense>
-    <component :is="layout">
-      <slot />
-    </component>
-  </Suspense>
+
 </template>
 
-<script lang="ts" setup>
-import { shallowRef } from "vue"
-import AppLayoutDefault from "~/src/layouts/default/AppLayoutDefault.vue"
+<style scoped lang="stylus">
 
-const layout = shallowRef(AppLayoutDefault)
-</script>
+</style>

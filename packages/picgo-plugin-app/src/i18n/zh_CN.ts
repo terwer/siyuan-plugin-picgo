@@ -114,8 +114,8 @@ export default {
   "picgo.type.switch.active.text": "切换到内置PicGO",
   "picgo.type.switch.unactive.text": "切换到外部PicGO",
   "picgo.type.external.title": "外部PicGO设置",
-  "setting.picgo.external.setting.apiurl": "API地址",
-  "setting.picgo.external.setting.apiurl.tip": "请输入外部外部PicGO的API地址，默认是：http://127.0.0.1:36677",
+  "setting.picgo.external.setting.apiurl": "PicGo server 上传接口",
+  "setting.picgo.external.setting.apiurl.tip": "请输入 PicGo server 上传接口地址，默认是：http://127.0.0.1:36677",
   "siyuan.config.setting": "思源设置",
   "setting.blog.siyuan.apiurl": "思源API地址",
   "setting.blog.siyuan.apiurl.tip": "思源API地址，默认是：http://127.0.0.1:6806",
@@ -134,5 +134,5 @@ export default {
   "upload.adaptor.app": "PicGO(app)",
   "upload.adaptor.core": "PicGO-Core",
   "setting.cors.title": "CORS 代理",
-  "setting.cors.title.tip": "CORS 代理，浏览器和 dcoker 环境必备，如有需要可付费咨询 youweics@163.com",
+  "setting.cors.title.tip": "CORS 代理，浏览器、dcoker以及某些插件可能需要，可付费咨询 youweics@163.com",
 }

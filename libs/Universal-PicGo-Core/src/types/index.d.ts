@@ -8,9 +8,11 @@
  */
 
 
-import { EventEmitter, Buffer } from "../utils/nodePolyfill"
+import { Buffer, EventEmitter } from "../utils/nodePolyfill"
 import { ILogger } from "zhi-lib-base"
-import {AxiosRequestConfig} from "axios";
+import { AxiosRequestConfig } from "axios"
+import { IJSON } from "universal-picgo-store"
+import { PicgoTypeEnum } from "../utils/enums"
 
 export interface IPicGo extends EventEmitter {
   /**
@@ -115,6 +117,7 @@ export interface ISmmsConfig {
   token: string
   backupDomain?: string
 }
+
 /** 七牛云图床配置项 */
 export interface IQiniuConfig {
   accessKey: string
@@ -124,12 +127,13 @@ export interface IQiniuConfig {
   /** 自定义域名 */
   url: string
   /** 存储区域编号 */
-  area: 'z0' | 'z1' | 'z2' | 'na0' | 'as0' | string
+  area: "z0" | "z1" | "z2" | "na0" | "as0" | string
   /** 网址后缀，比如使用 `?imageslim` 可进行[图片瘦身](https://developer.qiniu.com/dora/api/1271/image-thin-body-imageslim) */
   options: string
   /** 自定义存储路径，比如 `img/` */
   path: string
 }
+
 /** 又拍云图床配置项 */
 export interface IUpyunConfig {
   /** 存储空间名，及你的服务名 */
@@ -145,6 +149,7 @@ export interface IUpyunConfig {
   /** 加速域名，注意要加 `http://` 或者 `https://` */
   url: string
 }
+
 /** 腾讯云图床配置项 */
 export interface ITcyunConfig {
   secretId: string
@@ -161,12 +166,13 @@ export interface ITcyunConfig {
   /** 自定义域名，注意要加 `http://` 或者 `https://` */
   customUrl: string
   /** COS 版本，v4 或者 v5 */
-  version: 'v5' | 'v4'
+  version: "v5" | "v4"
   /** 针对图片的一些后缀处理参数 PicGo 2.4.0+ PicGo-Core 1.5.0+ */
   options: string
   /** 是否支持极智压缩 */
   slim: boolean
 }
+
 /** GitHub 图床配置项 */
 export interface IGithubConfig {
   /** 仓库名，格式是 `username/reponame` */
@@ -180,6 +186,7 @@ export interface IGithubConfig {
   /** 分支名，默认是 `main` */
   branch: string
 }
+
 /** 阿里云图床配置项 */
 export interface IAliyunConfig {
   accessKeyId: string
@@ -195,6 +202,7 @@ export interface IAliyunConfig {
   /** 针对图片的一些后缀处理参数 PicGo 2.2.0+ PicGo-Core 1.4.0+ */
   options: string
 }
+
 /** Imgur 图床配置项 */
 export interface IImgurConfig {
   /** imgur 的 `clientId` */
@@ -234,6 +242,7 @@ export interface IConfig {
     npmProxy?: string
     [others: string]: any
   }
+
   [configOptions: string]: any
 }
 
@@ -246,10 +255,11 @@ export interface IPlugin {
   name?: string
   /** The config of this handler */
   config?: (ctx: IPicGo) => IPluginConfig[]
+
   [propName: string]: any
 }
 
-export type IPluginNameType = 'simple' | 'scope' | 'normal' | 'unknown'
+export type IPluginNameType = "simple" | "scope" | "normal" | "unknown"
 
 export interface ILocale {
   [key: string]: any
@@ -277,6 +287,7 @@ export interface IImgInfo {
   height?: number
   extname?: string
   imgUrl?: string
+
   [propName: string]: any
 }
 
@@ -334,6 +345,7 @@ export interface IPicGoPluginInterface {
   /**
    * for picgo gui plugins
    */
+
   // guiMenu?: (ctx: IPicGo) => IGuiMenuItem[]
 
   /**
@@ -355,6 +367,7 @@ export interface IPluginConfig {
   default?: any
   alias?: string
   message?: string
+
   // prefix?: string // for cli options
   [propName: string]: any
 }
@@ -403,6 +416,7 @@ export interface IPlugin {
   name?: string
   /** The config of this handler */
   config?: (ctx: IPicGo) => IPluginConfig[]
+
   [propName: string]: any
 }
 
@@ -474,7 +488,7 @@ export interface IConfigChangePayload<T> {
 // =====================================================================================================================
 // request start
 
-export type IPicGoRequest = <T, U extends  AxiosRequestConfig>(config: U) => Promise<IResponse<T, U>>
+export type IPicGoRequest = <T, U extends AxiosRequestConfig>(config: U) => Promise<IResponse<T, U>>
 
 /**
  * for PicGo new request api, the response will be json format
@@ -487,7 +501,7 @@ export type IReqOptions<T = any> = AxiosRequestConfig<T> & {
  * for PicGo new request api, the response will be Buffer
  */
 export type IReqOptionsWithArrayBufferRes<T = any> = IReqOptions<T> & {
-  responseType: 'arraybuffer'
+  responseType: "arraybuffer"
 }
 
 /**
@@ -500,9 +514,9 @@ export type IFullResponse<T = any, U = any> = AxiosResponse<T, U> & {
   body: T
 }
 
-type AxiosResponse<T = any, U = any> = import('axios').AxiosResponse<T, U>
+type AxiosResponse<T = any, U = any> = import("axios").AxiosResponse<T, U>
 
-type AxiosRequestConfig<T = any> = import('axios').AxiosRequestConfig<T>
+type AxiosRequestConfig<T = any> = import("axios").AxiosRequestConfig<T>
 
 interface IRequestOptionsWithFullResponse {
   resolveWithFullResponse: true
@@ -513,7 +527,7 @@ interface IRequestOptionsWithJSON {
 }
 
 interface IRequestOptionsWithResponseTypeArrayBuffer {
-  responseType: 'arraybuffer'
+  responseType: "arraybuffer"
 }
 
 /**
@@ -521,10 +535,11 @@ interface IRequestOptionsWithResponseTypeArrayBuffer {
  * U is the config type
  */
 export type IResponse<T, U> = U extends IRequestOptionsWithFullResponse ? IFullResponse<T, U>
-    : U extends IRequestOptionsWithJSON ? T
-        : U extends IRequestOptionsWithResponseTypeArrayBuffer ? Buffer
-          : U extends IReqOptionsWithBodyResOnly ? T
-              : string
+  : U extends IRequestOptionsWithJSON ? T
+    : U extends IRequestOptionsWithResponseTypeArrayBuffer ? Buffer
+      : U extends IReqOptionsWithBodyResOnly ? T
+        : string
+
 // request end
 
 /**
@@ -533,13 +548,39 @@ export type IResponse<T, U> = U extends IRequestOptionsWithFullResponse ? IFullR
 interface IExternalPicgoConfig {
   useBundledPicgo?: boolean
 
+  picgoType?: PicgoTypeEnum
+
   /**
    * extPicgoApiUrl 是一个字符串，表示外部 Picgo API 的 URL
    */
   extPicgoApiUrl?: string
 
+
   /**
    * 其他配置项，可以是任意类型
    */
   [key: string]: any
+}
+
+/**
+ * PicGo 统一存储接口
+ */
+interface IPicgoDb<T> {
+  key: string
+
+  initialValue: any
+
+  read(flush?: boolean): IJSON
+
+  get(key: string): any
+
+  set(key: string, value: any): void
+
+  has(key: string): boolean
+
+  unset(key: string, value: any): boolean
+
+  saveConfig(config: Partial<T>): void
+
+  removeConfig(config: T): void
 }

@@ -7,36 +7,36 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { IConfig, IPicGo } from "../../types"
+import { IExternalPicgoConfig, IPicGo, IPicgoDb } from "../../types"
 import { hasNodeEnv, IJSON, JSONStore, win } from "universal-picgo-store"
 import { browserPathJoin } from "../../utils/browserUtils"
 import { PicgoTypeEnum } from "../../utils/enums"
 
-class ExternalPicgoConfigDb {
+class ExternalPicgoConfigDb implements IPicgoDb<IExternalPicgoConfig> {
   private readonly ctx: IPicGo
   private readonly db: JSONStore
+  public readonly key: string
+  public readonly initialValue = {
+    useBundledPicgo: true,
+    picgoType: PicgoTypeEnum.Bundled,
+    extPicgoApiUrl: "http://127.0.0.1:36677",
+  }
 
   constructor(ctx: IPicGo) {
     this.ctx = ctx
-    let packagePath: string
 
     if (hasNodeEnv) {
       const path = win.require("path")
-      packagePath = path.join(this.ctx.pluginBaseDir, "external-picgo-cfg.json")
+      this.key = path.join(this.ctx.pluginBaseDir, "external-picgo-cfg.json")
     } else {
-      packagePath = browserPathJoin(this.ctx.pluginBaseDir, "external-picgo-cfg.json")
+      this.key = browserPathJoin(this.ctx.pluginBaseDir, "external-picgo-cfg.json")
     }
 
-    this.db = new JSONStore(packagePath)
+    this.db = new JSONStore(this.key)
 
-    // const cfg: IExternalPicgoConfig = {
-    //   useBundledPicgo: true,
-    //   picgoType: PicgoTypeEnum.Bundled,
-    //   extPicgoApiUrl: "http://127.0.0.1:36677",
-    // }
-    this.safeSet("useBundledPicgo", true)
-    this.safeSet("picgoType", PicgoTypeEnum.Bundled)
-    this.safeSet("extPicgoApiUrl", "http://127.0.0.1:36677")
+    this.safeSet("useBundledPicgo", this.initialValue.useBundledPicgo)
+    this.safeSet("picgoType", this.initialValue.picgoType)
+    this.safeSet("extPicgoApiUrl", this.initialValue.extPicgoApiUrl)
   }
 
   read(flush?: boolean): IJSON {
@@ -63,13 +63,13 @@ class ExternalPicgoConfigDb {
     return this.db.unset(key, value)
   }
 
-  saveConfig(config: Partial<IConfig>): void {
+  saveConfig(config: Partial<IExternalPicgoConfig>): void {
     Object.keys(config).forEach((name: string) => {
       this.set(name, config[name])
     })
   }
 
-  removeConfig(config: IConfig): void {
+  removeConfig(config: IExternalPicgoConfig): void {
     Object.keys(config).forEach((name: string) => {
       this.unset(name, config[name])
     })

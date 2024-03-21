@@ -10,6 +10,7 @@
 import { ILogger, simpleLogger } from "zhi-lib-base"
 import { SiyuanPicGoUploadApi } from "./siyuanPicGoUploadApi"
 import { hasNodeEnv, IImgInfo, win } from "universal-picgo"
+import { IPicGo } from "universal-picgo/src"
 
 /**
  * Picgo与文章交互的通用方法
@@ -29,6 +30,10 @@ class SiyuanPicgoPostApi {
     this.cfgUpdating = false
 
     this.updateConfig()
+  }
+
+  public ctx(): IPicGo {
+    return this.picgoApi.picgo
   }
 
   /**

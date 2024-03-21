@@ -7,22 +7,28 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { IConfig, IPicGo } from "../../types"
+import { IConfig, IPicGo, IPicgoDb } from "../../types"
 import { IJSON, JSONStore } from "universal-picgo-store"
 
-class ConfigDb {
+class ConfigDb implements IPicgoDb<IConfig> {
   private readonly ctx: IPicGo
   private readonly db: JSONStore
+  public readonly key: string
+  public readonly initialValue = {
+    picBed: {
+      uploader: "smms",
+      current: "smms",
+    },
+    picgoPlugins: {},
+  }
 
   constructor(ctx: IPicGo) {
     this.ctx = ctx
-    this.db = new JSONStore(this.ctx.configPath)
+    this.key = this.ctx.configPath
+    this.db = new JSONStore(this.key)
 
-    this.safeSet("picBed", {
-      uploader: "smms",
-      current: "smms",
-    })
-    this.safeSet("picgoPlugins", {})
+    this.safeSet("picBed", this.initialValue.picBed)
+    this.safeSet("picgoPlugins", this.initialValue.picgoPlugins)
   }
 
   read(flush?: boolean): IJSON {

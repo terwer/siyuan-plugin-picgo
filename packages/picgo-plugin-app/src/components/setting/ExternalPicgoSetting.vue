@@ -7,10 +7,30 @@
   -  of this license document, but changing it is not allowed.
   -->
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useVueI18n } from "$composables/useVueI18n.ts"
+import { reactive } from "vue"
+
+const { t } = useVueI18n()
+
+const props = defineProps({
+  cfg: {
+    type: Object,
+    default: null,
+  },
+})
+
+const formData = reactive({
+  cfg: props.cfg,
+})
+</script>
 
 <template>
-  <div>External picgo setting</div>
+  <div>
+    <el-form-item :label="t('setting.picgo.external.setting.apiurl')" label-width="170px">
+      <el-input v-model="formData.cfg.extPicgoApiUrl" :placeholder="t('setting.picgo.external.setting.apiurl.tip')" />
+    </el-form-item>
+  </div>
 </template>
 
 <style scoped></style>
