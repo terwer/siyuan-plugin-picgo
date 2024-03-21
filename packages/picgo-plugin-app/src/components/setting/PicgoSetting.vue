@@ -10,10 +10,11 @@
 <script setup lang="ts">
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { reactive } from "vue"
-import { PicgoTypeEnum } from "universal-picgo"
-import { hasNodeEnv } from "universal-picgo"
+import { PicgoTypeEnum } from "zhi-siyuan-picgo"
+import { useSiyuanDevice } from "$composables/useSiyuanDevice.ts"
 
 const { t } = useVueI18n()
+const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
 
 const formData = reactive({
   picgoType: PicgoTypeEnum.Bundled,
@@ -46,7 +47,7 @@ const handlePicgoTypeChange = (_val: any) => {}
         </el-select>
       </el-form-item>
       <div v-if="formData.picgoType === PicgoTypeEnum.Bundled">
-        <el-form-item v-if="!hasNodeEnv" :label="t('setting.cors.title')">
+        <el-form-item v-if="!isInSiyuanOrSiyuanNewWin()" :label="t('setting.cors.title')">
           <el-input v-model="formData.proxy" :placeholder="t('setting.cors.title.tip')" />
           <div>
             <a href="https://blog.terwer.space/static/20240312140915-rvxrqp2" target="_blank">

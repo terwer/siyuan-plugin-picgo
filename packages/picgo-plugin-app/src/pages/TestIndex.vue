@@ -9,8 +9,10 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router"
+import { useSiyuanDevice } from "$composables/useSiyuanDevice.ts"
 
 const router = useRouter()
+const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
 
 const handleTestBrowser = async () => {
   await router.push({
@@ -29,10 +31,10 @@ const handleTestElectron = async () => {
 
 <template>
   <back-page title="组件测试">
-    <div class="action-item">
+    <div class="action-item" v-if="isInSiyuanOrSiyuanNewWin()">
       <el-button type="primary" @click="handleTestBrowser">测试浏览器</el-button>
     </div>
-    <div class="action-item">
+    <div class="action-item" v-else>
       <el-button type="primary" @click="handleTestElectron">测试Electron</el-button>
     </div>
   </back-page>

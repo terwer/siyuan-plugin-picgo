@@ -1,3 +1,12 @@
+/*
+ *            GNU GENERAL PUBLIC LICENSE
+ *               Version 3, 29 June 2007
+ *
+ *  Copyright (C) 2024 Terwer, Inc. <https://terwer.space/>
+ *  Everyone is permitted to copy and distribute verbatim copies
+ *  of this license document, but changing it is not allowed.
+ */
+
 /// <reference types="vitest" />
 
 import { resolve } from "path"
@@ -46,8 +55,8 @@ export default defineConfig({
       // Could also be a dictionary or array of multiple entry points
       entry: resolve(__dirname, "src/index.ts"),
       // the proper extensions will be added
-      fileName: "index",
-      formats: ["cjs"],
+      // fileName: "index",
+      formats: ["es"],
     },
     rollupOptions: {
       plugins: [...(isWatch ? [livereload(devDistDir)] : [])],

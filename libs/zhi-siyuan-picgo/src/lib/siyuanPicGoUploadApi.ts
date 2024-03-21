@@ -7,7 +7,7 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { ExternalPicgo, IImgInfo, IPicGo, UniversalPicGo } from "universal-picgo"
+import { ExternalPicgo, IImgInfo, IPicGo, PicgoTypeEnum, UniversalPicGo } from "universal-picgo"
 import { ILogger } from "zhi-lib-base"
 
 /**
@@ -38,6 +38,10 @@ class SiyuanPicGoUploadApi {
   public async upload(input?: any[]): Promise<IImgInfo[] | Error> {
     const useBundledPicgo = this.externalPicGo.db.get("useBundledPicgo")
     if (useBundledPicgo) {
+      const picgoTyype = this.externalPicGo.db.get("picgoTyype")
+      if (picgoTyype !== PicgoTypeEnum.Bundled) {
+        throw new Error("当前配置使用内置PicGo，请先在配置页面选择使用内置PicGo")
+      }
       return this.picgo.upload(input)
     }
     return this.externalPicGo.upload(input)

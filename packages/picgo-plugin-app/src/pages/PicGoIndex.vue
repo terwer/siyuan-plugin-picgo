@@ -8,12 +8,14 @@
   -->
 
 <script setup lang="ts">
-import { hasNodeEnv } from "universal-picgo"
+import { useSiyuanDevice } from "$composables/useSiyuanDevice.ts"
+
+const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
 </script>
 
 <template>
   <div class="picgo-body">
-    <electron-index v-if="hasNodeEnv" />
+    <electron-index v-if="isInSiyuanOrSiyuanNewWin()" />
     <browser-index v-else />
   </div>
 </template>
