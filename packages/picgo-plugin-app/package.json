@@ -20,7 +20,7 @@
     "vite": "^5.1.6",
     "vite-plugin-html": "^3.2.2",
     "vitest": "^1.4.0",
-    "vue-tsc": "^2.0.6"
+    "vue-tsc": "^2.0.7"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
