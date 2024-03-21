@@ -8,125 +8,66 @@
   -->
 
 <script setup lang="ts">
-import { createAppLogger } from "@/utils/appLogger.ts"
-import { ElMessage, UploadRequestOptions } from "element-plus"
-import { UploadFilled } from "@element-plus/icons-vue"
-import { onBeforeMount, onBeforeUnmount, ref } from "vue"
-import { retrieveImageFromClipboardAsBlob } from "@/utils/browserClipboard.ts"
+import { ref } from "vue"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import MaterialSymbolsImageSearchRounded from "~icons/material-symbols/image-search-rounded"
 import MaterialSymbolsSettingsAccountBoxOutlineSharp from "~icons/material-symbols/settings-account-box-outline-sharp"
-import SettingIndex from "$pages/SettingIndex.vue"
-import { SiyuanPicGo } from "@/utils/siyuanPicgo.ts"
+import DragUpload from "$components/home/DragUpload.vue"
+import { useRouter } from "vue-router"
+import PictureList from "$components/home/PictureList.vue"
+import { usePicgoCommon } from "$composables/usePicgoCommon.ts"
+import { BrowserUtil } from "zhi-device"
 
-const logger = createAppLogger("picgo-browser-index")
 const { t } = useVueI18n()
+const { picgoCommonData, picgoCommonMethods } = usePicgoCommon()
+const router = useRouter()
 
-const limit = ref(5)
 const activeMenu = ref("upload")
-
-const handleDragAction = async (file: Blob) => {
-  let res: any
-  try {
-    const picgo = await SiyuanPicGo.getInstance()
-    logger.debug("picgo =>", picgo)
-
-    const result = await picgo.upload([file])
-    if (result instanceof Array) {
-      if (result.length === 0) {
-        ElMessage.error("upload error => " + "no result")
-        res = {
-          success: false,
-          message: "upload error => " + "no result",
-        }
-      } else {
-        logger.info("upload success =>", result)
-        ElMessage.success("upload success")
-        const imageInfo = result[0] as any
-        res = {
-          success: true,
-          message: "upload success",
-          url: imageInfo.imgUrl,
-        }
-      }
-    } else {
-      logger.error("upload error =>", result.toString())
-      ElMessage.error("upload error => " + result.toString())
-      res = {
-        success: false,
-        message: "upload error => " + result.toString(),
-      }
-    }
-  } catch (e: any) {
-    logger.error(e)
-    ElMessage.error(e.toString())
-    res = {
-      success: false,
-      message: "upload error => " + e.toString(),
-    }
+const pageId = ref(BrowserUtil.getQueryParam("pageId"))
+const handleTabClick = async (pane: any, ev: Event) => {
+  if (pane.props.name === "setting") {
+    await router.push({
+      path: "/setting",
+      query: { showBack: "true" },
+    })
   }
-
-  return res
 }
-
-const customRequestHandler = (options: UploadRequestOptions): Promise<unknown> => {
-  return handleDragAction(options.file)
-}
-
-const handleExceed = (_e: any) => {
-  ElMessage.error("selected files exceed to upload limit  " + limit.value)
-}
-
-const handlePasteAction = (e: any) => {
-  e.preventDefault()
-
-  retrieveImageFromClipboardAsBlob(e, function (imageBlob: any) {
-    if (imageBlob && imageBlob instanceof Blob) {
-      const file = new File([imageBlob], "image.png", { type: "image/png" })
-      handleDragAction(file)
-    } else {
-      ElMessage.error("image not found in browser clipboard")
-    }
-  })
-}
-
-onBeforeMount(() => {
-  window.addEventListener("paste", handlePasteAction)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener("paste", handlePasteAction)
-})
 </script>
 
 <template>
   <div>
-    <el-tabs :key="activeMenu" v-model="activeMenu" class="setting-tabs">
+    <el-tabs :key="activeMenu" v-model="activeMenu" class="setting-tabs" @tab-click="handleTabClick">
       <el-tab-pane name="upload">
         <template #label>
           <span>
             <i class="el-icon"><MaterialSymbolsImageSearchRounded /></i> {{ t("upload.tab.upload") }}
           </span>
         </template>
-        <el-upload
-          class="upload-demo"
-          drag
-          :http-request="customRequestHandler"
-          multiple
-          :limit="limit"
-          accept="image/png,image/jpg,image/jpeg,image/gif,image/webp,image/svg"
-          :on-exceed="handleExceed"
-        >
-          <el-icon class="el-icon--upload">
-            <upload-filled />
-          </el-icon>
-          <div class="el-upload__text">
-            {{ t("upload.select.tip1") }} <em>{{ t("upload.select.tip2") }}</em>
+        <div class="drag-action">
+          <drag-upload />
+        </div>
+        <div class="upload-action">
+          <!-- 图片列表 -->
+          <picture-list
+            :picgo-common-data="picgoCommonData"
+            :picgo-common-methods="picgoCommonMethods"
+            :page-id="pageId"
+          />
+
+          <!-- 日志显示 -->
+          <div v-if="picgoCommonData.showDebugMsg" class="page-id">
+            <el-input v-model="pageId" placeholder="页面ID" />
           </div>
-          <template #tip>
-            <div class="el-upload__tip">{{ t("upload.select.limit") }} 5</div>
-          </template>
-        </el-upload>
+          <!-- 日志显示 -->
+          <div v-if="picgoCommonData.showDebugMsg" class="log-msg">
+            <el-input
+              v-model="picgoCommonData.loggerMsg"
+              type="textarea"
+              :autosize="{ minRows: 5, maxRows: 10 }"
+              placeholder="日志信息"
+            />
+          </div>
+        </div>
       </el-tab-pane>
       <el-tab-pane name="setting">
         <template #label>
@@ -134,13 +75,16 @@ onBeforeUnmount(() => {
             <i class="el-icon"><MaterialSymbolsSettingsAccountBoxOutlineSharp /></i> {{ t("upload.tab.setting") }}
           </span>
         </template>
-        <setting-index />
+        loading...
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <style lang="stylus" scoped>
-.action-item
-  margin 10px
+.page-id
+  margin-bottom 16px
+
+.log-msg
+  margin: 10px 0
 </style>

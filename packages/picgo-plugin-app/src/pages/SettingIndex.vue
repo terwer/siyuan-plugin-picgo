@@ -15,7 +15,7 @@ const { t } = useVueI18n()
 
 <template>
   <div>
-    <el-tabs tab-position="left">
+    <el-tabs tab-position="left" class="setting-tab">
       <el-tab-pane :label="t('setting.picgo.picbed')">
         <picgo-setting />
       </el-tab-pane>
@@ -26,4 +26,7 @@ const { t } = useVueI18n()
   </div>
 </template>
 
-<style scoped></style>
+<style lang="stylus" scoped>
+:deep(.el-tabs__nav)
+  height 600px
+</style>

@@ -15,20 +15,30 @@ import UploadButton from "$components/home/UploadButton.vue"
 import { ref } from "vue"
 import MaterialSymbolsImageSearchRounded from "~icons/material-symbols/image-search-rounded"
 import MaterialSymbolsSettingsAccountBoxOutlineSharp from "~icons/material-symbols/settings-account-box-outline-sharp"
-import SettingIndex from "$pages/SettingIndex.vue"
 import { BrowserUtil } from "zhi-device"
 import DragUpload from "$components/home/DragUpload.vue"
+import { useRouter } from "vue-router"
 
 const { t } = useVueI18n()
 const { picgoCommonData, picgoCommonMethods } = usePicgoCommon()
+const router = useRouter()
 
 const activeMenu = ref("upload")
 const pageId = ref(BrowserUtil.getQueryParam("pageId"))
+
+const handleTabClick = async (pane: any, ev: Event) => {
+  if (pane.props.name === "setting") {
+    await router.push({
+      path: "/setting",
+      query: { showBack: "true" },
+    })
+  }
+}
 </script>
 
 <template>
   <div>
-    <el-tabs :key="activeMenu" v-model="activeMenu" class="setting-tabs">
+    <el-tabs :key="activeMenu" v-model="activeMenu" class="setting-tabs" @tab-click="handleTabClick">
       <el-tab-pane name="upload">
         <template #label>
           <span>
@@ -75,7 +85,7 @@ const pageId = ref(BrowserUtil.getQueryParam("pageId"))
             <i class="el-icon"><MaterialSymbolsSettingsAccountBoxOutlineSharp /></i> {{ t("upload.tab.setting") }}
           </span>
         </template>
-        <setting-index />
+        loading...
       </el-tab-pane>
     </el-tabs>
   </div>
