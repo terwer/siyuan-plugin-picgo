@@ -45,35 +45,26 @@ export const SIYUAN_PICGO_FILE_MAP_KEY = "custom-picgo-file-map-key"
 class SiyuanPicGoUploadApi {
   private readonly picgo: IPicGo
   private readonly logger: ILogger
+  public cfgUpdating: boolean
 
   constructor(isDev?: boolean) {
-    let cfgfolder = ""
-    let picgo_cfg_160 = ""
+    // 初始化 PicGO
+    this.picgo = new UniversalPicGo("", "", isDev)
+    this.logger = this.picgo.getLogger("siyuan-picgo-upload-api")
+    this.cfgUpdating = false
+
+    // =================================================================================================================
+
+    // 迁移旧插件配置
+    let legacyCfgfolder = ""
     // 初始化思源 PicGO 配置
     const workspaceDir = win?.siyuan?.config?.system?.workspaceDir ?? ""
     if (hasNodeEnv && workspaceDir !== "") {
       const path = win.require("path")
-      cfgfolder = path.join(workspaceDir, "data", "storage", "syp", "picgo")
-      picgo_cfg_160 = path.join(cfgfolder, "picgo.cfg.json")
-    }
-
-    // 初始化 PicGO
-    this.picgo = new UniversalPicGo(picgo_cfg_160, "", isDev)
-    this.logger = this.picgo.getLogger("siyuan-picgo-upload-api")
-
-    // 迁移旧插件
-    if (hasNodeEnv && cfgfolder !== "") {
+      legacyCfgfolder = path.join(workspaceDir, "data", "storage", "syp", "picgo")
       // 如果新插件采用了不同的目录，需要迁移旧插件 node_modules 文件夹
-      if (cfgfolder !== this.picgo.pluginBaseDir) {
-        const path = win.require("path")
-
-        const plugin_dir_070 = path.join(cfgfolder, "node_modules")
-        const pkg_070 = path.join(cfgfolder, "package.json")
-        const plugin_dir_160 = path.join(this.picgo.pluginBaseDir, "node_modules")
-        const pkg_160 = path.join(this.picgo.pluginBaseDir, "package.json")
-
-        this.moveFile(plugin_dir_070, plugin_dir_160)
-        this.moveFile(pkg_070, pkg_160)
+      if (legacyCfgfolder !== this.picgo.baseDir) {
+        void this.moveFile(legacyCfgfolder, this.picgo.baseDir)
       }
     }
 
@@ -101,27 +92,67 @@ class SiyuanPicGoUploadApi {
 
   // ===================================================================================================================
 
-  private moveFile(from: string, to: string) {
+  private async moveFile(from: string, to: string) {
     const fs = win.fs
     const path = win.require("path")
-    const exist = pathExistsSync(fs, path, from)
+    const existFrom = pathExistsSync(fs, path, from)
     const existTo = pathExistsSync(fs, path, to)
 
+    if (!existFrom) {
+      return
+    }
+
     // 存在旧文件采取迁移
-    if (exist) {
-      this.logger.info(`will move ${from} to ${to}`)
-      // 目的地存在复制
-      if (existTo) {
-        fs.promises.cp(from, to).catch((e: any) => {
+    this.cfgUpdating = true
+    this.logger.info(`will move ${from} to ${to}`)
+    // 目的地存在复制
+    if (existTo) {
+      this.copyFolder(from, to)
+        .then(() => {
+          this.cfgUpdating = false
+        })
+        .catch((e: any) => {
+          this.cfgUpdating = false
           this.logger.error(`copy ${from} to ${to} failed: ${e}`)
         })
-      } else {
-        // 不存在移动过去
-        fs.promises.rename(from, to).catch((e: any) => {
+    } else {
+      // 不存在移动过去
+      fs.promises
+        .rename(from, to)
+        .then(() => {
+          this.cfgUpdating = false
+        })
+        .catch((e: any) => {
+          this.cfgUpdating = false
           this.logger.error(`move ${from} to ${to} failed: ${e}`)
         })
+    }
+  }
+
+  private async copyFolder(from: string, to: string) {
+    const fs = win.fs
+    const path = win.require("path")
+
+    const files = await fs.promises.readdir(from)
+    for (const file of files) {
+      if (file.startsWith(".")) {
+        continue
+      }
+      const sourcePath = path.join(from, file)
+      const destPath = path.join(to, file)
+
+      const stats = await fs.promises.lstat(sourcePath)
+      if (stats.isDirectory()) {
+        await fs.promises.mkdir(destPath, { recursive: true })
+        // 递归复制子文件夹
+        await this.copyFolder(sourcePath, destPath)
+      } else {
+        await fs.promises.copyFile(sourcePath, destPath)
       }
     }
+
+    // 删除源文件夹
+    await fs.promises.rmdir(from, { recursive: true })
   }
 }
 

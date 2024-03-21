@@ -17,9 +17,8 @@ import {
   IPicGo,
   IPicGoPlugin,
   IPicGoPluginInterface,
-  IPicGoRequest,
   IPluginLoader,
-  IStringKeyMap,
+  IStringKeyMap
 } from "../types"
 import { Lifecycle } from "./Lifecycle"
 import uploaders from "../plugins/uploader"
@@ -91,7 +90,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       uploader: new LifecyclePlugins("uploader"),
       beforeTransformPlugins: new LifecyclePlugins("beforeTransformPlugins"),
       beforeUploadPlugins: new LifecyclePlugins("beforeUploadPlugins"),
-      afterUploadPlugins: new LifecyclePlugins("afterUploadPlugins"),
+      afterUploadPlugins: new LifecyclePlugins("afterUploadPlugins")
     }
     this.initConfigPath()
     // this.cmd = new Commander(this)
@@ -166,7 +165,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       _.set(this._config, name, config[name])
       eventBus.emit(IBusEvent.CONFIG_CHANGE, {
         configName: name,
-        value: config[name],
+        value: config[name]
       })
     })
   }
@@ -233,8 +232,9 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     if (hasNodeEnv) {
       const os = win.require("os")
       const fs = win.fs
+      const path = win.require("path")
       const { homedir } = os
-      const dir = homedir() + "/.universal-picgo"
+      const dir = path.join(homedir(), ".universal-picgo")
       ensureFolderSync(fs, dir)
       return dir
     } else {
@@ -245,6 +245,12 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   private initConfigPath(): void {
     if (this.configPath === "") {
       this.baseDir = this.getDefautBaseDir()
+      if (hasNodeEnv) {
+        const path = win.require("path")
+        this.configPath = path.join(this.baseDir, "picgo.cfg.json")
+      } else {
+        this.configPath = browserPathJoin(this.baseDir, "picgo.cfg.json")
+      }
     } else {
       if (hasNodeEnv) {
         const fs = win.fs

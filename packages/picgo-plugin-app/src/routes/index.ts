@@ -16,6 +16,7 @@ import SettingIndex from "$pages/SettingIndex.vue"
 import PicgoSetting from "$components/setting/PicgoSetting.vue"
 import TestIndex from "$pages/TestIndex.vue"
 import BrowserTest from "$components/test/BrowserTest.vue"
+import ElectronTest from "$components/test/ElectronTest.vue"
 
 /**
  * 路由定义
@@ -29,10 +30,5 @@ export const routes: RouteRecordRaw[] = [
   { path: "/setting/transport", component: TransportSelect },
   { path: "/test", component: TestIndex },
   { path: "/test/browser", component: BrowserTest },
-  {
-    path: "/test/electron",
-    component: () => {
-      return import("$components/test/ElectronTest.vue")
-    },
-  },
+  { path: "/test/electron", component: ElectronTest },
 ]

@@ -9,9 +9,7 @@
 
 <script setup lang="ts">
 import { createAppLogger } from "@/utils/appLogger.ts"
-import { isDev } from "@/utils/Constants.ts"
 import { ElMessage, UploadRequestOptions } from "element-plus"
-import { SiyuanPicGoUploadApi } from "universal-picgo"
 import { UploadFilled } from "@element-plus/icons-vue"
 import { onBeforeMount, onBeforeUnmount, ref } from "vue"
 import { retrieveImageFromClipboardAsBlob } from "@/utils/browserClipboard.ts"
@@ -19,6 +17,7 @@ import { useVueI18n } from "$composables/useVueI18n.ts"
 import MaterialSymbolsImageSearchRounded from "~icons/material-symbols/image-search-rounded"
 import MaterialSymbolsSettingsAccountBoxOutlineSharp from "~icons/material-symbols/settings-account-box-outline-sharp"
 import SettingIndex from "$pages/SettingIndex.vue"
+import { SiyuanPicGo } from "@/utils/siyuanPicgo.ts"
 
 const logger = createAppLogger("picgo-browser-index")
 const { t } = useVueI18n()
@@ -29,7 +28,7 @@ const activeMenu = ref("upload")
 const handleDragAction = async (file: Blob) => {
   let res: any
   try {
-    const picgo = new SiyuanPicGoUploadApi(isDev)
+    const picgo = await SiyuanPicGo.getInstance()
     logger.debug("picgo =>", picgo)
 
     const result = await picgo.upload([file])
