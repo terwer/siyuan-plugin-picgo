@@ -36,7 +36,7 @@ class BrowserI18nDb {
     return this.db.unset(this.i18nKey, [])
   }
 
-  get(key: ""): any {
+  get(key: string): any {
     throw new Error("get is not supported by BrowserI18nDb")
   }
 

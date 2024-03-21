@@ -12,6 +12,7 @@ import { UniversalPicGo } from "../core/UniversalPicGo"
 import { ILogger } from "zhi-lib-base"
 import { hasNodeEnv, win } from "universal-picgo-store"
 import { pathExistsSync } from "../utils/nodeUtils"
+import { ExternalPicgo } from "../core/ExternalPicgo"
 
 /**
  * 文章PicGO图片信息Key
@@ -44,12 +45,14 @@ export const SIYUAN_PICGO_FILE_MAP_KEY = "custom-picgo-file-map-key"
  */
 class SiyuanPicGoUploadApi {
   private readonly picgo: IPicGo
+  private readonly externalPicGo: ExternalPicgo
   private readonly logger: ILogger
   public cfgUpdating: boolean
 
   constructor(isDev?: boolean) {
     // 初始化 PicGO
     this.picgo = new UniversalPicGo("", "", isDev)
+    this.externalPicGo = new ExternalPicgo(this.picgo, isDev)
     this.logger = this.picgo.getLogger("siyuan-picgo-upload-api")
     this.cfgUpdating = false
 
@@ -87,7 +90,11 @@ class SiyuanPicGoUploadApi {
    * @param input 路径数组，可为空，为空上传剪贴板
    */
   public async upload(input?: any[]): Promise<IImgInfo[] | Error> {
-    return this.picgo.upload(input)
+    const useBundledPicgo = this.externalPicGo.db.get("useBundledPicgo")
+    if (useBundledPicgo) {
+      return this.picgo.upload(input)
+    }
+    return this.externalPicGo.upload(input)
   }
 
   // ===================================================================================================================

@@ -51,9 +51,9 @@ const handleTest3 = async () => {
     const picgo = await SiyuanPicGo.getInstance()
     logger.debug("picgo =>", picgo)
 
-    // const result = await picgo.upload(["/Users/terwer/Documents/pictures/photo.jpg"])
-    // logger.info("upload success =>", result)
-    // ElMessage.success("upload success")
+    const result = await picgo.upload(["/Users/terwer/Documents/pictures/photo.jpg"])
+    logger.info("upload success =>", result)
+    ElMessage.success("upload success")
   } catch (e: any) {
     logger.error(e)
     ElMessage.error(e.toString())

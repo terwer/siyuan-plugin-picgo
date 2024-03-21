@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { reactive } from "vue"
-import { PicgoTypeEnum } from "@/utils/enums.ts"
+import { PicgoTypeEnum } from "universal-picgo"
 import { hasNodeEnv } from "universal-picgo"
 
 const { t } = useVueI18n()

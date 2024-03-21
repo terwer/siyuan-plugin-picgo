@@ -27,11 +27,16 @@ export const browserPathJoin = (...paths: string[]) => {
   // 过滤掉空路径
   const filteredPaths = paths.filter((path) => path && path.trim() !== "")
 
-  // 使用斜杠连接路径
-  const joinedPath = filteredPaths.join("/")
+  // 如果路径数组为空，则返回空字符串
+  if (filteredPaths.length === 0) {
+    return ""
+  }
+
+  // 连接所有路径
+  let joinedPath = filteredPaths.join("/")
 
   // 处理多余的斜杠
-  const normalizedPath = joinedPath.replace(/\/{2,}/g, "/")
+  joinedPath = joinedPath.replace(/([^:/]|^)\/{2,}/g, "$1/")
 
-  return normalizedPath
+  return joinedPath
 }

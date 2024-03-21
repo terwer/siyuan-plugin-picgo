@@ -21,13 +21,18 @@ class SiyuanPicGo {
   public static async getInstance(): Promise<SiyuanPicGoUploadApi> {
     return new Promise((resolve, reject) => {
       const picgo = new SiyuanPicGoUploadApi(isDev)
+      let needUpdate = false
       const checkConfig = () => {
         if (picgo.cfgUpdating) {
+          needUpdate = true
           ElMessage.warning("检测到旧配置，正在迁移配置，请勿进行任何操作...")
           setTimeout(checkConfig, 1000)
         } else {
+          if (needUpdate) {
+            ElMessage.success("配置迁移完成")
+            needUpdate = false
+          }
           this.logger.info("picgo instance is ready")
-          ElMessage.success("配置迁移完成")
           resolve(picgo)
         }
       }

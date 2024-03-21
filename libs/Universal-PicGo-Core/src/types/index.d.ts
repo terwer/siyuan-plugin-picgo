@@ -526,3 +526,20 @@ export type IResponse<T, U> = U extends IRequestOptionsWithFullResponse ? IFullR
           : U extends IReqOptionsWithBodyResOnly ? T
               : string
 // request end
+
+/**
+ * 外部 Picgo 配置接口
+ */
+interface IExternalPicgoConfig {
+  useBundledPicgo?: boolean
+
+  /**
+   * extPicgoApiUrl 是一个字符串，表示外部 Picgo API 的 URL
+   */
+  extPicgoApiUrl?: string
+
+  /**
+   * 其他配置项，可以是任意类型
+   */
+  [key: string]: any
+}

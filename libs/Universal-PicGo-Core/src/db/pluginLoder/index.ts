@@ -44,7 +44,7 @@ class PluginLoaderDb {
     return this.db.read(flush)
   }
 
-  get(key: ""): any {
+  get(key: string): any {
     this.read(true)
     return this.db.get(key)
   }

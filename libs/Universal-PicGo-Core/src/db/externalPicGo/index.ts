@@ -8,21 +8,35 @@
  */
 
 import { IConfig, IPicGo } from "../../types"
-import { IJSON, JSONStore } from "universal-picgo-store"
+import { hasNodeEnv, IJSON, JSONStore, win } from "universal-picgo-store"
+import { browserPathJoin } from "../../utils/browserUtils"
+import { PicgoTypeEnum } from "../../utils/enums"
 
-class ConfigDb {
+class ExternalPicgoConfigDb {
   private readonly ctx: IPicGo
   private readonly db: JSONStore
 
   constructor(ctx: IPicGo) {
     this.ctx = ctx
-    this.db = new JSONStore(this.ctx.configPath)
+    let packagePath: string
 
-    this.safeSet("picBed", {
-      uploader: "smms",
-      current: "smms",
-    })
-    this.safeSet("picgoPlugins", {})
+    if (hasNodeEnv) {
+      const path = win.require("path")
+      packagePath = path.join(this.ctx.pluginBaseDir, "external-picgo-cfg.json")
+    } else {
+      packagePath = browserPathJoin(this.ctx.pluginBaseDir, "external-picgo-cfg.json")
+    }
+
+    this.db = new JSONStore(packagePath)
+
+    // const cfg: IExternalPicgoConfig = {
+    //   useBundledPicgo: true,
+    //   picgoType: PicgoTypeEnum.Bundled,
+    //   extPicgoApiUrl: "http://127.0.0.1:36677",
+    // }
+    this.safeSet("useBundledPicgo", true)
+    this.safeSet("picgoType", PicgoTypeEnum.Bundled)
+    this.safeSet("extPicgoApiUrl", "http://127.0.0.1:36677")
   }
 
   read(flush?: boolean): IJSON {
@@ -74,4 +88,4 @@ class ConfigDb {
   }
 }
 
-export default ConfigDb
+export default ExternalPicgoConfigDb
