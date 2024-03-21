@@ -9,9 +9,15 @@
 
 import { RemovableRef, StorageSerializers, useLocalStorage } from "@vueuse/core"
 import SiyuanConfig from "@/models/SiyuanConfig.ts"
+import { readonly } from "vue"
+import { SiyuanDevice } from "zhi-device"
+import useCommonLocalStorage from "@/stores/common/useCommonLocalStorage.ts"
+import { useSiyuanDevice } from "$composables/useSiyuanDevice.ts"
 
 const useSiyuanSetting = () => {
+  const filePath = "storage/syp/siyuan-cfg.json"
   const storageKey = "siyuan-cfg"
+  const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
 
   /**
    * 获取思源笔记配置
@@ -22,14 +28,39 @@ const useSiyuanSetting = () => {
   const getSiyuanSetting = (): RemovableRef<SiyuanConfig> => {
     const baseUrl = "http://127.0.0.1:6806"
     const token = ""
-    const initialValue = new SiyuanConfig(baseUrl, token)
-    const siyuanConfig = useLocalStorage<SiyuanConfig>(storageKey, initialValue, {
+    // PC客户端多个工作空间情况下，自动读取思源地址
+    let origin: string | undefined = undefined
+    if (isInSiyuanOrSiyuanNewWin()) {
+      const win = SiyuanDevice.siyuanWindow()
+      origin = win?.location.origin
+    }
+
+    const initialValue = new SiyuanConfig(origin ?? baseUrl, token)
+    const siyuanConfig = useCommonLocalStorage<SiyuanConfig>(filePath, storageKey, initialValue, {
       serializer: StorageSerializers.object,
     })
+
+    // 更新apiUrl
+    if (origin) {
+      siyuanConfig.value.apiUrl = origin
+    }
     return siyuanConfig
   }
 
-  return { getSiyuanSetting }
+  /**
+   * 获取只读版本的思源笔记配置
+   * 调用现有的 getSiyuanSetting 并转化为只读
+   *
+   * @author terwer
+   * @since 0.6.0
+   */
+  const getReadOnlySiyuanSetting = () => {
+    const siyuanConfigRef = getSiyuanSetting()
+    const readOnlySiyuanConfigRef = readonly(siyuanConfigRef)
+    return readOnlySiyuanConfigRef
+  }
+
+  return { getSiyuanSetting, getReadOnlySiyuanSetting }
 }
 
 export { useSiyuanSetting }
