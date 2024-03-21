@@ -7,11 +7,11 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { IImgInfo, IPicGo } from "../../types"
-import { UniversalPicGo } from "../../core/UniversalPicGo"
+import { IImgInfo, IPicGo } from "../types"
+import { UniversalPicGo } from "../core/UniversalPicGo"
 import { ILogger } from "zhi-lib-base"
 import { hasNodeEnv, win } from "universal-picgo-store"
-import { browserPathJoin } from "../../utils/browserUtils"
+import { pathExistsSync } from "../utils/nodeUtils"
 
 /**
  * 文章PicGO图片信息Key
@@ -42,7 +42,7 @@ export const SIYUAN_PICGO_FILE_MAP_KEY = "custom-picgo-file-map-key"
  * @since 0.6.0
  * @author terwer
  */
-class PicGoUploadApi {
+class SiyuanPicGoUploadApi {
   private readonly picgo: IPicGo
   private readonly logger: ILogger
 
@@ -50,26 +50,31 @@ class PicGoUploadApi {
     let cfgfolder = ""
     let picgo_cfg_160 = ""
     // 初始化思源 PicGO 配置
-    const workspaceDir = win?.siyuan?.config?.system?.workspaceDir
-    if (workspaceDir) {
-      cfgfolder = `${workspaceDir}/data/storage/syp/picgo`
-      picgo_cfg_160 = browserPathJoin(cfgfolder, "picgo.cfg.json")
+    const workspaceDir = win?.siyuan?.config?.system?.workspaceDir ?? ""
+    if (hasNodeEnv && workspaceDir !== "") {
+      const path = win.require("path")
+      cfgfolder = path.join(workspaceDir, "data", "storage", "syp", "picgo")
+      picgo_cfg_160 = path.join(cfgfolder, "picgo.cfg.json")
     }
 
     // 初始化 PicGO
     this.picgo = new UniversalPicGo(picgo_cfg_160, "", isDev)
     this.logger = this.picgo.getLogger("siyuan-picgo-upload-api")
 
-    // 移除旧插件
+    // 迁移旧插件
     if (hasNodeEnv && cfgfolder !== "") {
-      // 删除 node_modules 文件夹
-      const fs = win.fs
-      const path = win.require("path")
-      const oldPluginDir = path.join(cfgfolder, "node_modules")
-      this.logger.info(`will remove old plugin dir ${oldPluginDir}`)
-      fs.promises.rm(oldPluginDir).catch((e: any) => {
-        throw e
-      })
+      // 如果新插件采用了不同的目录，需要迁移旧插件 node_modules 文件夹
+      if (cfgfolder !== this.picgo.pluginBaseDir) {
+        const path = win.require("path")
+
+        const plugin_dir_070 = path.join(cfgfolder, "node_modules")
+        const pkg_070 = path.join(cfgfolder, "package.json")
+        const plugin_dir_160 = path.join(this.picgo.pluginBaseDir, "node_modules")
+        const pkg_160 = path.join(this.picgo.pluginBaseDir, "package.json")
+
+        this.moveFile(plugin_dir_070, plugin_dir_160)
+        this.moveFile(pkg_070, pkg_160)
+      }
     }
 
     // 默认配置位置
@@ -93,6 +98,31 @@ class PicGoUploadApi {
   public async upload(input?: any[]): Promise<IImgInfo[] | Error> {
     return this.picgo.upload(input)
   }
+
+  // ===================================================================================================================
+
+  private moveFile(from: string, to: string) {
+    const fs = win.fs
+    const path = win.require("path")
+    const exist = pathExistsSync(fs, path, from)
+    const existTo = pathExistsSync(fs, path, to)
+
+    // 存在旧文件采取迁移
+    if (exist) {
+      this.logger.info(`will move ${from} to ${to}`)
+      // 目的地存在复制
+      if (existTo) {
+        fs.promises.cp(from, to).catch((e: any) => {
+          this.logger.error(`copy ${from} to ${to} failed: ${e}`)
+        })
+      } else {
+        // 不存在移动过去
+        fs.promises.rename(from, to).catch((e: any) => {
+          this.logger.error(`move ${from} to ${to} failed: ${e}`)
+        })
+      }
+    }
+  }
 }
 
-export { PicGoUploadApi }
+export { SiyuanPicGoUploadApi }

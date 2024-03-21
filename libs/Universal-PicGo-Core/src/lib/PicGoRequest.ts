@@ -14,7 +14,7 @@ import { ILogger } from "zhi-lib-base"
 import { eventBus } from "../utils/eventBus"
 import { IBusEvent } from "../utils/enums"
 import { browserPathJoin } from "../utils/browserUtils"
-import { hasNodeEnv } from "universal-picgo-store/src"
+import { hasNodeEnv } from "universal-picgo-store"
 import { ILocalesKey } from "../i18n/zh-CN"
 
 // legacy request adaptor start

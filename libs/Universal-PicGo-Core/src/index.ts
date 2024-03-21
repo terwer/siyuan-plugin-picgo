@@ -1,6 +1,6 @@
 import { UniversalPicGo } from "./core/UniversalPicGo"
-import { PicGoUploadApi } from "./api/siyuan/picGoUploadApi"
+import { SiyuanPicGoUploadApi } from "./api/SiyuanPicGoUploadApi"
 import { win, currentWin, parentWin, hasNodeEnv } from "universal-picgo-store"
 
-export { UniversalPicGo, PicGoUploadApi }
+export { UniversalPicGo, SiyuanPicGoUploadApi }
 export { win, currentWin, parentWin, hasNodeEnv }

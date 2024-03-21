@@ -21,9 +21,9 @@ class PluginLoaderDb {
 
     if (hasNodeEnv) {
       const path = win.require("path")
-      packagePath = path.join(this.ctx.baseDir, "package.json")
+      packagePath = path.join(this.ctx.pluginBaseDir, "package.json")
     } else {
-      packagePath = browserPathJoin(this.ctx.baseDir, "package.json")
+      packagePath = browserPathJoin(this.ctx.pluginBaseDir, "package.json")
     }
 
     this.db = new JSONStore(packagePath)

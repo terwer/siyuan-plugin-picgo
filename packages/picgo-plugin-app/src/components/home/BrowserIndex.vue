@@ -11,7 +11,7 @@
 import { createAppLogger } from "@/utils/appLogger.ts"
 import { isDev } from "@/utils/Constants.ts"
 import { ElMessage, UploadRequestOptions } from "element-plus"
-import { UniversalPicGo } from "universal-picgo"
+import { SiyuanPicGoUploadApi } from "universal-picgo"
 import { UploadFilled } from "@element-plus/icons-vue"
 import { onBeforeMount, onBeforeUnmount, ref } from "vue"
 import { retrieveImageFromClipboardAsBlob } from "@/utils/browserClipboard.ts"
@@ -29,7 +29,7 @@ const activeMenu = ref("upload")
 const handleDragAction = async (file: Blob) => {
   let res: any
   try {
-    const picgo = new UniversalPicGo("", isDev)
+    const picgo = new SiyuanPicGoUploadApi(isDev)
     logger.debug("picgo =>", picgo)
 
     const result = await picgo.upload([file])
@@ -102,7 +102,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div>
-    <el-tabs v-model="activeMenu" class="setting-tabs" :key="activeMenu">
+    <el-tabs :key="activeMenu" v-model="activeMenu" class="setting-tabs">
       <el-tab-pane name="upload">
         <template #label>
           <span>

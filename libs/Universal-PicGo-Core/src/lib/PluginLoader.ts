@@ -38,7 +38,7 @@ export class PluginLoader implements IPluginLoader {
     if (hasNodeEnv) {
       const fs = win.fs
       const path = win.require("path")
-      const packagePath = path.join(this.ctx.baseDir, "package.json")
+      const packagePath = path.join(this.ctx.pluginBaseDir, "package.json")
       const pluginDir = path.join(this.ctx.pluginBaseDir, "node_modules/")
       // Thanks to hexo -> https://github.com/hexojs/hexo/blob/master/lib/hexo/load_plugins.js
       if (!fs.existsSync(pluginDir)) {
