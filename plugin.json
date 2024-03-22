@@ -7,15 +7,21 @@
   "backends": [
     "windows",
     "linux",
-    "darwin"
+    "darwin",
+    "docker",
+    "android",
+    "ios"
   ],
   "frontends": [
     "desktop",
-    "browser-desktop"
+    "desktop-window",
+    "mobile",
+    "browser-desktop",
+    "browser-mobile"
   ],
   "displayName": {
-    "default": "PicGo Plugin",
-    "zh_CN": "PicGo插件"
+    "default": "PicGo picbed",
+    "zh_CN": "PicGo图床"
   },
   "description": {
     "default": "Your favorite PicGo image bed and PicGo plugins are still available in Siyuan Notes, wuhu~",

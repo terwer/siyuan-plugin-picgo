@@ -77,3 +77,11 @@ export const getRawData = (args: any): any => {
   }
   return args
 }
+
+export const trimValues = (obj: IStringKeyMap) => {
+  const newObj = {} as IStringKeyMap
+  Object.keys(obj).forEach((key) => {
+    newObj[key] = typeof obj[key] === "string" ? obj[key].trim() : obj[key]
+  })
+  return newObj
+}

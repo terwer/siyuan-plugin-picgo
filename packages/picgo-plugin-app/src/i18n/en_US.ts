@@ -94,6 +94,7 @@ export default {
   "main.opt.success": "Success",
   "main.opt.failure": "Error",
   "main.opt.edit": "Edit",
+  "main.opt.add": "Add",
   "main.opt.delete": "Delete",
   "main.opt.loading": "In operation...",
   "main.opt.warning": "Warn tips",
@@ -140,4 +141,6 @@ export default {
   "setting.cors.title": "CORS Proxy",
   "setting.cors.title.tip":
     "The CORS proxy is essential for browsers and Docker environments. For further consultation, feel free to contact youweics@163.com.",
+  "upload.no.beds":
+    'No image hosting service is currently available. Kindly proceed to "Image Hosting Settings" to add a new image hosting service.',
 }

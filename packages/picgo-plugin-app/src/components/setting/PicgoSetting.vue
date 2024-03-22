@@ -48,9 +48,9 @@ const handlePicgoTypeChange = (val: any) => {
 </script>
 
 <template>
-  <back-page :title="t('setting.picgo.picbed')">
+  <back-page :title="t('setting.picgo.picgo')">
     <el-form label-width="100px" class="picgo-setting-form">
-      <el-form-item :label="t('upload.default.adaptor')">
+      <el-form-item :label="t('upload.default.adaptor')" required>
         <el-select
           v-model="externalPicGoSettingForm.picgoType"
           :placeholder="t('common.select')"
@@ -60,7 +60,7 @@ const handlePicgoTypeChange = (val: any) => {
         </el-select>
       </el-form-item>
       <div v-if="externalPicGoSettingForm.picgoType === PicgoTypeEnum.Bundled">
-        <bundled-picgo-setting :cfg="bundledPicGoSettingForm" />
+        <bundled-picgo-setting :ctx="ctx" :cfg="bundledPicGoSettingForm" />
       </div>
       <div v-else>
         <external-picgo-setting :cfg="externalPicGoSettingForm" />

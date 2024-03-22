@@ -90,6 +90,7 @@ export default {
   "main.opt.success": "操作成功",
   "main.opt.failure": "操作失败",
   "main.opt.edit": "编辑",
+  "main.opt.add": "新增",
   "main.opt.delete": "删除",
   "main.opt.loading": "操作中...",
   "main.opt.warning": "警告信息",
@@ -135,4 +136,5 @@ export default {
   "upload.adaptor.core": "PicGO-Core",
   "setting.cors.title": "CORS 代理",
   "setting.cors.title.tip": "CORS 代理，浏览器、dcoker以及某些插件可能需要，可付费咨询 youweics@163.com",
+  "upload.no.beds": "暂无可用图床，请前往「图床设置」新增图床",
 }

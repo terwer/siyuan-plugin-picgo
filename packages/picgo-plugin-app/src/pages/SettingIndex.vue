@@ -16,7 +16,7 @@ const { t } = useVueI18n()
 <template>
   <div>
     <el-tabs tab-position="left" class="setting-tab">
-      <el-tab-pane :label="t('setting.picgo.picbed')">
+      <el-tab-pane :label="t('setting.picgo.picgo')">
         <picgo-setting />
       </el-tab-pane>
       <el-tab-pane :label="t('siyuan.config.setting')">
