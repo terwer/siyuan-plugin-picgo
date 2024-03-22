@@ -20,8 +20,12 @@ import {
   PluginLoaderDb,
 } from "universal-picgo"
 import { SiyuanConfig as SiyuanPicgoConfig } from "zhi-siyuan-api"
+import { PicgoHelper } from "./lib/picgoHelper"
+import { retrieveImageFromClipboardAsBlob } from "./lib/utils/browserClipboard"
+import { copyToClipboardInBrowser } from "./lib/utils/utils"
 
-export { SiyuanPicgoConfig, SiyuanPicgoPostApi }
+export { SiyuanPicgoConfig, SiyuanPicgoPostApi, PicgoHelper }
+export { retrieveImageFromClipboardAsBlob, copyToClipboardInBrowser }
 export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
 export { PicgoTypeEnum }
 export { type IPicGo, type IImgInfo, type IPicgoDb, type IConfig, type IExternalPicgoConfig }

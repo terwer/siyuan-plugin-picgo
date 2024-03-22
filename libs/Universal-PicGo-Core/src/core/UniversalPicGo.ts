@@ -124,11 +124,11 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   //   }
   // }
 
-  getConfig<T>(name?: string): T {
+  getConfig<T>(name?: string, defaultValue?: any): T {
     if (!name) {
       return this._config as unknown as T
     } else {
-      return _.get(this._config, name)
+      return _.get(this._config, name, defaultValue)
     }
   }
 

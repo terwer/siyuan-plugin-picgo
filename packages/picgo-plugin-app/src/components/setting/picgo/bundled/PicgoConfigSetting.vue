@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { onBeforeMount, reactive } from "vue"
 import { useVueI18n } from "$composables/useVueI18n.ts"
-import { PicgoUtil } from "@/utils/picgoUtil.ts"
+import { PicgoHelper } from "zhi-siyuan-picgo"
 import { createAppLogger } from "@/utils/appLogger.ts"
 
 const logger = createAppLogger("picgo-config-setting")
@@ -36,6 +36,8 @@ const formData = reactive({
   picBeds: [] as IPicBedType[],
 })
 
+const picgoHelper = new PicgoHelper(props.ctx, formData.cfg)
+
 const handleShowPicBedListChange = (val: ICheckBoxValueType[]) => {
   const list = formData.picBeds.map((item: IPicBedType) => {
     if (!val.includes(item.name)) {
@@ -45,16 +47,19 @@ const handleShowPicBedListChange = (val: ICheckBoxValueType[]) => {
     }
     return item
   })
-  PicgoUtil.savePicgoConfig(props.ctx, {
+
+  picgoHelper.savePicgoConfig({
     "picBed.list": list,
   })
   logger.debug("保存启用的图床", list)
 }
 
 const initPicBeds = () => {
-  const picBeds = PicgoUtil.getPicBeds(props.ctx)
+  const picBeds = picgoHelper.getPicBeds()
+  console.log(picBeds)
+  console.log(formData.cfg)
   formData.picBeds = picBeds
-  formData.showPicBedList = PicgoUtil.getVisiablePicBedNamesByPicBeds(picBeds)
+  formData.showPicBedList = PicgoHelper.getVisiablePicBedNamesByPicBeds(picBeds)
 }
 
 onBeforeMount(() => {

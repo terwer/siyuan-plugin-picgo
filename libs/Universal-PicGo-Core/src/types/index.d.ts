@@ -584,3 +584,12 @@ interface IPicgoDb<T> {
 
   removeConfig(config: T): void
 }
+
+/**
+ * 图床类型定义
+ */
+interface IPicBedType {
+  type: string
+  name: string
+  visible: boolean
+}

@@ -9,10 +9,10 @@
 
 <script setup lang="ts">
 import { UploadFilled } from "@element-plus/icons-vue"
-import { onBeforeMount, onBeforeUnmount, ref } from "vue"
+import { ref } from "vue"
 import { SiyuanPicGo } from "@/utils/siyuanPicgo.ts"
 import { ElMessage, UploadRequestOptions } from "element-plus"
-import { retrieveImageFromClipboardAsBlob } from "@/utils/browserClipboard.ts"
+import { retrieveImageFromClipboardAsBlob } from "zhi-siyuan-picgo"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { createAppLogger } from "@/utils/appLogger.ts"
 
@@ -33,7 +33,7 @@ const handleDragAction = async (file: Blob) => {
         ElMessage.error("upload error => " + "no result")
         res = {
           success: false,
-          message: "upload error => " + "no result",
+          message: "upload error => " + "no result"
         }
       } else {
         logger.info("upload success =>", result)
@@ -42,7 +42,7 @@ const handleDragAction = async (file: Blob) => {
         res = {
           success: true,
           message: "upload success",
-          url: imageInfo.imgUrl,
+          url: imageInfo.imgUrl
         }
       }
     } else {
@@ -50,7 +50,7 @@ const handleDragAction = async (file: Blob) => {
       ElMessage.error("upload error => " + result.toString())
       res = {
         success: false,
-        message: "upload error => " + result.toString(),
+        message: "upload error => " + result.toString()
       }
     }
   } catch (e: any) {
@@ -58,7 +58,7 @@ const handleDragAction = async (file: Blob) => {
     ElMessage.error(e.toString())
     res = {
       success: false,
-      message: "upload error => " + e.toString(),
+      message: "upload error => " + e.toString()
     }
   }
 
@@ -76,7 +76,7 @@ const handleExceed = (_e: any) => {
 const handlePasteAction = (e: any) => {
   e.preventDefault()
 
-  retrieveImageFromClipboardAsBlob(e, function (imageBlob: any) {
+  retrieveImageFromClipboardAsBlob(e, function(imageBlob: any) {
     if (imageBlob && imageBlob instanceof Blob) {
       const file = new File([imageBlob], "image.png", { type: "image/png" })
       handleDragAction(file)

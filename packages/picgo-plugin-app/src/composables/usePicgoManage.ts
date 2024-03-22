@@ -15,7 +15,7 @@ import { ElMessage, ElMessageBox } from "element-plus"
 import { BrowserUtil } from "zhi-device"
 import { ImageItem } from "zhi-siyuan-picgo/src/lib/models/ImageItem.ts"
 import { SiyuanPicGo } from "@/utils/siyuanPicgo.ts"
-import { copyToClipboardInBrowser } from "@/utils/utils.ts"
+import { copyToClipboardInBrowser } from "zhi-siyuan-picgo"
 
 /**
  * Picgo图片管理组件

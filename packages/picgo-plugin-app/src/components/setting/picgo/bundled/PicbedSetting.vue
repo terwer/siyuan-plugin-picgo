@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { computed, onBeforeMount, reactive } from "vue"
 import { useVueI18n } from "$composables/useVueI18n.ts"
-import { PicgoUtil } from "@/utils/picgoUtil.ts"
+import { PicgoHelper } from "zhi-siyuan-picgo/src/lib/picgoHelper.ts"
 import { DateUtil } from "zhi-common"
 import MaterialSymbolsEditSquareOutline from "~icons/material-symbols/edit-square-outline"
 import MaterialSymbolsLightCancelRounded from "~icons/material-symbols-light/cancel-rounded"
@@ -93,14 +93,14 @@ const findPicbedName = (type: string) => formData.picBeds.find((x) => x.type ===
  */
 const getCurrentUploader = () => {
   return (
-    PicgoUtil.getPicgoConfig(formData.cfg, "picBed.uploader") ||
-    PicgoUtil.getPicgoConfig(formData.cfg, "picBed.current") ||
+    PicgoHelper.getPicgoConfig(formData.cfg, "picBed.uploader") ||
+    PicgoHelper.getPicgoConfig(formData.cfg, "picBed.current") ||
     "smms"
   )
 }
 
 const getProfileList = (bedType: string): IUploaderConfigItem => {
-  const profileList = PicgoUtil.getUploaderConfigList(props.ctx, formData.cfg, bedType)
+  const profileList = PicgoHelper.getUploaderConfigList(props.ctx, formData.cfg, bedType)
   return profileList
 }
 
@@ -116,10 +116,10 @@ const handlePicBedTypeChange = (item: IPicBedType) => {
 const selectItem = (id: string) => {
   // 选中当前配置
   formData.profileData.curConfig = findProfileConfig(id)
-  PicgoUtil.selectUploaderConfig(props.ctx, formData.cfg, formData.selectedBedType, id)
+  PicgoHelper.selectUploaderConfig(props.ctx, formData.cfg, formData.selectedBedType, id)
 
   // 设置为默认
-  PicgoUtil.setDefaultPicBed(props.ctx, formData.selectedBedType)
+  PicgoHelper.setDefaultPicBed(props.ctx, formData.selectedBedType)
 
   // 刷新页面
   // 必须先刷新 formData.cfg
@@ -157,7 +157,7 @@ const reloadProfile = () => {
 
 const initConfig = () => {
   // 获取图床列表
-  const picBeds = PicgoUtil.getVisiablePicBeds(props.ctx)
+  const picBeds = PicgoHelper.getVisiablePicBeds(props.ctx)
   formData.picBeds = picBeds
   formData.dbBedType = getCurrentUploader()
   formData.selectedBedType = formData.dbBedType
