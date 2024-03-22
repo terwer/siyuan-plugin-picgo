@@ -95,21 +95,9 @@ function editConfig(id: string) {}
  */
 function addNewConfig() {}
 
-const getVisiablePicBeds = () => {
-  const picBeds = PicgoUtil.getPicBeds(props.ctx)
-  return picBeds
-    .map((item: IPicBedType) => {
-      if (item.visible) {
-        return item
-      }
-      return null
-    })
-    .filter((item: any) => item) as IPicBedType[]
-}
-
 const initConfig = (bedType: string | undefined = undefined) => {
   // 获取图床列表
-  const picBeds = getVisiablePicBeds()
+  const picBeds = PicgoUtil.getVisiablePicBeds(props.ctx)
 
   // 默认第一个图床
   if (!bedType) {

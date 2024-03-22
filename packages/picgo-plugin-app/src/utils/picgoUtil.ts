@@ -50,11 +50,11 @@ class PicgoUtil {
   }
 
   /**
-   * 获取可用的图床列表
+   * 获取所有的图床列表
    *
    * @param ctx
    */
-  public static getPicBeds(ctx: IPicGo) {
+  public static getPicBeds(ctx: IPicGo): IPicBedType[] {
     const picBedTypes = ctx.helper.uploader.getIdList()
     const picBedFromDB = ctx.getConfig("picBed.list") || []
 
@@ -75,6 +75,56 @@ class PicgoUtil {
       })
 
     return picBeds
+  }
+
+  /**
+   * 获取启用的图床
+   *
+   * @param ctx
+   */
+  public static getVisiablePicBeds(ctx: IPicGo): IPicBedType[] {
+    const picBeds = this.getPicBeds(ctx)
+    return picBeds
+      .map((item: IPicBedType) => {
+        if (item.visible) {
+          return item
+        }
+        return null
+      })
+      .filter((item: any) => item) as IPicBedType[]
+  }
+
+  /**
+   * 获取可用的图床列表名称
+   *
+   * @param ctx
+   */
+  public static getVisiablePicBedNames(ctx: IPicGo): string[] {
+    const picBeds = this.getPicBeds(ctx)
+    return picBeds
+      .map((item: IPicBedType) => {
+        if (item.visible) {
+          return item.name
+        }
+        return null
+      })
+      .filter((item: any) => item) as string[]
+  }
+
+  /**
+   * 根据图床数据获取可用的图床列表名称
+   *
+   * @param picBeds
+   */
+  public static getVisiablePicBedNamesByPicBeds(picBeds: IPicBedType[]): string[] {
+    return picBeds
+      .map((item: IPicBedType) => {
+        if (item.visible) {
+          return item.name
+        }
+        return null
+      })
+      .filter((item: any) => item) as string[]
   }
 
   public static getUploaderConfigList(ctx: IPicGo, cfg: IConfig, type: string): IUploaderConfigItem {

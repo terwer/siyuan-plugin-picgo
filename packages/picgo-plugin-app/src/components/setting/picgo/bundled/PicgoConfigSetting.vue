@@ -54,15 +54,7 @@ const handleShowPicBedListChange = (val: ICheckBoxValueType[]) => {
 const initPicBeds = () => {
   const picBeds = PicgoUtil.getPicBeds(props.ctx)
   formData.picBeds = picBeds
-
-  formData.showPicBedList = picBeds
-    .map((item: IPicBedType) => {
-      if (item.visible) {
-        return item.name
-      }
-      return null
-    })
-    .filter((item: any) => item) as string[]
+  formData.showPicBedList = PicgoUtil.getVisiablePicBedNamesByPicBeds(picBeds)
 }
 
 onBeforeMount(() => {
