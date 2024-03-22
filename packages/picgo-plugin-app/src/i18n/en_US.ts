@@ -22,6 +22,7 @@ export default {
   "setting.picgo.picbed.unselected.tip": "Unselected",
   "setting.picgo.picbed.set.default": "Set as default picbed",
   "setting.picgo.picbed.current.selected.tip": "Current selected picbed is:",
+  "setting.picgo.picbed.change.tip": "In order to make alterations, kindly select 「Set as default picbed」",
   "setting.picgo.picbed.current.tip": "Current picbed is:",
   "setting.picgo.picbed.uploader.config.name": "Picbed config name",
   "setting.picgo.picbed.uploader.config.name.placeholder": "Please input config name",

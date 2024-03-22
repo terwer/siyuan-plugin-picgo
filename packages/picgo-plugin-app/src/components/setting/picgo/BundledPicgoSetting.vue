@@ -50,7 +50,7 @@ const formData = reactive({
     </el-form-item>
 
     <!-- 图床设置 -->
-    <el-radio-group :key="formData.settingType" v-model="formData.settingType" style="margin-bottom: 30px">
+    <el-radio-group :key="formData.settingType" v-model="formData.settingType" class="bundled-setting-group">
       <el-radio-button key="picgo-config" value="picgo-config">PicGo设置</el-radio-button>
       <el-radio-button key="picbed" value="picbed">图床设置</el-radio-button>
       <el-radio-button key="picgo-plugin" value="picgo-plugin">插件商店</el-radio-button>
@@ -61,4 +61,7 @@ const formData = reactive({
   </div>
 </template>
 
-<style scoped lang="stylus"></style>
+<style scoped lang="stylus">
+.bundled-setting-group
+  margin-bottom 6px
+</style>

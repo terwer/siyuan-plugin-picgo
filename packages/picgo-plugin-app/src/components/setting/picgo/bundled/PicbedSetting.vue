@@ -8,13 +8,14 @@
   -->
 
 <script setup lang="ts">
-import { onBeforeMount, reactive } from "vue"
+import { computed, onBeforeMount, reactive } from "vue"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { PicgoUtil } from "@/utils/picgoUtil.ts"
 import { DateUtil } from "zhi-common"
 import MaterialSymbolsEditSquareOutline from "~icons/material-symbols/edit-square-outline"
 import MaterialSymbolsLightCancelRounded from "~icons/material-symbols-light/cancel-rounded"
 import MaterialSymbolsAddBoxSharp from "~icons/material-symbols/add-box-sharp"
+import { ElMessage } from "element-plus"
 
 const { t } = useVueI18n()
 
@@ -33,8 +34,8 @@ const formData = reactive({
   cfg: props.cfg,
 
   // 当前选择的图床类型
-  bedType: "",
-  defaultBedType: "",
+  selectedBedType: "",
+  dbBedType: "",
 
   // 图床数据
   // 注意这里需要是用户启用的类型
@@ -42,17 +43,50 @@ const formData = reactive({
 
   // 配置数据
   profileData: {
-    // 默认配置I项D
-    defaultConfigId: "",
-
     // 当前图床配置列表
     curConfigList: [] as IUploaderConfigListItem[],
     // 当前配置
     curConfig: {} as IUploaderConfigListItem,
-    // 当前配置项ID
-    curConfigId: "",
   },
+
+  // 表单展示
+  isNewForm: false,
+  showConfigForm: false,
 })
+
+// computed
+const picbedTips = computed(() => {
+  const selectedBedTypeName = findPicbedName(formData.selectedBedType)
+  const dbBedTypeName = findPicbedName(formData.dbBedType)
+
+  if (formData.selectedBedType === formData.dbBedType) {
+    return t("setting.picgo.picbed.current.tip") + dbBedTypeName + "_" + formData.profileData.curConfig._configName
+  } else {
+    return (
+      t("setting.picgo.picbed.current.selected.tip") +
+      selectedBedTypeName +
+      "，" +
+      t("setting.picgo.picbed.current.tip") +
+      dbBedTypeName +
+      t("setting.picgo.picbed.change.tip")
+    )
+  }
+})
+
+const selectedPicbedTipStyle = computed(() => {
+  return formData.selectedBedType === formData.dbBedType ? "success" : "error"
+})
+
+const selectedPicbedStyle = (type: string) => {
+  return formData.selectedBedType === type ? "primary" : ""
+}
+
+const isProfileSelected = (id: string) => {
+  return formData.selectedBedType === formData.dbBedType && id === formData.profileData.curConfig._id
+}
+
+// 从formData.picBeds中查找对应type的图片床类型名称
+const findPicbedName = (type: string) => formData.picBeds.find((x) => x.type === type)?.name || type
 
 /**
  * 获取当前图床
@@ -70,13 +104,29 @@ const getProfileList = (bedType: string): IUploaderConfigItem => {
   return profileList
 }
 
-const handlePicBedTypeChange = (item: IPicBedType) => {}
+const handlePicBedTypeChange = (item: IPicBedType) => {
+  formData.selectedBedType = item.type
+  reloadProfile()
+}
 
 /**
  * 选择默认配置
  * @param id 配置ID
  */
-function selectItem(id: string) {}
+const selectItem = (id: string) => {
+  // 选中当前配置
+  formData.profileData.curConfig = findProfileConfig(id)
+  PicgoUtil.selectUploaderConfig(props.ctx, formData.cfg, formData.selectedBedType, id)
+
+  // 设置为默认
+  PicgoUtil.setDefaultPicBed(props.ctx, formData.selectedBedType)
+
+  // 刷新页面
+  // 必须先刷新 formData.cfg
+  initPage()
+
+  ElMessage.success(t("main.opt.success"))
+}
 
 /**
  * 删除配置
@@ -95,58 +145,45 @@ function editConfig(id: string) {}
  */
 function addNewConfig() {}
 
+const findProfileConfig = (id: string) => {
+  return formData.profileData.curConfigList.find((x) => x._id === id) ?? ({} as IUploaderConfigListItem)
+}
+
+const reloadProfile = () => {
+  const profileList = getProfileList(formData.selectedBedType)
+  formData.profileData.curConfigList = profileList.configList
+  formData.profileData.curConfig = findProfileConfig(profileList.defaultId)
+}
+
 const initConfig = () => {
   // 获取图床列表
   const picBeds = PicgoUtil.getVisiablePicBeds(props.ctx)
-
-  let bedType: string
-  // SM.MS是必选的
-  if (picBeds.length == 0) {
-    const defaultPicbed = {
-      type: "smms",
-      name: "SM.MS",
-    } as IPicBedType
-    picBeds.push(defaultPicbed)
-  }
-  // 默认第一个图床
-  bedType = picBeds[0].type
-
-  formData.bedType = bedType
   formData.picBeds = picBeds
+  formData.dbBedType = getCurrentUploader()
+  formData.selectedBedType = formData.dbBedType
+}
 
-  const profileList = getProfileList(formData.bedType)
-  formData.profileData.curConfigList = profileList.configList
-  formData.profileData.defaultConfigId = profileList.defaultId
-
-  formData.defaultBedType = getCurrentUploader()
+const initPage = () => {
+  initConfig()
+  reloadProfile()
 }
 
 onBeforeMount(() => {
-  initConfig()
+  initPage()
 })
 </script>
 
 <template>
   <div class="picbed-setting">
-    <el-alert
-      :title="
-        t('setting.picgo.picbed.current.selected.tip') +
-        formData.bedType +
-        '，' +
-        t('setting.picgo.picbed.current.tip') +
-        formData.defaultBedType
-      "
-      type="success"
-      :closable="false"
-    />
+    <el-alert :title="picbedTips" :type="selectedPicbedTipStyle" :closable="false" />
 
     <!-- 图床配置列表 -->
     <div class="bed-type-list">
-      <el-button-group>
+      <el-button-group class="picbed-group">
         <el-button
           v-for="item in formData.picBeds"
-          :key="item.name"
-          :type="formData.bedType === item.type ? 'primary' : ''"
+          :key="item.type"
+          :type="selectedPicbedStyle(item.type)"
           @click="handlePicBedTypeChange(item)"
           >{{ item.name }}
         </el-button>
@@ -196,18 +233,18 @@ onBeforeMount(() => {
               </div>
               <div
                 :class="{
-                  selected: config._id === formData.profileData.defaultConfigId,
+                  selected: isProfileSelected(config._id),
                 }"
               >
                 {{
-                  config._id === formData.profileData.defaultConfigId
+                  isProfileSelected(config._id)
                     ? t("setting.picgo.picbed.selected.tip")
                     : t("setting.picgo.picbed.unselected.tip")
                 }}
               </div>
             </el-card>
           </div>
-          <div class="profile-card-item prifile-add-btn" @click="addNewConfig">
+          <div class="profile-card-item profile-add-btn" @click="addNewConfig">
             <el-tooltip
               :content="t('main.opt.add')"
               class="box-item"
@@ -215,16 +252,11 @@ onBeforeMount(() => {
               placement="bottom"
               popper-class="publish-menu-tooltip"
             >
-              <el-icon><MaterialSymbolsAddBoxSharp /></el-icon>
+              <el-icon>
+                <MaterialSymbolsAddBoxSharp />
+              </el-icon>
             </el-tooltip>
           </div>
-        </div>
-
-        <!-- 配置操作 -->
-        <div class="profile-action">
-          <el-button class="set-default-btn" type="primary">
-            {{ t("setting.picgo.picbed.set.default") }}
-          </el-button>
         </div>
       </div>
     </div>
@@ -255,17 +287,17 @@ onBeforeMount(() => {
   color: green;
 }
 
-.profile-action{
+.profile-action {
   display: inline-block;
   margin-left 8px;
   margin-right: 2px;
 }
 
-.prifile-add-btn{
+.profile-add-btn {
   width: 100px;
 }
 
-.prifile-add-btn svg{
+.profile-add-btn svg {
   height: 100px;
   width: 40px;
 }

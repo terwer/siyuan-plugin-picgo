@@ -63,7 +63,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div>
+  <div class="picgo-cfg-form">
     <!-- 图床开关 -->
     <el-form-item :label="t('setting.picgo.picgo.choose.showed.picbed')" label-width="140px" required>
       <el-checkbox-group
@@ -82,4 +82,6 @@ onBeforeMount(() => {
 .no-beds
   color red
   font-size 12px
+.picgo-cfg-form
+  margin-bottom 6px
 </style>

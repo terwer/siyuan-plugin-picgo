@@ -9,10 +9,13 @@
 
 import { IPicGo, IPicGoPlugin } from "../../types"
 import SMMSUploader from "./smms"
+import githubUploader from "./github"
+
 const buildInUploaders: IPicGoPlugin = () => {
   return {
     register(ctx: IPicGo) {
       SMMSUploader(ctx)
+      githubUploader(ctx)
     },
   }
 }

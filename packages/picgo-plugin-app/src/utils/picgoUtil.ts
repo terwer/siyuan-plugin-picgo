@@ -84,7 +84,7 @@ class PicgoUtil {
    */
   public static getVisiablePicBeds(ctx: IPicGo): IPicBedType[] {
     const picBeds = this.getPicBeds(ctx)
-    return picBeds
+    const visiablePicBeds = picBeds
       .map((item: IPicBedType) => {
         if (item.visible) {
           return item
@@ -92,6 +92,16 @@ class PicgoUtil {
         return null
       })
       .filter((item: any) => item) as IPicBedType[]
+
+    // SM.MS是必选的
+    if (visiablePicBeds.length == 0) {
+      const defaultPicbed = {
+        type: "smms",
+        name: "SM.MS",
+      } as IPicBedType
+      visiablePicBeds.push(defaultPicbed)
+    }
+    return visiablePicBeds
   }
 
   /**
@@ -149,6 +159,42 @@ class PicgoUtil {
     }
     // console.warn("获取当前图床配置列表：", configItem)
     return configItem
+  }
+
+  /**
+   * 选择当前图床
+   *
+   * @param ctx
+   * @param cfg
+   * @param type 当前图床类型
+   * @param id 当前图床配置ID
+   * @author terwer
+   * @since 0.7.0
+   */
+  public static selectUploaderConfig = (ctx: IPicGo, cfg: IConfig, type: string, id: string) => {
+    const { configList } = this.getUploaderConfigList(ctx, cfg, type)
+    const config = configList.find((item) => item._id === id)
+    if (config) {
+      ctx.saveConfig({
+        [`uploader.${type}.defaultId`]: id,
+        [`picBed.${type}`]: config,
+      })
+    }
+
+    return config
+  }
+
+  /**
+   * 设置默认图床
+   *
+   * @param ctx
+   * @param type
+   */
+  public static setDefaultPicBed(ctx: IPicGo, type: string) {
+    this.savePicgoConfig(ctx, {
+      "picBed.current": type,
+      "picBed.uploader": type,
+    })
   }
 
   // ===================================================================================================================
