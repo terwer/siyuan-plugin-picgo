@@ -22,12 +22,12 @@ const { t } = useVueI18n()
 const props = defineProps({
   ctx: {
     type: Object,
-    default: null,
+    default: null
   },
   cfg: {
     type: Object,
-    default: null,
-  },
+    default: null
+  }
 })
 
 const formData = reactive({
@@ -46,13 +46,15 @@ const formData = reactive({
     // 当前图床配置列表
     curConfigList: [] as IUploaderConfigListItem[],
     // 当前配置
-    curConfig: {} as IUploaderConfigListItem,
+    curConfig: {} as IUploaderConfigListItem
   },
 
   // 表单展示
   isNewForm: false,
-  showConfigForm: false,
+  showConfigForm: false
 })
+// PicGo 持久化操作帮助类
+const picgoHelper = new PicgoHelper(props.ctx, formData.cfg)
 
 // computed
 const picbedTips = computed(() => {
@@ -88,17 +90,6 @@ const isProfileSelected = (id: string) => {
 // 从formData.picBeds中查找对应type的图片床类型名称
 const findPicbedName = (type: string) => formData.picBeds.find((x) => x.type === type)?.name || type
 
-/**
- * 获取当前图床
- */
-const getCurrentUploader = () => {
-  return (
-    PicgoHelper.getPicgoConfig(formData.cfg, "picBed.uploader") ||
-    PicgoHelper.getPicgoConfig(formData.cfg, "picBed.current") ||
-    "smms"
-  )
-}
-
 const getProfileList = (bedType: string): IUploaderConfigItem => {
   const profileList = PicgoHelper.getUploaderConfigList(props.ctx, formData.cfg, bedType)
   return profileList
@@ -132,18 +123,21 @@ const selectItem = (id: string) => {
  * 删除配置
  * @param id 配置ID
  */
-function deleteConfig(id: string) {}
+function deleteConfig(id: string) {
+}
 
 /**
  * 编辑配置
  * @param id 配置ID
  */
-function editConfig(id: string) {}
+function editConfig(id: string) {
+}
 
 /**
  * 新增配置
  */
-function addNewConfig() {}
+function addNewConfig() {
+}
 
 const findProfileConfig = (id: string) => {
   return formData.profileData.curConfigList.find((x) => x._id === id) ?? ({} as IUploaderConfigListItem)
@@ -157,15 +151,15 @@ const reloadProfile = () => {
 
 const initConfig = () => {
   // 获取图床列表
-  const picBeds = PicgoHelper.getVisiablePicBeds(props.ctx)
+  const picBeds = picgoHelper.getVisiablePicBeds()
   formData.picBeds = picBeds
-  formData.dbBedType = getCurrentUploader()
+  formData.dbBedType = picgoHelper.getCurrentUploader()
   formData.selectedBedType = formData.dbBedType
 }
 
 const initPage = () => {
   initConfig()
-  reloadProfile()
+  // reloadProfile()
 }
 
 onBeforeMount(() => {
@@ -185,7 +179,7 @@ onBeforeMount(() => {
           :key="item.type"
           :type="selectedPicbedStyle(item.type)"
           @click="handlePicBedTypeChange(item)"
-          >{{ item.name }}
+        >{{ item.name }}
         </el-button>
       </el-button-group>
     </div>

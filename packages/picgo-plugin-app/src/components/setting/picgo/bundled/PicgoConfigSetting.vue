@@ -35,7 +35,7 @@ const formData = reactive({
   // 全量图床集合
   picBeds: [] as IPicBedType[],
 })
-
+// PicGo 持久化操作帮助类
 const picgoHelper = new PicgoHelper(props.ctx, formData.cfg)
 
 const handleShowPicBedListChange = (val: ICheckBoxValueType[]) => {

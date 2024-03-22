@@ -51,7 +51,7 @@ class PicgoHelper {
    * @param key
    * @param defaultValue
    */
-  public getPicgoConfig2(key?: string, defaultValue?: any) {
+  public getPicgoConfig(key?: string, defaultValue?: any) {
     if (!key) {
       return this.readonlyCfg as unknown
     }
@@ -84,7 +84,7 @@ class PicgoHelper {
    */
   public getPicBeds(): IPicBedType[] {
     const picBedTypes = this.ctx.helper.uploader.getIdList()
-    const picBedFromDB = this.getPicgoConfig2("picBed.list") || []
+    const picBedFromDB = this.getPicgoConfig("picBed.list") || []
 
     const picBeds = picBedTypes
       .map((item: any) => {
@@ -105,33 +105,31 @@ class PicgoHelper {
     return picBeds
   }
 
-  // /**
-  //  * 获取启用的图床
-  //  *
-  //  * @param ctx
-  //  */
-  // public static getVisiablePicBeds(ctx: IPicGo): IPicBedType[] {
-  //   const picBeds = this.getPicBeds(ctx)
-  //   const visiablePicBeds = picBeds
-  //     .map((item: IPicBedType) => {
-  //       if (item.visible) {
-  //         return item
-  //       }
-  //       return null
-  //     })
-  //     .filter((item: any) => item) as IPicBedType[]
-  //
-  //   // SM.MS是必选的
-  //   if (visiablePicBeds.length == 0) {
-  //     const defaultPicbed = {
-  //       type: "smms",
-  //       name: "SM.MS",
-  //     } as IPicBedType
-  //     visiablePicBeds.push(defaultPicbed)
-  //   }
-  //   return visiablePicBeds
-  // }
-  //
+  /**
+   * 获取启用的图床
+   */
+  public getVisiablePicBeds(): IPicBedType[] {
+    const picBeds = this.getPicBeds()
+    const visiablePicBeds = picBeds
+      .map((item: IPicBedType) => {
+        if (item.visible) {
+          return item
+        }
+        return null
+      })
+      .filter((item: any) => item) as IPicBedType[]
+
+    // SM.MS是必选的
+    if (visiablePicBeds.length == 0) {
+      const defaultPicbed = {
+        type: "smms",
+        name: "SM.MS",
+      } as IPicBedType
+      visiablePicBeds.push(defaultPicbed)
+    }
+    return visiablePicBeds
+  }
+
   // /**
   //  * 获取可用的图床列表名称
   //  *
@@ -163,6 +161,13 @@ class PicgoHelper {
         return null
       })
       .filter((item: any) => item) as string[]
+  }
+
+  /**
+   * 获取当前图床
+   */
+  public getCurrentUploader() {
+    return this.getPicgoConfig("picBed.uploader") || this.getPicgoConfig("picBed.current") || "smms"
   }
 
   // public static getUploaderConfigList(ctx: IPicGo, cfg: IConfig, type: string): IUploaderConfigItem {
