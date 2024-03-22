@@ -95,15 +95,23 @@ function editConfig(id: string) {}
  */
 function addNewConfig() {}
 
-const initConfig = (bedType: string | undefined = undefined) => {
+const initConfig = () => {
   // 获取图床列表
   const picBeds = PicgoUtil.getVisiablePicBeds(props.ctx)
 
-  // 默认第一个图床
-  if (!bedType) {
-    bedType = picBeds.length > 0 ? picBeds[0].type : "smms"
+  let bedType: string
+  // SM.MS是必选的
+  if (picBeds.length == 0) {
+    const defaultPicbed = {
+      type: "smms",
+      name: "SM.MS",
+    } as IPicBedType
+    picBeds.push(defaultPicbed)
   }
-  formData.bedType = bedType ?? "smms"
+  // 默认第一个图床
+  bedType = picBeds[0].type
+
+  formData.bedType = bedType
   formData.picBeds = picBeds
 
   const profileList = getProfileList(formData.bedType)
