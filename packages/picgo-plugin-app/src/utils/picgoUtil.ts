@@ -52,30 +52,29 @@ class PicgoUtil {
   /**
    * 获取可用的图床列表
    *
-   * @param cfg
+   * @param ctx
    */
-  public static getPicBeds(cfg: IConfig) {
-    const picBeds = this.getPicgoConfig(cfg, "picBed.list", []) as IPicBedType[]
+  public static getPicBeds(ctx: IPicGo) {
+    const picBedTypes = ctx.helper.uploader.getIdList()
+    const picBedFromDB = ctx.getConfig("picBed.list") || []
 
-    const showPicBedList = picBeds
-      .map((item: IPicBedType) => {
-        if (item.visible) {
-          return item
+    const picBeds = picBedTypes
+      .map((item: any) => {
+        const visible = picBedFromDB.find((i: any) => i.type === item) // object or undefined
+        return {
+          type: item,
+          name: ctx.helper.uploader.get(item).name || item,
+          visible: visible ? visible.visible : true,
         }
-        return null
       })
-      .filter((item) => item)
       .sort((a: any) => {
         if (a.type === "smms") {
           return -1
         }
         return 0
-      }) as IPicBedType[]
+      })
 
-    return {
-      picBeds,
-      showPicBedList,
-    }
+    return picBeds
   }
 
   public static getUploaderConfigList(ctx: IPicGo, cfg: IConfig, type: string): IUploaderConfigItem {
@@ -101,6 +100,8 @@ class PicgoUtil {
     // console.warn("获取当前图床配置列表：", configItem)
     return configItem
   }
+
+  // ===================================================================================================================
 
   /**
    * upgrade old uploader config to new format

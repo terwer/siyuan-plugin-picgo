@@ -36,3 +36,5 @@ interface IUploaderListItemMetaInfo {
   _updatedAt: number
   _createdAt: number
 }
+
+type ICheckBoxValueType = boolean | string | number

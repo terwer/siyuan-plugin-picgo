@@ -37,9 +37,8 @@ const formData = reactive({
   defaultBedType: "",
 
   // 图床数据
-  picBedData: {
-    showPicBedList: [] as IPicBedType[],
-  },
+  // 注意这里需要是用户启用的类型
+  picBeds: [] as IPicBedType[],
 
   // 配置数据
   profileData: {
@@ -96,18 +95,30 @@ function editConfig(id: string) {}
  */
 function addNewConfig() {}
 
+const getVisiablePicBeds = () => {
+  const picBeds = PicgoUtil.getPicBeds(props.ctx)
+  return picBeds
+    .map((item: IPicBedType) => {
+      if (item.visible) {
+        return item
+      }
+      return null
+    })
+    .filter((item: any) => item) as IPicBedType[]
+}
+
 const initConfig = (bedType: string | undefined = undefined) => {
   // 获取图床列表
-  const { showPicBedList } = PicgoUtil.getPicBeds(formData.cfg)
+  const picBeds = getVisiablePicBeds()
 
   // 默认第一个图床
   if (!bedType) {
-    bedType = showPicBedList.length > 0 ? showPicBedList[0].type : "smms"
+    bedType = picBeds.length > 0 ? picBeds[0].type : "smms"
   }
-  formData.bedType = bedType
+  formData.bedType = bedType ?? "smms"
+  formData.picBeds = picBeds
 
-  formData.picBedData.showPicBedList = showPicBedList
-  const profileList = getProfileList(bedType)
+  const profileList = getProfileList(formData.bedType)
   formData.profileData.curConfigList = profileList.configList
   formData.profileData.defaultConfigId = profileList.defaultId
 
@@ -137,7 +148,7 @@ onBeforeMount(() => {
     <div class="bed-type-list">
       <el-button-group>
         <el-button
-          v-for="item in formData.picBedData.showPicBedList"
+          v-for="item in formData.picBeds"
           :key="item.name"
           :type="formData.bedType === item.type ? 'primary' : ''"
           @click="handlePicBedTypeChange(item)"
@@ -208,7 +219,7 @@ onBeforeMount(() => {
               placement="bottom"
               popper-class="publish-menu-tooltip"
             >
-            <el-icon><MaterialSymbolsAddBoxSharp /></el-icon>
+              <el-icon><MaterialSymbolsAddBoxSharp /></el-icon>
             </el-tooltip>
           </div>
         </div>

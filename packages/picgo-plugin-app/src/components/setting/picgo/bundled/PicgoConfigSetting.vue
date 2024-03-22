@@ -11,7 +11,9 @@
 import { onBeforeMount, reactive } from "vue"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { PicgoUtil } from "@/utils/picgoUtil.ts"
+import { createAppLogger } from "@/utils/appLogger.ts"
 
+const logger = createAppLogger("picgo-config-setting")
 const { t } = useVueI18n()
 
 const props = defineProps({
@@ -28,18 +30,43 @@ const props = defineProps({
 const formData = reactive({
   cfg: props.cfg,
 
-  showPicBedList: [] as IPicBedType[],
-  picBed: [] as IPicBedType[],
+  // 用户选择展示的图床
+  showPicBedList: [] as string[],
+  // 全量图床集合
+  picBeds: [] as IPicBedType[],
 })
 
-const getPicBeds = () => {
-  const { picBeds, showPicBedList } = PicgoUtil.getPicBeds(formData.cfg)
-  formData.picBed = picBeds
-  formData.showPicBedList = showPicBedList
+const handleShowPicBedListChange = (val: ICheckBoxValueType[]) => {
+  const list = formData.picBeds.map((item: IPicBedType) => {
+    if (!val.includes(item.name)) {
+      item.visible = false
+    } else {
+      item.visible = true
+    }
+    return item
+  })
+  PicgoUtil.savePicgoConfig(props.ctx, {
+    "picBed.list": list,
+  })
+  logger.debug("保存启用的图床", list)
+}
+
+const initPicBeds = () => {
+  const picBeds = PicgoUtil.getPicBeds(props.ctx)
+  formData.picBeds = picBeds
+
+  formData.showPicBedList = picBeds
+    .map((item: IPicBedType) => {
+      if (item.visible) {
+        return item.name
+      }
+      return null
+    })
+    .filter((item: any) => item) as string[]
 }
 
 onBeforeMount(() => {
-  getPicBeds()
+  initPicBeds()
 })
 </script>
 
@@ -47,8 +74,12 @@ onBeforeMount(() => {
   <div>
     <!-- 图床开关 -->
     <el-form-item :label="t('setting.picgo.picgo.choose.showed.picbed')" label-width="140px" required>
-      <el-checkbox-group v-if="formData.showPicBedList.length > 0" v-model="formData.showPicBedList">
-        <el-checkbox v-for="item in formData.picBed" :key="item.name" :label="item.name" />
+      <el-checkbox-group
+        v-if="formData.picBeds.length > 0"
+        v-model="formData.showPicBedList"
+        @change="handleShowPicBedListChange"
+      >
+        <el-checkbox v-for="item in formData.picBeds" :key="item.name" :label="item.name" :value="item.name" />
       </el-checkbox-group>
       <div v-else class="no-beds">{{ t("upload.no.beds") }}</div>
     </el-form-item>
