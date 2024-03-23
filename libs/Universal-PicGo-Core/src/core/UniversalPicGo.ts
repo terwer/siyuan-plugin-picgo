@@ -93,10 +93,10 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       afterUploadPlugins: new LifecyclePlugins("afterUploadPlugins"),
     }
     this.initConfigPath()
+    this.initConfig()
     // this.cmd = new Commander(this)
     this.pluginHandler = new PluginHandler(this)
     this.requestWrapper = new PicGoRequestWrapper(this)
-    this.initConfig()
     this.init()
 
     this.log.info("UniversalPicGo inited")

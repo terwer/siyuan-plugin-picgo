@@ -8,9 +8,18 @@
  */
 
 import _ from "lodash-es"
-import { IBusEvent, IConfig, IPicBedType, IPicGo } from "universal-picgo"
-import { getRawData } from "./utils/utils"
+import {
+  eventBus,
+  IBusEvent,
+  IConfig,
+  IPicBedType,
+  IPicGo,
+  IUploaderConfigItem,
+  IUploaderConfigListItem,
+} from "universal-picgo"
+import { getRawData, trimValues } from "./utils/utils"
 import { readonly } from "vue"
+import IdUtil from "./utils/idUtil"
 
 /**
  * picgo 工具类
@@ -72,7 +81,7 @@ class PicgoHelper {
     Object.keys(cfg).forEach((name: string) => {
       const rawCfg = getRawData(cfg)
       _.set(this.reactiveCfg, name, rawCfg[name])
-      this.ctx.emit(IBusEvent.CONFIG_CHANGE, {
+      eventBus.emit(IBusEvent.CONFIG_CHANGE, {
         configName: name,
         value: rawCfg[name],
       })
@@ -130,23 +139,21 @@ class PicgoHelper {
     return visiablePicBeds
   }
 
-  // /**
-  //  * 获取可用的图床列表名称
-  //  *
-  //  * @param ctx
-  //  */
-  // public static getVisiablePicBedNames(ctx: IPicGo): string[] {
-  //   const picBeds = this.getPicBeds(ctx)
-  //   return picBeds
-  //     .map((item: IPicBedType) => {
-  //       if (item.visible) {
-  //         return item.name
-  //       }
-  //       return null
-  //     })
-  //     .filter((item: any) => item) as string[]
-  // }
-  //
+  /**
+   * 获取可用的图床列表名称
+   */
+  public getVisiablePicBedNames(): string[] {
+    const picBeds = this.getPicBeds()
+    return picBeds
+      .map((item: IPicBedType) => {
+        if (item.visible) {
+          return item.name
+        }
+        return null
+      })
+      .filter((item: any) => item) as string[]
+  }
+
   /**
    * 根据图床数据获取可用的图床列表名称
    *
@@ -170,115 +177,110 @@ class PicgoHelper {
     return this.getPicgoConfig("picBed.uploader") || this.getPicgoConfig("picBed.current") || "smms"
   }
 
-  // public static getUploaderConfigList(ctx: IPicGo, cfg: IConfig, type: string): IUploaderConfigItem {
-  //   if (!type) {
-  //     return {
-  //       configList: [] as IUploaderConfigListItem[],
-  //       defaultId: "",
-  //     }
-  //   }
-  //   const currentUploaderConfig = this.getPicgoConfig(cfg, `uploader.${type}`) ?? {}
-  //   let configList = currentUploaderConfig.configList
-  //   let defaultId = currentUploaderConfig.defaultId || ""
-  //   if (!configList) {
-  //     const res = this.upgradeUploaderConfig(ctx, cfg, type)
-  //     configList = res.configList
-  //     defaultId = res.defaultId
-  //   }
-  //
-  //   const configItem = {
-  //     configList,
-  //     defaultId,
-  //   }
-  //   // console.warn("获取当前图床配置列表：", configItem)
-  //   return configItem
-  // }
-  //
-  // /**
-  //  * 选择当前图床
-  //  *
-  //  * @param ctx
-  //  * @param cfg
-  //  * @param type 当前图床类型
-  //  * @param id 当前图床配置ID
-  //  * @author terwer
-  //  * @since 0.7.0
-  //  */
-  // public static selectUploaderConfig = (ctx: IPicGo, cfg: IConfig, type: string, id: string) => {
-  //   const { configList } = this.getUploaderConfigList(ctx, cfg, type)
-  //   const config = configList.find((item) => item._id === id)
-  //   if (config) {
-  //     ctx.saveConfig({
-  //       [`uploader.${type}.defaultId`]: id,
-  //       [`picBed.${type}`]: config,
-  //     })
-  //   }
-  //
-  //   return config
-  // }
-  //
-  // /**
-  //  * 设置默认图床
-  //  *
-  //  * @param ctx
-  //  * @param type
-  //  */
-  // public static setDefaultPicBed(ctx: IPicGo, type: string) {
-  //   this.savePicgoConfig(ctx, {
-  //     "picBed.current": type,
-  //     "picBed.uploader": type,
-  //   })
-  // }
-  //
-  // // ===================================================================================================================
-  //
-  // /**
-  //  * upgrade old uploader config to new format
-  //  *
-  //  * @param ctx
-  //  * @param cfg
-  //  * @param type type
-  //  * @author terwer
-  //  * @since 0.7.0
-  //  */
-  // private static upgradeUploaderConfig = (ctx: IPicGo, cfg: IConfig, type: string) => {
-  //   const uploaderConfig = this.getPicgoConfig(cfg, `picBed.${type}`) ?? {}
-  //   if (!uploaderConfig._id) {
-  //     Object.assign(uploaderConfig, this.completeUploaderMetaConfig(uploaderConfig))
-  //   }
-  //
-  //   const uploaderConfigList = [uploaderConfig]
-  //   this.savePicgoConfig(ctx, {
-  //     [`uploader.${type}`]: {
-  //       configList: uploaderConfigList,
-  //       defaultId: uploaderConfig._id,
-  //     },
-  //     [`picBed.${type}`]: uploaderConfig,
-  //   })
-  //   return {
-  //     configList: uploaderConfigList as IUploaderConfigListItem[],
-  //     defaultId: uploaderConfig._id as string,
-  //   }
-  // }
-  //
-  // /**
-  //  * 增加配置元数据
-  //  *
-  //  * @param originData 原始数据
-  //  */
-  // private static completeUploaderMetaConfig(originData: any) {
-  //   return Object.assign(
-  //     {
-  //       _configName: "Default",
-  //     },
-  //     trimValues(originData),
-  //     {
-  //       _id: IdUtil.newUuid(),
-  //       _createdAt: Date.now(),
-  //       _updatedAt: Date.now(),
-  //     }
-  //   )
-  // }
+  public getUploaderConfigList(type: string): IUploaderConfigItem {
+    if (!type) {
+      return {
+        configList: [] as IUploaderConfigListItem[],
+        defaultId: "",
+      }
+    }
+    const currentUploaderConfig = this.getPicgoConfig(`uploader.${type}`, {})
+    let configList = currentUploaderConfig.configList
+    let defaultId = currentUploaderConfig.defaultId || ""
+    if (!configList) {
+      const res = this.upgradeUploaderConfig(type)
+      configList = res.configList
+      defaultId = res.defaultId
+    }
+
+    const configItem = {
+      configList,
+      defaultId,
+    }
+    // console.warn("获取当前图床配置列表：", configItem)
+    return configItem
+  }
+
+  /**
+   * 选择当前图床
+   *
+   * @param type 当前图床类型
+   * @param id 当前图床配置ID
+   * @author terwer
+   * @since 0.7.0
+   */
+  public selectUploaderConfig = (type: string, id: string) => {
+    const { configList } = this.getUploaderConfigList(type)
+    const config = configList.find((item: any) => item._id === id)
+    if (config) {
+      this.savePicgoConfig({
+        [`uploader.${type}.defaultId`]: id,
+        [`picBed.${type}`]: config,
+      })
+    }
+
+    return config
+  }
+
+  /**
+   * 设置默认图床
+   *
+   * @param type
+   */
+  public setDefaultPicBed(type: string) {
+    this.savePicgoConfig({
+      "picBed.current": type,
+      "picBed.uploader": type,
+    })
+  }
+
+  // ===================================================================================================================
+
+  /**
+   * upgrade old uploader config to new format
+   *
+   * @param type type
+   * @author terwer
+   * @since 0.7.0
+   */
+  private upgradeUploaderConfig = (type: string) => {
+    const uploaderConfig = this.getPicgoConfig(`picBed.${type}`, {})
+    if (!uploaderConfig._id) {
+      Object.assign(uploaderConfig, this.completeUploaderMetaConfig(uploaderConfig))
+    }
+
+    const uploaderConfigList = [uploaderConfig]
+    this.savePicgoConfig({
+      [`uploader.${type}`]: {
+        configList: uploaderConfigList,
+        defaultId: uploaderConfig._id,
+      },
+      [`picBed.${type}`]: uploaderConfig,
+    })
+    return {
+      configList: uploaderConfigList as IUploaderConfigListItem[],
+      defaultId: uploaderConfig._id as string,
+    }
+  }
+
+  /**
+   * 增加配置元数据
+   *
+   * @param originData 原始数据
+   */
+  private completeUploaderMetaConfig(originData: any) {
+    return Object.assign(
+      {
+        _configName: "Default",
+      },
+      trimValues(originData),
+      {
+        _id: IdUtil.newUuid(),
+        _createdAt: Date.now(),
+        _updatedAt: Date.now(),
+      }
+    )
+  }
 }
 
 export { PicgoHelper }

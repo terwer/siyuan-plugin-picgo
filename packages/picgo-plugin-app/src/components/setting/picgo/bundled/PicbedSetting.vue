@@ -22,12 +22,12 @@ const { t } = useVueI18n()
 const props = defineProps({
   ctx: {
     type: Object,
-    default: null
+    default: null,
   },
   cfg: {
     type: Object,
-    default: null
-  }
+    default: null,
+  },
 })
 
 const formData = reactive({
@@ -46,12 +46,12 @@ const formData = reactive({
     // 当前图床配置列表
     curConfigList: [] as IUploaderConfigListItem[],
     // 当前配置
-    curConfig: {} as IUploaderConfigListItem
+    curConfig: {} as IUploaderConfigListItem,
   },
 
   // 表单展示
   isNewForm: false,
-  showConfigForm: false
+  showConfigForm: false,
 })
 // PicGo 持久化操作帮助类
 const picgoHelper = new PicgoHelper(props.ctx, formData.cfg)
@@ -91,7 +91,7 @@ const isProfileSelected = (id: string) => {
 const findPicbedName = (type: string) => formData.picBeds.find((x) => x.type === type)?.name || type
 
 const getProfileList = (bedType: string): IUploaderConfigItem => {
-  const profileList = PicgoHelper.getUploaderConfigList(props.ctx, formData.cfg, bedType)
+  const profileList = picgoHelper.getUploaderConfigList(bedType)
   return profileList
 }
 
@@ -107,12 +107,11 @@ const handlePicBedTypeChange = (item: IPicBedType) => {
 const selectItem = (id: string) => {
   // 选中当前配置
   formData.profileData.curConfig = findProfileConfig(id)
-  PicgoHelper.selectUploaderConfig(props.ctx, formData.cfg, formData.selectedBedType, id)
+  picgoHelper.selectUploaderConfig(formData.selectedBedType, id)
 
   // 设置为默认
-  PicgoHelper.setDefaultPicBed(props.ctx, formData.selectedBedType)
+  picgoHelper.setDefaultPicBed(formData.selectedBedType)
 
-  // 刷新页面
   // 必须先刷新 formData.cfg
   initPage()
 
@@ -123,21 +122,18 @@ const selectItem = (id: string) => {
  * 删除配置
  * @param id 配置ID
  */
-function deleteConfig(id: string) {
-}
+function deleteConfig(id: string) {}
 
 /**
  * 编辑配置
  * @param id 配置ID
  */
-function editConfig(id: string) {
-}
+function editConfig(id: string) {}
 
 /**
  * 新增配置
  */
-function addNewConfig() {
-}
+function addNewConfig() {}
 
 const findProfileConfig = (id: string) => {
   return formData.profileData.curConfigList.find((x) => x._id === id) ?? ({} as IUploaderConfigListItem)
@@ -159,7 +155,7 @@ const initConfig = () => {
 
 const initPage = () => {
   initConfig()
-  // reloadProfile()
+  reloadProfile()
 }
 
 onBeforeMount(() => {
@@ -179,7 +175,7 @@ onBeforeMount(() => {
           :key="item.type"
           :type="selectedPicbedStyle(item.type)"
           @click="handlePicBedTypeChange(item)"
-        >{{ item.name }}
+          >{{ item.name }}
         </el-button>
       </el-button-group>
     </div>

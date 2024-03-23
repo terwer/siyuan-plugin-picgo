@@ -593,3 +593,20 @@ interface IPicBedType {
   name: string
   visible: boolean
 }
+
+/**
+ * 某个PicGO平台配置列表
+ */
+interface IUploaderConfigItem {
+  configList: IUploaderConfigListItem[]
+  defaultId: string
+}
+
+type IUploaderConfigListItem = IStringKeyMap & IUploaderListItemMetaInfo
+
+interface IUploaderListItemMetaInfo {
+  _id: string
+  _configName: string
+  _updatedAt: number
+  _createdAt: number
+}

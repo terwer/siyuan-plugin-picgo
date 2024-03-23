@@ -41,7 +41,7 @@ const formData = reactive({
 <template>
   <div>
     <el-form-item :label="t('setting.cors.title')" :required="!isInSiyuanOrSiyuanNewWin()">
-      <el-input v-model="formData.cfg.picBed.proxy" :placeholder="t('setting.cors.title.tip')" />
+      <el-input v-model="formData.cfg.picBed.proxy" :placeholder="t('setting.cors.title.tip')"/>
       <div>
         <a href="https://blog.terwer.space/static/20240312140915-rvxrqp2" target="_blank">
           {{ t("setting.picgo.refer.to.here") }}
