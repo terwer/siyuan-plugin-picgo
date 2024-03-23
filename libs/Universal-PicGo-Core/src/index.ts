@@ -15,6 +15,7 @@ import {
   IPicBedType,
   IUploaderConfigItem,
   IUploaderConfigListItem,
+  IPluginConfig,
 } from "./types"
 
 export { UniversalPicGo, ExternalPicgo, eventBus }
@@ -30,4 +31,5 @@ export {
   type IPicBedType,
   type IUploaderConfigItem,
   type IUploaderConfigListItem,
+  type IPluginConfig,
 }

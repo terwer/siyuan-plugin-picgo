@@ -16,6 +16,7 @@ import MaterialSymbolsEditSquareOutline from "~icons/material-symbols/edit-squar
 import MaterialSymbolsLightCancelRounded from "~icons/material-symbols-light/cancel-rounded"
 import MaterialSymbolsAddBoxSharp from "~icons/material-symbols/add-box-sharp"
 import { ElMessage } from "element-plus"
+import { c } from "vite/dist/node/types.d-FdqQ54oU"
 
 const { t } = useVueI18n()
 
@@ -47,11 +48,16 @@ const formData = reactive({
     curConfigList: [] as IUploaderConfigListItem[],
     // 当前配置
     curConfig: {} as IUploaderConfigListItem,
+    // 当前配置项表单
+    curFormPropertiesConfig: {} as IStringKeyMap,
+    // 表单配置项ID
+    curFormConfigId: "" as string | undefined,
   },
 
   // 表单展示
   isNewForm: false,
   showConfigForm: false,
+  configFormTitle: "",
 })
 // PicGo 持久化操作帮助类
 const picgoHelper = new PicgoHelper(props.ctx, formData.cfg)
@@ -100,6 +106,16 @@ const handlePicBedTypeChange = (item: IPicBedType) => {
   reloadProfile()
 }
 
+const handleDrawerClose = () => {
+  reloadProfile()
+}
+
+const handleDrawerTitleChange = (val: string) => {
+  if (!formData.isNewForm) {
+    formData.configFormTitle = `编辑配置_${val}`
+  }
+}
+
 /**
  * 选择默认配置
  * @param id 配置ID
@@ -120,20 +136,38 @@ const selectItem = (id: string) => {
 
 /**
  * 删除配置
- * @param id 配置ID
- */
-function deleteConfig(id: string) {}
+ *
+ * @param config 配置信息
+ * */
+function deleteConfig(config: IUploaderConfigListItem) {}
 
 /**
  * 编辑配置
- * @param id 配置ID
+ *
+ * @param config 配置信息
  */
-function editConfig(id: string) {}
+function editConfig(config: IUploaderConfigListItem) {
+  const configObj = picgoHelper.getPicBedConfig(formData.selectedBedType)
+  formData.profileData.curFormPropertiesConfig = configObj.config
+  formData.profileData.curFormConfigId = config._id
+
+  formData.isNewForm = false
+  formData.showConfigForm = true
+  formData.configFormTitle = `编辑配置_${config._configName}`
+}
 
 /**
  * 新增配置
  */
-function addNewConfig() {}
+function addNewConfig() {
+  const newConfigObj = picgoHelper.getPicBedConfig(formData.selectedBedType)
+  formData.profileData.curFormPropertiesConfig = newConfigObj.config
+  formData.profileData.curFormConfigId = undefined
+
+  formData.isNewForm = true
+  formData.showConfigForm = true
+  formData.configFormTitle = "新增配置"
+}
 
 const findProfileConfig = (id: string) => {
   return formData.profileData.curConfigList.find((x) => x._id === id) ?? ({} as IUploaderConfigListItem)
@@ -184,12 +218,7 @@ onBeforeMount(() => {
       <div class="profile-setting">
         <!-- 图床配置列表 -->
         <div class="profile-card-box">
-          <div
-            v-for="config in formData.profileData.curConfigList"
-            :key="config._id"
-            class="profile-card-item"
-            @click="() => selectItem(config._id)"
-          >
+          <div v-for="config in formData.profileData.curConfigList" :key="config._id" class="profile-card-item">
             <el-card>
               <div class="profile-card-line">
                 <span>{{ config._configName }}</span>
@@ -201,7 +230,7 @@ onBeforeMount(() => {
                     placement="bottom"
                     popper-class="publish-menu-tooltip"
                   >
-                    <div class="profile-action" @click.stop="editConfig(config._id)">
+                    <div class="profile-action" @click.stop="editConfig(config)">
                       <el-icon><MaterialSymbolsEditSquareOutline /></el-icon>
                     </div>
                   </el-tooltip>
@@ -212,7 +241,7 @@ onBeforeMount(() => {
                     placement="bottom"
                     popper-class="publish-menu-tooltip"
                   >
-                    <div class="profile-action" @click.stop="deleteConfig(config._id)">
+                    <div class="profile-action" @click.stop="deleteConfig(config)">
                       <el-icon><MaterialSymbolsLightCancelRounded /></el-icon>
                     </div>
                   </el-tooltip>
@@ -223,8 +252,11 @@ onBeforeMount(() => {
               </div>
               <div
                 :class="{
+                  selectItem: true,
                   selected: isProfileSelected(config._id),
                 }"
+                title="点击可选中"
+                @click="() => selectItem(config._id)"
               >
                 {{
                   isProfileSelected(config._id)
@@ -250,6 +282,30 @@ onBeforeMount(() => {
         </div>
       </div>
     </div>
+
+    <!-- 抽屉占位 -->
+    <el-drawer
+      v-model="formData.showConfigForm"
+      size="85%"
+      :title="formData.configFormTitle"
+      direction="rtl"
+      :destroy-on-close="true"
+    >
+      <!-- 图床配置表单 -->
+      <div class="profile-form">
+        <config-form
+          :id="formData.selectedBedType"
+          :ctx="ctx"
+          :cfg="formData.cfg"
+          config-type="uploader"
+          :config="formData.profileData.curFormPropertiesConfig"
+          :config-id="formData.profileData.curFormConfigId"
+          :is-new-form="formData.isNewForm"
+          @on-close="handleDrawerClose"
+          @drawer-title-change="handleDrawerTitleChange"
+        />
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -264,13 +320,18 @@ onBeforeMount(() => {
   width: 48%;
   margin-top: 10px;
   margin-bottom: 10px;
-  cursor: pointer;
+  cursor: text;
 }
 
 .profile-card-item .profile-date {
   font-size: 12px;
   color: var(--el-text-color-primary);
   margin: 10px 0;
+}
+
+.profile-card-item .selectItem {
+  cursor: pointer;
+  color: red;
 }
 
 .profile-card-item .selected {
