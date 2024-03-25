@@ -65,6 +65,16 @@ export const EN: ILocales = {
   PICBED_GITHUB_MESSAGE_PATH: "Ex. test/",
   PICBED_GITHUB_MESSAGE_CUSTOMURL: "Ex. https://test.com",
 
+  // Gitlab
+  PICBED_GITLAB: "Gitlab",
+  PICBED_GITLAB_URL: "Set Url",
+  PICBED_GITLAB_TOKEN: "Set Token",
+  PICBED_GITLAB_REPO: "Set Repo Name",
+  PICBED_GITLAB_BRANCH: "Set Branch",
+  PICBED_GITLAB_MESSAGE_URL: "Ex. http://localhost:8002",
+  PICBED_GITLAB_MESSAGE_REPO: "Ex. username/repo",
+  PICBED_GITLAB_MESSAGE_BRANCH: "Ex. main",
+
   // qiniu
   PICBED_QINIU: "Qiniu",
   PICBED_QINIU_ACCESSKEY: "Set AccessKey",

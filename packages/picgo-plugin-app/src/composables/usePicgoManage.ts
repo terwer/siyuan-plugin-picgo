@@ -44,13 +44,11 @@ export const usePicgoManage = (props: any, deps: any) => {
   // public methods
   const picgoManageMethods = {
     handleUploadCurrentImageToBed: async (imageItem: ImageItem) => {
-      picgoCommonData.isUploadLoading = true
 
       if (!picgoCommonData.isSiyuanOrSiyuanNewWin) {
         const errMsg = "由于浏览器的安全限制，无法获取本地文件的完整路径，因此非electron环境只能通过剪贴板上传"
         ElMessage.error(errMsg)
         picgoCommonData.loggerMsg = t("main.opt.failure") + "=>" + errMsg
-        picgoCommonData.isUploadLoading = false
         return
       }
 
@@ -62,6 +60,7 @@ export const usePicgoManage = (props: any, deps: any) => {
         })
           .then(async () => {
             try {
+              picgoCommonData.isUploadLoading = true
               await picgoManageMethods.doUploadImagesToBed(imageItem, true)
               picgoCommonData.isUploadLoading = false
 

@@ -65,6 +65,16 @@ export const ZH_TW: ILocales = {
   PICBED_GITHUB_MESSAGE_PATH: "例如：test/",
   PICBED_GITHUB_MESSAGE_CUSTOMURL: "例如：https://test.com",
 
+  // Gitlab
+  PICBED_GITLAB: "Gitlab",
+  PICBED_GITLAB_URL: "設定Url",
+  PICBED_GITLAB_TOKEN: "設定Token",
+  PICBED_GITLAB_REPO: "設定倉庫名",
+  PICBED_GITLAB_BRANCH: "設定分支名",
+  PICBED_GITLAB_MESSAGE_URL: "例如： http://localhost:8002",
+  PICBED_GITLAB_MESSAGE_REPO: "例如： username/repo",
+  PICBED_GITLAB_MESSAGE_BRANCH: "例如： main",
+
   // qiniu
   PICBED_QINIU: "七牛云",
   PICBED_QINIU_ACCESSKEY: "設定AccessKey",

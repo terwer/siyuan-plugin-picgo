@@ -61,7 +61,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
       get message() {
         return ctx.i18n.translate<ILocalesKey>("PICBED_GITHUB_MESSAGE_BRANCH")
       },
-      default: userConfig.branch || "master",
+      default: userConfig.branch || "main",
       required: true,
     },
     {

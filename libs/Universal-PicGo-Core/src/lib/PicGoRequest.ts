@@ -194,21 +194,26 @@ class PicGoRequestWrapper {
       return resp
     } else {
       return instance.request(opt).then((res) => {
+        let customResp: any
+        if (userOptions.responseType === "json") {
+          customResp = res.data
+        } else {
+          customResp = JSON.stringify(res.data)
+        }
         // use old request option format
-        let oldResp: any
         if (opt.__isOldOptions) {
           if ("json" in userOptions) {
             if (userOptions.json) {
-              oldResp = res.data
+              customResp = res.data
             }
           } else {
-            oldResp = JSON.stringify(res.data)
+            customResp = JSON.stringify(res.data)
           }
         } else {
-          oldResp = res.data
+          customResp = res.data
         }
-        that.logger.debug("PicGoRequest request interceptor oldRequest, oldResp", oldResp)
-        return oldResp
+        that.logger.debug("PicGoRequest request interceptor oldRequest, oldResp", customResp)
+        return customResp
       }) as Promise<IResponse<T, U>>
     }
   }

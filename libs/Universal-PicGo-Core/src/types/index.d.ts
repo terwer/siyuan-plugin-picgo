@@ -187,6 +187,18 @@ export interface IGithubConfig {
   branch: string
 }
 
+/** Gitlab 图床配置项 */
+export interface IGitlabConfig {
+  /** gitlab 地址，例如：http://localhost:8002 */
+  url: string
+  /** 仓库名，格式是 `username/reponame` */
+  repo: string
+  /** 分支名，默认是 `main` */
+  branch: string
+  /** gitlab token */
+  token: string
+}
+
 /** 阿里云图床配置项 */
 export interface IAliyunConfig {
   accessKeyId: string
