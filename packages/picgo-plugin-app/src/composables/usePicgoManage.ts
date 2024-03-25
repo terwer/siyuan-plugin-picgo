@@ -41,6 +41,36 @@ export const usePicgoManage = (props: any, deps: any) => {
   // deps data
   const picgoCommonData = picgoCommonMethods.getPicgoCommonData()
 
+  // private methods
+  /**
+   * 处理图片后续
+   *
+   * @param imgInfos
+   */
+  const doAfterUploadReplace = (imgInfos: any) => {
+    throw new Error("这里需要替换图片，而不是追加")
+    // let imageJson
+    // if (typeof imgInfos == "string") {
+    //   logger.warn("doAfterUpload返回的是字符串，需要解析")
+    //   imageJson = JSON.parse(imgInfos)
+    // } else {
+    //   imageJson = imgInfos
+    // }
+    //
+    // picgoCommonData.loggerMsg = JSON.stringify(imgInfos)
+    // logger.debug("doAfterUpload,imgInfos=>", imgInfos)
+    //
+    // if (imageJson && imageJson.length > 0) {
+    //   imageJson.forEach((img: any) => {
+    //     const rtnItem = new ImageItem(img.imgUrl, img.imgUrl, false)
+    //     picgoCommonData.loggerMsg += "\nnewItem=>" + JSON.stringify(rtnItem)
+    //
+    //     picgoCommonData.fileList.files.push(rtnItem)
+    //   })
+    // }
+    // ElMessage.success(t("main.opt.success"))
+  }
+
   // public methods
   const picgoManageMethods = {
     handleUploadCurrentImageToBed: async (imageItem: ImageItem) => {
@@ -53,11 +83,10 @@ export const usePicgoManage = (props: any, deps: any) => {
           .then(async () => {
             try {
               picgoCommonData.isUploadLoading = true
-              await picgoManageMethods.doUploadImagesToBed(imageItem, true)
+              await picgoManageMethods.doUploadCurrentImageToBed(imageItem, true)
               picgoCommonData.isUploadLoading = false
 
-              ElMessage.success("图片已经成功上传至图床，即将刷新页面")
-              BrowserUtil.reloadPage()
+              ElMessage.success("图片已经成功重新上传至图床")
             } catch (e) {
               picgoCommonData.isUploadLoading = false
 
@@ -81,11 +110,10 @@ export const usePicgoManage = (props: any, deps: any) => {
           })
       } else {
         try {
-          await picgoManageMethods.doUploadImagesToBed(imageItem)
+          await picgoManageMethods.doUploadCurrentImageToBed(imageItem)
           picgoCommonData.isUploadLoading = false
 
-          ElMessage.success("图片已经成功上传至图床，即将刷新页面")
-          BrowserUtil.reloadPage()
+          ElMessage.success("图片已经成功上传至图床")
         } catch (e) {
           picgoCommonData.isUploadLoading = false
 
@@ -101,16 +129,20 @@ export const usePicgoManage = (props: any, deps: any) => {
     },
 
     /**
-     * 单个传，否则无法将图片对应
+     * 单个传，否则无法将图片对应，需要替换
+     *
      * @param imageItem
      * @param forceUpload 强制上传
      */
-    doUploadImagesToBed: async (imageItem: ImageItem, forceUpload?: boolean) => {
+    doUploadCurrentImageToBed: async (imageItem: ImageItem, forceUpload?: boolean) => {
       const pageId = props.pageId
       const attrs = await siyuanApi.getBlockAttrs(pageId)
 
       const picgoPostApi = await SiyuanPicGo.getInstance()
-      await picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, forceUpload)
+      const imgInfos = await picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, forceUpload)
+
+      // 处理后续
+      doAfterUploadReplace(imgInfos)
     },
 
     onImageUrlCopy: (url: string) => {
