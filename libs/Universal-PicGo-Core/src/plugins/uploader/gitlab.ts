@@ -35,7 +35,7 @@ const postOptions = (userConfig: IGitlabConfig, base64Image: string, fileName: s
     data: body,
     responseType: "json",
     // proxy=false 表示浏览器换无需代理也可以直接使用
-    // proxy=true 表示浏览器需要设置代理
+    // 默认情况下浏览器需要设置代理
     proxy: false,
   }
 }
