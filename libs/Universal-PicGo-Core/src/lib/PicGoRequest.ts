@@ -195,11 +195,7 @@ class PicGoRequestWrapper {
     } else {
       return instance.request(opt).then((res) => {
         let customResp: any
-        if (userOptions.responseType === "json") {
-          customResp = res.data
-        } else {
-          customResp = JSON.stringify(res.data)
-        }
+
         // use old request option format
         if (opt.__isOldOptions) {
           if ("json" in userOptions) {
@@ -210,7 +206,14 @@ class PicGoRequestWrapper {
             customResp = JSON.stringify(res.data)
           }
         } else {
-          customResp = res.data
+          // new resp
+          if (userOptions.responseType === "json") {
+            customResp = res.data
+          } else if (userOptions.responseType === "text") {
+            customResp = JSON.stringify(res.data)
+          } else {
+            customResp = res.data
+          }
         }
         that.logger.debug("PicGoRequest request interceptor oldRequest, oldResp", customResp)
         return customResp

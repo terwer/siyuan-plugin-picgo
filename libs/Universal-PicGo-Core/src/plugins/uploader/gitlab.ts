@@ -9,22 +9,30 @@
 
 import { IGitlabConfig, IPicGo } from "../../types"
 import { ILocalesKey } from "../../i18n/zh-CN"
-import { base64ToBuffer, safeParse } from "../../utils/common"
+import { bufferToBase64, safeParse } from "../../utils/common"
 import { AxiosRequestConfig } from "axios"
 
-const postOptions = (url: string, repo: string, token: string, image: Buffer, fileName: string): AxiosRequestConfig => {
-  const formData = new FormData()
-  formData.append("file", new Blob([image], { type: "image/png" }), fileName)
+const postOptions = (userConfig: IGitlabConfig, base64Image: string, fileName: string): AxiosRequestConfig => {
+  const body = {
+    branch: userConfig.branch,
+    author_email: userConfig.authorMail,
+    author_name: userConfig.authorName,
+    encoding: "base64",
+    commit_message: userConfig.commitMessage,
+    content: base64Image,
+  }
 
+  const repo = encodeURIComponent(userConfig.repo)
+  const filepath = encodeURIComponent(userConfig.path + fileName)
   return {
     method: "POST",
-    url: `${url}/api/v4/projects/${encodeURIComponent(repo)}/uploads`,
+    url: `${userConfig.url}/api/v4/projects/${repo}/repository/files/${filepath}`,
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
       // "User-Agent": "PicGo",
-      "PRIVATE-TOKEN": token,
+      "PRIVATE-TOKEN": userConfig.token,
     },
-    data: formData,
+    data: body,
     responseType: "json",
   }
 }
@@ -34,37 +42,50 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   if (!gitlabConfig) {
     throw new Error("Can not find gitlab config!")
   }
-  try {
-    const imgList = ctx.output
-    for (const img of imgList) {
-      if (img.fileName) {
-        let image = img.buffer
-        if (!image && img.base64Image) {
-          image = base64ToBuffer(img.base64Image)
+  const imgList = ctx.output
+  for (const img of imgList) {
+    if (img.fileName) {
+      try {
+        let image = img.base64Image
+        if (!image && img.buffer) {
+          image = bufferToBase64(img.buffer)
         }
         if (!image) {
-          ctx.log.error("Can not find image buffer")
-          throw new Error("Can not find image buffer")
+          ctx.log.error("Can not find image base64")
+          throw new Error("Can not find image base64")
         }
 
-        const postConfig = postOptions(gitlabConfig.url, gitlabConfig.repo, gitlabConfig.token, image, img.fileName)
-        const res: string = await ctx.request(postConfig)
+        const postConfig = postOptions(gitlabConfig, image, img.fileName)
+        const res: any = await ctx.request(postConfig)
         const body = safeParse<any>(res)
 
         delete img.base64Image
         delete img.buffer
-        img.imgUrl = body.full_url
+        img.imgUrl = `${gitlabConfig.url}/${gitlabConfig.repo}/-/raw/${body.branch}/${body.file_path}`
+      } catch (e: any) {
+        let errMsg: any
+        // 处理重复图片
+        if (e?.statusCode === 400 && e.response?.body?.message.indexOf("exists") > -1) {
+          delete img.base64Image
+          delete img.buffer
+          // http://localhost:8002/api/v4/projects/terwer%2Fgitlab-upload/repository/files/img%2Fimage-20240321213215-uzrob4t.png
+          // 需要转换成
+          // http://localhost:8002/terwer/gitlab-upload/-/raw/main/img/image-20240321213215-uzrob4t.png
+          const originalUrl = decodeURIComponent(e.url)
+          img.imgUrl = originalUrl
+            .replace("/api/v4/projects", "")
+            .replace("/repository/files/", `/-/raw/${gitlabConfig.branch}/`)
+        } else {
+          if (e?.statusCode) {
+            errMsg = e.response?.body?.error ?? e.response?.body?.message ?? e.stack ?? "unknown error"
+          } else {
+            errMsg = e.toString()
+          }
+          ctx.log.error(errMsg)
+          throw new Error(errMsg)
+        }
       }
     }
-  } catch (e: any) {
-    let errMsg: any
-    if (e?.statusCode === 400) {
-      errMsg = e.response?.body?.error ?? e.stack ?? "unknown error"
-    } else {
-      errMsg = e.toString()
-    }
-    ctx.log.error(errMsg)
-    throw new Error(errMsg)
   }
   return ctx
 }
@@ -125,6 +146,42 @@ const config = (ctx: IPicGo) => {
       },
       default: userConfig.token || "",
       required: true,
+    },
+    {
+      name: "path",
+      type: "input",
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>("PICBED_GITLAB_PATH")
+      },
+      default: userConfig.path || "img/",
+      required: false,
+    },
+    {
+      name: "authorMail",
+      type: "input",
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>("PICBED_GITLAB_AUTHOR_MAIL")
+      },
+      default: userConfig.authorMail || "youweics@163.com",
+      required: false,
+    },
+    {
+      name: "authorName",
+      type: "input",
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>("PICBED_GITLAB_AUTHOR_NAME")
+      },
+      default: userConfig.authorName || "terwer",
+      required: false,
+    },
+    {
+      name: "commitMessage",
+      type: "input",
+      get alias() {
+        return ctx.i18n.translate<ILocalesKey>("PICBED_GITLAB_COMMIT_MESSAGE")
+      },
+      default: userConfig.commitMessage || "upload by PicGo via siyuan-plugin-picgo",
+      required: false,
     },
   ]
 }

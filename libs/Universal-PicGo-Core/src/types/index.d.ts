@@ -197,6 +197,14 @@ export interface IGitlabConfig {
   branch: string
   /** gitlab token */
   token: string
+  /** 自定义存储路径，比如 `img/` */
+  path: string
+  /** 作者邮箱  */
+  authorMail: string
+  /** 作者姓名 */
+  authorName: string
+  /** 提交信息 */
+  commitMessage: string
 }
 
 /** 阿里云图床配置项 */

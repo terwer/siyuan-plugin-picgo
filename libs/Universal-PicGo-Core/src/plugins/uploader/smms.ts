@@ -51,7 +51,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
       }
       const postConfig = postOptions(img.fileName, image, smmsConfig?.token, smmsConfig?.backupDomain)
       try {
-        const res: string = await ctx.request(postConfig)
+        const res: any = await ctx.request(postConfig)
         const body = safeParse<any>(res)
         if (body.code === "success") {
           delete img.base64Image

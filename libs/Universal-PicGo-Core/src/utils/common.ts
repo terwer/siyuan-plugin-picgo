@@ -82,6 +82,10 @@ export const base64ToBuffer = (base64: string): Buffer | typeof win.Buffer => {
   return imageBuffer
 }
 
+export const bufferToBase64 = (buffer: Buffer | typeof win.Buffer) => {
+  return buffer.toString("base64")
+}
+
 export const getBase64File = async (base64: string): Promise<IPathTransformedImgInfo> => {
   const imgInfo = extractImageInfoFromBase64(base64)
   const imageBuffer = base64ToBuffer(imgInfo.imageBase64)
