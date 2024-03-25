@@ -152,7 +152,7 @@ function deleteConfig(config: IUploaderConfigListItem) {
     .then(async () => {
       try {
         picgoHelper.deleteUploaderConfig(formData.selectedBedType, config._id)
-        initPage()
+        reloadProfile()
         ElMessage.success(t("main.opt.success"))
       } catch (e) {
         ElMessage({
