@@ -70,7 +70,14 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
         // http://localhost:8002/api/v4/projects/terwer%2Fgitlab-upload/repository/files/img%2Fimage-20240321213215-uzrob4t.png/raw?private_token=glpat-xxxxxxxxxxxxxxxx
         const repo = encodeURIComponent(userConfig.repo)
         const filepath = encodeURIComponent(body.file_path)
-        img.imgUrl = `${userConfig.url}/api/v4/projects/${repo}/repository/files/${filepath}/raw?private_token=${userConfig.token}`
+        // for private projects
+        // get token
+        // Preferences -> Access tokens
+        // img.imgUrl = `${userConfig.url}/api/v4/projects/${repo}/repository/files/${filepath}/raw?private_token=${userConfig.token}`
+        //
+        // change to public => Settings -> General
+        // Visibility, project features, permissions
+        img.imgUrl = `${userConfig.url}/api/v4/projects/${repo}/repository/files/${filepath}/raw`
       } catch (e: any) {
         let errMsg: any
         // 处理重复图片
