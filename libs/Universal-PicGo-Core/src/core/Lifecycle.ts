@@ -12,7 +12,6 @@ import { ILifecyclePlugins, IPicGo, IPlugin, Undefinable } from "../types"
 import { ILogger } from "zhi-lib-base"
 import { createContext } from "../utils/createContext"
 import { IBuildInEvent } from "../utils/enums"
-import { handleUrlEncode } from "../utils/common"
 
 export class Lifecycle extends EventEmitter {
   private readonly ctx: IPicGo
@@ -114,11 +113,9 @@ export class Lifecycle extends EventEmitter {
     await this.handlePlugins(ctx.helper.afterUploadPlugins, ctx)
     let msg = ""
     const length = ctx.output.length
-    // notice, now picgo builtin uploader will encodeOutputURL by default
-    const isEncodeOutputURL = ctx.getConfig<Undefinable<boolean>>("settings.encodeOutputURL") === true
     for (let i = 0; i < length; i++) {
       if (typeof ctx.output[i].imgUrl !== "undefined") {
-        msg += isEncodeOutputURL ? handleUrlEncode(ctx.output[i].imgUrl!) : ctx.output[i].imgUrl!
+        msg += ctx.output[i].imgUrl!
         if (i !== length - 1) {
           msg += "\n"
         }

@@ -15,23 +15,6 @@ import { Buffer } from "./nodePolyfill"
 
 export const isUrl = (url: string): boolean => url.startsWith("http://") || url.startsWith("https://")
 
-export const isUrlEncode = (url: string): boolean => {
-  url = url || ""
-  try {
-    // the whole url encode or decode shold not use encodeURIComponent or decodeURIComponent
-    return url !== decodeURI(url)
-  } catch (e) {
-    // if some error caught, try to let it go
-    return false
-  }
-}
-export const handleUrlEncode = (url: string): string => {
-  if (!isUrlEncode(url)) {
-    url = encodeURI(url)
-  }
-  return url
-}
-
 /**
  * 检测输入是否为 base64 编码的字符串
  *
@@ -176,7 +159,6 @@ export const getBlobFile = async (blob: any): Promise<IPathTransformedImgInfo> =
 }
 
 export const getURLFile = async (url: string, ctx: IPicGo): Promise<IPathTransformedImgInfo> => {
-  url = handleUrlEncode(url)
   let isImage = false
   let extname = ""
   let timeoutId: any
@@ -194,6 +176,13 @@ export const getURLFile = async (url: string, ctx: IPicGo): Promise<IPathTransfo
               responseType: "arraybuffer",
             })
             .then((resp: any) => {
+              if (resp.status !== 200) {
+                resolve({
+                  success: false,
+                  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                  reason: `File not found from url ${url} , please try again later`,
+                })
+              }
               const contentType = resp.headers["content-type"]
               if (contentType?.includes("image")) {
                 isImage = true
@@ -204,6 +193,13 @@ export const getURLFile = async (url: string, ctx: IPicGo): Promise<IPathTransfo
         } else {
           // 浏览器环境单独出处理，直接跳出 promise
           const response = await window.fetch(url)
+          if (response.status !== 200) {
+            resolve({
+              success: false,
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+              reason: `File not found from url ${url} , please try again later`,
+            })
+          }
           const blob = await response.blob()
           const imgInfo = await getBlobFile(blob)
           clearTimeout(timeoutId)
