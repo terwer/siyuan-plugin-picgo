@@ -20,17 +20,17 @@ import MaterialSymbolsSoundDetectionGlassBreakOutline from "~icons/material-symb
 const props = defineProps({
   pageId: {
     type: String,
-    default: ""
+    default: "",
   },
 
   picgoCommonData: {
     type: Object,
-    default: null
+    default: null,
   },
   picgoCommonMethods: {
     type: Object,
-    default: null
-  }
+    default: null,
+  },
 })
 
 // uses
@@ -39,7 +39,7 @@ const { t } = useVueI18n()
 const { picgoInitMethods } = usePicgoInitPage(props, { picgoCommonMethods: props.picgoCommonMethods })
 const { picgoManageData, picgoManageMethods } = usePicgoManage(props, {
   picgoCommonMethods: props.picgoCommonMethods,
-  picgoInitMethods
+  picgoInitMethods,
 })
 </script>
 
@@ -51,11 +51,7 @@ const { picgoManageData, picgoManageMethods } = usePicgoManage(props, {
         <div><img :src="f.url" :alt="f.name" /></div>
         <div>
           <!-- 上传本地图片到图床 -->
-          <el-button
-            v-if="picgoCommonData.isSiyuanOrSiyuanNewWin"
-            class="file-list-action"
-            @click="picgoManageMethods.handleUploadCurrentImageToBed(f)"
-          >
+          <el-button class="file-list-action" @click="picgoManageMethods.handleUploadCurrentImageToBed(f)">
             <el-icon v-if="f.isLocal">
               <Fa6SolidUpload />
             </el-icon>

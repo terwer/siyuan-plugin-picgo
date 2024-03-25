@@ -119,7 +119,7 @@ class SiyuanPicgoPostApi {
       }
 
       // imageItem.originUrl = decodeURIComponent(imageItem.originUrl)
-      imageItem.url = decodeURIComponent(imageItem.url)
+      // imageItem.url = decodeURIComponent(imageItem.url)
       this.logger.debug("imageItem=>", imageItem)
       ret.push(imageItem)
     }

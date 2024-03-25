@@ -34,12 +34,15 @@ const postOptions = (userConfig: IGitlabConfig, base64Image: string, fileName: s
     },
     data: body,
     responseType: "json",
+    // proxy=false 表示浏览器换无需代理也可以直接使用
+    // proxy=true 表示浏览器需要设置代理
+    proxy: false,
   }
 }
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
-  const gitlabConfig = ctx.getConfig<IGitlabConfig>("picBed.gitlab")
-  if (!gitlabConfig) {
+  const userConfig = ctx.getConfig<IGitlabConfig>("picBed.gitlab")
+  if (!userConfig) {
     throw new Error("Can not find gitlab config!")
   }
   const imgList = ctx.output
@@ -55,26 +58,27 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           throw new Error("Can not find image base64")
         }
 
-        const postConfig = postOptions(gitlabConfig, image, img.fileName)
+        const postConfig = postOptions(userConfig, image, img.fileName)
         const res: any = await ctx.request(postConfig)
         const body = safeParse<any>(res)
 
         delete img.base64Image
         delete img.buffer
-        img.imgUrl = `${gitlabConfig.url}/${gitlabConfig.repo}/-/raw/${body.branch}/${body.file_path}`
+
+        // http://localhost:8002/api/v4/projects/terwer%2Fgitlab-upload/repository/files/img%2Fimage-20240321213215-uzrob4t.png
+        // 需要转换成
+        // http://localhost:8002/api/v4/projects/terwer%2Fgitlab-upload/repository/files/img%2Fimage-20240321213215-uzrob4t.png/raw?private_token=glpat-xxxxxxxxxxxxxxxx
+        const repo = encodeURIComponent(userConfig.repo)
+        const filepath = encodeURIComponent(body.file_path)
+        img.imgUrl = `${userConfig.url}/api/v4/projects/${repo}/repository/files/${filepath}/raw?private_token=${userConfig.token}`
       } catch (e: any) {
         let errMsg: any
         // 处理重复图片
         if (e?.statusCode === 400 && e.response?.body?.message.indexOf("exists") > -1) {
           delete img.base64Image
           delete img.buffer
-          // http://localhost:8002/api/v4/projects/terwer%2Fgitlab-upload/repository/files/img%2Fimage-20240321213215-uzrob4t.png
-          // 需要转换成
-          // http://localhost:8002/terwer/gitlab-upload/-/raw/main/img/image-20240321213215-uzrob4t.png
-          const originalUrl = decodeURIComponent(e.url)
+          const originalUrl = e.url
           img.imgUrl = originalUrl
-            .replace("/api/v4/projects", "")
-            .replace("/repository/files/", `/-/raw/${gitlabConfig.branch}/`)
         } else {
           if (e?.statusCode) {
             errMsg = e.response?.body?.error ?? e.response?.body?.message ?? e.stack ?? "unknown error"

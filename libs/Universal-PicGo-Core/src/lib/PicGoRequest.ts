@@ -160,11 +160,20 @@ class PicGoRequestWrapper {
 
     // compatible with old request options to new options
     const opt = requestInterceptor(userOptions)
-    if (!hasNodeEnv) {
+    if (!hasNodeEnv && userOptions.proxy !== false) {
       if (!this.proxy || this.proxy.trim() === "") {
         throw new Error(this.ctx.i18n.translate<ILocalesKey>("CORS_ANYWHERE_REQUIRED"))
       }
-      opt.url = browserPathJoin(this.proxy, opt.url ?? "")
+      if (opt.url?.includes("127.0.0.1") || opt.url?.includes("localhost")) {
+        // 本地地址需要配置本地代理才启用
+        if (this.proxy?.includes("127.0.0.1") || this.proxy?.includes("localhost")) {
+          opt.url = browserPathJoin(this.proxy, opt.url ?? "")
+        } else {
+          throw new Error(this.ctx.i18n.translate<ILocalesKey>("CORS_ANYWHERE_REQUIRED_LOCALHOST"))
+        }
+      } else {
+        opt.url = browserPathJoin(this.proxy, opt.url ?? "")
+      }
     }
 
     const that = this

@@ -130,4 +130,5 @@ export const ZH_TW: ILocales = {
   // CORS
   CORS_ANYWHERE_REQUIRED:
     "在Docker或瀏覽器中使用內建的PicGo之前，您必須配置CORS代理，如需獲取更多詳情，請聯繫youweics@163.com。",
+  CORS_ANYWHERE_REQUIRED_LOCALHOST: "在Docker或浏览器中本地地址必须使用本地代理",
 }

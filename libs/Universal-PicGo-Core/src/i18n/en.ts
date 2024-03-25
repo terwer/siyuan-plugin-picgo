@@ -133,4 +133,5 @@ export const EN: ILocales = {
   // CORS
   CORS_ANYWHERE_REQUIRED:
     "You must config cors proxy before using bundled picgo in docker or browser, moredetail please contact youweics@163.com",
+  CORS_ANYWHERE_REQUIRED_LOCALHOST: "Local url must use local proxy in docker or browser environment",
 }
