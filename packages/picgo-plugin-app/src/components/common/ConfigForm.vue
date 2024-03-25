@@ -31,11 +31,11 @@ const props = defineProps({
     default: null,
   },
 
-  // 配置类型：plugin、transfer还是uploader
+  // 配置类型：plugin、transformer还是uploader
   configType: String,
   config: Object,
 
-  // 对于uploader来说是图床类型
+  // 对于uploader来说是图床类型，例如：smms
   id: String,
   // 当前配置项的uuid
   configId: String,
@@ -44,6 +44,10 @@ const props = defineProps({
 
 const formData = reactive({
   cfg: props.cfg,
+
+  config: props.config,
+  configId: props.configId,
+  isNewForm: props.isNewForm,
 })
 // PicGo 持久化操作帮助类
 const picgoHelper = new PicgoHelper(props.ctx, formData.cfg)
@@ -52,30 +56,13 @@ const $configForm = ref<FormInstance>()
 const configList = ref<IPluginConfig[]>([])
 const configRuleForm = reactive<IStringKeyMap>({})
 
-// const getConfigType = () => {
-//   switch (props.configType) {
-//     case "plugin": {
-//       return props.id
-//     }
-//     case "uploader": {
-//       return `picBed.${props.id}`
-//     }
-//     case "transformer": {
-//       return `transformer.${props.id}`
-//     }
-//     default:
-//       return "unknown"
-//   }
-// }
-
 const getCurConfigFormData = () => {
-  // const type = getConfigType()
-  const configId = props.configId
+  const configId = formData.configId
   let curConfig: any
   switch (props.configType) {
     case "plugin": {
-      curConfig = picgoHelper.getPicgoConfig(`${props.configId}`, {
-        _configName: props.configId,
+      curConfig = picgoHelper.getPicgoConfig(`${formData.configId}`, {
+        _configName: formData.configId,
       })
       break
     }
@@ -85,7 +72,7 @@ const getCurConfigFormData = () => {
       break
     }
     case "transformer": {
-      curConfig = picgoHelper.getPicgoConfig(`transformer.${props.configId}`, {})
+      curConfig = picgoHelper.getPicgoConfig(`transformer.${formData.configId}`, {})
       break
     }
     default:
@@ -96,8 +83,8 @@ const getCurConfigFormData = () => {
 }
 
 const handleConfigChange = (val: any) => {
-  const config = (props.isNewForm ? {} : getCurConfigFormData()) as any
-  const configId = props.isNewForm ? undefined : props.configId
+  const config = (formData.isNewForm ? {} : getCurConfigFormData()) as any
+  const configId = formData.isNewForm ? undefined : formData.configId
   Object.assign(configRuleForm, config)
 
   // 追加form属性
@@ -123,9 +110,7 @@ const handleConfigChange = (val: any) => {
       return item
     })
   }
-
-  logger.debug("完整form属性=>", configRuleForm)
-  logger.debug("动态配置configList=>", configList.value)
+  logger.debug("config change finish")
 }
 
 const doSubmit = (val: any) => {
@@ -133,7 +118,7 @@ const doSubmit = (val: any) => {
   switch (props.configType) {
     case "plugin":
       picgoHelper.savePicgoConfig({
-        [`${props.configId}`]: val,
+        [`${formData.configId}`]: val,
       })
       break
     case "uploader":
@@ -141,16 +126,16 @@ const doSubmit = (val: any) => {
       break
     case "transformer":
       picgoHelper.savePicgoConfig({
-        [`transformer.${props.configId}`]: val,
+        [`transformer.${formData.configId}`]: val,
       })
       break
   }
 }
 
 watch(
-  props.config as any,
+  formData.config as any,
   (val: IPluginConfig[]) => {
-    logger.debug("检测到配置文件变化，val=>", val)
+    logger.debug("config file is changed，val=>", val)
     handleConfigChange(val)
   },
   {
@@ -164,6 +149,11 @@ watch(
   (val: IStringKeyMap) => {
     logger.debug("save config change to db", val)
     doSubmit(val)
+
+    if (formData.isNewForm) {
+      emit("on-close")
+      return
+    }
     emit("drawer-title-change", val._configName)
     emit("on-close")
   },

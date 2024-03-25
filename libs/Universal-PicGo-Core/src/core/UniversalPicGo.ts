@@ -54,7 +54,6 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   pluginBaseDir!: string
   helper!: IHelper
   log: ILogger
-  // cmd: Commander
   output: IImgInfo[]
   input: any[]
   pluginHandler: PluginHandler
@@ -62,8 +61,6 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   i18n!: II18nManager
   VERSION: string = process.env.PICGO_VERSION ?? "unknown"
   private readonly isDev: boolean
-
-  // GUI_VERSION?: string
 
   get pluginLoader(): IPluginLoader {
     return this._pluginLoader
@@ -94,7 +91,6 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     }
     this.initConfigPath()
     this.initConfig()
-    // this.cmd = new Commander(this)
     this.pluginHandler = new PluginHandler(this)
     this.requestWrapper = new PicGoRequestWrapper(this)
     this.init()
@@ -116,13 +112,6 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       return pluginInstance
     }
   }
-
-  // registerCommands(): void {
-  //   if (this.configPath !== "") {
-  //     this.cmd.init()
-  //     this.cmd.loadCommands()
-  //   }
-  // }
 
   getConfig<T>(name?: string, defaultValue?: any): T {
     if (!name) {

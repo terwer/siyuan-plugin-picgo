@@ -15,8 +15,7 @@ import { DateUtil } from "zhi-common"
 import MaterialSymbolsEditSquareOutline from "~icons/material-symbols/edit-square-outline"
 import MaterialSymbolsLightCancelRounded from "~icons/material-symbols-light/cancel-rounded"
 import MaterialSymbolsAddBoxSharp from "~icons/material-symbols/add-box-sharp"
-import { ElMessage } from "element-plus"
-import { c } from "vite/dist/node/types.d-FdqQ54oU"
+import { ElMessage, ElMessageBox } from "element-plus"
 
 const { t } = useVueI18n()
 
@@ -108,6 +107,11 @@ const handlePicBedTypeChange = (item: IPicBedType) => {
 
 const handleDrawerClose = () => {
   reloadProfile()
+
+  if (formData.isNewForm) {
+    formData.showConfigForm = false
+    ElMessage.success("新配置初始化成功，请手动点击编辑")
+  }
 }
 
 const handleDrawerTitleChange = (val: string) => {
@@ -139,7 +143,26 @@ const selectItem = (id: string) => {
  *
  * @param config 配置信息
  * */
-function deleteConfig(config: IUploaderConfigListItem) {}
+function deleteConfig(config: IUploaderConfigListItem) {
+  ElMessageBox.confirm(`确认删除配置 ${config._configName} 吗？`, t("main.opt.warning"), {
+    confirmButtonText: t("main.opt.ok"),
+    cancelButtonText: t("main.opt.cancel"),
+    type: "warning",
+  })
+    .then(async () => {
+      try {
+        picgoHelper.deleteUploaderConfig(formData.selectedBedType, config._id)
+        initPage()
+        ElMessage.success(t("main.opt.success"))
+      } catch (e) {
+        ElMessage({
+          type: "error",
+          message: t("main.opt.failure") + "=>" + e,
+        })
+      }
+    })
+    .catch(() => {})
+}
 
 /**
  * 编辑配置
@@ -230,7 +253,7 @@ onBeforeMount(() => {
                     placement="bottom"
                     popper-class="publish-menu-tooltip"
                   >
-                    <div class="profile-action" @click.stop="editConfig(config)">
+                    <div class="profile-action opt-action" @click.stop="editConfig(config)">
                       <el-icon><MaterialSymbolsEditSquareOutline /></el-icon>
                     </div>
                   </el-tooltip>
@@ -241,7 +264,7 @@ onBeforeMount(() => {
                     placement="bottom"
                     popper-class="publish-menu-tooltip"
                   >
-                    <div class="profile-action" @click.stop="deleteConfig(config)">
+                    <div class="profile-action opt-action" @click.stop="deleteConfig(config)">
                       <el-icon><MaterialSymbolsLightCancelRounded /></el-icon>
                     </div>
                   </el-tooltip>
@@ -266,7 +289,7 @@ onBeforeMount(() => {
               </div>
             </el-card>
           </div>
-          <div class="profile-card-item profile-add-btn" @click="addNewConfig">
+          <div class="profile-card-item opt-action profile-add-btn" @click="addNewConfig">
             <el-tooltip
               :content="t('main.opt.add')"
               class="box-item"
@@ -332,6 +355,7 @@ onBeforeMount(() => {
 .profile-card-item .selectItem {
   cursor: pointer;
   color: red;
+  width: max-content;
 }
 
 .profile-card-item .selected {
@@ -351,5 +375,9 @@ onBeforeMount(() => {
 .profile-add-btn svg {
   height: 100px;
   width: 40px;
+}
+
+.opt-action {
+  cursor: pointer;
 }
 </style>

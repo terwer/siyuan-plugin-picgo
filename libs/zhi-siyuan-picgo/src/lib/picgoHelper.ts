@@ -15,7 +15,7 @@ import {
   IPicBedType,
   IPicGo,
   IUploaderConfigItem,
-  IUploaderConfigListItem
+  IUploaderConfigListItem,
 } from "universal-picgo"
 import { getRawData, trimValues } from "./utils/utils"
 import { readonly } from "vue"
@@ -89,7 +89,7 @@ class PicgoHelper {
       _.set(this.reactiveCfg, name, rawCfg[name])
       eventBus.emit(IBusEvent.CONFIG_CHANGE, {
         configName: name,
-        value: rawCfg[name]
+        value: rawCfg[name],
       })
     })
   }
@@ -107,7 +107,7 @@ class PicgoHelper {
         return {
           type: item,
           name: this.ctx.helper.uploader.get(item).name || item,
-          visible: visible ? visible.visible : true
+          visible: visible ? visible.visible : true,
         }
       })
       .sort((a: any) => {
@@ -138,7 +138,7 @@ class PicgoHelper {
     if (visiablePicBeds.length == 0) {
       const defaultPicbed = {
         type: "smms",
-        name: "SM.MS"
+        name: "SM.MS",
       } as IPicBedType
       visiablePicBeds.push(defaultPicbed)
     }
@@ -187,7 +187,7 @@ class PicgoHelper {
     if (!type) {
       return {
         configList: [] as IUploaderConfigListItem[],
-        defaultId: ""
+        defaultId: "",
       }
     }
     const currentUploaderConfig = this.getPicgoConfig(`uploader.${type}`, {})
@@ -201,7 +201,7 @@ class PicgoHelper {
 
     const configItem = {
       configList,
-      defaultId
+      defaultId,
     }
     // console.warn("获取当前图床配置列表：", configItem)
     return configItem
@@ -221,7 +221,7 @@ class PicgoHelper {
     if (config) {
       this.savePicgoConfig({
         [`uploader.${type}.defaultId`]: id,
-        [`picBed.${type}`]: config
+        [`picBed.${type}`]: config,
       })
     }
 
@@ -236,7 +236,7 @@ class PicgoHelper {
   public setDefaultPicBed(type: string) {
     this.savePicgoConfig({
       "picBed.current": type,
-      "picBed.uploader": type
+      "picBed.uploader": type,
     })
   }
 
@@ -256,12 +256,12 @@ class PicgoHelper {
       const config = this.handleConfigWithFunction(_config)
       return {
         config,
-        name
+        name,
       }
     } else {
       return {
         config: [],
-        name
+        name,
       }
     }
   }
@@ -289,7 +289,7 @@ class PicgoHelper {
     let updatedDefaultId = defaultId
     if (existConfig) {
       updatedConfig = Object.assign(existConfig, trimValues(config), {
-        _updatedAt: Date.now()
+        _updatedAt: Date.now(),
       })
     } else {
       updatedConfig = this.completeUploaderMetaConfig(config)
@@ -299,11 +299,65 @@ class PicgoHelper {
     this.savePicgoConfig({
       [`uploader.${type}.configList`]: configList,
       [`uploader.${type}.defaultId`]: updatedDefaultId,
-      [`picBed.${type}`]: updatedConfig
+      [`picBed.${type}`]: updatedConfig,
     })
   }
 
+  /**
+   * delete uploader config by type & id
+   */
+  public deleteUploaderConfig(type: string, id: string) {
+    const uploaderConfig = this.getUploaderConfigList(type)
+    let configList = uploaderConfig.configList
+    // ensure raw for save
+    configList = getRawData(configList)
+    const defaultId = uploaderConfig.ddefaultId
+    if (configList.length <= 1) {
+      return
+    }
+    let newDefaultId = defaultId
+    const updatedConfigList = configList.filter((item: any) => item._id !== id)
+    if (id === defaultId) {
+      newDefaultId = updatedConfigList[0]._id
+      this.changeCurrentUploader(type, updatedConfigList[0], updatedConfigList[0]._id)
+    }
+    this.savePicgoConfig({
+      [`uploader.${type}.configList`]: updatedConfigList,
+    })
+    return {
+      configList: updatedConfigList,
+      defaultId: newDefaultId,
+    }
+  }
+
   // ===================================================================================================================
+
+  /**
+   * 切换当前上传图床
+   *
+   * @param type 图床类型
+   * @param config 图床配置
+   * @param id 配置id
+   */
+  private changeCurrentUploader(type: string, config: any, id: string) {
+    if (!type) {
+      return
+    }
+    if (id) {
+      this.savePicgoConfig({
+        [`uploader.${type}.defaultId`]: id,
+      })
+    }
+    if (config) {
+      this.savePicgoConfig({
+        [`picBed.${type}`]: config,
+      })
+    }
+    this.savePicgoConfig({
+      "picBed.current": type,
+      "picBed.uploader": type,
+    })
+  }
 
   /**
    * upgrade old uploader config to new format
@@ -322,13 +376,13 @@ class PicgoHelper {
     this.savePicgoConfig({
       [`uploader.${type}`]: {
         configList: uploaderConfigList,
-        defaultId: uploaderConfig._id
+        defaultId: uploaderConfig._id,
       },
-      [`picBed.${type}`]: uploaderConfig
+      [`picBed.${type}`]: uploaderConfig,
     })
     return {
       configList: uploaderConfigList as IUploaderConfigListItem[],
-      defaultId: uploaderConfig._id as string
+      defaultId: uploaderConfig._id as string,
     }
   }
 
@@ -340,13 +394,13 @@ class PicgoHelper {
   private completeUploaderMetaConfig(originData: any) {
     return Object.assign(
       {
-        _configName: "Default"
+        _configName: "Default",
       },
       trimValues(originData),
       {
         _id: IdUtil.newUuid(),
         _createdAt: Date.now(),
-        _updatedAt: Date.now()
+        _updatedAt: Date.now(),
       }
     )
   }
