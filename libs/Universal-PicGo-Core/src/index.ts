@@ -17,10 +17,12 @@ import {
   IUploaderConfigListItem,
   IPluginConfig,
 } from "./types"
+import { isFileOrBlob } from "./utils/common"
 
 export { UniversalPicGo, ExternalPicgo, eventBus }
 export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
 export { PicgoTypeEnum, IBusEvent }
+export { isFileOrBlob }
 export { win, currentWin, parentWin, hasNodeEnv }
 export {
   type IPicGo,

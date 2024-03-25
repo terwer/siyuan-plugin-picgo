@@ -9,57 +9,67 @@
 
 <script setup lang="ts">
 import { UploadFilled } from "@element-plus/icons-vue"
-import { ref } from "vue"
+import { onBeforeMount, onBeforeUnmount, reactive, ref } from "vue"
 import { SiyuanPicGo } from "@/utils/siyuanPicgo.ts"
 import { ElMessage, UploadRequestOptions } from "element-plus"
 import { retrieveImageFromClipboardAsBlob } from "zhi-siyuan-picgo"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { createAppLogger } from "@/utils/appLogger.ts"
+import { usePicgoUpload } from "$composables/usePicgoUpload.ts"
+import { ImageItem } from "zhi-siyuan-picgo/src/lib/models/ImageItem.ts"
 
 const logger = createAppLogger("drag-upload")
+
+// props
+const props = defineProps({
+  pageId: {
+    type: String,
+    default: "",
+  },
+
+  picgoCommonData: {
+    type: Object,
+    default: null,
+  },
+  picgoCommonMethods: {
+    type: Object,
+    default: null,
+  },
+})
+
+// refs
+const formData = reactive({
+  picgoCommonData: props.picgoCommonData,
+  picgoCommonMethods: props.picgoCommonMethods,
+})
+// uses
 const { t } = useVueI18n()
+const { picgoUploadMethods } = usePicgoUpload(props, { picgoCommonMethods: formData.picgoCommonMethods }, {})
 
 const limit = ref(5)
 
 const handleDragAction = async (file: Blob) => {
   let res: any
   try {
-    const picgo = await SiyuanPicGo.getInstance()
-    logger.debug("picgo =>", picgo)
+    formData.picgoCommonData.isUploadLoading = true
 
-    const result = await picgo.upload([file])
-    if (result instanceof Array) {
-      if (result.length === 0) {
-        ElMessage.error("upload error => " + "no result")
-        res = {
-          success: false,
-          message: "upload error => " + "no result"
-        }
-      } else {
-        logger.info("upload success =>", result)
-        ElMessage.success("upload success")
-        const imageInfo = result[0] as any
-        res = {
-          success: true,
-          message: "upload success",
-          url: imageInfo.imgUrl
-        }
-      }
-    } else {
-      logger.error("upload error =>", result.toString())
-      ElMessage.error("upload error => " + result.toString())
-      res = {
-        success: false,
-        message: "upload error => " + result.toString()
-      }
+    const imageItem = new ImageItem("", file as any, true, "", "")
+    await picgoUploadMethods.doUploadImageToBed(imageItem)
+
+    res = {
+      success: true,
+      message: "",
     }
   } catch (e: any) {
-    logger.error(e)
-    ElMessage.error(e.toString())
+    const errMsg = t("main.opt.failure") + "=>" + e
+    logger.error(errMsg)
+    ElMessage.error(errMsg)
     res = {
       success: false,
-      message: "upload error => " + e.toString()
+      message: errMsg,
     }
+  } finally {
+    formData.picgoCommonData.isUploadLoading = false
   }
 
   return res
@@ -76,7 +86,7 @@ const handleExceed = (_e: any) => {
 const handlePasteAction = (e: any) => {
   e.preventDefault()
 
-  retrieveImageFromClipboardAsBlob(e, function(imageBlob: any) {
+  retrieveImageFromClipboardAsBlob(e, function (imageBlob: any) {
     if (imageBlob && imageBlob instanceof Blob) {
       const file = new File([imageBlob], "image.png", { type: "image/png" })
       handleDragAction(file)
@@ -86,13 +96,13 @@ const handlePasteAction = (e: any) => {
   })
 }
 
-// onBeforeMount(() => {
-//   window.addEventListener("paste", handlePasteAction)
-// })
-//
-// onBeforeUnmount(() => {
-//   window.removeEventListener("paste", handlePasteAction)
-// })
+onBeforeMount(() => {
+  window.addEventListener("paste", handlePasteAction)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener("paste", handlePasteAction)
+})
 </script>
 
 <template>

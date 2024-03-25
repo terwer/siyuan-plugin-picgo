@@ -12,12 +12,12 @@ import { ref } from "vue"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import MaterialSymbolsImageSearchRounded from "~icons/material-symbols/image-search-rounded"
 import MaterialSymbolsSettingsAccountBoxOutlineSharp from "~icons/material-symbols/settings-account-box-outline-sharp"
-import DragUpload from "$components/home/DragUpload.vue"
+import DragUpload from "$components/home/controls/DragUpload.vue"
 import { useRouter } from "vue-router"
-import PictureList from "$components/home/PictureList.vue"
+import PictureList from "$components/home/controls/PictureList.vue"
 import { usePicgoCommon } from "$composables/usePicgoCommon.ts"
 import { BrowserUtil } from "zhi-device"
-import UploadButton from "$components/home/UploadButton.vue"
+import UploadButton from "$components/home/controls/UploadButton.vue"
 
 const { t } = useVueI18n()
 const { picgoCommonData, picgoCommonMethods } = usePicgoCommon()
@@ -49,7 +49,11 @@ const handleTabClick = async (pane: any, ev: Event) => {
           <el-button v-loading.fullscreen.lock="picgoCommonData.isUploadLoading" text> </el-button>
         </div>
         <div class="drag-action">
-          <drag-upload />
+          <drag-upload
+            :page-id="pageId"
+            :picgo-common-data="picgoCommonData"
+            :picgo-common-methods="picgoCommonMethods"
+          />
         </div>
         <div class="upload-action">
           <!-- 上传按钮 -->

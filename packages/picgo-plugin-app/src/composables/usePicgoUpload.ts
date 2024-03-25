@@ -14,7 +14,6 @@ import { reactive } from "vue"
 import { ImageItem } from "zhi-siyuan-picgo/src/lib/models/ImageItem.ts"
 import { ElMessage } from "element-plus"
 import { SiyuanPicGo } from "@/utils/siyuanPicgo.ts"
-import { BrowserUtil } from "zhi-device"
 import { useSiyuanApi } from "$composables/useSiyuanApi.ts"
 import { StrUtil } from "zhi-common"
 
@@ -110,7 +109,7 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
         if (e.toString().indexOf("cancel") <= -1) {
           ElMessage({
             type: "error",
-            message: t("main.opt.failure") + "=>" + e,
+            message: t("main.opt.failure") + "=>" + e
           })
           logger.error(t("main.opt.failure") + "=>" + e)
         }
@@ -132,7 +131,7 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
         if (e.toString().indexOf("cancel") <= -1) {
           ElMessage({
             type: "error",
-            message: t("main.opt.failure") + "=>" + e,
+            message: t("main.opt.failure") + "=>" + e
           })
           logger.error(t("main.opt.failure") + "=>", e)
         }
@@ -142,15 +141,19 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
     },
     /**
      * 单个传，否则无法将图片对应
+     *
      * @param imageItem
      * @param forceUpload 强制上传
      */
-    doUploadImagesToBed: async (imageItem: ImageItem, forceUpload?: boolean) => {
+    doUploadImageToBed: async (imageItem: ImageItem, forceUpload?: boolean) => {
       const pageId = props.pageId
       const attrs = await siyuanApi.getBlockAttrs(pageId)
 
       const picgoPostApi = await SiyuanPicGo.getInstance()
-      await picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, forceUpload)
+      const imgInfos = await picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, forceUpload)
+
+      // 处理后续
+      doAfterUpload(imgInfos)
     },
     doUploaddAllImagesToBed: async () => {
       picgoCommonData.isUploadLoading = true
@@ -167,22 +170,21 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
           }
 
           hasLocalImages = true
-          await picgoUploadMethods.doUploadImagesToBed(imageItem)
+          await picgoUploadMethods.doUploadImageToBed(imageItem)
         }
 
         picgoCommonData.isUploadLoading = false
         if (!hasLocalImages) {
           ElMessage.warning("未发现本地图片，不上传")
         } else {
-          ElMessage.success("图片已经全部上传至图床，即将刷新页面")
-          BrowserUtil.reloadPage()
+          ElMessage.success("图片已经全部上传至图床")
         }
       } catch (e) {
         picgoCommonData.isUploadLoading = false
 
         ElMessage({
           type: "error",
-          message: t("main.opt.failure") + "=>" + e,
+          message: t("main.opt.failure") + "=>" + e
         })
         logger.error(t("main.opt.failure") + "=>" + e)
       }
@@ -204,11 +206,11 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
       } finally {
         picgoCommonData.isUploadLoading = false
       }
-    },
+    }
   }
 
   return {
     picgoUploadData,
-    picgoUploadMethods,
+    picgoUploadMethods
   }
 }

@@ -18,6 +18,7 @@ import { SiyuanConfig, SiyuanKernelApi } from "zhi-siyuan-api"
 import { ImageParser } from "./parser/ImageParser"
 import { PicgoPostResult } from "./models/PicgoPostResult"
 import { DeviceDetection, DeviceTypeEnum, SiyuanDevice } from "zhi-device"
+import { isFileOrBlob } from "universal-picgo"
 
 /**
  * Picgo与文章交互的通用方法
@@ -247,25 +248,34 @@ class SiyuanPicgoPostApi {
     }
 
     let imageFullPath: string
-    if (this.isSiyuanOrSiyuanNewWin) {
-      const win = SiyuanDevice.siyuanWindow()
-      const dataDir: string = win.siyuan.config.system.dataDir
-      imageFullPath = `${dataDir}/assets/${imageItem.name}`
-      this.logger.info(`Will upload picture from ${imageFullPath}, imageItem =>`, imageItem)
+    // blob 或者 file 直接上传
+    if (isFileOrBlob(imageItem.url)) {
+      imageFullPath = imageItem.url
+    } else {
+      if (this.isSiyuanOrSiyuanNewWin) {
+        // 如果是路径解析路径
+        const win = SiyuanDevice.siyuanWindow()
+        const dataDir: string = win.siyuan.config.system.dataDir
+        imageFullPath = `${dataDir}/assets/${imageItem.name}`
+        this.logger.info(`Will upload picture from ${imageFullPath}, imageItem =>`, imageItem)
 
-      const fs = win.require("fs")
-      if (!fs.existsSync(imageFullPath)) {
+        const fs = win.require("fs")
+        if (!fs.existsSync(imageFullPath)) {
+          // 路径不存在直接上传
+          imageFullPath = imageItem.url
+        }
+      } else {
+        // 浏览器环境直接上传
         imageFullPath = imageItem.url
       }
-    } else {
-      imageFullPath = imageItem.url
     }
+
     this.logger.warn("isSiyuanOrSiyuanNewWin=>" + this.isSiyuanOrSiyuanNewWin + ", imageFullPath=>", imageFullPath)
     filePaths.push(imageFullPath)
 
     // 批量上传
     const imageJson: any = await this.picgoApi.upload(filePaths)
-    this.logger.warn("图片上传完成，imageJson=>", imageJson)
+    this.logger.debug("图片上传完成，imageJson=>", imageJson)
     const imageJsonObj = JsonUtil.safeParse(imageJson, []) as any
     // 处理后续
     if (imageJsonObj && imageJsonObj.length > 0) {
@@ -281,12 +291,14 @@ class SiyuanPicgoPostApi {
       throw new Error("图片上传失败，可能原因：PicGO配置错误，请检查配置。请打开picgo.log查看更多信息")
     }
 
-    this.logger.warn("newFileMap=>", fileMap)
+    this.logger.debug("newFileMap=>", fileMap)
 
     const newFileMapStr = JSON.stringify(fileMap)
     await this.siyuanApi.setBlockAttrs(pageId, {
       [SIYUAN_PICGO_FILE_MAP_KEY]: newFileMapStr,
     })
+
+    return imageJsonObj
   }
 
   // ===================================================================================================================
