@@ -67,6 +67,9 @@ const picbedTips = computed(() => {
   const dbBedTypeName = findPicbedName(formData.dbBedType)
 
   if (formData.selectedBedType === formData.dbBedType) {
+    if (!formData.profileData.curConfig._configName) {
+      return t("setting.picgo.picbed.unselected.tip")
+    }
     return t("setting.picgo.picbed.current.tip") + dbBedTypeName + "_" + formData.profileData.curConfig._configName
   } else {
     return (
@@ -81,7 +84,9 @@ const picbedTips = computed(() => {
 })
 
 const selectedPicbedTipStyle = computed(() => {
-  return formData.selectedBedType === formData.dbBedType ? "success" : "error"
+  return formData.selectedBedType === formData.dbBedType && formData.profileData.curConfig._configName
+    ? "success"
+    : "error"
 })
 
 const selectedPicbedStyle = (type: string) => {
