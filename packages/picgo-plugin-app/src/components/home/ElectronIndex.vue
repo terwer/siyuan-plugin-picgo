@@ -45,15 +45,14 @@ const handleTabClick = async (pane: any, ev: Event) => {
             <i class="el-icon"><MaterialSymbolsImageSearchRounded /></i> {{ t("upload.tab.upload") }}
           </span>
         </template>
+        <!-- 上传状态 -->
+        <div class="upload-status">
+          <el-button v-loading.fullscreen.lock="picgoCommonData.isUploadLoading" text> </el-button>
+        </div>
         <div class="drag-action">
           <drag-upload />
         </div>
         <div class="upload-action">
-          <!-- 上传状态 -->
-          <div class="upload-status">
-            <el-button text :loading="picgoCommonData.isUploadLoading">{{ t("picgo.upload.status") }} </el-button>
-          </div>
-
           <!-- 上传按钮 -->
           <upload-button :picgo-common-data="picgoCommonData" :picgo-common-methods="picgoCommonMethods" />
 

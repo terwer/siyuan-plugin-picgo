@@ -82,8 +82,8 @@ const { picgoUploadMethods } = usePicgoUpload(
 
     <!-- 下载所有远程图片 -->
     <el-button
-      type="primary"
       v-if="formData.picgoCommonData.isSiyuanOrSiyuanNewWin"
+      type="primary"
       @click="picgoUploadMethods.doDownloadAllImagesToLocal"
     >
       <el-icon><MaterialSymbolsCloudDownloadRounded /></el-icon>
