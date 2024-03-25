@@ -17,6 +17,7 @@ import { useRouter } from "vue-router"
 import PictureList from "$components/home/PictureList.vue"
 import { usePicgoCommon } from "$composables/usePicgoCommon.ts"
 import { BrowserUtil } from "zhi-device"
+import UploadButton from "$components/home/UploadButton.vue"
 
 const { t } = useVueI18n()
 const { picgoCommonData, picgoCommonMethods } = usePicgoCommon()
@@ -43,15 +44,26 @@ const handleTabClick = async (pane: any, ev: Event) => {
             <i class="el-icon"><MaterialSymbolsImageSearchRounded /></i> {{ t("upload.tab.upload") }}
           </span>
         </template>
+        <!-- 上传状态 -->
+        <div class="upload-status">
+          <el-button v-loading.fullscreen.lock="picgoCommonData.isUploadLoading" text> </el-button>
+        </div>
         <div class="drag-action">
           <drag-upload />
         </div>
         <div class="upload-action">
-          <!-- 图片列表 -->
-          <picture-list
+          <!-- 上传按钮 -->
+          <upload-button
+            :page-id="pageId"
             :picgo-common-data="picgoCommonData"
             :picgo-common-methods="picgoCommonMethods"
+          />
+
+          <!-- 图片列表 -->
+          <picture-list
             :page-id="pageId"
+            :picgo-common-data="picgoCommonData"
+            :picgo-common-methods="picgoCommonMethods"
           />
 
           <!-- 日志显示 -->

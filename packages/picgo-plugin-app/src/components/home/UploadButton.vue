@@ -18,6 +18,11 @@ import IcTwotoneContentPasteSearch from "~icons/ic/twotone-content-paste-search"
 
 // props
 const props = defineProps({
+  pageId: {
+    type: String,
+    default: "",
+  },
+
   picgoCommonData: {
     type: Object,
     default: null,
@@ -65,27 +70,23 @@ const { picgoUploadMethods } = usePicgoUpload(
     </el-button>
 
     <!-- 剪贴板上传 -->
-    <el-button type="primary" @click="picgoUploadMethods.doUploadPicFromClipboard">
+    <el-button
+      v-if="formData.picgoCommonData.isSiyuanOrSiyuanNewWin"
+      type="primary"
+      @click="picgoUploadMethods.doUploadPicFromClipboard"
+    >
       <el-icon><IcTwotoneContentPasteSearch /></el-icon>
       &nbsp;{{ t("picgo.upload.clipboard") }}
     </el-button>
 
     <!-- 上传所有图片到图床 -->
-    <el-button
-      v-if="formData.picgoCommonData.isSiyuanOrSiyuanNewWin"
-      type="success"
-      @click="picgoUploadMethods.doUploaddAllImagesToBed"
-    >
+    <el-button type="success" @click="picgoUploadMethods.doUploaddAllImagesToBed">
       <el-icon><UiwCloudUpload /></el-icon>
       &nbsp;{{ t("picgo.upload.onclick") }}
     </el-button>
 
     <!-- 下载所有远程图片 -->
-    <el-button
-      v-if="formData.picgoCommonData.isSiyuanOrSiyuanNewWin"
-      type="primary"
-      @click="picgoUploadMethods.doDownloadAllImagesToLocal"
-    >
+    <el-button type="primary" @click="picgoUploadMethods.doDownloadAllImagesToLocal">
       <el-icon><MaterialSymbolsCloudDownloadRounded /></el-icon>
       &nbsp;{{ t("picgo.download.onclick") }}
     </el-button>

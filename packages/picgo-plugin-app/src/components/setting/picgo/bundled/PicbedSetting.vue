@@ -276,7 +276,7 @@ onBeforeMount(() => {
                 </span>
               </div>
               <div class="profile-date">
-                {{ DateUtil.formatTimestampToZhDate(config._updatedAt) }}
+                {{ DateUtil.formatTimestampToZh(config._updatedAt, true) }}
               </div>
               <div
                 :class="{

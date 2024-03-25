@@ -90,20 +90,11 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
           return
         }
 
-        if (!picgoCommonData.isSiyuanOrSiyuanNewWin) {
-          const errMsg = "由于浏览器的安全限制，无法获取本地文件的完整路径，因此非electron环境只能通过剪贴板上传"
-          ElMessage.error(errMsg)
-          picgoCommonData.loggerMsg = t("main.opt.failure") + "=>" + errMsg
-          picgoCommonData.isUploadLoading = false
-          return
-        }
-
         // 获取选择的文件的路径数组
         const filePaths = []
         for (let i = 0; i < fileList.length; i++) {
           if (fileList.item(i).path) {
             filePaths.push(fileList.item(i).path)
-            logger.debug("路径不为空")
           } else {
             logger.debug("路径为空，忽略")
           }
@@ -164,14 +155,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
     doUploaddAllImagesToBed: async () => {
       picgoCommonData.isUploadLoading = true
 
-      if (!picgoCommonData.isSiyuanOrSiyuanNewWin) {
-        const errMsg = "由于浏览器的安全限制，无法获取本地文件的完整路径，因此非electron环境只能通过剪贴板上传"
-        ElMessage.error(errMsg)
-        picgoCommonData.loggerMsg = t("main.opt.failure") + "=>" + errMsg
-        picgoCommonData.isUploadLoading = false
-        return
-      }
-
       try {
         let hasLocalImages = false
         const imageItemArray = picgoCommonData.fileList.files
@@ -213,8 +196,13 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
       picgoCommonData.isUploadLoading = true
 
       try {
+        const ret = await siyuanApi.netAssets2LocalAssets(props.pageId)
+        logger.debug("ret=>", ret)
+        ElMessage.success("网络图片下载成功")
+      } catch (e: any) {
+        throw new Error("网络图片下载失败" + e.toString())
       } finally {
-        // picgoCommonData.isUploadLoading = false
+        picgoCommonData.isUploadLoading = false
       }
     },
   }

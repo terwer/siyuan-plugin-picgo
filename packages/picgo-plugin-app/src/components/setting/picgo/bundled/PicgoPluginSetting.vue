@@ -27,7 +27,10 @@ const formData = reactive({
 </script>
 
 <template>
-  <div>picgo plugin</div>
+  <div class="plugin-setting">敬请期待</div>
 </template>
 
-<style scoped lang="stylus"></style>
+<style scoped lang="stylus">
+.plugin-setting
+  margin-top 10px
+</style>

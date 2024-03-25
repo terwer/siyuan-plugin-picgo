@@ -54,13 +54,17 @@ const handleTabClick = async (pane: any, ev: Event) => {
         </div>
         <div class="upload-action">
           <!-- 上传按钮 -->
-          <upload-button :picgo-common-data="picgoCommonData" :picgo-common-methods="picgoCommonMethods" />
+          <upload-button
+            :page-id="pageId"
+            :picgo-common-data="picgoCommonData"
+            :picgo-common-methods="picgoCommonMethods"
+          />
 
           <!-- 图片列表 -->
           <picture-list
+            :page-id="pageId"
             :picgo-common-data="picgoCommonData"
             :picgo-common-methods="picgoCommonMethods"
-            :page-id="pageId"
           />
 
           <!-- 日志显示 -->
