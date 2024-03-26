@@ -31,6 +31,8 @@ function postOptions(options: IQiniuConfig, fileName: string, token: string, img
       "Content-Type": mime.lookup(fileName) || "application/octet-stream",
     },
     data: imgBase64,
+    // proxy=false 表示浏览器换无需代理也可以直接使用
+    // 默认情况下浏览器需要设置代理
     proxy: false,
   }
 }
