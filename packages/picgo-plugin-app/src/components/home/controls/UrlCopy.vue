@@ -75,7 +75,7 @@ const onImageUrlCopy = (imageInfo: ImageItem, type: UrlTypeEnum) => {
       :key="UrlTypeEnum.URL"
       :type="formData.urlType === UrlTypeEnum.URL ? 'primary' : 'default'"
       class="copy-action-item"
-      @click="onImageUrlCopy(props.imgInfo, UrlTypeEnum.URL)"
+      @click="onImageUrlCopy(props.imgInfo as ImageItem, UrlTypeEnum.URL)"
     >
       URL
     </el-button>
@@ -83,7 +83,7 @@ const onImageUrlCopy = (imageInfo: ImageItem, type: UrlTypeEnum) => {
       :key="UrlTypeEnum.MD"
       :type="formData.urlType === UrlTypeEnum.MD ? 'primary' : 'default'"
       class="copy-action-item"
-      @click="onImageUrlCopy(props.imgInfo, UrlTypeEnum.MD)"
+      @click="onImageUrlCopy(props.imgInfo as ImageItem, UrlTypeEnum.MD)"
     >
       MD
     </el-button>
@@ -91,7 +91,7 @@ const onImageUrlCopy = (imageInfo: ImageItem, type: UrlTypeEnum) => {
       :key="UrlTypeEnum.HTML"
       :type="formData.urlType === UrlTypeEnum.HTML ? 'primary' : 'default'"
       class="copy-action-item"
-      @click="onImageUrlCopy(props.imgInfo, UrlTypeEnum.HTML)"
+      @click="onImageUrlCopy(props.imgInfo as ImageItem, UrlTypeEnum.HTML)"
     >
       HTML
     </el-button>
@@ -99,7 +99,7 @@ const onImageUrlCopy = (imageInfo: ImageItem, type: UrlTypeEnum) => {
       :key="UrlTypeEnum.BB"
       :type="formData.urlType === UrlTypeEnum.BB ? 'primary' : 'default'"
       class="copy-action-item"
-      @click="onImageUrlCopy(props.imgInfo, UrlTypeEnum.BB)"
+      @click="onImageUrlCopy(props.imgInfo as ImageItem, UrlTypeEnum.BB)"
     >
       BB
     </el-button>
