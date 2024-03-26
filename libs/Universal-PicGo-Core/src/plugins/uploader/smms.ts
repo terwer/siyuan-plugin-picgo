@@ -70,8 +70,14 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           throw new Error(body.message)
         }
       } catch (e: any) {
-        ctx.log.error(e)
-        throw e
+        let errMsg: any
+        if (e?.statusCode) {
+          errMsg = e.response?.body?.error ?? e.response?.body?.message ?? e.stack ?? "unknown error"
+        } else {
+          errMsg = e.toString()
+        }
+        ctx.log.error(errMsg)
+        throw errMsg
       }
     }
   }

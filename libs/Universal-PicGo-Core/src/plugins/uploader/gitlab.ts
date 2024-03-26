@@ -11,6 +11,7 @@ import { IGitlabConfig, IPicGo } from "../../types"
 import { ILocalesKey } from "../../i18n/zh-CN"
 import { bufferToBase64, safeParse } from "../../utils/common"
 import { AxiosRequestConfig } from "axios"
+import { IBuildInEvent } from "../../utils/enums"
 
 const postOptions = (userConfig: IGitlabConfig, base64Image: string, fileName: string): AxiosRequestConfig => {
   const body = {
@@ -93,6 +94,10 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
             errMsg = e.toString()
           }
           ctx.log.error(errMsg)
+          ctx.emit(IBuildInEvent.NOTIFICATION, {
+            title: ctx.i18n.translate<ILocalesKey>("UPLOAD_FAILED"),
+            body: ctx.i18n.translate<ILocalesKey>("CHECK_SETTINGS"),
+          })
           throw errMsg
         }
       }

@@ -95,6 +95,10 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
               errMsg = e.toString()
             }
             ctx.log.error(errMsg)
+            ctx.emit(IBuildInEvent.NOTIFICATION, {
+              title: ctx.i18n.translate<ILocalesKey>("UPLOAD_FAILED"),
+              body: ctx.i18n.translate<ILocalesKey>("CHECK_SETTINGS"),
+            })
             throw errMsg
           }
         }
