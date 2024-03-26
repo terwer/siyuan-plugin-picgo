@@ -167,7 +167,7 @@ watch(
 <template>
   <div class="config-form-box">
     <div class="config-form">
-      <el-form ref="$configForm" label-width="120px" :model="configRuleForm">
+      <el-form ref="$configForm" label-width="125px" :model="configRuleForm">
         <el-form-item :label="t('setting.picgo.config.name')" required prop="_configName">
           <el-input v-model="configRuleForm._configName" :placeholder="t('setting.picgo.config.name.placeholder')" />
         </el-form-item>

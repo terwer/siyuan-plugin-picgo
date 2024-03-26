@@ -5,3 +5,4 @@ declare module '*.json' {
 
 declare module "ali-oss"
 declare module "arraybuffer-to-buffer"
+declare module "upyun"

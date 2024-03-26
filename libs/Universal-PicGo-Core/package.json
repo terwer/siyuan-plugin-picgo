@@ -39,6 +39,7 @@
     "mime-types": "^2.1.35",
     "queue": "^7.0.0",
     "universal-picgo-store": "workspace:*",
+    "upyun": "^3.4.6",
     "zhi-lib-base": "^0.8.0"
   },
   "publishConfig": {
