@@ -1,9 +1,18 @@
+/*
+ *            GNU GENERAL PUBLIC LICENSE
+ *               Version 3, 29 June 2007
+ *
+ *  Copyright (C) 2024 Terwer, Inc. <https://terwer.space/>
+ *  Everyone is permitted to copy and distribute verbatim copies
+ *  of this license document, but changing it is not allowed.
+ */
+
 // noinspection ES6PreferShortImport
 
-import { IAliyunConfig, IPicGo } from "../../types"
-import { IBuildInEvent } from "../../utils/enums"
-import { ILocalesKey } from "../../i18n/zh-CN"
-import { base64ToBuffer } from "../../utils/common"
+import { IAliyunConfig, IPicGo } from "../../../types"
+import { IBuildInEvent } from "../../../utils/enums"
+import { ILocalesKey } from "../../../i18n/zh-CN"
+import { base64ToBuffer } from "../../../utils/common"
 import OSS from "ali-oss"
 
 const handleNode = async (ctx: IPicGo): Promise<IPicGo> => {

@@ -1,10 +1,19 @@
-import { IAliyunConfig, IPicGo } from "../../types"
+/*
+ *            GNU GENERAL PUBLIC LICENSE
+ *               Version 3, 29 June 2007
+ *
+ *  Copyright (C) 2024 Terwer, Inc. <https://terwer.space/>
+ *  Everyone is permitted to copy and distribute verbatim copies
+ *  of this license document, but changing it is not allowed.
+ */
+
+import { IAliyunConfig, IPicGo } from "../../../types"
 import crypto from "crypto"
 import mime from "mime-types"
-import { IBuildInEvent } from "../../utils/enums"
-import { ILocalesKey } from "../../i18n/zh-CN"
+import { IBuildInEvent } from "../../../utils/enums"
+import { ILocalesKey } from "../../../i18n/zh-CN"
 import { AxiosRequestConfig } from "axios"
-import { base64ToBuffer, safeParse } from "../../utils/common"
+import { base64ToBuffer, safeParse } from "../../../utils/common"
 
 // generate OSS signature
 const generateSignature = (options: IAliyunConfig, fileName: string): string => {

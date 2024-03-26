@@ -1,8 +1,17 @@
-import { IAliyunConfig, IPicGo, IPluginConfig } from "../../types"
-import { ILocalesKey } from "../../i18n/zh-CN"
+/*
+ *            GNU GENERAL PUBLIC LICENSE
+ *               Version 3, 29 June 2007
+ *
+ *  Copyright (C) 2024 Terwer, Inc. <https://terwer.space/>
+ *  Everyone is permitted to copy and distribute verbatim copies
+ *  of this license document, but changing it is not allowed.
+ */
+
+import { IAliyunConfig, IPicGo, IPluginConfig } from "../../../types"
+import { ILocalesKey } from "../../../i18n/zh-CN"
 import { hasNodeEnv } from "universal-picgo-store"
-import { handleNode } from "./aliyun-node"
-import { handleWeb } from "./aliyun-web"
+import { handleNode } from "./node"
+import { handleWeb } from "./web"
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   if (hasNodeEnv) {
@@ -21,7 +30,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
         return ctx.i18n.translate<ILocalesKey>("PICBED_ALICLOUD_ACCESSKEYID")
       },
       default: userConfig.accessKeyId || "",
-      required: true
+      required: true,
     },
     {
       name: "accessKeySecret",
@@ -30,7 +39,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
         return ctx.i18n.translate<ILocalesKey>("PICBED_ALICLOUD_ACCESSKEYSECRET")
       },
       default: userConfig.accessKeySecret || "",
-      required: true
+      required: true,
     },
     {
       name: "bucket",
@@ -39,7 +48,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
         return ctx.i18n.translate<ILocalesKey>("PICBED_ALICLOUD_BUCKET")
       },
       default: userConfig.bucket || "",
-      required: true
+      required: true,
     },
     {
       name: "area",
@@ -54,7 +63,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
       get message() {
         return ctx.i18n.translate<ILocalesKey>("PICBED_ALICLOUD_MESSAGE_AREA")
       },
-      required: true
+      required: true,
     },
     {
       name: "path",
@@ -69,7 +78,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
         return ctx.i18n.translate<ILocalesKey>("PICBED_ALICLOUD_MESSAGE_PATH")
       },
       default: userConfig.path || "",
-      required: false
+      required: false,
     },
     {
       name: "customUrl",
@@ -84,7 +93,7 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
         return ctx.i18n.translate<ILocalesKey>("PICBED_ALICLOUD_MESSAGE_CUSTOMURL")
       },
       default: userConfig.customUrl || "",
-      required: false
+      required: false,
     },
     {
       name: "options",
@@ -99,8 +108,8 @@ const config = (ctx: IPicGo): IPluginConfig[] => {
         return ctx.i18n.translate<ILocalesKey>("PICBED_ALICLOUD_MESSAGE_OPTIONS")
       },
       default: userConfig.options || "",
-      required: false
-    }
+      required: false,
+    },
   ]
   return config
 }
@@ -111,6 +120,6 @@ export default function register(ctx: IPicGo): void {
       return ctx.i18n.translate<ILocalesKey>("PICBED_ALICLOUD")
     },
     handle,
-    config
+    config,
   })
 }

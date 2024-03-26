@@ -111,7 +111,7 @@ class PicgoHelper {
         }
       })
       .sort((a: any) => {
-        if (a.type === "smms") {
+        if (a.type === "github") {
           return -1
         }
         return 0
