@@ -30,7 +30,7 @@
     "vue": "^3.4.21",
     "vue-i18n": "^9.10.1",
     "vue-router": "^4.3.0",
-    "zhi-common": "^1.31.0",
+    "zhi-common": "^1.33.0",
     "zhi-lib-base": "^0.8.0",
     "universal-picgo": "workspace:*"
   }

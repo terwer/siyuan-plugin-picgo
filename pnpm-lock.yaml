@@ -107,8 +107,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0(vue@3.4.21)
       zhi-common:
-        specifier: ^1.31.0
-        version: 1.31.0(typescript@5.4.2)
+        specifier: ^1.33.0
+        version: 1.33.0(typescript@5.4.2)
       zhi-lib-base:
         specifier: ^0.8.0
         version: 0.8.0
@@ -7667,8 +7667,8 @@ packages:
       commander: 9.5.0
     dev: true
 
-  /zhi-common@1.31.0(typescript@5.4.2):
-    resolution: {integrity: sha512-s9x5e3dLhFmh514yvT1JtP7xriWMVxQ11AyIjOgx5Xo2cKcDv5b6nKDaLj2Jkvms9iwZRSinDY8y/FK3jrfbrg==}
+  /zhi-common@1.33.0(typescript@5.4.2):
+    resolution: {integrity: sha512-ggHVmZ/zkVIOLfAWv4vqJBZY9BZnlnBUhlOmtYoVHV35UdxI5zcvvakBRgDZxjyknikHOLot7MtYfccCCOdyKw==}
     dependencies:
       js-yaml: 4.1.0
       shorthash2: 1.0.3
