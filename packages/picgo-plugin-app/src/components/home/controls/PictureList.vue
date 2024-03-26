@@ -116,4 +116,7 @@ const { picgoManageData, picgoManageMethods } = usePicgoManage(props, {
   display: flex
   margin: 6px 0
   width: 100%
+
+.img-big-preview
+  max-width 100%
 </style>

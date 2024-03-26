@@ -93,7 +93,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
             errMsg = e.toString()
           }
           ctx.log.error(errMsg)
-          throw new Error(errMsg)
+          throw errMsg
         }
       }
     }

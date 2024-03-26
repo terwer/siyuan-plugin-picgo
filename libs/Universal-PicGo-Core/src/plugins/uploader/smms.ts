@@ -34,8 +34,8 @@ const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDo
 }
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
-  const smmsConfig = ctx.getConfig<ISmmsConfig>("picBed.smms")
-  if (!smmsConfig) {
+  const userConfig = ctx.getConfig<ISmmsConfig>("picBed.smms")
+  if (!userConfig) {
     throw new Error("Can not find smms config!")
   }
   const imgList = ctx.output
@@ -49,7 +49,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
         ctx.log.error("Can not find image buffer")
         throw new Error("Can not find image buffer")
       }
-      const postConfig = postOptions(img.fileName, image, smmsConfig?.token, smmsConfig?.backupDomain)
+      const postConfig = postOptions(img.fileName, image, userConfig?.token, userConfig?.backupDomain)
       try {
         const res: any = await ctx.request(postConfig)
         const body = safeParse<any>(res)
