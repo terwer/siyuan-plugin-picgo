@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { ImageItem } from "zhi-siyuan-picgo/src/lib/models/ImageItem.ts"
 import { BrowserUtil } from "zhi-device"
-import { copyToClipboardInBrowser } from "zhi-siyuan-picgo/src"
+import { copyToClipboardInBrowser } from "zhi-siyuan-picgo"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { reactive } from "vue"
 

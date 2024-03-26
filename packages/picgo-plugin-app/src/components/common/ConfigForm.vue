@@ -14,7 +14,7 @@ import { IPluginConfig } from "zhi-siyuan-picgo"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { createAppLogger } from "@/utils/appLogger.ts"
 import _ from "lodash-es"
-import { PicgoHelper } from "zhi-siyuan-picgo/src"
+import { PicgoHelper } from "zhi-siyuan-picgo"
 
 const logger = createAppLogger("picbed-config-form")
 const { t } = useVueI18n()
