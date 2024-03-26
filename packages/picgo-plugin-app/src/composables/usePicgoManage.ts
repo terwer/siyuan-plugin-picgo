@@ -12,10 +12,8 @@ import { useSiyuanApi } from "$composables/useSiyuanApi.ts"
 import { createAppLogger } from "@/utils/appLogger.ts"
 import { reactive } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
-import { BrowserUtil } from "zhi-device"
 import { ImageItem } from "zhi-siyuan-picgo/src/lib/models/ImageItem.ts"
 import { SiyuanPicGo } from "@/utils/siyuanPicgo.ts"
-import { copyToClipboardInBrowser } from "zhi-siyuan-picgo"
 
 /**
  * Picgo图片管理组件
@@ -153,13 +151,6 @@ export const usePicgoManage = (props: any, deps: any) => {
 
       // 处理后续
       doAfterUploadReplace(imgInfos, imageItem)
-    },
-
-    onImageUrlCopy: (url: string) => {
-      if (BrowserUtil.isInBrowser) {
-        const mdUrl = `![](${url})`
-        copyToClipboardInBrowser(mdUrl)
-      }
     },
 
     handlePictureCardPreview: (url: string) => {

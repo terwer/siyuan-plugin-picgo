@@ -13,7 +13,6 @@ import { usePicgoInitPage } from "$composables/usePicgoInitPage.ts"
 import { usePicgoManage } from "$composables/usePicgoManage.ts"
 import Fa6SolidUpload from "~icons/fa6-solid/upload"
 import MdiArrowRightTopBold from "~icons/mdi/arrow-right-top-bold"
-import IcOutlineLink from "~icons/ic/outline-link"
 import MaterialSymbolsSoundDetectionGlassBreakOutline from "~icons/material-symbols/sound-detection-glass-break-outline"
 
 // props
@@ -62,22 +61,7 @@ const { picgoManageData, picgoManageMethods } = usePicgoManage(props, {
           </el-button>
 
           <!-- 复制图片链接 -->
-          <el-popover
-            placement="bottom"
-            :title="f.alt ? f.alt : t('setting.picgo.index.copy.link')"
-            :width="picgoCommonData.popWidth"
-            trigger="hover"
-            :content="f.url"
-          >
-            <template #reference>
-              <el-button class="file-list-action" @click="picgoManageMethods.onImageUrlCopy(f.url)">
-                <el-icon>
-                  <IcOutlineLink />
-                </el-icon>
-                &nbsp;{{ t("setting.picgo.index.copy.link") }}
-              </el-button>
-            </template>
-          </el-popover>
+          <url-copy :img-info="f" />
 
           <!-- 图片预览 -->
           <el-button class="file-list-action" @click="picgoManageMethods.handlePictureCardPreview(f.url)">
@@ -117,7 +101,7 @@ const { picgoManageData, picgoManageMethods } = usePicgoManage(props, {
   padding: 8px
   border: solid 1px var(--el-color-primary)
   border-radius: var(--el-input-border-radius, var(--el-border-radius-base))
-  width: calc(25% - 38px)
+  width: calc(25% - 35px)
 
   &:last-child
     margin-right: 0

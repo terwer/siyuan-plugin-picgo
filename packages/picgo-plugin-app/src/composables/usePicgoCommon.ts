@@ -25,7 +25,6 @@ export const usePicgoCommon = () => {
   // public data
   const picgoCommonData = reactive({
     isUploadLoading: false,
-    popWidth: 400,
     showDebugMsg: isDev,
     loggerMsg: "",
     isSiyuanOrSiyuanNewWin: isInSiyuanOrSiyuanNewWin(),
