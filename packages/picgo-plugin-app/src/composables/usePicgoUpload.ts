@@ -46,8 +46,39 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
    * 处理图片后续
    *
    * @param imgInfos
+   * @param imageItem 上传已存在图片需要，新图片留空
    */
-  const doAfterUpload = (imgInfos: any) => {
+  const doAfterUpload = (imgInfos: any, imageItem?: ImageItem) => {
+    if (imageItem) {
+      doAfterUploadReplace(imgInfos, imageItem)
+    } else {
+      let imageJson
+      if (typeof imgInfos == "string") {
+        logger.warn("doAfterUpload返回的是字符串，需要解析")
+        imageJson = JSON.parse(imgInfos)
+      } else {
+        imageJson = imgInfos
+      }
+
+      picgoCommonData.loggerMsg = JSON.stringify(imgInfos)
+      logger.debug("doAfterUpload,imgInfos=>", imgInfos)
+
+      const img = imageJson[0]
+      const rtnItem = new ImageItem(img.imgUrl, img.imgUrl, false)
+      picgoCommonData.loggerMsg += "\nnewItem=>" + JSON.stringify(rtnItem)
+
+      picgoCommonData.fileList.files.push(rtnItem)
+      ElMessage.success(t("main.opt.success"))
+    }
+  }
+
+  /**
+   * 处理图片后续（单个图片，替换）
+   *
+   * @param imgInfos
+   * @param imageItem
+   */
+  const doAfterUploadReplace = (imgInfos: any, imageItem: ImageItem) => {
     let imageJson
     if (typeof imgInfos == "string") {
       logger.warn("doAfterUpload返回的是字符串，需要解析")
@@ -60,12 +91,22 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
     logger.debug("doAfterUpload,imgInfos=>", imgInfos)
 
     if (imageJson && imageJson.length > 0) {
-      imageJson.forEach((img: any) => {
-        const rtnItem = new ImageItem(img.imgUrl, img.imgUrl, false)
-        picgoCommonData.loggerMsg += "\nnewItem=>" + JSON.stringify(rtnItem)
+      const img = imageJson[0]
+      const rtnItem = new ImageItem(imageItem.originUrl, img.imgUrl, false)
+      picgoCommonData.loggerMsg += "\nnewItem=>" + JSON.stringify(rtnItem)
 
-        picgoCommonData.fileList.files.push(rtnItem)
+      const newList = picgoCommonData.fileList.files.map((x: ImageItem) => {
+        if (x.hash === imageItem.hash) {
+          return rtnItem
+        }
+        return x
       })
+
+      // 刷新列表
+      picgoCommonData.fileList.files = []
+      for (const newItem of newList) {
+        picgoCommonData.fileList.files.push(newItem)
+      }
     }
     ElMessage.success(t("main.opt.success"))
   }
@@ -109,7 +150,7 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
         if (e.toString().indexOf("cancel") <= -1) {
           ElMessage({
             type: "error",
-            message: t("main.opt.failure") + "=>" + e
+            message: t("main.opt.failure") + "=>" + e,
           })
           logger.error(t("main.opt.failure") + "=>" + e)
         }
@@ -131,7 +172,7 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
         if (e.toString().indexOf("cancel") <= -1) {
           ElMessage({
             type: "error",
-            message: t("main.opt.failure") + "=>" + e
+            message: t("main.opt.failure") + "=>" + e,
           })
           logger.error(t("main.opt.failure") + "=>", e)
         }
@@ -153,7 +194,11 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
       const imgInfos = await picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, forceUpload)
 
       // 处理后续
-      doAfterUpload(imgInfos)
+      if (forceUpload) {
+        doAfterUpload(imgInfos, imageItem)
+      } else {
+        doAfterUpload(imgInfos)
+      }
     },
     doUploaddAllImagesToBed: async () => {
       picgoCommonData.isUploadLoading = true
@@ -170,7 +215,7 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
           }
 
           hasLocalImages = true
-          await picgoUploadMethods.doUploadImageToBed(imageItem)
+          await picgoUploadMethods.doUploadImageToBed(imageItem, true)
         }
 
         picgoCommonData.isUploadLoading = false
@@ -184,7 +229,7 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
 
         ElMessage({
           type: "error",
-          message: t("main.opt.failure") + "=>" + e
+          message: t("main.opt.failure") + "=>" + e,
         })
         logger.error(t("main.opt.failure") + "=>" + e)
       }
@@ -206,11 +251,11 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
       } finally {
         picgoCommonData.isUploadLoading = false
       }
-    }
+    },
   }
 
   return {
     picgoUploadData,
-    picgoUploadMethods
+    picgoUploadMethods,
   }
 }

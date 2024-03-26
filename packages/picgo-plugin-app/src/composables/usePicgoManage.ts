@@ -43,7 +43,7 @@ export const usePicgoManage = (props: any, deps: any) => {
 
   // private methods
   /**
-   * 处理图片后续（单个图片）
+   * 处理图片后续（单个图片，替换）
    *
    * @param imgInfos
    * @param imageItem
