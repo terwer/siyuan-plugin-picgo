@@ -50,16 +50,16 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   for (const img of imgList) {
     if (img.fileName) {
       try {
-        let image = img.base64Image
-        if (!image && img.buffer) {
-          image = bufferToBase64(img.buffer)
+        let base64Image = img.base64Image
+        if (!base64Image && img.buffer) {
+          base64Image = bufferToBase64(img.buffer)
         }
-        if (!image) {
+        if (!base64Image) {
           ctx.log.error("Can not find image base64")
           throw new Error("Can not find image base64")
         }
 
-        const postConfig = postOptions(userConfig, image, img.fileName)
+        const postConfig = postOptions(userConfig, base64Image, img.fileName)
         const res: any = await ctx.request(postConfig)
         const body = safeParse<any>(res)
 

@@ -39,18 +39,18 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
     const imgList = ctx.output
     for (const img of imgList) {
       if (img.fileName) {
-        let image = img.base64Image
-        if (!image && img.buffer) {
-          image = bufferToBase64(img.buffer)
+        let base64Image = img.base64Image
+        if (!base64Image && img.buffer) {
+          base64Image = bufferToBase64(img.buffer)
         }
-        if (!image) {
+        if (!base64Image) {
           ctx.log.error("Can not find image base64")
           throw new Error("Can not find image base64")
         }
         const data = {
           message: "Upload by PicGo via siyuan-note",
           branch: githubOptions.branch,
-          content: image,
+          content: base64Image,
           path: githubOptions.path + encodeURI(img.fileName),
         }
         const postConfig = postOptions(img.fileName, githubOptions, data)

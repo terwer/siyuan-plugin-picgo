@@ -12,6 +12,8 @@ import SMMSUploader from "./smms"
 import githubUploader from "./github"
 import gitlabUploader from "./gitlab"
 import aliYunUploader from "./aliyun"
+import imgurUploader from "./imgur"
+
 const buildInUploaders: IPicGoPlugin = () => {
   return {
     register(ctx: IPicGo) {
@@ -19,6 +21,7 @@ const buildInUploaders: IPicGoPlugin = () => {
       githubUploader(ctx)
       gitlabUploader(ctx)
       aliYunUploader(ctx)
+      imgurUploader(ctx)
     },
   }
 }
