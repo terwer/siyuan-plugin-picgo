@@ -4,7 +4,7 @@
 ### Features
 * allow config timeout ([34cf0bb](https://github.com/terwer/siyuan-plugin-picgo/commit/34cf0bb94f596368ebf62fd16d33881a17515c5c))
 * show image state in status bar ([aa48d09](https://github.com/terwer/siyuan-plugin-picgo/commit/aa48d097fbf86a66e1e54a73b6107946c8390321))
-* support validate iamge block ([6c53003](https://github.com/terwer/siyuan-plugin-picgo/commit/6c53003c4141d849b21895ae6f36df88ab99cedc))
+* support validate image block ([6c53003](https://github.com/terwer/siyuan-plugin-picgo/commit/6c53003c4141d849b21895ae6f36df88ab99cedc))
 ### Bug Fixes
 * add clean script ([378fdeb](https://github.com/terwer/siyuan-plugin-picgo/commit/378fdeb2fefe209dbdb0d28acfae16633bd70953))
 * call origin upload error ([5e5c00a](https://github.com/terwer/siyuan-plugin-picgo/commit/5e5c00a200fb1537756740e53e7b6161f1da5313))
