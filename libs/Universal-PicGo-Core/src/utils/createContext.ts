@@ -18,6 +18,7 @@ const createContext = (ctx: IPicGo): IPicGo => {
   return {
     configPath: ctx.configPath,
     baseDir: ctx.baseDir,
+    pluginBaseDir: ctx.pluginBaseDir,
     log: ctx.log,
     // cmd: ctx.cmd,
     output: [],

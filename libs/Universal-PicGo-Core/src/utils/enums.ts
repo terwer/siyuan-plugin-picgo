@@ -29,3 +29,16 @@ export enum IBuildInEvent {
 export enum IBusEvent {
   CONFIG_CHANGE = "CONFIG_CHANGE",
 }
+
+/**
+ * PicGo 类型枚举
+ *
+ * @version 1.6.0
+ * @since 1.6.0
+ * @author terwer
+ */
+export enum PicgoTypeEnum {
+  Bundled = "bundled",
+  App = "app",
+  // Core = "core",
+}

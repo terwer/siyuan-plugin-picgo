@@ -63,6 +63,20 @@ export const ZH_CN = {
   PICBED_GITHUB_MESSAGE_PATH: "例如：test/",
   PICBED_GITHUB_MESSAGE_CUSTOMURL: "例如：https://test.com",
 
+  // Gitlab
+  PICBED_GITLAB: "Gitlab",
+  PICBED_GITLAB_URL: "设定Url",
+  PICBED_GITLAB_TOKEN: "设定Token",
+  PICBED_GITLAB_REPO: "设定仓库名",
+  PICBED_GITLAB_BRANCH: "设定分支名",
+  PICBED_GITLAB_PATH: "设定存储路径",
+  PICBED_GITLAB_AUTHOR_MAIL: "设定提交人邮箱",
+  PICBED_GITLAB_AUTHOR_NAME: "设定提交人姓名",
+  PICBED_GITLAB_COMMIT_MESSAGE: "设定提交信息",
+  PICBED_GITLAB_MESSAGE_URL: "例如： http://localhost:8002",
+  PICBED_GITLAB_MESSAGE_REPO: "例如： username/repo",
+  PICBED_GITLAB_MESSAGE_BRANCH: "例如： main",
+
   // qiniu
   PICBED_QINIU: "七牛云",
   PICBED_QINIU_ACCESSKEY: "设定AccessKey",
@@ -110,6 +124,11 @@ export const ZH_CN = {
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED: "插件更新失败",
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED_REASON: "插件更新失败，失败码为${code}，错误日志为 \n ${data}",
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED_VALID: "插件更新失败，请输入合法插件名",
+
+  // CORS
+  CORS_ANYWHERE_REQUIRED:
+    "在Docker或浏览器中使用内置的PicGo之前，您必须配置CORS代理，如需获取更多详情，请联系youweics@163.com。",
+  CORS_ANYWHERE_REQUIRED_LOCALHOST: "在Docker或浏览器中本地地址必须使用本地代理",
 }
 
 export type ILocalesKey = keyof typeof ZH_CN

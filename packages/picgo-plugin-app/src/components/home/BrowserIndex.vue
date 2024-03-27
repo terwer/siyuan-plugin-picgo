@@ -8,33 +8,99 @@
   -->
 
 <script setup lang="ts">
-import { createAppLogger } from "@/utils/appLogger.ts"
-import { isDev } from "@/utils/Constants.ts"
-import { ElMessage } from "element-plus"
-import { UniversalPicGo } from "universal-picgo"
+import { ref } from "vue"
+import { useVueI18n } from "$composables/useVueI18n.ts"
+import MaterialSymbolsImageSearchRounded from "~icons/material-symbols/image-search-rounded"
+import MaterialSymbolsSettingsAccountBoxOutlineSharp from "~icons/material-symbols/settings-account-box-outline-sharp"
+import DragUpload from "$components/home/controls/DragUpload.vue"
+import { useRouter } from "vue-router"
+import PictureList from "$components/home/controls/PictureList.vue"
+import { usePicgoCommon } from "$composables/usePicgoCommon.ts"
+import { BrowserUtil } from "zhi-device"
+import UploadButton from "$components/home/controls/UploadButton.vue"
 
-const logger = createAppLogger("picgo-browser-index")
+const { t } = useVueI18n()
+const { picgoCommonData, picgoCommonMethods } = usePicgoCommon()
+const router = useRouter()
 
-const handleTest = async () => {
-  try {
-    const picgo = new UniversalPicGo("", isDev)
-    logger.debug("picgo =>", picgo)
-
-    const result = await picgo.upload()
-    logger.info("upload success =>", result)
-    ElMessage.success("upload success")
-  } catch (e: any) {
-    logger.error(e)
-    ElMessage.error(e.toString())
+const activeMenu = ref("upload")
+const pageId = ref(BrowserUtil.getQueryParam("pageId"))
+const handleTabClick = async (pane: any, ev: Event) => {
+  if (pane.props.name === "setting") {
+    await router.push({
+      path: "/setting",
+      query: { showBack: "true" },
+    })
   }
 }
 </script>
 
 <template>
   <div>
-    <h1>PicGO index</h1>
-    <el-button type="primary" @click="handleTest">测试浏览器</el-button>
+    <el-tabs :key="activeMenu" v-model="activeMenu" class="setting-tabs" @tab-click="handleTabClick">
+      <el-tab-pane name="upload">
+        <template #label>
+          <span>
+            <i class="el-icon"><MaterialSymbolsImageSearchRounded /></i> {{ t("upload.tab.upload") }}
+          </span>
+        </template>
+        <!-- 上传状态 -->
+        <div class="upload-status">
+          <el-button v-loading.fullscreen.lock="picgoCommonData.isUploadLoading" text> </el-button>
+        </div>
+        <div class="drag-action">
+          <drag-upload
+            :page-id="pageId"
+            :picgo-common-data="picgoCommonData"
+            :picgo-common-methods="picgoCommonMethods"
+          />
+        </div>
+        <div class="upload-action">
+          <!-- 上传按钮 -->
+          <upload-button
+            :page-id="pageId"
+            :picgo-common-data="picgoCommonData"
+            :picgo-common-methods="picgoCommonMethods"
+          />
+
+          <!-- 图片列表 -->
+          <picture-list
+            :page-id="pageId"
+            :picgo-common-data="picgoCommonData"
+            :picgo-common-methods="picgoCommonMethods"
+          />
+
+          <!-- 日志显示 -->
+          <div v-if="picgoCommonData.showDebugMsg" class="page-id">
+            <el-input v-model="pageId" placeholder="页面ID" />
+          </div>
+          <!-- 日志显示 -->
+          <div v-if="picgoCommonData.showDebugMsg" class="log-msg">
+            <el-input
+              v-model="picgoCommonData.loggerMsg"
+              type="textarea"
+              :autosize="{ minRows: 5, maxRows: 10 }"
+              placeholder="日志信息"
+            />
+          </div>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane name="setting">
+        <template #label>
+          <span>
+            <i class="el-icon"><MaterialSymbolsSettingsAccountBoxOutlineSharp /></i> {{ t("upload.tab.setting") }}
+          </span>
+        </template>
+        loading...
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
-<style scoped></style>
+<style lang="stylus" scoped>
+.page-id
+  margin-bottom 16px
+
+.log-msg
+  margin: 10px 0
+</style>

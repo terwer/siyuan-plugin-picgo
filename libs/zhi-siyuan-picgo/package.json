@@ -1,0 +1,44 @@
+{
+  "name": "zhi-siyuan-picgo",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "picgo lib for siyuan-note",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "repository": "terwer/zhi",
+  "homepage": "https://github.com/terwer/zhi/tree/main/libs/zhi-siyuan-picgo",
+  "author": "terwer",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "zhi",
+    "lib"
+  ],
+  "scripts": {
+    "serve": "vite",
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "start": "vite preview",
+    "test": "npx vitest --watch"
+  },
+  "devDependencies": {
+    "@terwer/eslint-config-custom": "^1.3.6",
+    "@terwer/vite-config-custom": "^0.7.6",
+    "@types/uuid": "^9.0.8"
+  },
+  "dependencies": {
+    "js-md5": "^0.8.3",
+    "universal-picgo": "workspace:*",
+    "uuid": "^9.0.1",
+    "zhi-common": "^1.33.0",
+    "zhi-device": "^2.11.0",
+    "zhi-lib-base": "^0.8.0",
+    "zhi-siyuan-api": "^2.19.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

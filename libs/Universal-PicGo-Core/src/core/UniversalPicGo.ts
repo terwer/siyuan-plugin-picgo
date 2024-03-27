@@ -17,7 +17,6 @@ import {
   IPicGo,
   IPicGoPlugin,
   IPicGoPluginInterface,
-  IPicGoRequest,
   IPluginLoader,
   IStringKeyMap,
 } from "../types"
@@ -32,7 +31,7 @@ import getClipboardImage from "../utils/getClipboardImage"
 import { IBuildInEvent, IBusEvent } from "../utils/enums"
 import ConfigDb from "../db/config"
 import { hasNodeEnv, win } from "universal-picgo-store"
-import { ensureFileSync, pathExistsSync } from "../utils/nodeUtils"
+import { ensureFileSync, ensureFolderSync, pathExistsSync } from "../utils/nodeUtils"
 import { I18nManager } from "../i18n"
 import { browserPathJoin, getBrowserDirectoryPath } from "../utils/browserUtils"
 import { isConfigKeyInBlackList, isInputConfigValid } from "../utils/common"
@@ -52,9 +51,9 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   private _pluginLoader!: PluginLoader
   configPath: string
   baseDir!: string
+  pluginBaseDir!: string
   helper!: IHelper
   log: ILogger
-  // cmd: Commander
   output: IImgInfo[]
   input: any[]
   pluginHandler: PluginHandler
@@ -62,8 +61,6 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   i18n!: II18nManager
   VERSION: string = process.env.PICGO_VERSION ?? "unknown"
   private readonly isDev: boolean
-
-  // GUI_VERSION?: string
 
   get pluginLoader(): IPluginLoader {
     return this._pluginLoader
@@ -77,11 +74,12 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     return this.requestWrapper.PicGoRequest.bind(this.requestWrapper)
   }
 
-  constructor(configPath = "", isDev?: boolean) {
+  constructor(configPath?: string, pluginBaseDir?: string, isDev?: boolean) {
     super()
     this.isDev = isDev ?? false
     this.log = this.getLogger()
-    this.configPath = configPath
+    this.configPath = configPath ?? ""
+    this.pluginBaseDir = pluginBaseDir ?? ""
     this.output = []
     this.input = []
     this.helper = {
@@ -92,10 +90,9 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       afterUploadPlugins: new LifecyclePlugins("afterUploadPlugins"),
     }
     this.initConfigPath()
-    // this.cmd = new Commander(this)
+    this.initConfig()
     this.pluginHandler = new PluginHandler(this)
     this.requestWrapper = new PicGoRequestWrapper(this)
-    this.initConfig()
     this.init()
 
     this.log.info("UniversalPicGo inited")
@@ -116,18 +113,11 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     }
   }
 
-  // registerCommands(): void {
-  //   if (this.configPath !== "") {
-  //     this.cmd.init()
-  //     this.cmd.loadCommands()
-  //   }
-  // }
-
-  getConfig<T>(name?: string): T {
+  getConfig<T>(name?: string, defaultValue?: any): T {
     if (!name) {
       return this._config as unknown as T
     } else {
-      return _.get(this._config, name)
+      return _.get(this._config, name, defaultValue)
     }
   }
 
@@ -227,35 +217,56 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
 
   // ===================================================================================================================
 
-  private initConfigPath(): void {
-    this.log.debug("win =>", win)
-    this.log.info(`hasNodeEnv => ${hasNodeEnv}`)
+  private getDefautBaseDir(): string {
     if (hasNodeEnv) {
       const os = win.require("os")
       const fs = win.fs
       const path = win.require("path")
       const { homedir } = os
-      if (this.configPath === "") {
-        this.configPath = homedir() + "/.universal-picgo/config.json"
-      }
-      if (path.extname(this.configPath).toUpperCase() !== ".JSON") {
-        this.configPath = ""
-        throw Error("The configuration file only supports JSON format.")
-      }
-      this.baseDir = path.dirname(this.configPath)
-      const exist = pathExistsSync(fs, path, this.configPath)
-      if (!exist) {
-        ensureFileSync(fs, path, `${this.configPath}`)
+      const dir = path.join(homedir(), ".universal-picgo")
+      ensureFolderSync(fs, dir)
+      return dir
+    } else {
+      return "universal-picgo"
+    }
+  }
+
+  private initConfigPath(): void {
+    if (this.configPath === "") {
+      this.baseDir = this.getDefautBaseDir()
+      if (hasNodeEnv) {
+        const path = win.require("path")
+        this.configPath = path.join(this.baseDir, "picgo.cfg.json")
+      } else {
+        this.configPath = browserPathJoin(this.baseDir, "picgo.cfg.json")
       }
     } else {
-      if (this.configPath === "") {
-        this.baseDir = "universal-picgo"
-        this.configPath = browserPathJoin(this.baseDir, "config.json")
+      if (hasNodeEnv) {
+        const fs = win.fs
+        const path = win.require("path")
+
+        if (path.extname(this.configPath).toUpperCase() !== ".JSON") {
+          this.configPath = ""
+          throw Error("The configuration file only supports JSON format.")
+        }
+        this.baseDir = path.dirname(this.configPath)
+        const exist = pathExistsSync(fs, path, this.configPath)
+        if (!exist) {
+          ensureFileSync(fs, path, `${this.configPath}`)
+        }
       } else {
-        // 模拟 path.dirname 的功能，获取路径的目录部分赋值给 baseDir
         this.baseDir = getBrowserDirectoryPath(this.configPath)
       }
     }
+
+    if (this.pluginBaseDir === "") {
+      this.pluginBaseDir = this.getDefautBaseDir()
+    }
+
+    this.log.debug("win =>", win)
+    this.log.info(`hasNodeEnv => ${hasNodeEnv}`)
+    this.log.info(`this.baseDir => ${this.baseDir}`)
+    this.log.info(`this.pluginBaseDir => ${this.pluginBaseDir}`)
   }
 
   private initConfig(): void {

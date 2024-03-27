@@ -13,10 +13,6 @@ import fs from "fs"
 const packageJson = fs.readFileSync("./package.json").toString()
 const pkg = JSON.parse(packageJson) || {}
 
-const getAppBase = (): string => {
-  return "/plugins/siyuan-plugin-picgo/"
-}
-
 const getDefineEnv = (isDevMode: boolean) => {
   const mode = process.env.NODE_ENV
   const isTest = mode === "test"
@@ -25,8 +21,7 @@ const getDefineEnv = (isDevMode: boolean) => {
 
   const defaultEnv = {
     DEV_MODE: `${isDevMode || isTest}`,
-    APP_BASE: `${appBase}`,
-    NODE_ENV: "development",
+    NODE_ENV: isDevMode ? "development" : "production",
     PICGO_VERSION: pkg.version,
   }
   const env = loadEnv(mode, process.cwd())
@@ -54,7 +49,6 @@ const isWatch = args.watch || args.w || false
 const isDev = isServe || isWatch
 const devDistDir = "./dist"
 const distDir = isWatch ? devDistDir : "./dist"
-const appBase = getAppBase()
 
 console.log("isWatch=>", isWatch)
 console.log("distDir=>", distDir)

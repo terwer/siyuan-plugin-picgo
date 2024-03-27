@@ -13,6 +13,9 @@ import { IConfig, IConfigChangePayload, IFullResponse, IPicGo, IResponse, Undefi
 import { ILogger } from "zhi-lib-base"
 import { eventBus } from "../utils/eventBus"
 import { IBusEvent } from "../utils/enums"
+import { browserPathJoin } from "../utils/browserUtils"
+import { hasNodeEnv } from "universal-picgo-store"
+import { ILocalesKey } from "../i18n/zh-CN"
 
 // legacy request adaptor start
 // thanks for https://github.dev/request/request/blob/master/index.js
@@ -34,37 +37,6 @@ function requestInterceptor(options: any | AxiosRequestConfig): AxiosRequestConf
     ...options,
     url: (options.url as string) || "",
     headers: options.headers || {},
-  }
-  // user request config proxy
-  if (options.proxy) {
-    let proxyOptions = options.proxy
-    if (typeof proxyOptions === "string") {
-      try {
-        proxyOptions = new URL(options.proxy)
-      } catch (e) {
-        proxyOptions = false
-        opt.proxy = false
-        console.error(e)
-      }
-      __isOldOptions = true
-    }
-    // if (proxyOptions) {
-    //   if (options.url?.startsWith("https://")) {
-    //     opt.proxy = false
-    //     opt.httpsAgent = tunnel.httpsOverHttp({
-    //       proxy: {
-    //         host: proxyOptions?.hostname,
-    //         port: parseInt(proxyOptions?.port, 10),
-    //       },
-    //     })
-    //   } else {
-    //     opt.proxy = {
-    //       host: proxyOptions.hostname,
-    //       port: parseInt(proxyOptions.port, 10),
-    //       protocol: "http",
-    //     }
-    //   }
-    // }
   }
   if ("formData" in options) {
     const form = new FormData() as any
@@ -181,21 +153,6 @@ class PicGoRequestWrapper {
     this.options.headers = userOptions.headers || {}
     this.options.maxBodyLength = Infinity
     this.options.maxContentLength = Infinity
-    // const httpsAgent = new https.Agent({
-    //   maxVersion: 'TLSv1.2',
-    //   minVersion: 'TLSv1.2'
-    // })
-    // if (this.options.proxy && userOptions.url?.startsWith("https://")) {
-    //   this.options.httpsAgent = tunnel.httpsOverHttp({
-    //     proxy: {
-    //       host: this.options.proxy.host,
-    //       port: this.options.proxy.port,
-    //     },
-    //   })
-    //   this.options.proxy = false
-    // } else {
-    //   this.options.httpsAgent = httpsAgent
-    // }
 
     this.logger.debug("PicGoRequest start request, options", this.options)
     const instance = axios.create(this.options)
@@ -203,6 +160,21 @@ class PicGoRequestWrapper {
 
     // compatible with old request options to new options
     const opt = requestInterceptor(userOptions)
+    if (!hasNodeEnv && userOptions.proxy !== false) {
+      if (!this.proxy || this.proxy.trim() === "") {
+        throw new Error(this.ctx.i18n.translate<ILocalesKey>("CORS_ANYWHERE_REQUIRED"))
+      }
+      if (opt.url?.includes("127.0.0.1") || opt.url?.includes("localhost")) {
+        // 本地地址需要配置本地代理才启用
+        if (this.proxy?.includes("127.0.0.1") || this.proxy?.includes("localhost")) {
+          opt.url = browserPathJoin(this.proxy, opt.url ?? "")
+        } else {
+          throw new Error(this.ctx.i18n.translate<ILocalesKey>("CORS_ANYWHERE_REQUIRED_LOCALHOST"))
+        }
+      } else {
+        opt.url = browserPathJoin(this.proxy, opt.url ?? "")
+      }
+    }
 
     const that = this
     instance.interceptors.request.use(function (obj) {
@@ -231,21 +203,29 @@ class PicGoRequestWrapper {
       return resp
     } else {
       return instance.request(opt).then((res) => {
+        let customResp: any
+
         // use old request option format
-        let oldResp: any
         if (opt.__isOldOptions) {
           if ("json" in userOptions) {
             if (userOptions.json) {
-              oldResp = res.data
+              customResp = res.data
             }
           } else {
-            oldResp = JSON.stringify(res.data)
+            customResp = JSON.stringify(res.data)
           }
         } else {
-          oldResp = res.data
+          // new resp
+          if (userOptions.responseType === "json") {
+            customResp = res.data
+          } else if (userOptions.responseType === "text") {
+            customResp = JSON.stringify(res.data)
+          } else {
+            customResp = res.data
+          }
         }
-        that.logger.debug("PicGoRequest request interceptor oldRequest, oldResp", oldResp)
-        return oldResp
+        that.logger.debug("PicGoRequest request interceptor oldRequest, oldResp", customResp)
+        return customResp
       }) as Promise<IResponse<T, U>>
     }
   }

@@ -65,6 +65,20 @@ export const EN: ILocales = {
   PICBED_GITHUB_MESSAGE_PATH: "Ex. test/",
   PICBED_GITHUB_MESSAGE_CUSTOMURL: "Ex. https://test.com",
 
+  // Gitlab
+  PICBED_GITLAB: "Gitlab",
+  PICBED_GITLAB_URL: "Set Url",
+  PICBED_GITLAB_TOKEN: "Set Token",
+  PICBED_GITLAB_REPO: "Set Repo Name",
+  PICBED_GITLAB_BRANCH: "Set Branch",
+  PICBED_GITLAB_PATH: "Set Path",
+  PICBED_GITLAB_AUTHOR_MAIL: "Set Path",
+  PICBED_GITLAB_AUTHOR_NAME: "Set Path",
+  PICBED_GITLAB_COMMIT_MESSAGE: "Set Path",
+  PICBED_GITLAB_MESSAGE_URL: "Ex. http://localhost:8002",
+  PICBED_GITLAB_MESSAGE_REPO: "Ex. username/repo",
+  PICBED_GITLAB_MESSAGE_BRANCH: "Ex. main",
+
   // qiniu
   PICBED_QINIU: "Qiniu",
   PICBED_QINIU_ACCESSKEY: "Set AccessKey",
@@ -115,4 +129,9 @@ export const EN: ILocales = {
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED: "Plugin update failed",
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED_REASON: "Plugin update failed, error code is ${code}, error log is \n ${data}",
   PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED_VALID: "Plugin update failed, please enter a valid plugin name",
+
+  // CORS
+  CORS_ANYWHERE_REQUIRED:
+    "You must config cors proxy before using bundled picgo in docker or browser, moredetail please contact youweics@163.com",
+  CORS_ANYWHERE_REQUIRED_LOCALHOST: "Local url must use local proxy in docker or browser environment",
 }

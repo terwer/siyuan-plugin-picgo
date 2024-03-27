@@ -7,44 +7,42 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { IConfig, IPicGo } from "../../types"
+import { IPicGo, IPicgoDb } from "../../types"
 import { hasNodeEnv, IJSON, JSONStore, win } from "universal-picgo-store"
 import { browserPathJoin } from "../../utils/browserUtils"
 
-class PluginLoaderDb {
+class PluginLoaderDb implements IPicgoDb<any> {
   private readonly ctx: IPicGo
   private readonly db: JSONStore
+  public readonly key: string
+  public readonly initialValue = {
+    name: "picgo-plugins",
+    description: "picgo-plugins",
+    repository: "https://github.com/terwer/siyuan-plugin-picgo/tree/main/libs/Universal-PicGo-Core",
+    license: "MIT",
+  }
 
   constructor(ctx: IPicGo) {
     this.ctx = ctx
-    let packagePath: string
 
     if (hasNodeEnv) {
       const path = win.require("path")
-      packagePath = path.join(this.ctx.baseDir, "package.json")
+      this.key = path.join(this.ctx.pluginBaseDir, "package.json")
     } else {
-      packagePath = browserPathJoin(this.ctx.baseDir, "package.json")
+      this.key = browserPathJoin(this.ctx.pluginBaseDir, "package.json")
     }
 
-    this.db = new JSONStore(packagePath)
+    this.db = new JSONStore(this.key)
 
-    // const pkg = {
-    //    name: "picgo-plugins",
-    //    description: "picgo-plugins",
-    //    repository: "https://github.com/PicGo/PicGo-Core",
-    //    license: "MIT",
-    // }
-    this.safeSet("name", "picgo-plugins")
-    this.safeSet("description", "picgo-plugins")
-    this.safeSet("repository", "https://github.com/terwer/siyuan-plugin-picgo/tree/main/libs/Universal-PicGo-Core")
-    this.safeSet("license", "MIT")
+    // 初始化
+    this.saveConfig(this.initialValue)
   }
 
   read(flush?: boolean): IJSON {
     return this.db.read(flush)
   }
 
-  get(key: ""): any {
+  get(key: string): any {
     this.read(true)
     return this.db.get(key)
   }
@@ -64,13 +62,13 @@ class PluginLoaderDb {
     return this.db.unset(key, value)
   }
 
-  saveConfig(config: Partial<IConfig>): void {
+  saveConfig(config: Partial<any>): void {
     Object.keys(config).forEach((name: string) => {
       this.set(name, config[name])
     })
   }
 
-  removeConfig(config: IConfig): void {
+  removeConfig(config: any): void {
     Object.keys(config).forEach((name: string) => {
       this.unset(name, config[name])
     })

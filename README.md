@@ -4,7 +4,7 @@
 
 ![](./preview.png)
 
-Your favorite PicGo image bed and PicGo plugins are still available in siyuan-notes, wuhu~
+Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 
 > Important Note: 
 > 

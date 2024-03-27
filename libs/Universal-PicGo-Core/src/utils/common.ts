@@ -10,24 +10,74 @@
 import { IImgSize, IPathTransformedImgInfo, IPicGo, IPluginNameType } from "../types"
 import { hasNodeEnv, win } from "universal-picgo-store"
 import imageSize from "./image-size"
+import { calculateHash } from "./hashUtil"
+import { Buffer } from "./nodePolyfill"
 
 export const isUrl = (url: string): boolean => url.startsWith("http://") || url.startsWith("https://")
 
-export const isUrlEncode = (url: string): boolean => {
-  url = url || ""
-  try {
-    // the whole url encode or decode shold not use encodeURIComponent or decodeURIComponent
-    return url !== decodeURI(url)
-  } catch (e) {
-    // if some error caught, try to let it go
-    return false
+/**
+ * 检测输入是否为 base64 编码的字符串
+ *
+ * @param  input - 输入字符串或 Buffer
+ * @returns- 如果是 base64 编码则返回 true，否则返回 false
+ */
+export const isBase64 = (input: any) => {
+  if (typeof input === "string") {
+    // 检查字符串是否为 base64 编码
+    return /^data:image\/[a-zA-Z]*;base64,/.test(input)
+  }
+
+  // 如果输入不是字符串，则直接返回 false
+  return false
+}
+
+function extractImageInfoFromBase64(base64ImageData: string): any {
+  const mimeAndBase64Regex = new RegExp("data:([^;]+);base64,(.+)")
+  const match = base64ImageData.match(mimeAndBase64Regex)
+
+  if (match) {
+    const mimeType = match[1]
+    const base64Data = match[2]
+
+    // 提取 mime 类型的基础文件扩展名
+    const ext = mimeType.split("/")[1]
+
+    // 使用 HashUtil.calculateHash 函数生成默认图片名称
+    const imageName = `${calculateHash(base64Data)}.${ext}`
+
+    return {
+      mimeType,
+      imageBase64: base64Data,
+      imageName,
+    }
+  } else {
+    throw new Error("Mime type and base64 data extraction failed")
   }
 }
-export const handleUrlEncode = (url: string): string => {
-  if (!isUrlEncode(url)) {
-    url = encodeURI(url)
+
+export const base64ToBuffer = (base64: string): Buffer | typeof win.Buffer => {
+  let imageBuffer
+  if (hasNodeEnv) {
+    imageBuffer = win.Buffer.from(base64, "base64")
+  } else {
+    imageBuffer = Buffer.from(base64, "base64")
   }
-  return url
+  return imageBuffer
+}
+
+export const bufferToBase64 = (buffer: Buffer | typeof win.Buffer) => {
+  return buffer.toString("base64")
+}
+
+export const getBase64File = async (base64: string): Promise<IPathTransformedImgInfo> => {
+  const imgInfo = extractImageInfoFromBase64(base64)
+  const imageBuffer = base64ToBuffer(imgInfo.imageBase64)
+  return {
+    success: true,
+    buffer: imageBuffer,
+    fileName: "", // will use getImageSize result
+    extname: "", // will use getImageSize result
+  }
 }
 
 export const getFSFile = async (filePath: string): Promise<IPathTransformedImgInfo> => {
@@ -48,8 +98,67 @@ export const getFSFile = async (filePath: string): Promise<IPathTransformedImgIn
   }
 }
 
+function isBlob(val: any) {
+  return toString.call(val) === "[object Blob]"
+}
+
+function isFile(val: any) {
+  return toString.call(val) === "[object File]"
+}
+
+export const isFileOrBlob = (val: any): boolean => {
+  return isBlob(val) || isFile(val)
+}
+
+export const isBuffer = (val: any): boolean => {
+  return toString.call(val) === "[object Buffer]"
+}
+
+/**
+ * 将 file 对象转换为 Buffer
+ *
+ * @param file - file
+ * @author terwer
+ * @version 0.9.0
+ * @since 0.9.0
+ */
+export const fileToBuffer = async (file: any): Promise<any> => {
+  if (hasNodeEnv) {
+    return new Promise((resolve, reject) => {
+      const reader = new win.FileReader()
+      reader.onload = (e: any) => {
+        // 将 ArrayBuffer 转换成 Buffer 对象
+        const buffer = win.Buffer.from(e.target.result)
+        resolve(buffer)
+      }
+      reader.onerror = reject
+      reader.readAsArrayBuffer(file)
+    })
+  } else {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (e: any) => {
+        // 将 ArrayBuffer 转换成 Buffer 对象
+        const buffer = Buffer.from(e.target.result)
+        resolve(buffer)
+      }
+      reader.onerror = reject
+      reader.readAsArrayBuffer(file)
+    })
+  }
+}
+
+export const getBlobFile = async (blob: any): Promise<IPathTransformedImgInfo> => {
+  const buffer = await fileToBuffer(blob)
+  return {
+    success: true,
+    buffer,
+    fileName: "", // will use getImageSize result
+    extname: "", // will use getImageSize result
+  }
+}
+
 export const getURLFile = async (url: string, ctx: IPicGo): Promise<IPathTransformedImgInfo> => {
-  url = handleUrlEncode(url)
   let isImage = false
   let extname = ""
   let timeoutId: any
@@ -57,31 +166,60 @@ export const getURLFile = async (url: string, ctx: IPicGo): Promise<IPathTransfo
   const requestFn = new Promise<IPathTransformedImgInfo>((resolve, reject) => {
     ;(async () => {
       try {
-        const res = await ctx
-          .request({
-            method: "get",
-            url,
-            resolveWithFullResponse: true,
-            responseType: "arraybuffer",
-          })
-          .then((resp: any) => {
-            const contentType = resp.headers["content-type"]
-            if (contentType?.includes("image")) {
-              isImage = true
-              extname = `.${contentType.split("image/")[1]}`
-            }
-            return resp.data as Buffer
-          })
+        let res: any
+        if (hasNodeEnv) {
+          res = await ctx
+            .request({
+              method: "get",
+              url,
+              resolveWithFullResponse: true,
+              responseType: "arraybuffer",
+            })
+            .then((resp: any) => {
+              if (resp.status !== 200) {
+                resolve({
+                  success: false,
+                  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                  reason: `File not found from url ${url} , please try again later`,
+                })
+              }
+              const contentType = resp.headers["content-type"]
+              if (contentType?.includes("image")) {
+                isImage = true
+                extname = `.${contentType.split("image/")[1]}`
+              }
+              return resp.data as any
+            })
+        } else {
+          // 浏览器环境单独出处理，直接跳出 promise
+          const response = await window.fetch(url)
+          if (response.status !== 200) {
+            resolve({
+              success: false,
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+              reason: `File not found from url ${url} , please try again later`,
+            })
+          }
+          const blob = await response.blob()
+          const imgInfo = await getBlobFile(blob)
+          clearTimeout(timeoutId)
+          resolve(imgInfo)
+        }
         clearTimeout(timeoutId)
         if (isImage) {
           const urlPath = new URL(url).pathname
-          const fileName = urlPath.split("/").pop()
-          // if (hasNodeEnv) {
-          //   const path = win.require("path")
-          //   fileName = path.basename(urlPath)
-          // }
+          let fileName: string
+          let imgBuffer: Buffer | typeof win.Buffer
+          if (hasNodeEnv) {
+            const path = win.require("path")
+            fileName = path.basename(urlPath)
+            imgBuffer = win.Buffer.from(res)
+          } else {
+            fileName = urlPath.split("/").pop() ?? ""
+            imgBuffer = Buffer.from(res)
+          }
           resolve({
-            buffer: res,
+            buffer: imgBuffer,
             fileName: fileName,
             extname,
             success: true,
@@ -283,7 +421,7 @@ export const forceNumber = (num: string | number = 0): number => {
 //   return process.env.NODE_ENV === 'production'
 // }
 
-export const getImageSize = (file: typeof win.Buffer): IImgSize => {
+export const getImageSize = (file: Buffer | typeof win.Buffer): IImgSize => {
   try {
     const { width = 0, height = 0, type } = imageSize(file)
     const extname = type ? `.${type}` : ".png"

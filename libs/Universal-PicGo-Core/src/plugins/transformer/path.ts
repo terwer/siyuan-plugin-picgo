@@ -10,14 +10,29 @@
 import dayjs from "dayjs"
 import { IImgInfo, IImgSize, IPathTransformedImgInfo, IPicGo } from "../../types"
 import { win } from "universal-picgo-store"
-import { getFSFile, getImageSize, getURLFile, isUrl } from "../../utils/common"
+import { Buffer } from "../../utils/nodePolyfill"
+import {
+  getBase64File,
+  getBlobFile,
+  getFSFile,
+  getImageSize,
+  getURLFile,
+  isBase64,
+  isBuffer,
+  isFileOrBlob,
+  isUrl,
+} from "../../utils/common"
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const results: IImgInfo[] = ctx.output
   await Promise.all(
-    ctx.input.map(async (item: string | typeof win.Buffer, index: number) => {
+    ctx.input.map(async (item: string | Buffer | typeof win.Buffer, index: number) => {
       let info: IPathTransformedImgInfo
-      if (win.Buffer.isBuffer(item)) {
+      if (isFileOrBlob(item)) {
+        ctx.log.debug("using File or Blob in path transform")
+        info = await getBlobFile(item)
+      } else if (isBuffer(item)) {
+        ctx.log.debug("using buffer in path transform")
         info = {
           success: true,
           buffer: item,
@@ -25,8 +40,13 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           extname: "", // will use getImageSize result
         }
       } else if (isUrl(item)) {
+        ctx.log.debug("using image url in path transform")
         info = await getURLFile(item, ctx)
+      } else if (isBase64(item)) {
+        ctx.log.debug("using image base64 in path transform")
+        info = await getBase64File(item)
       } else {
+        ctx.log.debug("using fs in path transform")
         info = await getFSFile(item)
       }
       if (info.success && info.buffer) {
@@ -34,13 +54,14 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
         const extname = info.extname || imgSize.extname || ".png"
         results[index] = {
           buffer: info.buffer,
-          fileName: info.fileName || `${dayjs().format("YYYYMMDDHHmmss")}${extname}}`,
+          fileName: info.fileName || `${dayjs().format("YYYYMMDDHHmmss")}${extname}`,
           width: imgSize.width,
           height: imgSize.height,
           extname,
         }
       } else {
         ctx.log.error(info.reason)
+        throw new Error(info.reason)
       }
     })
   )
@@ -49,7 +70,11 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   return ctx
 }
 
-const getImgSize = (ctx: IPicGo, file: typeof win.Buffer, path: string | typeof win.Buffer): IImgSize => {
+const getImgSize = (
+  ctx: IPicGo,
+  file: Buffer | typeof win.Buffer,
+  path: string | Buffer | typeof win.Buffer
+): IImgSize => {
   const imageSize = getImageSize(file)
   if (!imageSize.real) {
     if (typeof path === "string") {

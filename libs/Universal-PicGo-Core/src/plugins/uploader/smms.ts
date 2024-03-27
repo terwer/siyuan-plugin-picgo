@@ -11,7 +11,7 @@ import { ILocalesKey } from "../../i18n/zh-CN"
 import { IPicGo, IPluginConfig, ISmmsConfig } from "../../types"
 import { IBuildInEvent } from "../../utils/enums"
 import { AxiosRequestConfig } from "axios"
-import { safeParse } from "../../utils/common"
+import { base64ToBuffer, safeParse } from "../../utils/common"
 
 const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDomain = ""): AxiosRequestConfig => {
   const domain = backupDomain || "sm.ms"
@@ -34,20 +34,24 @@ const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDo
 }
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
-  const smmsConfig = ctx.getConfig<ISmmsConfig>("picBed.smms")
-  if (!smmsConfig) {
+  const userConfig = ctx.getConfig<ISmmsConfig>("picBed.smms")
+  if (!userConfig) {
     throw new Error("Can not find smms config!")
   }
   const imgList = ctx.output
   for (const img of imgList) {
-    if (img.fileName && img.buffer) {
+    if (img.fileName) {
       let image = img.buffer
       if (!image && img.base64Image) {
-        image = Buffer.from(img.base64Image, "base64")
+        image = base64ToBuffer(img.base64Image)
       }
-      const postConfig = postOptions(img.fileName, image, smmsConfig?.token, smmsConfig?.backupDomain)
+      if (!image) {
+        ctx.log.error("Can not find image buffer")
+        throw new Error("Can not find image buffer")
+      }
+      const postConfig = postOptions(img.fileName, image, userConfig?.token, userConfig?.backupDomain)
       try {
-        const res: string = await ctx.request(postConfig)
+        const res: any = await ctx.request(postConfig)
         const body = safeParse<any>(res)
         if (body.code === "success") {
           delete img.base64Image
@@ -66,8 +70,14 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           throw new Error(body.message)
         }
       } catch (e: any) {
-        ctx.log.error(e)
-        throw e
+        let errMsg: any
+        if (e?.statusCode) {
+          errMsg = e.response?.body?.error ?? e.response?.body?.message ?? e.stack ?? "unknown error"
+        } else {
+          errMsg = e.toString()
+        }
+        ctx.log.error(errMsg)
+        throw errMsg
       }
     }
   }

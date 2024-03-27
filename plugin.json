@@ -7,19 +7,25 @@
   "backends": [
     "windows",
     "linux",
-    "darwin"
+    "darwin",
+    "docker",
+    "android",
+    "ios"
   ],
   "frontends": [
     "desktop",
-    "browser-desktop"
+    "desktop-window",
+    "mobile",
+    "browser-desktop",
+    "browser-mobile"
   ],
   "displayName": {
-    "default": "PicGo Plugin",
-    "zh_CN": "PicGo插件"
+    "default": "PicGo picbed",
+    "zh_CN": "PicGo图床"
   },
   "description": {
-    "default": "Your favorite PicGo image bed and PicGo plugins are still available in Siyuan Notes, wuhu~",
-    "zh_CN": "您喜爱的 PicGo 图床与 PicGo 插件，在思源笔记依然可用，没想到吧~"
+    "default": "Your favorite PicGo image bed is still available in Siyuan Notes, wuhu~",
+    "zh_CN": "您喜爱的 PicGo 图床，在思源笔记依然可用，没想到吧~"
   },
   "readme": {
     "default": "README.md",

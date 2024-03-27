@@ -6,32 +6,37 @@
   "scripts": {
     "serve": "python -u scripts/serve.py && vite",
     "dev": "python -u scripts/dev.py",
-    "build": "python -u scripts/build.py"
+    "build": "python -u scripts/build.py",
+    "lint": "vue-tsc --noEmit"
   },
   "devDependencies": {
     "@terwer/eslint-config-custom": "^1.3.6",
     "@vitejs/plugin-vue": "^5.0.4",
     "fast-glob": "^3.3.2",
-    "minimist": "^1.2.5",
+    "minimist": "^1.2.8",
     "rollup-plugin-livereload": "^2.0.5",
-    "typescript": "^5.2.2",
+    "typescript": "^5.4.3",
     "unplugin-auto-import": "^0.17.5",
     "unplugin-vue-components": "^0.26.0",
-    "vite": "^5.1.6",
+    "vite": "^5.2.6",
     "vite-plugin-html": "^3.2.2",
     "vitest": "^1.4.0",
-    "vue-tsc": "^2.0.6"
+    "vue-tsc": "^2.0.7"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
+    "@iconify/json": "^2.2.196",
     "@vueuse/core": "^10.9.0",
-    "element-plus": "^2.6.1",
+    "element-plus": "^2.6.2",
     "lodash-es": "^4.17.21",
+    "unplugin-icons": "^0.18.5",
     "vue": "^3.4.21",
-    "vue-i18n": "^9.10.1",
+    "vue-i18n": "^9.10.2",
     "vue-router": "^4.3.0",
-    "zhi-common": "^1.31.0",
+    "zhi-common": "^1.33.0",
+    "zhi-device": "^2.11.0",
     "zhi-lib-base": "^0.8.0",
-    "universal-picgo": "workspace:*"
+    "zhi-siyuan-api": "^2.19.1",
+    "zhi-siyuan-picgo": "workspace:*"
   }
 }
