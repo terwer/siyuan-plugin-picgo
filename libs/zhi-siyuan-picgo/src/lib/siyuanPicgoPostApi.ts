@@ -240,7 +240,7 @@ class SiyuanPicgoPostApi {
   ): Promise<void> {
     const mapInfoStr = attrs[SIYUAN_PICGO_FILE_MAP_KEY] ?? "{}"
     const fileMap = JsonUtil.safeParse<any>(mapInfoStr, {})
-    this.logger.warn("fileMap=>", fileMap)
+    this.logger.debug("fileMap=>", fileMap)
 
     // 处理上传
     const filePaths = []
@@ -250,33 +250,36 @@ class SiyuanPicgoPostApi {
     }
 
     // 兼容剪贴板
-    if (!StrUtil.isEmptyString(imageItem.url)) {
-      let imageFullPath: string
-      // blob 或者 file 直接上传
-      if (isFileOrBlob(imageItem.url)) {
-        imageFullPath = imageItem.url
-      } else {
-        if (this.isSiyuanOrSiyuanNewWin) {
-          // 如果是路径解析路径
-          const win = SiyuanDevice.siyuanWindow()
-          const dataDir: string = win.siyuan.config.system.dataDir
-          imageFullPath = `${dataDir}/assets/${imageItem.name}`
-          this.logger.info(`Will upload picture from ${imageFullPath}, imageItem =>`, imageItem)
+    let imageFullPath: string | Blob | File
+    // blob 或者 file 直接上传
+    if (isFileOrBlob(imageItem.url)) {
+      imageFullPath = imageItem.url
+    } else {
+      if (this.isSiyuanOrSiyuanNewWin) {
+        // 如果是路径解析路径
+        const win = SiyuanDevice.siyuanWindow()
+        const dataDir: string = win.siyuan.config.system.dataDir
+        imageFullPath = `${dataDir}/assets/${imageItem.name}`
+        this.logger.info(`Will upload picture from ${imageFullPath}, imageItem =>`, imageItem)
 
-          const fs = win.require("fs")
-          if (!fs.existsSync(imageFullPath)) {
-            // 路径不存在直接上传
-            imageFullPath = imageItem.url
-          }
-        } else {
-          // 浏览器环境直接上传
+        const fs = win.require("fs")
+        if (!fs.existsSync(imageFullPath)) {
+          // 路径不存在直接上传
           imageFullPath = imageItem.url
         }
+      } else {
+        // 浏览器环境直接上传
+        imageFullPath = imageItem.url
       }
+    }
 
-      this.logger.warn("isSiyuanOrSiyuanNewWin=>" + this.isSiyuanOrSiyuanNewWin + ", imageFullPath=>", imageFullPath)
+    // noinspection SuspiciousTypeOfGuard
+    if (!imageFullPath || (typeof imageFullPath === "string" && imageFullPath.trim().length == 0)) {
+      this.logger.warn("upload from clipboard")
+    } else {
       filePaths.push(imageFullPath)
     }
+    this.logger.warn("start uploading =>", filePaths)
 
     // 批量上传
     const imageJson: any = await this.originalUpload(filePaths)

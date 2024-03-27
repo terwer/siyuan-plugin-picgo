@@ -139,7 +139,7 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
             const attrs = await siyuanApi.getBlockAttrs(pageId)
 
             const picgoPostApi = await SiyuanPicGoClient.getInstance()
-            const imageItem = new ImageItem(filePath, "", true)
+            const imageItem = new ImageItem(generateUniqueName(), filePath, true)
             const imgInfos = await picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, false)
             // 处理后续
             doAfterUpload(imgInfos)
@@ -153,7 +153,7 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
         if (e.toString().indexOf("cancel") <= -1) {
           ElMessage({
             type: "error",
-            message: t("main.opt.failure") + "=>" + e
+            message: t("main.opt.failure") + "=>" + e,
           })
           logger.error(t("main.opt.failure") + "=>" + e)
         }
@@ -179,7 +179,7 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
         if (e.toString().indexOf("cancel") <= -1) {
           ElMessage({
             type: "error",
-            message: t("main.opt.failure") + "=>" + e
+            message: t("main.opt.failure") + "=>" + e,
           })
           logger.error(t("main.opt.failure") + "=>", e)
         }
@@ -236,7 +236,7 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
 
         ElMessage({
           type: "error",
-          message: t("main.opt.failure") + "=>" + e
+          message: t("main.opt.failure") + "=>" + e,
         })
         logger.error(t("main.opt.failure") + "=>" + e)
       }
@@ -258,11 +258,11 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
       } finally {
         picgoCommonData.isUploadLoading = false
       }
-    }
+    },
   }
 
   return {
     picgoUploadData,
-    picgoUploadMethods
+    picgoUploadMethods,
   }
 }
