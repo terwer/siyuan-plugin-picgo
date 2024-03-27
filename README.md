@@ -12,6 +12,17 @@ Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 > 
 > For versions of siyuan-note before `2.10.8`, it is advised not to upgrade this plugin beyond version `1.4.5`. Subsequent to siyuan-note `2.10.8`, the PicGO plugin can be updated to `1.5.0+`.
 
+## Image Hosting Support
+
+- Github
+- Gitlab
+- Alibaba Cloud
+- Tencent Cloud
+- Upyun
+- Qiniu Cloud
+- SM.MS
+- imgur
+
 ## Changelog
 
 Please refer to [CHANGELOG](https://github.com/terwer/siyuan-plugin-picgo/blob/main/CHANGELOG.md)
