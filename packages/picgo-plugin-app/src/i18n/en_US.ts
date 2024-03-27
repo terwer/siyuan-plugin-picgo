@@ -8,6 +8,9 @@
  */
 
 export default {
+  "common.back": "Back",
+  "common.select": "Select",
+  "setting.picgo.refer.to.here": "For details, please refer here",
   "setting.picgo.refer.to": "For details, please refer to:",
   "setting.picgo.refer.to.online.doc": "Picgo configuration online documentation",
   "setting.picgo.picbed": "Picbed setting",
@@ -19,6 +22,7 @@ export default {
   "setting.picgo.picbed.unselected.tip": "Unselected",
   "setting.picgo.picbed.set.default": "Set as default picbed",
   "setting.picgo.picbed.current.selected.tip": "Current selected picbed is:",
+  "setting.picgo.picbed.change.tip": "In order to make alterations, kindly select 「Set as default picbed」",
   "setting.picgo.picbed.current.tip": "Current picbed is:",
   "setting.picgo.picbed.uploader.config.name": "Picbed config name",
   "setting.picgo.picbed.uploader.config.name.placeholder": "Please input config name",
@@ -91,6 +95,7 @@ export default {
   "main.opt.success": "Success",
   "main.opt.failure": "Error",
   "main.opt.edit": "Edit",
+  "main.opt.add": "Add",
   "main.opt.delete": "Delete",
   "main.opt.loading": "In operation...",
   "main.opt.warning": "Warn tips",
@@ -124,4 +129,21 @@ export default {
   "setting.blog.siyuan.password": "Siyuan Token",
   "setting.blog.siyuan.password.tip": "Siyuan Token, which is empty by default",
   "form.validate.name.required": "Please enter a name",
+  "upload.select.tip1": "Drop file here, Ctrl+V paste image here or",
+  "upload.select.tip2": "click to upload",
+  "upload.select.limit": "jp(e)g/png/gif/svg/webp files with a size less than 500kb, max upload size is",
+  "upload.tab.upload": "Picture upload",
+  "upload.tab.setting": "Plugin setting",
+  "component.test": "Component test",
+  "siyuan.setting.title": "Siyuan setting",
+  "upload.adaptor.bundled": "Bundled PicGO",
+  "upload.adaptor.app": "PicGO(app)",
+  "upload.adaptor.core": "PicGO-Core",
+  "setting.cors.title": "CORS Proxy",
+  "setting.cors.title.tip":
+    "The CORS proxy is essential for browsers and Docker environments. For further consultation, feel free to contact youweics@163.com.",
+  "upload.no.beds":
+    'No image hosting service is currently available. Kindly proceed to "Image Hosting Settings" to add a new image hosting service.',
+  "picgo.siyuan.wait.timeout": "Sync timeout(seconds)",
+  "picgo.siyuan.wait.timeout.tip": "Timeout when handle picbed sync",
 }

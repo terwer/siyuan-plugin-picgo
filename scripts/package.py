@@ -9,8 +9,8 @@ if __name__ == "__main__":
     # 获取当前工作空间
     cwd = scriptutils.get_workdir()
 
-    os.system("pnpm build -F picgo-plugin-app")
-    os.system("pnpm build -F picgo-plugin-bootstrap")
+    os.system("pnpm build -F picgo-plugin-app --force")
+    os.system("pnpm build -F picgo-plugin-bootstrap --force")
 
     dist_folder = "./artifacts/siyuan-plugin-picgo/dist"
     data = scriptutils.read_json_file(cwd + "package.json")

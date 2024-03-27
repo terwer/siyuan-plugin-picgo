@@ -8,9 +8,11 @@
   -->
 
 <template>
-  <component :is="layout">
-    <slot />
-  </component>
+  <Suspense>
+    <component :is="layout">
+      <slot />
+    </component>
+  </Suspense>
 </template>
 
 <script lang="ts" setup>

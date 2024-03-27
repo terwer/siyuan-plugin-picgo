@@ -14,19 +14,16 @@ import { version } from "../../../package.json"
 import { useVueI18n } from "~/src/composables/useVueI18n.ts"
 import { DateUtil } from "zhi-common"
 import { useRouter } from "vue-router"
-import { useSiyuanDevice } from "~/src/composables/useSiyuanDevice.ts"
+import { isDev } from "@/utils/Constants.ts"
 
 const { t } = useVueI18n()
 const router = useRouter()
-const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
 
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
 
 const v = ref(version)
 const nowYear = DateUtil.nowYear()
-
-const isSiyuanOrSiyuanNewWin = isInSiyuanOrSiyuanNewWin()
 
 const goHome = async () => {
   await router.push({
@@ -39,12 +36,12 @@ const goGithub = () => {
 }
 
 const goAbout = () => {
-  window.open("https://blog.terwer.space/about")
+  window.open("https://terwer.space/about")
 }
 
-const handleTransportSetting = async () => {
+const handlePicgoSetting = async () => {
   await router.push({
-    path: "/setting/transport",
+    path: "/setting/picgo",
     query: { showBack: "true" },
   })
 }
@@ -52,6 +49,13 @@ const handleTransportSetting = async () => {
 const handleSiyuanSetting = async () => {
   await router.push({
     path: "/setting/siyuan",
+    query: { showBack: "true" },
+  })
+}
+
+const handleComponentTest = async () => {
+  await router.push({
+    path: "/test",
     query: { showBack: "true" },
   })
 }
@@ -73,14 +77,19 @@ const handleSiyuanSetting = async () => {
           isDark ? t("theme.mode.light") : t("theme.mode.dark")
         }}</span>
 
-        <span v-if="isSiyuanOrSiyuanNewWin" class="text">.</span>
-        <span v-if="isSiyuanOrSiyuanNewWin" class="text s-dark" @click="handleTransportSetting">
-          {{ t("setting.conf.transport") }}
+        <span class="text">.</span>
+        <span class="text s-dark" @click="handlePicgoSetting">
+          {{ t("setting.picgo.picbed") }}
         </span>
 
         <span class="text">.</span>
         <span class="text s-dark" @click="handleSiyuanSetting">
           {{ t("siyuan.config.setting") }}
+        </span>
+
+        <span v-if="isDev" class="text">.</span>
+        <span v-if="isDev" class="text s-dark" @click="handleComponentTest">
+          {{ t("component.test") }}
         </span>
       </div>
     </div>

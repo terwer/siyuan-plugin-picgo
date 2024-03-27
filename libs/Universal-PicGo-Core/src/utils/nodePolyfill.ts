@@ -7,5 +7,6 @@
  *  of this license document, but changing it is not allowed.
  */
 import { EventEmitter } from "node:events"
+import { Buffer } from "node:buffer"
 
-export { EventEmitter }
+export { EventEmitter, Buffer }

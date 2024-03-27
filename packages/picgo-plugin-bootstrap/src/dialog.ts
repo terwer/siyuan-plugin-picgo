@@ -40,7 +40,6 @@ const showIframePage = (pluginInstance: PicgoPlugin, pageIndex: string) => {
   <iframe src="${pageIndex}" width="100%"></iframe>`
 
   new Dialog({
-    title: pluginInstance.i18n.picgo,
     transparent: false,
     content: contentHtml,
     width: "60%",

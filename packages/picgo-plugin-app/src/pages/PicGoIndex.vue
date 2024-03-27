@@ -8,21 +8,15 @@
   -->
 
 <script setup lang="ts">
-import { UniversalPicGo } from "universal-picgo"
-import { createAppLogger } from "@/utils/appLogger.ts"
+import { useSiyuanDevice } from "$composables/useSiyuanDevice.ts"
 
-const logger = createAppLogger("picgo-index")
-
-const handleTest = () => {
-  const picgo = new UniversalPicGo()
-  logger.debug("picgo =>", picgo)
-}
+const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
 </script>
 
 <template>
   <div class="picgo-body">
-    <h1>PicGO index</h1>
-    <el-button type="primary" @click="handleTest">测试</el-button>
+    <electron-index v-if="isInSiyuanOrSiyuanNewWin()" />
+    <browser-index v-else />
   </div>
 </template>
 
