@@ -62,6 +62,7 @@ export default defineConfig({
   // 在这里自定义变量
   define: {
     "process.env.DEV_MODE": `"${isWatch}"`,
+    "process.env.NODE_ENV": isWatch ? `"development"` : `"production"`,
   },
 
   build: {

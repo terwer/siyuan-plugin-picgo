@@ -16,11 +16,12 @@ import { initTopbar } from "./topbar"
 import { showPage } from "./dialog"
 import { PageRoute } from "./pageRoute"
 import { ILogger } from "./appLogger"
-import { generateUniqueName, ImageItem, SiyuanPicGo } from "zhi-siyuan-picgo"
-import { SIYUAN_PICGO_FILE_MAP_KEY } from "zhi-siyuan-picgo/src/lib/constants"
+import { generateUniqueName, ImageItem, SIYUAN_PICGO_FILE_MAP_KEY, SiyuanPicGo, IPicGo } from "zhi-siyuan-picgo"
+import { initStatusBar, updateStatusBar } from "./statusBar"
 
 export default class PicgoPlugin extends Plugin {
   private logger: ILogger
+  public statusBarElement: any
 
   constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
     super(options)
@@ -30,6 +31,7 @@ export default class PicgoPlugin extends Plugin {
 
   onload() {
     initTopbar(this)
+    initStatusBar(this)
     this.logger.info("PicGo Plugin loaded")
   }
 
@@ -86,6 +88,7 @@ export default class PicgoPlugin extends Plugin {
       password: siyuanApiToken,
     }
     const picgoPostApi = await SiyuanPicGo.getInstance(siyuanConfig as any, isDev)
+    const ctx = picgoPostApi.ctx()
     const siyuanApi = picgoPostApi.siyuanApi
     if (files.length > 1) {
       siyuanApi.pushErrMsg({
@@ -97,10 +100,11 @@ export default class PicgoPlugin extends Plugin {
     const file = files[0]
 
     try {
-      siyuanApi.pushMsg({
-        msg: "检测到剪贴板图片，正在上传，请勿进行任何操作...",
-        timeout: 1000,
-      })
+      // siyuanApi.pushMsg({
+      //   msg: "检测到剪贴板图片，正在上传，请勿进行刷新操作...",
+      //   timeout: 7000,
+      // })
+      updateStatusBar(this, "检测到剪贴板图片，正在上传，请勿进行刷新操作...")
 
       // pageId: string
       // attrs: any
@@ -114,14 +118,23 @@ export default class PicgoPlugin extends Plugin {
       if (imageJsonObj && imageJsonObj.length > 0) {
         const img = imageJsonObj[0]
         if (!img?.imgUrl || img.imgUrl.trim().length == 0) {
-          throw new Error(
-            "图片上传失败，可能原因：PicGO配置错误或者该平台不支持图片覆盖，请检查配置或者尝试上传新图片。请打开picgo.log查看更多信息"
-          )
+          // throw new Error(
+          //   "图片上传失败，可能原因：PicGO配置错误或者该平台不支持图片覆盖，请检查配置或者尝试上传新图片。请打开picgo.log查看更多信息"
+          // )
+          siyuanApi.pushErrMsg({
+            msg: "图片上传失败，可能原因：PicGO配置错误或者该平台不支持图片覆盖，请检查配置或者尝试上传新图片。请打开picgo.log查看更多信息",
+            timeout: 7000,
+          })
+          return
         }
         // 处理上传后续
-        await this.handleAfterUpload(siyuanApi, pageId, file, img, imageItem)
+        await this.handleAfterUpload(ctx, siyuanApi, pageId, file, img, imageItem)
       } else {
-        throw new Error("图片上传失败，可能原因：PicGO配置错误，请检查配置。请打开picgo.log查看更多信息")
+        siyuanApi.pushErrMsg({
+          msg: "图片上传失败，可能原因：PicGO配置错误，请检查配置。请打开picgo.log查看更多信息",
+          timeout: 7000,
+        })
+        // throw new Error("图片上传失败，可能原因：PicGO配置错误，请检查配置。请打开picgo.log查看更多信息")
       }
     } catch (e) {
       siyuanApi.pushErrMsg({
@@ -131,12 +144,13 @@ export default class PicgoPlugin extends Plugin {
     }
   }
 
-  private async handleAfterUpload(siyuanApi: any, pageId: string, file: any, img: any, oldImageitem: any) {
-    const WAIT_SECONDS = 10
-    siyuanApi.pushMsg({
-      msg: `剪贴板图片上传完成。准备延迟${WAIT_SECONDS}秒更新元数据，请勿刷新笔记！`,
-      timeout: 7000,
-    })
+  private async handleAfterUpload(ctx: IPicGo, siyuanApi: any, pageId: string, file: any, img: any, oldImageitem: any) {
+    const SIYUAN_WAIT_SECONDS = ctx.getConfig("siyuan.waitTimeout") || 10
+    // siyuanApi.pushMsg({
+    //   msg: `剪贴板图片上传完成。准备延迟${SIYUAN_WAIT_SECONDS}秒更新元数据，请勿刷新笔记！`,
+    //   timeout: 7000,
+    // })
+    updateStatusBar(this, `剪贴板图片上传完成。准备延迟${SIYUAN_WAIT_SECONDS}秒更新元数据，请勿刷新笔记！`)
     setTimeout(async () => {
       const formData = new FormData()
       formData.append("file[]", file)
@@ -189,18 +203,28 @@ export default class PicgoPlugin extends Plugin {
       const newImageBlock = await siyuanApi.getBlockByID(nodeId)
       // newImageBlock.markdown
       // "![image](assets/image-20240327190812-yq6esh4.png)"
+      this.logger.debug("new image block=>", newImageBlock)
+      // 如果查询出来的块信息不对，不更新，防止误更新
+      if (!newImageBlock.markdown.includes(newImageItem.originUrl)) {
+        siyuanApi.pushErrMsg({
+          msg: `块信息不符合，取消更新`,
+          timeout: 7000,
+        })
+        return
+      }
+
       // id: string
       // data: string
       // dataType?: "markdown" | "dom"
-      this.logger.debug("new image block=>", newImageBlock)
       const newImageContent = `![${newImageItem.alt}](${newImageItem.url})`
       await siyuanApi.updateBlock(nodeId, newImageContent, "markdown")
 
-      siyuanApi.pushMsg({
-        msg: `图片元数据更新成功`,
-        timeout: 7000,
-      })
-    }, WAIT_SECONDS * 1000)
+      // siyuanApi.pushMsg({
+      //   msg: `图片元数据更新成功`,
+      //   timeout: 7000,
+      // })
+      updateStatusBar(this, `图片元数据更新成功`)
+    }, SIYUAN_WAIT_SECONDS * 1000)
   }
 
   private getDataNodeIdFromImgWithSrc(srcValue: string) {

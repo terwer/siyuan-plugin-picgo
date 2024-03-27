@@ -3,6 +3,7 @@
   "version": "1.6.0",
   "description": "picgo plugin for siyuan-note",
   "scripts": {
+    "clean": "./scripts/clean.sh",
     "serve": "turbo run serve",
     "dev": "turbo run dev",
     "build": "turbo run build",

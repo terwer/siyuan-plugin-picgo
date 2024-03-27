@@ -138,4 +138,6 @@ export default {
   "setting.cors.title": "CORS 代理",
   "setting.cors.title.tip": "CORS 代理，浏览器、dcoker以及某些插件可能需要，可付费咨询 youweics@163.com",
   "upload.no.beds": "暂无可用图床，请前往「图床设置」新增图床",
+  "picgo.siyuan.wait.timeout": "同步延迟(秒)",
+  "picgo.siyuan.wait.timeout.tip": "图床同步延迟时间，大于这个时间才会去同步图床元数据",
 }

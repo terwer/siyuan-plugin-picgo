@@ -144,4 +144,6 @@ export default {
     "The CORS proxy is essential for browsers and Docker environments. For further consultation, feel free to contact youweics@163.com.",
   "upload.no.beds":
     'No image hosting service is currently available. Kindly proceed to "Image Hosting Settings" to add a new image hosting service.',
+  "picgo.siyuan.wait.timeout": "Sync timeout(seconds)",
+  "picgo.siyuan.wait.timeout.tip": "Timeout when handle picbed sync",
 }

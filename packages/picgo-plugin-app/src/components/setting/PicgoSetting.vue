@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import { useVueI18n } from "$composables/useVueI18n.ts"
-import { reactive } from "vue"
+import { onBeforeMount, reactive } from "vue"
 import { PicgoTypeEnum } from "zhi-siyuan-picgo"
 import { useExternalPicGoSetting } from "@/stores/useExternalPicGoSetting.ts"
 import { useBundledPicGoSetting } from "@/stores/useBundledPicGoSetting.ts"
@@ -28,23 +28,29 @@ const formData = reactive({
   picgoTypeList: [
     {
       value: PicgoTypeEnum.Bundled,
-      label: t("upload.adaptor.bundled")
+      label: t("upload.adaptor.bundled"),
     },
     {
       value: PicgoTypeEnum.App,
-      label: t("upload.adaptor.app")
-    }
+      label: t("upload.adaptor.app"),
+    },
     // {
     //   value: PicgoTypeEnum.Core,
     //   label: t("upload.adaptor.core"),
     // },
-  ]
+  ],
 })
 
 const handlePicgoTypeChange = (val: any) => {
   const isBundled = val === PicgoTypeEnum.Bundled
   externalPicGoSettingForm.value.useBundledPicgo = isBundled
 }
+
+onBeforeMount(() => {
+  // init siyuan related picgo config
+  bundledPicGoSettingForm.value.siyuan = bundledPicGoSettingForm.value.siyuan || {}
+  bundledPicGoSettingForm.value.siyuan.waitTimeout = bundledPicGoSettingForm.value.siyuan.waitTimeout || 10
+})
 </script>
 
 <template>
@@ -64,6 +70,14 @@ const handlePicgoTypeChange = (val: any) => {
       </div>
       <div v-else>
         <external-picgo-setting :cfg="externalPicGoSettingForm" />
+      </div>
+      <div>
+        <el-form-item :label="t('picgo.siyuan.wait.timeout')">
+          <el-input
+            v-model="bundledPicGoSettingForm.siyuan.waitTimeout"
+            :placeholder="t('picgo.siyuan.wait.timeout.tip')"
+          />
+        </el-form-item>
       </div>
     </el-form>
   </back-page>
