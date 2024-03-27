@@ -12,6 +12,17 @@
 > 
 > 思源笔记 `2.10.8` 之前的版本请不要升级本插件，最高只能使用使用 `1.4.5` 版本。 思源笔记 `2.10.8` 之后的版本可升级 PicGO 插件到 `1.5.0+` 。
 
+## 支持图床
+
+- Github
+- Gitlab
+- 阿里云
+- 腾讯云
+- 又拍云
+- 七牛云
+- SM.MS
+- imgur
+
 ## 更新历史
 
 请参考 [CHANGELOG](https://github.com/terwer/siyuan-plugin-picgo/blob/main/CHANGELOG.md)
