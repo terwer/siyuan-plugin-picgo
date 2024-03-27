@@ -11,6 +11,7 @@ import { IPicGo, IPicGoPlugin } from "../../types"
 import githubUploader from "./github"
 import gitlabUploader from "./gitlab"
 import aliYunUploader from "./aliyun"
+import tcYunUploader from "./tcyun"
 import qiniuUploader from "./qiniu"
 import upyunUploader from "./upyun"
 import SMMSUploader from "./smms"
@@ -22,6 +23,7 @@ const buildInUploaders: IPicGoPlugin = () => {
       githubUploader(ctx)
       gitlabUploader(ctx)
       aliYunUploader(ctx)
+      tcYunUploader(ctx)
       qiniuUploader(ctx)
       upyunUploader(ctx)
       SMMSUploader(ctx)
