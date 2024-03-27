@@ -11,11 +11,12 @@ import { useRouter } from "vue-router"
 import { createAppLogger } from "@/utils/appLogger.ts"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { reactive } from "vue"
-import { ImageItem } from "zhi-siyuan-picgo/src/lib/models/ImageItem.ts"
+import { ImageItem } from "zhi-siyuan-picgo"
 import { ElMessage } from "element-plus"
-import { SiyuanPicGo } from "@/utils/siyuanPicgo.ts"
 import { useSiyuanApi } from "$composables/useSiyuanApi.ts"
 import { StrUtil } from "zhi-common"
+import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
+import { generateUniqueName } from "zhi-siyuan-picgo/src"
 
 /**
  * Picgo上传组件
@@ -131,19 +132,21 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
         }
 
         // 获取选择的文件的路径数组
-        const filePaths = []
         for (let i = 0; i < fileList.length; i++) {
           if (fileList.item(i).path) {
-            filePaths.push(fileList.item(i).path)
+            const filePath = fileList.item(i).path
+            const pageId = props.pageId
+            const attrs = await siyuanApi.getBlockAttrs(pageId)
+
+            const picgoPostApi = await SiyuanPicGoClient.getInstance()
+            const imageItem = new ImageItem(generateUniqueName(), filePath, true)
+            const imgInfos = await picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, false)
+            // 处理后续
+            doAfterUpload(imgInfos)
           } else {
             logger.debug("路径为空，忽略")
           }
         }
-
-        const picgoPostApi = await SiyuanPicGo.getInstance()
-        const imgInfos = await picgoPostApi.upload(filePaths)
-        // 处理后续
-        doAfterUpload(imgInfos)
 
         picgoCommonData.isUploadLoading = false
       } catch (e: any) {
@@ -162,8 +165,12 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
       picgoCommonData.isUploadLoading = true
 
       try {
-        const picgoPostApi = await SiyuanPicGo.getInstance()
-        const imgInfos = await picgoPostApi.upload()
+        const pageId = props.pageId
+        const attrs = await siyuanApi.getBlockAttrs(pageId)
+
+        const picgoPostApi = await SiyuanPicGoClient.getInstance()
+        const imageItem = new ImageItem(generateUniqueName(), "", true)
+        const imgInfos = await picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, false)
         // 处理后续
         doAfterUpload(imgInfos)
 
@@ -190,7 +197,7 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
       const pageId = props.pageId
       const attrs = await siyuanApi.getBlockAttrs(pageId)
 
-      const picgoPostApi = await SiyuanPicGo.getInstance()
+      const picgoPostApi = await SiyuanPicGoClient.getInstance()
       const imgInfos = await picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, forceUpload)
 
       // 处理后续

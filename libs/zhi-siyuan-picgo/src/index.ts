@@ -7,26 +7,32 @@
  *  of this license document, but changing it is not allowed.
  */
 
+import { SiyuanPicGo } from "./lib/siyuanPicgo"
 import { SiyuanPicgoPostApi } from "./lib/siyuanPicgoPostApi"
 import {
+  calculateMD5,
   ConfigDb,
   ExternalPicgoConfigDb,
+  IConfig,
   IExternalPicgoConfig,
   IImgInfo,
   IPicGo,
   IPicgoDb,
-  IConfig,
+  IPluginConfig,
   PicgoTypeEnum,
   PluginLoaderDb,
-  IPluginConfig,
 } from "universal-picgo"
 import { SiyuanConfig as SiyuanPicgoConfig } from "zhi-siyuan-api"
 import { PicgoHelper } from "./lib/picgoHelper"
 import { retrieveImageFromClipboardAsBlob } from "./lib/utils/browserClipboard"
-import { copyToClipboardInBrowser } from "./lib/utils/utils"
+import { copyToClipboardInBrowser, generateUniqueName } from "./lib/utils/utils"
+import { ImageItem } from "./lib/models/ImageItem"
+import { ImageParser } from "./lib/parser/ImageParser"
+import { ParsedImage } from "./lib/models/ParsedImage"
 
-export { SiyuanPicgoConfig, SiyuanPicgoPostApi, PicgoHelper }
-export { retrieveImageFromClipboardAsBlob, copyToClipboardInBrowser }
+export { SiyuanPicGo, SiyuanPicgoConfig, SiyuanPicgoPostApi, PicgoHelper }
+export { ImageItem, ImageParser, ParsedImage }
+export { retrieveImageFromClipboardAsBlob, copyToClipboardInBrowser, calculateMD5, generateUniqueName }
 export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
 export { PicgoTypeEnum }
 export { type IPicGo, type IImgInfo, type IPicgoDb, type IConfig, type IExternalPicgoConfig, type IPluginConfig }

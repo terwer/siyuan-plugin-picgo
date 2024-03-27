@@ -8,9 +8,8 @@
   -->
 
 <script setup lang="ts">
-import { ImageItem } from "zhi-siyuan-picgo/src/lib/models/ImageItem.ts"
+import { copyToClipboardInBrowser, ImageItem } from "zhi-siyuan-picgo"
 import { BrowserUtil } from "zhi-device"
-import { copyToClipboardInBrowser } from "zhi-siyuan-picgo"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { reactive } from "vue"
 
@@ -24,14 +23,14 @@ enum UrlTypeEnum {
 const props = defineProps({
   imgInfo: {
     type: Object,
-    default: {} as ImageItem,
-  },
+    default: {} as ImageItem
+  }
 })
 
 // uses
 const { t } = useVueI18n()
 const formData = reactive({
-  urlType: UrlTypeEnum.MD,
+  urlType: UrlTypeEnum.MD
 })
 
 const doCopy = (str: string) => {
@@ -110,6 +109,7 @@ const onImageUrlCopy = (imageInfo: ImageItem, type: UrlTypeEnum) => {
 .url-copy-group
   width 100%
   margin-right 2px
+
   .copy-action-item
     width 25%
 </style>

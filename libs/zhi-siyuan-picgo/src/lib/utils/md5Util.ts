@@ -7,7 +7,7 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { md5 } from "js-md5"
+import { calculateMD5 } from "universal-picgo"
 
 /**
  * 获取文件名的hash
@@ -15,12 +15,5 @@ import { md5 } from "js-md5"
  * @param filename 文件名
  */
 export const getFileHash = (filename: string): string => {
-  // import { createHash } from "crypto"
-  // const hash = createHash("sha256")
-  // hash.update(filename)
-  // return hash.digest("hex")
-
-  // Base64.toBase64(filename).substring(0, 8);
-
-  return md5(filename)
+  return calculateMD5(filename)
 }

@@ -10,13 +10,11 @@
 <script setup lang="ts">
 import { UploadFilled } from "@element-plus/icons-vue"
 import { onBeforeMount, onBeforeUnmount, reactive, ref } from "vue"
-import { SiyuanPicGo } from "@/utils/siyuanPicgo.ts"
 import { ElMessage, UploadRequestOptions } from "element-plus"
-import { retrieveImageFromClipboardAsBlob } from "zhi-siyuan-picgo"
+import { generateUniqueName, ImageItem, retrieveImageFromClipboardAsBlob } from "zhi-siyuan-picgo"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { createAppLogger } from "@/utils/appLogger.ts"
 import { usePicgoUpload } from "$composables/usePicgoUpload.ts"
-import { ImageItem } from "zhi-siyuan-picgo/src/lib/models/ImageItem.ts"
 
 const logger = createAppLogger("drag-upload")
 
@@ -53,7 +51,7 @@ const handleDragAction = async (file: Blob) => {
   try {
     formData.picgoCommonData.isUploadLoading = true
 
-    const imageItem = new ImageItem("", file as any, true, "", "")
+    const imageItem = new ImageItem(generateUniqueName(), file as any, true, "", "")
     await picgoUploadMethods.doUploadImageToBed(imageItem)
 
     res = {

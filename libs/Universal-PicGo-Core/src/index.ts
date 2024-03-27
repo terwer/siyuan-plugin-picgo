@@ -17,12 +17,12 @@ import {
   IUploaderConfigListItem,
   IPluginConfig,
 } from "./types"
-import { isFileOrBlob } from "./utils/common"
+import { isFileOrBlob, calculateMD5 } from "./utils/common"
 
 export { UniversalPicGo, ExternalPicgo, eventBus }
 export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
 export { PicgoTypeEnum, IBusEvent }
-export { isFileOrBlob }
+export { isFileOrBlob, calculateMD5 }
 export { win, currentWin, parentWin, hasNodeEnv }
 export {
   type IPicGo,
