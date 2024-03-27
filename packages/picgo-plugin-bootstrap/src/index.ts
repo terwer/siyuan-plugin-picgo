@@ -17,9 +17,11 @@ import { showPage } from "./dialog"
 import { PageRoute } from "./pageRoute"
 import { ILogger } from "./appLogger"
 import { generateUniqueName, ImageItem, SIYUAN_PICGO_FILE_MAP_KEY, SiyuanPicGo, IPicGo } from "zhi-siyuan-picgo"
+import { initStatusBar, updateStatusBar } from "./statusBar"
 
 export default class PicgoPlugin extends Plugin {
   private logger: ILogger
+  public statusBarElement: any
 
   constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
     super(options)
@@ -29,6 +31,7 @@ export default class PicgoPlugin extends Plugin {
 
   onload() {
     initTopbar(this)
+    initStatusBar(this)
     this.logger.info("PicGo Plugin loaded")
   }
 
@@ -97,10 +100,11 @@ export default class PicgoPlugin extends Plugin {
     const file = files[0]
 
     try {
-      siyuanApi.pushMsg({
-        msg: "检测到剪贴板图片，正在上传，请勿进行任何操作...",
-        timeout: 1000,
-      })
+      // siyuanApi.pushMsg({
+      //   msg: "检测到剪贴板图片，正在上传，请勿进行刷新操作...",
+      //   timeout: 7000,
+      // })
+      updateStatusBar(this, "检测到剪贴板图片，正在上传，请勿进行刷新操作...")
 
       // pageId: string
       // attrs: any
@@ -114,14 +118,23 @@ export default class PicgoPlugin extends Plugin {
       if (imageJsonObj && imageJsonObj.length > 0) {
         const img = imageJsonObj[0]
         if (!img?.imgUrl || img.imgUrl.trim().length == 0) {
-          throw new Error(
-            "图片上传失败，可能原因：PicGO配置错误或者该平台不支持图片覆盖，请检查配置或者尝试上传新图片。请打开picgo.log查看更多信息"
-          )
+          // throw new Error(
+          //   "图片上传失败，可能原因：PicGO配置错误或者该平台不支持图片覆盖，请检查配置或者尝试上传新图片。请打开picgo.log查看更多信息"
+          // )
+          siyuanApi.pushErrMsg({
+            msg: "图片上传失败，可能原因：PicGO配置错误或者该平台不支持图片覆盖，请检查配置或者尝试上传新图片。请打开picgo.log查看更多信息",
+            timeout: 7000,
+          })
+          return
         }
         // 处理上传后续
         await this.handleAfterUpload(ctx, siyuanApi, pageId, file, img, imageItem)
       } else {
-        throw new Error("图片上传失败，可能原因：PicGO配置错误，请检查配置。请打开picgo.log查看更多信息")
+        siyuanApi.pushErrMsg({
+          msg: "图片上传失败，可能原因：PicGO配置错误，请检查配置。请打开picgo.log查看更多信息",
+          timeout: 7000,
+        })
+        // throw new Error("图片上传失败，可能原因：PicGO配置错误，请检查配置。请打开picgo.log查看更多信息")
       }
     } catch (e) {
       siyuanApi.pushErrMsg({
@@ -133,10 +146,11 @@ export default class PicgoPlugin extends Plugin {
 
   private async handleAfterUpload(ctx: IPicGo, siyuanApi: any, pageId: string, file: any, img: any, oldImageitem: any) {
     const SIYUAN_WAIT_SECONDS = ctx.getConfig("siyuan.waitTimeout") || 10
-    siyuanApi.pushMsg({
-      msg: `剪贴板图片上传完成。准备延迟${SIYUAN_WAIT_SECONDS}秒更新元数据，请勿刷新笔记！`,
-      timeout: 7000,
-    })
+    // siyuanApi.pushMsg({
+    //   msg: `剪贴板图片上传完成。准备延迟${SIYUAN_WAIT_SECONDS}秒更新元数据，请勿刷新笔记！`,
+    //   timeout: 7000,
+    // })
+    updateStatusBar(this, `剪贴板图片上传完成。准备延迟${SIYUAN_WAIT_SECONDS}秒更新元数据，请勿刷新笔记！`)
     setTimeout(async () => {
       const formData = new FormData()
       formData.append("file[]", file)
@@ -205,10 +219,11 @@ export default class PicgoPlugin extends Plugin {
       const newImageContent = `![${newImageItem.alt}](${newImageItem.url})`
       await siyuanApi.updateBlock(nodeId, newImageContent, "markdown")
 
-      siyuanApi.pushMsg({
-        msg: `图片元数据更新成功`,
-        timeout: 7000,
-      })
+      // siyuanApi.pushMsg({
+      //   msg: `图片元数据更新成功`,
+      //   timeout: 7000,
+      // })
+      updateStatusBar(this, `图片元数据更新成功`)
     }, SIYUAN_WAIT_SECONDS * 1000)
   }
 
