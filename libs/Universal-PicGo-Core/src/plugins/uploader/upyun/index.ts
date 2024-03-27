@@ -7,32 +7,40 @@
  *  of this license document, but changing it is not allowed.
  */
 
+import crypto from "crypto"
 import { ILocalesKey } from "../../../i18n/zh-CN"
 import { IPicGo, IPluginConfig, IUpyunConfig } from "../../../types"
-import upyun from "upyun"
 import { base64ToBuffer } from "../../../utils/common"
 import { IBuildInEvent } from "../../../utils/enums"
-import crypto from "crypto"
 import { Buffer } from "../../../utils/nodePolyfill"
-import { win } from "universal-picgo-store/src"
+import { AxiosRequestConfig } from "axios"
+
+// 封装计算MD5哈希的方法
+function calculateMD5(input: string) {
+  return crypto.createHash("md5").update(input).digest("hex")
+}
+
+function hmacsha1(secret: string, value: string) {
+  return crypto.createHmac("sha1", secret).update(value, "utf8").digest().toString("base64")
+}
 
 /**
- * @param  service Service 实例
+ * @param signKey
  * @param method 当前请求的 API 使用的方法
- * @param  path 当前请求的资源路径
+ * @param uri 当前请求的资源路径
+ * @param date
+ * @param policy
  * @param  contentMD5 内容的 md5 值
  */
-const getSignHeader = (
-  service: {
-    bucketName: string
-    operatorName: string
-    password: string
-    serviceName: string
-  },
+const getSignature = (
+  signKey: string,
   method: string,
-  path: string,
-  contentMD5: string | null = null
+  uri: string,
+  date: string,
+  policy: string,
+  contentMD5 = null
 ) => {
+  // https://help.upyun.com/knowledge-base/audit_authorization/#e6b3a8e6848fe4ba8be9a1b9
   // https://docs.upyun.com/api/form_api/
   // https://docs.upyun.com/api/authorization/#http-header
   // 签名计算方法
@@ -40,32 +48,54 @@ const getSignHeader = (
   // Authorization: UPYUN <Operator>:<Signature>
   // Password = MD5(password)
   //
-  // <Signature> = Base64 (HMAC-SHA1 (<Password>,
+  // Signature = Base64 (HMAC-SHA1 (<Password>,
   // <Method>&
   // <URI>&
   // <Date>&
+  // <Policy>&
   // <Content-MD5>
   // ))
   // 计算当前 api 请求签名信息
+  let stringToSign = `${method}&${uri}&${date}&${policy}`
+  if (contentMD5) {
+    stringToSign += `&${contentMD5}`
+  }
 
-  // service 的 password 已经是 md5 了
-  const { operatorName, password } = service
+  return hmacsha1(signKey, stringToSign)
+}
+
+const postOptions = (options: IUpyunConfig, fileName: string, saveKey: string, image: Buffer): AxiosRequestConfig => {
+  // 计算当前时间的时间戳（单位：秒）
+  const currentTimeStamp = Math.floor(Date.now() / 1000)
+  // 设置过期时间为30分钟后
+  const expirationTime = currentTimeStamp + 30 * 60
+
   const date = new Date().toUTCString()
 
-  let signString = `${method}&${path}&${date}`
-  if (contentMD5) {
-    signString += `&${contentMD5}`
+  const uploadArgs: any = {
+    bucket: options.bucket,
+    "save-key": saveKey,
+    expiration: expirationTime.toString(),
+    date: date,
   }
+  const policy = Buffer.from(JSON.stringify(uploadArgs)).toString("base64")
+  const password = calculateMD5(options.password)
+  const signature = getSignature(password, "POST", `/${options.bucket}`, date, policy)
 
-  const signBinary = crypto.createHmac("sha1", password).update(signString).digest("binary")
-  debugger
-  const signature = win.Buffer.from(signBinary).toString("base64")
-  debugger
+  const formData = new FormData()
+  formData.append("authorization", `UPYUN ${options.operator}:${signature}`)
+  formData.append("file", new Blob([image], { type: "image/png" }), fileName)
+  formData.append("policy", policy)
 
   return {
-    "x-date": date,
-    Authorization: `UPYUN ${operatorName}:${signature}`,
-  }
+    method: "POST",
+    url: `http://v0.api.upyun.com/${options.bucket}`,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    data: formData,
+    resolveWithFullResponse: true,
+  } as AxiosRequestConfig
 }
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
@@ -73,13 +103,6 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   if (!upyunOptions) {
     throw new Error("Can't find upYun config")
   }
-
-  const serviceName = upyunOptions.bucket
-  const operatorName = upyunOptions.operator
-  const operatorPassword = upyunOptions.password
-
-  const service = new upyun.Service(serviceName, operatorName, operatorPassword)
-  const client = new upyun.Client(service, getSignHeader)
 
   const imgList = ctx.output
   for (const img of imgList) {
@@ -94,22 +117,23 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
       }
       try {
         const path = upyunOptions.path || ""
-        const remotePath = `${path}${img.fileName}${upyunOptions.options}`
+        const saveKey = `${path}${img.fileName}${upyunOptions.options}`
 
-        const res: any = await client.putFile(remotePath, new Blob([image]))
+        const options = postOptions(upyunOptions, img.fileName, saveKey, image)
+        const res: any = await ctx.request(options)
         console.log("Using upyun SDK for upload, res=>", res)
 
         if (res) {
           delete img.base64Image
           delete img.buffer
-          img.imgUrl = `${upyunOptions.url}/${path}${img.fileName}${upyunOptions.options}`
+          img.imgUrl = `${upyunOptions.url}/${saveKey}`
         } else {
           throw new Error("Upload failed")
         }
       } catch (e: any) {
         let errMsg: any
         if (e?.statusCode) {
-          errMsg = e.response?.body ?? e.stack ?? "unknown error"
+          errMsg = e.response?.body?.msg ?? e.stack ?? "unknown error"
         } else {
           errMsg = e.toString()
         }
