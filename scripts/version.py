@@ -46,5 +46,10 @@ if __name__ == "__main__":
 
     # plugin.json
     parse_json(cwd + "plugin.json", "version", args.version)
+    # packages
     parse_json(cwd + "packages/picgo-plugin-bootstrap/package.json", "version", args.version)
     parse_json(cwd + "packages/picgo-plugin-app/package.json", "version", args.version)
+    # libs
+    parse_json(cwd + "libs/Universal-PicGo-Store/package.json", "version", args.version)
+    parse_json(cwd + "libs/Universal-PicGo-Core/package.json", "version", args.version)
+    parse_json(cwd + "libs/zhi-siyuan-picgo/package.json", "version", args.version)
