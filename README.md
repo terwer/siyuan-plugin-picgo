@@ -1,6 +1,5 @@
 [中文](README_zh_CN.md)
 
-- SM.MS
 # PicGo Plugin
 
 ![](./preview.png)
@@ -21,6 +20,7 @@ Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 - Tencent Cloud
 - Upyun
 - Qiniu Cloud
+- SM.MS
 - imgur
 
 ## Changelog

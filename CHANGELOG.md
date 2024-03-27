@@ -1,7 +1,17 @@
 # Changelog
 
-## [1.6.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.5.1...siyuan-plugin-picgo-v1.6.0) (2024-03-27)
+## [1.7.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.6.0...siyuan-plugin-picgo-v1.7.0) (2024-03-27)
 ### Features
+* allow config timeout ([34cf0bb](https://github.com/terwer/siyuan-plugin-picgo/commit/34cf0bb94f596368ebf62fd16d33881a17515c5c))
+* show image state in status bar ([aa48d09](https://github.com/terwer/siyuan-plugin-picgo/commit/aa48d097fbf86a66e1e54a73b6107946c8390321))
+* support validate iamge block ([6c53003](https://github.com/terwer/siyuan-plugin-picgo/commit/6c53003c4141d849b21895ae6f36df88ab99cedc))
+### Bug Fixes
+* add clean script ([378fdeb](https://github.com/terwer/siyuan-plugin-picgo/commit/378fdeb2fefe209dbdb0d28acfae16633bd70953))
+* call origin upload error ([5e5c00a](https://github.com/terwer/siyuan-plugin-picgo/commit/5e5c00a200fb1537756740e53e7b6161f1da5313))
+* docker load error ([9402b65](https://github.com/terwer/siyuan-plugin-picgo/commit/9402b6539cd567e86504c352b3c748420b5430d6))
+* picgo config align ([0cba7c1](https://github.com/terwer/siyuan-plugin-picgo/commit/0cba7c1f0f46d8b911bc51f9d0b8550c63c43c3c))
+* sts error bt import ([22ac275](https://github.com/terwer/siyuan-plugin-picgo/commit/22ac275f3c29672b2ac9832cee37943a8eb1943b))
+## [1.6.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.5.1...siyuan-plugin-picgo-v1.6.0) (2024-03-27)
 * adapt universal picgo config path ([07cc413](https://github.com/terwer/siyuan-plugin-picgo/commit/07cc413dd8975c40b3b924ba6732107ce6a12c9d))
 * add axios for request ([678ad8a](https://github.com/terwer/siyuan-plugin-picgo/commit/678ad8aeb5ee03edfbde5bef4eb51d410f88a38a))
 * add clipboard image support ([5c131a0](https://github.com/terwer/siyuan-plugin-picgo/commit/5c131a0b723243be107f4a6fd45b3f2884ed3667))
@@ -76,7 +86,6 @@
 * upload list ([ee955b0](https://github.com/terwer/siyuan-plugin-picgo/commit/ee955b0c5c37feb914cb4c0772a406a3671df17d))
 * upyun todo ([ea1798d](https://github.com/terwer/siyuan-plugin-picgo/commit/ea1798d2d9752cd8025a782b51476d0f29332c7e))
 * use ts-localstorage for browser ([952cff9](https://github.com/terwer/siyuan-plugin-picgo/commit/952cff98996a29999842113db9fd3cf0e2bb8a51))
-### Bug Fixes
 * change build scripts ([9545e57](https://github.com/terwer/siyuan-plugin-picgo/commit/9545e577a089a5b9c6b50131c10cb96952ad7fe3))
 * change dependabot ([b8c5085](https://github.com/terwer/siyuan-plugin-picgo/commit/b8c5085789bdfa9f626ca1bde7c5289f69ced8f4))
 * change dev scripts ([30cd4c2](https://github.com/terwer/siyuan-plugin-picgo/commit/30cd4c2d35e0e172db04d9bbce172174e2a4a6cb))
