@@ -10,15 +10,10 @@
 import crypto from "crypto"
 import { ILocalesKey } from "../../../i18n/zh-CN"
 import { IPicGo, IPluginConfig, IUpyunConfig } from "../../../types"
-import { base64ToBuffer } from "../../../utils/common"
+import { base64ToBuffer, calculateMD5 } from "../../../utils/common"
 import { IBuildInEvent } from "../../../utils/enums"
 import { Buffer } from "../../../utils/nodePolyfill"
 import { AxiosRequestConfig } from "axios"
-
-// 封装计算MD5哈希的方法
-function calculateMD5(input: string) {
-  return crypto.createHash("md5").update(input).digest("hex")
-}
 
 function hmacsha1(secret: string, value: string) {
   return crypto.createHmac("sha1", secret).update(value, "utf8").digest().toString("base64")

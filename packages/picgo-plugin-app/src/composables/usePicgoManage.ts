@@ -13,7 +13,7 @@ import { createAppLogger } from "@/utils/appLogger.ts"
 import { reactive } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
 import { ImageItem } from "zhi-siyuan-picgo/src/lib/models/ImageItem.ts"
-import { SiyuanPicGo } from "@/utils/siyuanPicgo.ts"
+import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
 
 /**
  * Picgo图片管理组件
@@ -146,7 +146,7 @@ export const usePicgoManage = (props: any, deps: any) => {
       const pageId = props.pageId
       const attrs = await siyuanApi.getBlockAttrs(pageId)
 
-      const picgoPostApi = await SiyuanPicGo.getInstance()
+      const picgoPostApi = await SiyuanPicGoClient.getInstance()
       const imgInfos = await picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, forceUpload)
 
       // 处理后续

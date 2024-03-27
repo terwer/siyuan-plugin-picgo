@@ -9,7 +9,7 @@
 
 import { ILogger, simpleLogger } from "zhi-lib-base"
 import { SiyuanPicGoUploadApi } from "./siyuanPicGoUploadApi"
-import { hasNodeEnv, IImgInfo, IPicGo, win } from "universal-picgo"
+import { hasNodeEnv, IPicGo, isFileOrBlob, win } from "universal-picgo"
 import { ParsedImage } from "./models/ParsedImage"
 import { ImageItem } from "./models/ImageItem"
 import { SIYUAN_PICGO_FILE_MAP_KEY } from "./constants"
@@ -18,7 +18,7 @@ import { SiyuanConfig, SiyuanKernelApi } from "zhi-siyuan-api"
 import { ImageParser } from "./parser/ImageParser"
 import { PicgoPostResult } from "./models/PicgoPostResult"
 import { DeviceDetection, DeviceTypeEnum, SiyuanDevice } from "zhi-device"
-import { isFileOrBlob } from "universal-picgo"
+import { IImgInfo } from "universal-picgo/src"
 
 /**
  * Picgo与文章交互的通用方法
@@ -26,7 +26,7 @@ import { isFileOrBlob } from "universal-picgo"
 class SiyuanPicgoPostApi {
   private readonly logger: ILogger
   private readonly imageParser: ImageParser
-  private readonly siyuanApi: SiyuanKernelApi
+  public readonly siyuanApi: SiyuanKernelApi
   private readonly siyuanConfig: SiyuanConfig
   private readonly isSiyuanOrSiyuanNewWin: boolean
   private readonly picgoApi: SiyuanPicGoUploadApi
@@ -71,7 +71,7 @@ class SiyuanPicgoPostApi {
    *
    * @param input 路径数组，可为空，为空上传剪贴板
    */
-  public async upload(input?: any[]): Promise<IImgInfo[] | Error> {
+  public async originalUpload(input?: any[]): Promise<IImgInfo[] | Error> {
     return this.picgoApi.upload(input)
   }
 
@@ -129,8 +129,10 @@ class SiyuanPicgoPostApi {
     return ret
   }
 
+  // ===================================================================================================================
+
   /**
-   * 上传当前文章图片到图床（提供给外部调用）
+   * 上传当前文章图片到图床（单篇文档所有图片全部批量上传，提供给外部调用）
    *
    * @param pageId 文章ID
    * @param attrs 文章属性
@@ -223,7 +225,7 @@ class SiyuanPicgoPostApi {
   }
 
   /**
-   * 上传单张图片到图床
+   * 上传单张图片到图床（当前图片单个上传，提供给外部调用）
    *
    * @param pageId 文章ID
    * @param attrs 文章属性
@@ -247,34 +249,37 @@ class SiyuanPicgoPostApi {
       return
     }
 
-    let imageFullPath: string
-    // blob 或者 file 直接上传
-    if (isFileOrBlob(imageItem.url)) {
-      imageFullPath = imageItem.url
-    } else {
-      if (this.isSiyuanOrSiyuanNewWin) {
-        // 如果是路径解析路径
-        const win = SiyuanDevice.siyuanWindow()
-        const dataDir: string = win.siyuan.config.system.dataDir
-        imageFullPath = `${dataDir}/assets/${imageItem.name}`
-        this.logger.info(`Will upload picture from ${imageFullPath}, imageItem =>`, imageItem)
+    // 兼容剪贴板
+    if (!StrUtil.isEmptyString(imageItem.url)) {
+      let imageFullPath: string
+      // blob 或者 file 直接上传
+      if (isFileOrBlob(imageItem.url)) {
+        imageFullPath = imageItem.url
+      } else {
+        if (this.isSiyuanOrSiyuanNewWin) {
+          // 如果是路径解析路径
+          const win = SiyuanDevice.siyuanWindow()
+          const dataDir: string = win.siyuan.config.system.dataDir
+          imageFullPath = `${dataDir}/assets/${imageItem.name}`
+          this.logger.info(`Will upload picture from ${imageFullPath}, imageItem =>`, imageItem)
 
-        const fs = win.require("fs")
-        if (!fs.existsSync(imageFullPath)) {
-          // 路径不存在直接上传
+          const fs = win.require("fs")
+          if (!fs.existsSync(imageFullPath)) {
+            // 路径不存在直接上传
+            imageFullPath = imageItem.url
+          }
+        } else {
+          // 浏览器环境直接上传
           imageFullPath = imageItem.url
         }
-      } else {
-        // 浏览器环境直接上传
-        imageFullPath = imageItem.url
       }
+
+      this.logger.warn("isSiyuanOrSiyuanNewWin=>" + this.isSiyuanOrSiyuanNewWin + ", imageFullPath=>", imageFullPath)
+      filePaths.push(imageFullPath)
     }
 
-    this.logger.warn("isSiyuanOrSiyuanNewWin=>" + this.isSiyuanOrSiyuanNewWin + ", imageFullPath=>", imageFullPath)
-    filePaths.push(imageFullPath)
-
     // 批量上传
-    const imageJson: any = await this.picgoApi.upload(filePaths)
+    const imageJson: any = await this.originalUpload(filePaths)
     this.logger.debug("图片上传完成，imageJson=>", imageJson)
     const imageJsonObj = JsonUtil.safeParse(imageJson, []) as any
     // 处理后续

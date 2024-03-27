@@ -213,6 +213,9 @@ importers:
       zhi-lib-base:
         specifier: ^0.8.0
         version: 0.8.0
+      zhi-siyuan-picgo:
+        specifier: workspace:*
+        version: link:../../libs/zhi-siyuan-picgo
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.0.2

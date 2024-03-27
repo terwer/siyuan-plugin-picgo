@@ -12,6 +12,7 @@ import { hasNodeEnv, win } from "universal-picgo-store"
 import imageSize from "./image-size"
 import { calculateHash } from "./hashUtil"
 import { Buffer } from "./nodePolyfill"
+import crypto from "crypto"
 
 export const isUrl = (url: string): boolean => url.startsWith("http://") || url.startsWith("https://")
 
@@ -442,3 +443,6 @@ export const getImageSize = (file: Buffer | typeof win.Buffer): IImgSize => {
     }
   }
 }
+
+// 封装计算MD5哈希的方法
+export const calculateMD5 = (input: string) => crypto.createHash("md5").update(input).digest("hex")

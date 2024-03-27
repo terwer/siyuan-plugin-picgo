@@ -37,7 +37,7 @@ const useSiyuanSetting = () => {
 
     const initialValue = new SiyuanPicgoConfig(origin ?? baseUrl, token)
     const siyuanConfig = useCommonLocalStorage<SiyuanPicgoConfig>(filePath, storageKey, initialValue, {
-      serializer: StorageSerializers.object
+      serializer: StorageSerializers.object,
     })
 
     // 更新apiUrl

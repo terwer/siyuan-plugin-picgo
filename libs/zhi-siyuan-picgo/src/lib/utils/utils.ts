@@ -85,3 +85,20 @@ export const trimValues = (obj: any) => {
   })
   return newObj
 }
+
+export function generateUniqueName() {
+  const currentTime = Math.floor(Date.now() / 1000) // 获取当前时间戳（秒级）
+
+  function generateRandomString(length: number) {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    let randomString = ""
+    for (let i = 0; i < length; i++) {
+      randomString += characters.charAt(Math.floor(Math.random() * characters.length))
+    }
+    return randomString
+  }
+
+  const randomString = generateRandomString(6) // 生成长度为6的随机字符串
+  const uniqueName = `${currentTime}_${randomString}`
+  return uniqueName + ".png"
+}

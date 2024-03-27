@@ -11,5 +11,5 @@ export const workspaceDir = `${(window as any).siyuan.config.system.workspaceDir
 export const dataDir = `${(window as any).siyuan.config.system.dataDir}`
 export const isDev = process.env.DEV_MODE === "true"
 
+export const siyuanApiUrl = window.location.origin ?? "http://127.0.0.1:6806"
 export const siyuanApiToken = ""
-export const siyuanApiUrl = ""

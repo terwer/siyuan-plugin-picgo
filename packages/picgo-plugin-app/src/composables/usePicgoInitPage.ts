@@ -8,12 +8,11 @@
  */
 
 import { createAppLogger } from "@/utils/appLogger.ts"
-import { ImageParser } from "zhi-siyuan-picgo/src/lib/parser/ImageParser.ts"
+import { ImageParser, ParsedImage } from "zhi-siyuan-picgo"
 import { isDev } from "@/utils/Constants.ts"
 import { useSiyuanApi } from "$composables/useSiyuanApi.ts"
-import { ParsedImage } from "zhi-siyuan-picgo/src/lib/models/ParsedImage.ts"
 import { onMounted, watch } from "vue"
-import { SiyuanPicGo } from "@/utils/siyuanPicgo.ts"
+import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
 
 /**
  * Picgo页面初始化组件
@@ -59,7 +58,8 @@ export const usePicgoInitPage = (props: any, deps: any) => {
 
     // 将字符串数组格式的图片信息转换成图片对象数组
     const attrs = await siyuanApi.getBlockAttrs(pageId)
-    const picgoPostApi = await SiyuanPicGo.getInstance()
+
+    const picgoPostApi = await SiyuanPicGoClient.getInstance()
     const imageItemArray = await picgoPostApi.doConvertImagesToImagesItemArray(attrs, retImgs)
 
     // 页面属性
