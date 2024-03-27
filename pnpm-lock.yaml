@@ -260,8 +260,8 @@ importers:
         specifier: ^0.21.0
         version: 0.21.0(vite@5.2.6)
       vite-plugin-static-copy:
-        specifier: ^1.0.1
-        version: 1.0.1(vite@5.2.6)
+        specifier: ^1.0.2
+        version: 1.0.2(vite@5.2.6)
       vite-tsconfig-paths:
         specifier: ^4.3.2
         version: 4.3.2(typescript@5.4.3)(vite@5.2.6)
@@ -7516,8 +7516,8 @@ packages:
       vite: 4.5.3(@types/node@20.11.30)
     dev: true
 
-  /vite-plugin-static-copy@1.0.1(vite@5.2.6):
-    resolution: {integrity: sha512-3eGL4mdZoPJMDBT68pv/XKIHR4MgVolStIxxv1gIBP4R8TpHn9C9EnaU0hesqlseJ4ycLGUxckFTu/jpuJXQlA==}
+  /vite-plugin-static-copy@1.0.2(vite@5.2.6):
+    resolution: {integrity: sha512-AfmEF+a/mfjsUsrgjbCkhzUCeIUF4EKQXXt3Ie1cour9MBpy6f6GphbdW2td28oYfOrwCyRzFCksgLkpk58q6Q==}
     engines: {node: ^18.0.0 || >=20.0.0}
     peerDependencies:
       vite: ^5.0.0
