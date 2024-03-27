@@ -10,7 +10,7 @@
 * call origin upload error ([5e5c00a](https://github.com/terwer/siyuan-plugin-picgo/commit/5e5c00a200fb1537756740e53e7b6161f1da5313))
 * docker load error ([9402b65](https://github.com/terwer/siyuan-plugin-picgo/commit/9402b6539cd567e86504c352b3c748420b5430d6))
 * picgo config align ([0cba7c1](https://github.com/terwer/siyuan-plugin-picgo/commit/0cba7c1f0f46d8b911bc51f9d0b8550c63c43c3c))
-* sts error bt import ([22ac275](https://github.com/terwer/siyuan-plugin-picgo/commit/22ac275f3c29672b2ac9832cee37943a8eb1943b))
+* sts error by import ([22ac275](https://github.com/terwer/siyuan-plugin-picgo/commit/22ac275f3c29672b2ac9832cee37943a8eb1943b))
 ## [1.6.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.5.1...siyuan-plugin-picgo-v1.6.0) (2024-03-27)
 * adapt universal picgo config path ([07cc413](https://github.com/terwer/siyuan-plugin-picgo/commit/07cc413dd8975c40b3b924ba6732107ce6a12c9d))
 * add axios for request ([678ad8a](https://github.com/terwer/siyuan-plugin-picgo/commit/678ad8aeb5ee03edfbde5bef4eb51d410f88a38a))
