@@ -22,12 +22,12 @@ const { t } = useVueI18n()
 const props = defineProps({
   ctx: {
     type: Object,
-    default: null
+    default: null,
   },
   cfg: {
     type: Object,
-    default: null
-  }
+    default: null,
+  },
 })
 
 const formData = reactive({
@@ -50,13 +50,13 @@ const formData = reactive({
     // 当前配置项表单
     curFormPropertiesConfig: {} as IStringKeyMap,
     // 表单配置项ID
-    curFormConfigId: "" as string | undefined
+    curFormConfigId: "" as string | undefined,
   },
 
   // 表单展示
   isNewForm: false,
   showConfigForm: false,
-  configFormTitle: ""
+  configFormTitle: "",
 })
 // PicGo 持久化操作帮助类
 const picgoHelper = new PicgoHelper(props.ctx, formData.cfg)
@@ -152,7 +152,7 @@ function deleteConfig(config: IUploaderConfigListItem) {
   ElMessageBox.confirm(`确认删除配置 ${config._configName} 吗？`, t("main.opt.warning"), {
     confirmButtonText: t("main.opt.ok"),
     cancelButtonText: t("main.opt.cancel"),
-    type: "warning"
+    type: "warning",
   })
     .then(async () => {
       try {
@@ -162,12 +162,11 @@ function deleteConfig(config: IUploaderConfigListItem) {
       } catch (e) {
         ElMessage({
           type: "error",
-          message: t("main.opt.failure") + "=>" + e
+          message: t("main.opt.failure") + "=>" + e,
         })
       }
     })
-    .catch(() => {
-    })
+    .catch(() => {})
 }
 
 /**
@@ -238,7 +237,7 @@ onBeforeMount(() => {
           :key="item.type"
           :type="selectedPicbedStyle(item.type)"
           @click="handlePicBedTypeChange(item)"
-        >{{ item.name }}
+          >{{ item.name }}
         </el-button>
       </el-button-group>
     </div>
@@ -342,6 +341,10 @@ onBeforeMount(() => {
 .bed-type-list {
   margin-top: 10px;
 }
+
+.picbed-group
+  button
+    margin-bottom 10px
 
 .profile-card-item {
   display: inline-block;
