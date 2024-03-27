@@ -10,7 +10,7 @@
 import { useSiyuanDevice } from "$composables/useSiyuanDevice.ts"
 import { reactive } from "vue"
 import { isDev } from "@/utils/Constants.ts"
-import { ImageItem } from "zhi-siyuan-picgo/src/lib/models/ImageItem.ts"
+import { ImageItem } from "zhi-siyuan-picgo"
 
 /**
  * Picgo公共组件

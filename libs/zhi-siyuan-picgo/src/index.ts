@@ -29,9 +29,10 @@ import { copyToClipboardInBrowser, generateUniqueName } from "./lib/utils/utils"
 import { ImageItem } from "./lib/models/ImageItem"
 import { ImageParser } from "./lib/parser/ImageParser"
 import { ParsedImage } from "./lib/models/ParsedImage"
+import { SIYUAN_PICGO_FILE_MAP_KEY } from "./lib/constants"
 
 export { SiyuanPicGo, SiyuanPicgoConfig, SiyuanPicgoPostApi, PicgoHelper }
-export { ImageItem, ImageParser, ParsedImage }
+export { ImageItem, ImageParser, ParsedImage, SIYUAN_PICGO_FILE_MAP_KEY }
 export { retrieveImageFromClipboardAsBlob, copyToClipboardInBrowser, calculateMD5, generateUniqueName }
 export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
 export { PicgoTypeEnum }

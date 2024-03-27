@@ -11,12 +11,11 @@ import { useRouter } from "vue-router"
 import { createAppLogger } from "@/utils/appLogger.ts"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { reactive } from "vue"
-import { ImageItem } from "zhi-siyuan-picgo"
+import { generateUniqueName, ImageItem } from "zhi-siyuan-picgo"
 import { ElMessage } from "element-plus"
 import { useSiyuanApi } from "$composables/useSiyuanApi.ts"
 import { StrUtil } from "zhi-common"
 import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
-import { generateUniqueName } from "zhi-siyuan-picgo/src"
 
 /**
  * Picgo上传组件

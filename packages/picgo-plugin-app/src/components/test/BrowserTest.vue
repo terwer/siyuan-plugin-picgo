@@ -28,7 +28,7 @@ const handleTest2 = async () => {
   }
 }
 
-const handleTest5 = async () => {˙
+const handleTest5 = async () => {
   try {
     const picgo = await SiyuanPicGoClient.getInstance()
     logger.debug("picgo =>", picgo)

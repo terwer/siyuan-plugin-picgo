@@ -9,7 +9,7 @@
 
 import { ILogger, simpleLogger } from "zhi-lib-base"
 import { SiyuanPicGoUploadApi } from "./siyuanPicGoUploadApi"
-import { hasNodeEnv, IPicGo, isFileOrBlob, win } from "universal-picgo"
+import { hasNodeEnv, IImgInfo, IPicGo, isFileOrBlob, win } from "universal-picgo"
 import { ParsedImage } from "./models/ParsedImage"
 import { ImageItem } from "./models/ImageItem"
 import { SIYUAN_PICGO_FILE_MAP_KEY } from "./constants"
@@ -18,7 +18,6 @@ import { SiyuanConfig, SiyuanKernelApi } from "zhi-siyuan-api"
 import { ImageParser } from "./parser/ImageParser"
 import { PicgoPostResult } from "./models/PicgoPostResult"
 import { DeviceDetection, DeviceTypeEnum, SiyuanDevice } from "zhi-device"
-import { IImgInfo } from "universal-picgo/src"
 
 /**
  * Picgo与文章交互的通用方法

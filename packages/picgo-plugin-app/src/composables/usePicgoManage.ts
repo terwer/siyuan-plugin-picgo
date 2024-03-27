@@ -12,7 +12,7 @@ import { useSiyuanApi } from "$composables/useSiyuanApi.ts"
 import { createAppLogger } from "@/utils/appLogger.ts"
 import { reactive } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
-import { ImageItem } from "zhi-siyuan-picgo/src/lib/models/ImageItem.ts"
+import { ImageItem } from "zhi-siyuan-picgo"
 import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
 
 /**
@@ -30,7 +30,7 @@ export const usePicgoManage = (props: any, deps: any) => {
   // public data
   const picgoManageData = reactive({
     dialogImageUrl: "",
-    dialogPreviewVisible: false,
+    dialogPreviewVisible: false
   })
 
   // deps
@@ -86,7 +86,7 @@ export const usePicgoManage = (props: any, deps: any) => {
         ElMessageBox.confirm("已经是远程图片，是否仍然覆盖上传？", t("main.opt.warning"), {
           confirmButtonText: t("main.opt.ok"),
           cancelButtonText: t("main.opt.cancel"),
-          type: "warning",
+          type: "warning"
         })
           .then(async () => {
             try {
@@ -100,7 +100,7 @@ export const usePicgoManage = (props: any, deps: any) => {
 
               ElMessage({
                 type: "error",
-                message: t("main.opt.failure") + "=>" + e,
+                message: t("main.opt.failure") + "=>" + e
               })
               logger.error(t("main.opt.failure") + "=>" + e)
             }
@@ -111,7 +111,7 @@ export const usePicgoManage = (props: any, deps: any) => {
             if (e.toString().indexOf("cancel") <= -1) {
               ElMessage({
                 type: "error",
-                message: t("main.opt.failure") + "，图片上传异常=>" + e,
+                message: t("main.opt.failure") + "，图片上传异常=>" + e
               })
               logger.error(t("main.opt.failure") + "=>" + e)
             }
@@ -127,7 +127,7 @@ export const usePicgoManage = (props: any, deps: any) => {
 
           ElMessage({
             type: "error",
-            message: t("main.opt.failure") + "=>" + e,
+            message: t("main.opt.failure") + "=>" + e
           })
           logger.error(t("main.opt.failure") + "=>" + e)
         }
@@ -156,11 +156,11 @@ export const usePicgoManage = (props: any, deps: any) => {
     handlePictureCardPreview: (url: string) => {
       picgoManageData.dialogImageUrl = url ?? ""
       picgoManageData.dialogPreviewVisible = true
-    },
+    }
   }
 
   return {
     picgoManageData,
-    picgoManageMethods,
+    picgoManageMethods
   }
 }

@@ -16,8 +16,7 @@ import { initTopbar } from "./topbar"
 import { showPage } from "./dialog"
 import { PageRoute } from "./pageRoute"
 import { ILogger } from "./appLogger"
-import { generateUniqueName, ImageItem, SiyuanPicGo } from "zhi-siyuan-picgo"
-import { SIYUAN_PICGO_FILE_MAP_KEY } from "zhi-siyuan-picgo/src/lib/constants"
+import { generateUniqueName, ImageItem, SIYUAN_PICGO_FILE_MAP_KEY, SiyuanPicGo } from "zhi-siyuan-picgo"
 
 export default class PicgoPlugin extends Plugin {
   private logger: ILogger
@@ -56,7 +55,8 @@ export default class PicgoPlugin extends Plugin {
   }
 
   private offEvent() {
-    this.eventBus.off("paste", () => {})
+    this.eventBus.off("paste", () => {
+    })
   }
 
   /**
@@ -83,14 +83,14 @@ export default class PicgoPlugin extends Plugin {
 
     const siyuanConfig = {
       apiUrl: siyuanApiUrl,
-      password: siyuanApiToken,
+      password: siyuanApiToken
     }
     const picgoPostApi = await SiyuanPicGo.getInstance(siyuanConfig as any, isDev)
     const siyuanApi = picgoPostApi.siyuanApi
     if (files.length > 1) {
       siyuanApi.pushErrMsg({
         msg: "仅支持一次性上传单张图片",
-        timeout: 7000,
+        timeout: 7000
       })
       return
     }
@@ -99,7 +99,7 @@ export default class PicgoPlugin extends Plugin {
     try {
       siyuanApi.pushMsg({
         msg: "检测到剪贴板图片，正在上传，请勿进行任何操作...",
-        timeout: 1000,
+        timeout: 1000
       })
 
       // pageId: string
@@ -126,7 +126,7 @@ export default class PicgoPlugin extends Plugin {
     } catch (e) {
       siyuanApi.pushErrMsg({
         msg: "剪贴板图片上传失败 =>" + e.toString(),
-        timeout: 7000,
+        timeout: 7000
       })
     }
   }
@@ -135,7 +135,7 @@ export default class PicgoPlugin extends Plugin {
     const WAIT_SECONDS = 10
     siyuanApi.pushMsg({
       msg: `剪贴板图片上传完成。准备延迟${WAIT_SECONDS}秒更新元数据，请勿刷新笔记！`,
-      timeout: 7000,
+      timeout: 7000
     })
     setTimeout(async () => {
       const formData = new FormData()
@@ -168,12 +168,12 @@ export default class PicgoPlugin extends Plugin {
       if (!newImageItem) {
         siyuanApi.pushErrMsg({
           msg: `未找到图片元数据`,
-          timeout: 7000,
+          timeout: 7000
         })
       }
       const newFileMapStr = JSON.stringify(fileMap)
       await siyuanApi.setBlockAttrs(pageId, {
-        [SIYUAN_PICGO_FILE_MAP_KEY]: newFileMapStr,
+        [SIYUAN_PICGO_FILE_MAP_KEY]: newFileMapStr
       })
 
       // 更新块
@@ -181,7 +181,7 @@ export default class PicgoPlugin extends Plugin {
       if (!nodeId) {
         siyuanApi.pushErrMsg({
           msg: `未找到图片块 ID`,
-          timeout: 7000,
+          timeout: 7000
         })
         return
       }
@@ -198,7 +198,7 @@ export default class PicgoPlugin extends Plugin {
 
       siyuanApi.pushMsg({
         msg: `图片元数据更新成功`,
-        timeout: 7000,
+        timeout: 7000
       })
     }, WAIT_SECONDS * 1000)
   }
