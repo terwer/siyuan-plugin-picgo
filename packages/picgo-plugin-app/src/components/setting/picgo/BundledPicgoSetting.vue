@@ -41,7 +41,7 @@ const formData = reactive({
 <template>
   <div>
     <el-form-item :label="t('setting.cors.title')" :required="!isInSiyuanOrSiyuanNewWin()">
-      <el-input v-model="formData.cfg.picBed.proxy" :placeholder="t('setting.cors.title.tip')"/>
+      <el-input v-model="formData.cfg.picBed.proxy" :placeholder="t('setting.cors.title.tip')" />
       <div>
         <a href="https://blog.terwer.space/static/20240312140915-rvxrqp2" target="_blank">
           {{ t("setting.picgo.refer.to.here") }}
@@ -53,11 +53,15 @@ const formData = reactive({
     <el-radio-group :key="formData.settingType" v-model="formData.settingType" class="bundled-setting-group">
       <el-radio-button key="picbed" value="picbed">图床设置</el-radio-button>
       <el-radio-button key="picgo-config" value="picgo-config">PicGo设置</el-radio-button>
+      <!--
       <el-radio-button key="picgo-plugin" value="picgo-plugin">插件商店</el-radio-button>
+      -->
     </el-radio-group>
     <picbed-setting v-if="formData.settingType === 'picbed'" :ctx="props.ctx" :cfg="formData.cfg" />
     <picgo-config-setting v-if="formData.settingType === 'picgo-config'" :ctx="props.ctx" :cfg="formData.cfg" />
+    <!--
     <picgo-plugin-setting v-if="formData.settingType === 'picgo-plugin'" :ctx="props.ctx" :cfg="formData.cfg" />
+    -->
   </div>
 </template>
 
