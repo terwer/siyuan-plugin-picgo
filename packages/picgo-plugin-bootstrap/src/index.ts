@@ -16,7 +16,7 @@ import { initTopbar } from "./topbar"
 import { showPage } from "./dialog"
 import { PageRoute } from "./pageRoute"
 import { ILogger } from "./appLogger"
-import { generateUniqueName, ImageItem, SIYUAN_PICGO_FILE_MAP_KEY, SiyuanPicGo } from "zhi-siyuan-picgo"
+import { generateUniqueName, ImageItem, SIYUAN_PICGO_FILE_MAP_KEY, SiyuanPicGo, IPicGo } from "zhi-siyuan-picgo"
 
 export default class PicgoPlugin extends Plugin {
   private logger: ILogger
@@ -85,6 +85,7 @@ export default class PicgoPlugin extends Plugin {
       password: siyuanApiToken,
     }
     const picgoPostApi = await SiyuanPicGo.getInstance(siyuanConfig as any, isDev)
+    const ctx = picgoPostApi.ctx()
     const siyuanApi = picgoPostApi.siyuanApi
     if (files.length > 1) {
       siyuanApi.pushErrMsg({
@@ -118,7 +119,7 @@ export default class PicgoPlugin extends Plugin {
           )
         }
         // 处理上传后续
-        await this.handleAfterUpload(siyuanApi, pageId, file, img, imageItem)
+        await this.handleAfterUpload(ctx, siyuanApi, pageId, file, img, imageItem)
       } else {
         throw new Error("图片上传失败，可能原因：PicGO配置错误，请检查配置。请打开picgo.log查看更多信息")
       }
@@ -130,10 +131,10 @@ export default class PicgoPlugin extends Plugin {
     }
   }
 
-  private async handleAfterUpload(siyuanApi: any, pageId: string, file: any, img: any, oldImageitem: any) {
-    const WAIT_SECONDS = 10
+  private async handleAfterUpload(ctx: IPicGo, siyuanApi: any, pageId: string, file: any, img: any, oldImageitem: any) {
+    const SIYUAN_WAIT_SECONDS = ctx.getConfig("siyuan.waitTimeout") || 10
     siyuanApi.pushMsg({
-      msg: `剪贴板图片上传完成。准备延迟${WAIT_SECONDS}秒更新元数据，请勿刷新笔记！`,
+      msg: `剪贴板图片上传完成。准备延迟${SIYUAN_WAIT_SECONDS}秒更新元数据，请勿刷新笔记！`,
       timeout: 7000,
     })
     setTimeout(async () => {
@@ -208,7 +209,7 @@ export default class PicgoPlugin extends Plugin {
         msg: `图片元数据更新成功`,
         timeout: 7000,
       })
-    }, WAIT_SECONDS * 1000)
+    }, SIYUAN_WAIT_SECONDS * 1000)
   }
 
   private getDataNodeIdFromImgWithSrc(srcValue: string) {
