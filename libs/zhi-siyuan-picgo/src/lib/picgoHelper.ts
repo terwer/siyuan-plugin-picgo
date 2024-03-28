@@ -33,6 +33,7 @@ import { IPicGoHelperType } from "./utils/enums"
  */
 enum PicgoHelperEvents {
   REFRESH_PLUGIN_LIST = "refreshPluginList",
+  DO_PICGO_CONFIG_PLUGIN = "doPicgoConfigPlugin",
 }
 
 /**
@@ -529,7 +530,6 @@ class PicgoHelper {
           [`picgoPlugins.${plugin.fullName}`]: true,
         })
         that.triggerPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST)
-        // BrowserUtil.reloadPageWithMessageCallback("插件已启用，即将刷新页面...")
       },
     }
 
@@ -550,7 +550,6 @@ class PicgoHelper {
           that.handleRestoreState("uploader", plugin.config.uploader.name)
         }
         that.triggerPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST)
-        // BrowserUtil.reloadPageWithMessageCallback("插件已禁用，即将刷新页面...")
       },
     }
 
@@ -558,12 +557,46 @@ class PicgoHelper {
     template.push(enableItem)
     template.push(disableItem)
 
-    template.push({
-      label: " -------- ",
-      click() {
-        // ignore
-      },
-    })
+    // 插件自定义菜单配置
+    const pluginMenuTemplate = []
+    for (const i in plugin.config) {
+      // 图床分多份单独配置
+      if (i !== "uploader") {
+        if (plugin.config[i].config.length > 0) {
+          const obj = {
+            // setting.picgo.plugin.config.setting
+            // label: `插件设置 - ${plugin.config[i].fullName || plugin.config[i].name}`,
+            label: "插件设置",
+            click() {
+              const currentType = i
+              const configName = plugin.config[i].fullName || plugin.config[i].name
+              const config = plugin.config[i].config
+              // 触发事件操作插件配置
+              that.triggerPicgoEvent(PicgoHelperEvents.DO_PICGO_CONFIG_PLUGIN, {
+                currentType: currentType,
+                configName: configName,
+                config: config,
+              })
+            },
+          }
+          pluginMenuTemplate.push(obj)
+        }
+      }
+    }
+
+    // 如果没有插件菜单不显示分割线
+    if (pluginMenuTemplate.length > 0) {
+      template.push({
+        label: " -------- ",
+        click() {
+          // ignore
+        },
+      })
+
+      for (const pluginMenuItem of pluginMenuTemplate) {
+        template.push(pluginMenuItem)
+      }
+    }
 
     // 显示菜单
     const { Menu, getCurrentWindow } = win.require("@electron/remote")

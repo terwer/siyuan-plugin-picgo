@@ -39,10 +39,20 @@ const defaultLogo = ref(`this.src="/plugins/siyuan-plugin-picgo/images/picgo-log
 const formData = reactive({
   cfg: props.cfg,
 
+  // plugin list
   loading: false,
   searchText: "",
   pluginList: [] as IPicGoPlugin[],
   pluginNameList: [] as string[],
+
+  // plugin config form
+  showConfigForm: false,
+  configFormTitle: "",
+  pluginConfigData: {
+    currentType: "plugin",
+    configName: "",
+    config: {},
+  },
 })
 const npmSearchText = computed(() => {
   return formData.searchText.match("picgo-plugin-")
@@ -126,19 +136,23 @@ const buildContextMenu = async (plugin: IPicGoPlugin) => {
   picgoHelper.buildPluginMenu(plugin)
 }
 
+const handlePicgoConfigPlugin = (args: { currentType: string; configName: string; config: any }) => {
+  logger.debug("handlePicgoConfigPlugin args =>", args)
+
+  // set form data
+  formData.pluginConfigData.currentType = args.currentType
+  formData.pluginConfigData.configName = args.configName
+  formData.pluginConfigData.config = args.config
+
+  // show form
+  formData.showConfigForm = true
+  formData.configFormTitle = `插件配置 - ${args.configName}`
+}
+
 const checkWork = (item: IPicGoPlugin) => {
   const WORKED_PLUGINS = ["watermark-elec", "s3", "minio"]
   return WORKED_PLUGINS.includes(item.name)
 }
-
-watch(npmSearchText, (val: string) => {
-  if (val) {
-    formData.pluginList = []
-    getSearchResult(val)
-  } else {
-    loadPluginList()
-  }
-})
 
 const loadPluginList = () => {
   // load plugin
@@ -156,9 +170,19 @@ const initPage = () => {
   logger.debug("picgo plugin store inited", formData.pluginList)
 }
 
+watch(npmSearchText, (val: string) => {
+  if (val) {
+    formData.pluginList = []
+    getSearchResult(val)
+  } else {
+    loadPluginList()
+  }
+})
+
 onBeforeMount(() => {
   // bind events
   picgoHelper.bindPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST, initPage)
+  picgoHelper.bindPicgoEvent(PicgoHelperEvents.DO_PICGO_CONFIG_PLUGIN, handlePicgoConfigPlugin)
 
   // init
   initPage()
@@ -167,6 +191,7 @@ onBeforeMount(() => {
 onBeforeUnmount(() => {
   // unbind events
   picgoHelper.unbindPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST, initPage)
+  picgoHelper.unbindPicgoEvent(PicgoHelperEvents.DO_PICGO_CONFIG_PLUGIN, handlePicgoConfigPlugin)
 })
 </script>
 
@@ -273,7 +298,27 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <!-- 插件自定义配置表单 -->
+    <!-- 抽屉占位 -->
+    <el-drawer
+      v-model="formData.showConfigForm"
+      size="85%"
+      :title="formData.configFormTitle"
+      direction="rtl"
+      :destroy-on-close="true"
+    >
+      <!-- 插件自定义配置表单 -->
+      <div class="plugin-config-form">
+        <config-form
+          :id="formData.pluginConfigData.currentType"
+          :ctx="ctx"
+          :cfg="formData.cfg"
+          :config-type="formData.pluginConfigData.currentType"
+          :config-id="formData.pluginConfigData.configName"
+          :config="formData.pluginConfigData.config"
+          :is-new-form="false"
+        />
+      </div>
+    </el-drawer>
   </div>
 </template>
 
