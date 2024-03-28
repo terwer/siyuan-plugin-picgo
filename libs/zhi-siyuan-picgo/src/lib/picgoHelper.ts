@@ -588,6 +588,7 @@ class PicgoHelper {
     if (pluginMenuTemplate.length > 0) {
       template.push({
         label: " -------- ",
+        enabled: false,
         click() {
           // ignore
         },
@@ -605,6 +606,16 @@ class PicgoHelper {
     menu.popup({
       elecWin,
     })
+  }
+
+  public async installPlugin(fullName: string) {
+    const res = await this.ctx.pluginHandler.install([fullName], {}, {})
+    console.log("installPlugin res", res)
+    return {
+      success: res.success,
+      body: fullName,
+      errMsg: res.success ? "" : res.body,
+    }
   }
 
   // ===================================================================================================================

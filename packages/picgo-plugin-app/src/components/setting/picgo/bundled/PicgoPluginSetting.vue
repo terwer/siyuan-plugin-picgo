@@ -20,6 +20,7 @@ import MaterialSymbolsSettings from "~icons/material-symbols/settings"
 import PhBellSimpleSlashFill from "~icons/ph/bell-simple-slash-fill"
 import IconoirXmark from "~icons/iconoir/xmark"
 import { PicgoHelperEvents } from "zhi-siyuan-picgo/src"
+import { ElMessage, ElMessageBox } from "element-plus"
 
 const props = defineProps({
   ctx: {
@@ -130,7 +131,33 @@ const _getSearchResult = (val: string) => {
     })
 }
 
-const installPlugin = (item: IPicGoPlugin) => {}
+const installPlugin = (item: IPicGoPlugin) => {
+  if (!item.gui) {
+    ElMessageBox.confirm(t("setting.picgo.plugin.gui.not.implemented"), t("main.opt.tip"), {
+      confirmButtonText: t("main.opt.ok"),
+      cancelButtonText: t("main.opt.cancel"),
+      type: "warning",
+    })
+      .then(async () => {
+        item.ing = true
+        try {
+          await picgoHelper.installPlugin(item.fullName)
+        } catch (e) {
+          ElMessage({
+            type: "error",
+            message: t("main.opt.failure") + "=>" + e,
+          })
+          logger.error(t("main.opt.failure") + "=>" + e)
+        }
+      })
+      .catch(() => {
+        logger.warn("Install canceled")
+      })
+  } else {
+    item.ing = true
+    picgoHelper.installPlugin(item.fullName)
+  }
+}
 
 const buildContextMenu = async (plugin: IPicGoPlugin) => {
   picgoHelper.buildPluginMenu(plugin)

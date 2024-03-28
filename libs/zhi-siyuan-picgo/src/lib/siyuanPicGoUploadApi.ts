@@ -24,7 +24,7 @@ class SiyuanPicGoUploadApi {
 
   constructor(isDev?: boolean) {
     // 初始化 PicGO
-    this.picgo = new UniversalPicGo("", "", isDev)
+    this.picgo = new UniversalPicGo("", "", "", isDev)
     this.externalPicGo = new ExternalPicgo(this.picgo, isDev)
     this.logger = this.picgo.getLogger("siyuan-picgo-upload-api")
     this.logger.debug("picgo upload api inited")
