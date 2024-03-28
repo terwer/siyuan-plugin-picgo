@@ -27,6 +27,7 @@ import IdUtil from "./utils/idUtil"
 import { IGuiMenuItem } from "./types"
 import { handleConfigWithFunction, handleStreamlinePluginName } from "./utils/common"
 import { IPicGoHelperType } from "./utils/enums"
+import { BrowserUtil } from "zhi-device"
 
 /**
  * picgo 工具类
@@ -453,6 +454,102 @@ class PicgoHelper {
       list.push(obj)
     }
     return list
+  }
+
+  /**
+   * 构建插件菜单
+   *
+   * @param plugin 插件对象
+   *
+   * @author terwer
+   * @since 0.7.0
+   */
+  public buildPluginMenu(plugin: IPicGoPlugin) {
+    const that = this
+    // 根据插件构造菜单
+    const template = [] as any
+
+    // 启用插件
+    const enableItem = {
+      // setting.picgo.plugin.enable
+      label: "启用插件",
+      enabled: !plugin.enabled,
+      click() {
+        that.savePicgoConfig({
+          [`picgoPlugins.${plugin.fullName}`]: true,
+        })
+
+        BrowserUtil.reloadPageWithMessageCallback("插件已启用，即将刷新页面...")
+      },
+    }
+
+    // 禁用插件
+    const disableItem = {
+      // setting.picgo.plugin.disable
+      label: "禁用插件",
+      enabled: plugin.enabled,
+      click() {
+        that.savePicgoConfig({
+          [`picgoPlugins.${plugin.fullName}`]: false,
+        })
+
+        if (plugin.config.transformer.name) {
+          that.handleRestoreState("transformer", plugin.config.transformer.name)
+        }
+        if (plugin.config.uploader.name) {
+          that.handleRestoreState("uploader", plugin.config.uploader.name)
+        }
+
+        BrowserUtil.reloadPageWithMessageCallback("插件已禁用，即将刷新页面...")
+      },
+    }
+
+    // 固定菜单
+    template.push(enableItem)
+    template.push(disableItem)
+
+    template.push({
+      label: " -------- ",
+      click() {
+        // ignore
+      },
+    })
+
+    // 显示菜单
+    const { Menu, getCurrentWindow } = win.require("@electron/remote")
+    const elecWin = getCurrentWindow()
+    const menu = Menu.buildFromTemplate(template)
+    menu.popup({
+      elecWin,
+    })
+  }
+
+  // ===================================================================================================================
+
+  /**
+   * restore Uploader & Transformer
+   *
+   * @param item 插件项
+   * @param name 名称
+   */
+  private handleRestoreState(item: string, name: string) {
+    if (item === "uploader") {
+      const current = this.getPicgoConfig("picBed.current")
+      if (current === name) {
+        this.savePicgoConfig({
+          "picBed.current": "github",
+          "picBed.uploader": "github",
+        })
+      }
+    }
+    if (item === "transformer") {
+      const current = this.getPicgoConfig("picBed.transformer")
+      if (current === name) {
+        this.savePicgoConfig({
+          "picBed.transformer": "path",
+        })
+      }
+    }
   }
 
   /**

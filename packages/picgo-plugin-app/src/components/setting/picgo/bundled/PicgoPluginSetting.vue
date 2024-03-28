@@ -9,13 +9,16 @@
 
 <!--suppress HtmlUnknownAttribute, TypeScriptUnresolvedReference -->
 <script setup lang="ts">
-import { onBeforeMount, reactive, ref } from "vue"
+import { computed, onBeforeMount, reactive, ref, watch } from "vue"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import MaterialSymbolsShoppingBagOutlineSharp from "~icons/material-symbols/shopping-bag-outline-sharp"
 import MaterialSymbolsDownload from "~icons/material-symbols/download"
 import { IPicGoPlugin, PicgoHelper, win, handleStreamlinePluginName } from "zhi-siyuan-picgo"
 import _ from "lodash-es"
 import { createAppLogger } from "@/utils/appLogger.ts"
+import MaterialSymbolsSettings from "~icons/material-symbols/settings"
+import PhBellSimpleSlashFill from "~icons/ph/bell-simple-slash-fill"
+import IconoirXmark from "~icons/iconoir/xmark"
 
 const props = defineProps({
   ctx: {
@@ -31,7 +34,6 @@ const props = defineProps({
 const logger = createAppLogger("picgo-plugn-store")
 const { t } = useVueI18n()
 
-const os = ref("")
 const defaultLogo = ref(`this.src="/plugins/siyuan-plugin-picgo/images/picgo-logo.png"`)
 const formData = reactive({
   cfg: props.cfg,
@@ -40,6 +42,13 @@ const formData = reactive({
   searchText: "",
   pluginList: [] as IPicGoPlugin[],
   pluginNameList: [] as string[],
+})
+const npmSearchText = computed(() => {
+  return formData.searchText.match("picgo-plugin-")
+    ? formData.searchText
+    : formData.searchText !== ""
+    ? `picgo-plugin-${formData.searchText}`
+    : formData.searchText
 })
 let getSearchResult: any
 // PicGo 持久化操作帮助类
@@ -112,21 +121,35 @@ const _getSearchResult = (val: string) => {
 
 const installPlugin = (item: IPicGoPlugin) => {}
 
-const buildContextMenu = async (plugin: IPicGoPlugin) => {}
+const buildContextMenu = async (plugin: IPicGoPlugin) => {
+  picgoHelper.buildPluginMenu(plugin)
+}
 
 const checkWork = (item: IPicGoPlugin) => {
   const WORKED_PLUGINS = ["watermark-elec", "s3", "minio"]
   return WORKED_PLUGINS.includes(item.name)
 }
 
-onBeforeMount(() => {
-  os.value = win.process.platform
+watch(npmSearchText, (val: string) => {
+  if (val) {
+    formData.pluginList = []
+    getSearchResult(val)
+  } else {
+    loadPluginList()
+  }
+})
 
+const loadPluginList = () => {
   // load plugin
   const pluginList = picgoHelper.getPluginList()
   formData.pluginList = pluginList
   formData.pluginNameList = pluginList.map((item: any) => item.fullName)
   logger.debug("插件列表已经成功加载.", pluginList)
+}
+
+onBeforeMount(() => {
+  // load pluginlist
+  loadPluginList()
 
   // show search reault after delay
   getSearchResult = _.debounce(_getSearchResult, 50)
@@ -161,7 +184,7 @@ onBeforeMount(() => {
           <el-input v-model="formData.searchText" :placeholder="t('setting.picgo.plugin.search.placeholder')">
             <template #suffix>
               <el-icon class="el-input__icon" style="cursor: pointer" @click="cleanSearch">
-                <font-awesome-icon icon="fa-solid fa-xmark" />
+                <IconoirXmark />
               </el-icon>
             </template>
           </el-input>
@@ -173,8 +196,8 @@ onBeforeMount(() => {
       <div>
         <el-row v-loading="formData.loading" :gutter="10" class="plugin-list">
           <el-col v-for="item in formData.pluginList" :key="item.fullName" class="plugin-item__container" :span="12">
-            <div class="plugin-item" :class="{ darwin: os === 'darwin' }">
-              <div v-if="!item.gui" class="cli-only-badge" title="CLI only">CLI</div>
+            <div class="plugin-item">
+              <div v-if="!item.gui" class="unavailable-only-badge" title="Unavailable">Unavailable</div>
               <img class="plugin-item__logo" :src="item.logo" :onerror="defaultLogo" alt="img" />
               <div class="plugin-item__content" :class="{ disabled: !item.enabled }">
                 <div class="plugin-item__name" @click="openHomepage(item.homepage)">
@@ -220,10 +243,10 @@ onBeforeMount(() => {
                       </span>
                       <template v-else>
                         <el-icon v-if="item.enabled" class="el-icon-setting" @click="buildContextMenu(item)">
-                          <font-awesome-icon icon="fa-solid fa-gear" />
+                          <MaterialSymbolsSettings />
                         </el-icon>
                         <el-icon v-else class="el-icon-remove-outline" @click="buildContextMenu(item)">
-                          <font-awesome-icon icon="fa-solid fa-bell-slash" />
+                          <PhBellSimpleSlashFill />
                         </el-icon>
                       </template>
                     </template>
@@ -330,7 +353,7 @@ $darwinBg = #172426
       height 80px
       margin-bottom 10px
 
-    .cli-only-badge
+    .unavailable-only-badge
       position absolute
       right 0
       top 0
