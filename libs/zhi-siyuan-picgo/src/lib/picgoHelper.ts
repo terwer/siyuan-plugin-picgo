@@ -1,3 +1,5 @@
+// noinspection TypeScriptValidateJSTypes
+
 /*
  *            GNU GENERAL PUBLIC LICENSE
  *               Version 3, 29 June 2007
@@ -9,17 +11,30 @@
 
 import _ from "lodash-es"
 import {
-  eventBus,
   IBusEvent,
   IConfig,
   IPicBedType,
   IPicGo,
+  IPicGoPlugin,
   IUploaderConfigItem,
   IUploaderConfigListItem,
+  picgoEventBus,
+  win,
 } from "universal-picgo"
 import { getRawData, trimValues } from "./utils/utils"
 import { readonly } from "vue"
 import IdUtil from "./utils/idUtil"
+import { IGuiMenuItem } from "./types"
+import { handleConfigWithFunction, handleStreamlinePluginName } from "./utils/common"
+import { IPicGoHelperType } from "./utils/enums"
+
+/**
+ * PicGo 自定义事件
+ */
+enum PicgoHelperEvents {
+  REFRESH_PLUGIN_LIST = "refreshPluginList",
+  DO_PICGO_CONFIG_PLUGIN = "doPicgoConfigPlugin",
+}
 
 /**
  * picgo 工具类
@@ -87,12 +102,56 @@ class PicgoHelper {
     Object.keys(cfg).forEach((name: string) => {
       const rawCfg = getRawData(cfg)
       _.set(this.reactiveCfg, name, rawCfg[name])
-      eventBus.emit(IBusEvent.CONFIG_CHANGE, {
+      picgoEventBus.emit(IBusEvent.CONFIG_CHANGE, {
         configName: name,
         value: rawCfg[name],
       })
     })
   }
+
+  // ===================================================================================================================
+
+  /**
+   * 注册 PicGo 事件（仅触发一次）
+   *
+   * @param eventName
+   * @param listener
+   */
+  public bindOncePicgoEvent(eventName: string, listener: any) {
+    picgoEventBus.on(eventName, listener)
+  }
+
+  /**
+   * 注册 PicGo 事件
+   *
+   * @param eventName
+   * @param listener
+   */
+  public bindPicgoEvent(eventName: string, listener: any) {
+    picgoEventBus.on(eventName, listener)
+  }
+
+  /**
+   * 取消注册 PicGo 事件
+   *
+   * @param eventName
+   * @param listener
+   */
+  public unbindPicgoEvent(eventName: string, listener: any) {
+    picgoEventBus.off(eventName, listener)
+  }
+
+  /**
+   * 触发事件
+   *
+   * @param eventName
+   * @param args
+   */
+  public triggerPicgoEvent(eventName: string, args?: any) {
+    picgoEventBus.emit(eventName, args)
+  }
+
+  // ===================================================================================================================
 
   /**
    * 获取所有的图床列表
@@ -253,7 +312,7 @@ class PicgoHelper {
     const name = this.ctx.helper.uploader.get(type)?.name || type
     if (this.ctx.helper.uploader.get(type)?.config) {
       const _config = this.ctx.helper.uploader.get(type).config(this.ctx)
-      const config = this.handleConfigWithFunction(_config)
+      const config = handleConfigWithFunction(_config)
       return {
         config,
         name,
@@ -387,6 +446,211 @@ class PicgoHelper {
   }
 
   /**
+   * 获取插件列表（PC only）
+   */
+  public getPluginList(): IPicGoPlugin[] {
+    const path = win.require("path")
+
+    const STORE_PATH = this.ctx.baseDir
+    const pluginList = this.ctx.pluginLoader.getFullList()
+    const list = [] as IPicGoPlugin[]
+    for (const i in pluginList) {
+      const plugin = this.ctx.pluginLoader.getPlugin(pluginList[i])!
+      const pluginPath = path.join(STORE_PATH, `/node_modules/${pluginList[i]}`)
+      const pluginPKG = win.require(path.join(pluginPath, "package.json"))
+
+      const uploaderName = plugin.uploader || ""
+      const transformerName = plugin.transformer || ""
+      let menu: Omit<IGuiMenuItem, "handle">[] = []
+      if (plugin.guiMenu) {
+        menu = plugin.guiMenu(this.ctx).map((item: any) => ({
+          label: item.label,
+        }))
+      }
+      let gui = false
+      if (pluginPKG.keywords && pluginPKG.keywords.length > 0) {
+        if (pluginPKG.keywords.includes("picgo-gui-plugin")) {
+          gui = true
+        }
+      }
+
+      const obj: IPicGoPlugin = {
+        name: handleStreamlinePluginName(pluginList[i]),
+        fullName: pluginList[i],
+        author: pluginPKG.author.name || pluginPKG.author,
+        description: pluginPKG.description,
+        logo: "file://" + path.join(pluginPath, "logo.png").split(path.sep).join("/"),
+        version: pluginPKG.version,
+        gui,
+        config: {
+          plugin: {
+            fullName: pluginList[i],
+            name: handleStreamlinePluginName(pluginList[i]),
+            config: plugin.config ? handleConfigWithFunction(plugin.config(this.ctx)) : [],
+          },
+          uploader: {
+            name: uploaderName,
+            config: handleConfigWithFunction(this.getConfigByHelper(uploaderName, IPicGoHelperType.uploader)),
+          },
+          transformer: {
+            name: transformerName,
+            config: handleConfigWithFunction(this.getConfigByHelper(uploaderName, IPicGoHelperType.transformer)),
+          },
+        },
+        enabled: this.getPicgoConfig(`picgoPlugins.${pluginList[i]}`, false),
+        homepage: pluginPKG.homepage ? pluginPKG.homepage : "",
+        guiMenu: menu,
+        ing: false,
+      }
+      list.push(obj)
+    }
+    return list
+  }
+
+  /**
+   * 构建插件菜单
+   *
+   * @param plugin 插件对象
+   *
+   * @author terwer
+   * @since 0.7.0
+   */
+  public buildPluginMenu(plugin: IPicGoPlugin) {
+    const that = this
+    // 根据插件构造菜单
+    const template = [] as any
+
+    // 启用插件
+    const enableItem = {
+      // setting.picgo.plugin.enable
+      label: "启用插件",
+      enabled: !plugin.enabled,
+      click() {
+        that.savePicgoConfig({
+          [`picgoPlugins.${plugin.fullName}`]: true,
+        })
+        that.triggerPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST)
+      },
+    }
+
+    // 禁用插件
+    const disableItem = {
+      // setting.picgo.plugin.disable
+      label: "禁用插件",
+      enabled: plugin.enabled,
+      click() {
+        that.savePicgoConfig({
+          [`picgoPlugins.${plugin.fullName}`]: false,
+        })
+
+        if (plugin.config.transformer.name) {
+          that.handleRestoreState("transformer", plugin.config.transformer.name)
+        }
+        if (plugin.config.uploader.name) {
+          that.handleRestoreState("uploader", plugin.config.uploader.name)
+        }
+        that.triggerPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST)
+      },
+    }
+
+    // 固定菜单
+    template.push(enableItem)
+    template.push(disableItem)
+
+    // 插件自定义菜单配置
+    const pluginMenuTemplate = []
+    for (const i in plugin.config) {
+      // 图床分多份单独配置
+      if (i !== "uploader") {
+        if (plugin.config[i].config.length > 0) {
+          const obj = {
+            // setting.picgo.plugin.config.setting
+            // label: `插件设置 - ${plugin.config[i].fullName || plugin.config[i].name}`,
+            label: "插件设置",
+            click() {
+              const currentType = i
+              const configName = plugin.config[i].fullName || plugin.config[i].name
+              const config = plugin.config[i].config
+              // 触发事件操作插件配置
+              that.triggerPicgoEvent(PicgoHelperEvents.DO_PICGO_CONFIG_PLUGIN, {
+                currentType: currentType,
+                configName: configName,
+                config: config,
+              })
+            },
+          }
+          pluginMenuTemplate.push(obj)
+        }
+      }
+    }
+
+    // 如果没有插件菜单不显示分割线
+    if (pluginMenuTemplate.length > 0) {
+      template.push({
+        label: " -------- ",
+        enabled: false,
+        click() {
+          // ignore
+        },
+      })
+
+      for (const pluginMenuItem of pluginMenuTemplate) {
+        template.push(pluginMenuItem)
+      }
+    }
+
+    // 显示菜单
+    const { Menu, getCurrentWindow } = win.require("@electron/remote")
+    const elecWin = getCurrentWindow()
+    const menu = Menu.buildFromTemplate(template)
+    menu.popup({
+      elecWin,
+    })
+  }
+
+  /**
+   * 安装插件
+   *
+   * @param fullName
+   */
+  public async installPlugin(fullName: string) {
+    const res = await this.ctx.pluginHandler.install([fullName], {}, {})
+    return {
+      success: res.success,
+      body: fullName,
+      errMsg: res.success ? "" : res.body,
+    }
+  }
+
+  // ===================================================================================================================
+
+  /**
+   * restore Uploader & Transformer
+   *
+   * @param item 插件项
+   * @param name 名称
+   */
+  private handleRestoreState(item: string, name: string) {
+    if (item === "uploader") {
+      const current = this.getPicgoConfig("picBed.current")
+      if (current === name) {
+        this.savePicgoConfig({
+          "picBed.current": "github",
+          "picBed.uploader": "github",
+        })
+      }
+    }
+    if (item === "transformer") {
+      const current = this.getPicgoConfig("picBed.transformer")
+      if (current === name) {
+        this.savePicgoConfig({
+          "picBed.transformer": "path",
+        })
+      }
+    }
+  }
+
+  /**
    * 增加配置元数据
    *
    * @param originData 原始数据
@@ -405,22 +669,21 @@ class PicgoHelper {
     )
   }
 
-  /**
-   * 配置处理
-   *
-   * @param config 配置
-   */
-  private handleConfigWithFunction(config: any) {
-    for (const i in config) {
-      if (typeof config[i].default === "function") {
-        config[i].default = config[i].default()
+  // get uploader or transformer config
+  private getConfigByHelper(name: string, type: IPicGoHelperType) {
+    let config: any[] = []
+    if (name === "") {
+      return config
+    } else {
+      const handler = this.ctx.helper[type].get(name)
+      if (handler) {
+        if (handler.config) {
+          config = handler.config(this.ctx)
+        }
       }
-      if (typeof config[i].choices === "function") {
-        config[i].choices = config[i].choices()
-      }
+      return config
     }
-    return config
   }
 }
 
-export { PicgoHelper }
+export { PicgoHelper, PicgoHelperEvents }

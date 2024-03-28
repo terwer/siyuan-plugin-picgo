@@ -35,7 +35,7 @@ import { ensureFileSync, ensureFolderSync, pathExistsSync } from "../utils/nodeU
 import { I18nManager } from "../i18n"
 import { browserPathJoin, getBrowserDirectoryPath } from "../utils/browserUtils"
 import { isConfigKeyInBlackList, isInputConfigValid } from "../utils/common"
-import { eventBus } from "../utils/eventBus"
+import { picgoEventBus } from "../utils/picgoEventBus"
 import { PicGoRequestWrapper } from "../lib/PicGoRequest"
 
 /*
@@ -50,6 +50,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   private db!: ConfigDb
   private _pluginLoader!: PluginLoader
   configPath: string
+  zhiNpmPath: string
   baseDir!: string
   pluginBaseDir!: string
   helper!: IHelper
@@ -74,12 +75,13 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     return this.requestWrapper.PicGoRequest.bind(this.requestWrapper)
   }
 
-  constructor(configPath?: string, pluginBaseDir?: string, isDev?: boolean) {
+  constructor(configPath?: string, pluginBaseDir?: string, zhiNpmPath?: string, isDev?: boolean) {
     super()
     this.isDev = isDev ?? false
     this.log = this.getLogger()
     this.configPath = configPath ?? ""
     this.pluginBaseDir = pluginBaseDir ?? ""
+    this.zhiNpmPath = zhiNpmPath ?? ""
     this.output = []
     this.input = []
     this.helper = {
@@ -90,6 +92,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       afterUploadPlugins: new LifecyclePlugins("afterUploadPlugins"),
     }
     this.initConfigPath()
+    this.initZhiNpmPath()
     this.initConfig()
     this.pluginHandler = new PluginHandler(this)
     this.requestWrapper = new PicGoRequestWrapper(this)
@@ -152,7 +155,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
         delete config[name]
       }
       _.set(this._config, name, config[name])
-      eventBus.emit(IBusEvent.CONFIG_CHANGE, {
+      picgoEventBus.emit(IBusEvent.CONFIG_CHANGE, {
         configName: name,
         value: config[name],
       })
@@ -267,6 +270,21 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     this.log.info(`hasNodeEnv => ${hasNodeEnv}`)
     this.log.info(`this.baseDir => ${this.baseDir}`)
     this.log.info(`this.pluginBaseDir => ${this.pluginBaseDir}`)
+  }
+
+  private initZhiNpmPath(): void {
+    if (hasNodeEnv) {
+      const fs = win.fs
+      const path = win.require("path")
+
+      if (this.zhiNpmPath === "") {
+        this.zhiNpmPath = this.configPath
+      }
+      const dir = path.join(this.baseDir, "libs")
+      ensureFolderSync(fs, dir)
+    } else {
+      this.log.warn("zhi is not supported in browser")
+    }
   }
 
   private initConfig(): void {

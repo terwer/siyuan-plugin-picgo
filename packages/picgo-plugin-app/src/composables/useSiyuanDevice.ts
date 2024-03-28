@@ -19,24 +19,18 @@ export const useSiyuanDevice = () => {
   const isInSiyuanMainWin = () => {
     const deviceType = DeviceDetection.getDevice()
     const isSiyuanOrSiyuanNewWin = deviceType === DeviceTypeEnum.DeviceType_Siyuan_MainWin
-    logger.debug("deviceType=>", deviceType)
-    logger.debug("isSiyuanOrSiyuanNewWin=>", String(isSiyuanOrSiyuanNewWin))
     return isSiyuanOrSiyuanNewWin
   }
 
   const isInSiyuanWidget = () => {
     const deviceType = DeviceDetection.getDevice()
     const isSiyuanOrSiyuanNewWin = deviceType === DeviceTypeEnum.DeviceType_Siyuan_Widget
-    logger.debug("deviceType=>", deviceType)
-    logger.debug("isSiyuanOrSiyuanNewWin=>", String(isSiyuanOrSiyuanNewWin))
     return isSiyuanOrSiyuanNewWin
   }
 
   const isInChromeExtension = () => {
     const deviceType = DeviceDetection.getDevice()
     const isSiyuanOrSiyuanNewWin = deviceType === DeviceTypeEnum.DeviceType_Chrome_Extension
-    logger.debug("deviceType=>", deviceType)
-    logger.debug("isSiyuanOrSiyuanNewWin=>", String(isSiyuanOrSiyuanNewWin))
     return isSiyuanOrSiyuanNewWin
   }
 
@@ -47,8 +41,6 @@ export const useSiyuanDevice = () => {
       deviceType === DeviceTypeEnum.DeviceType_Siyuan_MainWin ||
       deviceType === DeviceTypeEnum.DeviceType_Siyuan_RendererWin ||
       deviceType === DeviceTypeEnum.DeviceType_Siyuan_Widget
-    logger.debug("deviceType=>", deviceType)
-    logger.debug("isSiyuanOrSiyuanNewWin=>", String(isSiyuanOrSiyuanNewWin))
     return isSiyuanOrSiyuanNewWin
   }
 

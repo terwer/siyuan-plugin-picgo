@@ -7,7 +7,9 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { EventEmitter } from "./nodePolyfill"
+import { IPicGo } from "universal-picgo"
 
-const eventBus = new EventEmitter()
-export { eventBus }
+export interface IGuiMenuItem {
+  label: string
+  handle: (ctx: IPicGo, guiApi: any) => Promise<void>
+}

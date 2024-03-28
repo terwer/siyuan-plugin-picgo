@@ -3,7 +3,7 @@ import { ExternalPicgo } from "./core/ExternalPicgo"
 import ConfigDb from "./db/config"
 import PluginLoaderDb from "./db/pluginLoder"
 import ExternalPicgoConfigDb from "./db/externalPicGo"
-import { eventBus } from "./utils/eventBus"
+import { picgoEventBus } from "./utils/picgoEventBus"
 import { currentWin, hasNodeEnv, parentWin, win } from "universal-picgo-store"
 import { PicgoTypeEnum, IBusEvent } from "./utils/enums"
 import {
@@ -16,10 +16,11 @@ import {
   IUploaderConfigItem,
   IUploaderConfigListItem,
   IPluginConfig,
+  IPicGoPlugin,
 } from "./types"
 import { isFileOrBlob, calculateMD5 } from "./utils/common"
 
-export { UniversalPicGo, ExternalPicgo, eventBus }
+export { UniversalPicGo, ExternalPicgo, picgoEventBus }
 export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
 export { PicgoTypeEnum, IBusEvent }
 export { isFileOrBlob, calculateMD5 }
@@ -34,4 +35,5 @@ export {
   type IUploaderConfigItem,
   type IUploaderConfigListItem,
   type IPluginConfig,
+  type IPicGoPlugin,
 }

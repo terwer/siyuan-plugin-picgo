@@ -14,7 +14,7 @@ const packageJson = fs.readFileSync("./package.json").toString()
 const pkg = JSON.parse(packageJson) || {}
 
 const getDefineEnv = (isDevMode: boolean) => {
-  const mode = process.env.NODE_ENV
+  const mode = process.env.NODE_ENV ?? "production"
   const isTest = mode === "test"
   console.log("isServe=>", isServe)
   console.log("mode=>", mode)

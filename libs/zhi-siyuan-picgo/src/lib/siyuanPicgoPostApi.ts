@@ -46,8 +46,6 @@ class SiyuanPicgoPostApi {
         deviceType === DeviceTypeEnum.DeviceType_Siyuan_MainWin ||
         deviceType === DeviceTypeEnum.DeviceType_Siyuan_RendererWin ||
         deviceType === DeviceTypeEnum.DeviceType_Siyuan_Widget
-      this.logger.debug("deviceType=>", deviceType)
-      this.logger.debug("isSiyuanOrSiyuanNewWin=>", String(isSiyuanOrSiyuanNewWin))
       return isSiyuanOrSiyuanNewWin
     })()
 
@@ -322,6 +320,12 @@ class SiyuanPicgoPostApi {
       if (legacyCfgfolder !== this.picgoApi.picgo.baseDir) {
         void this.moveFile(legacyCfgfolder, this.picgoApi.picgo.baseDir)
       }
+
+      // 迁移 zhiNpmPath
+      const zhiNpmPathSetupJsPath = path.join(workspaceDir, "data", "plugins", "siyuan-plugin-picgo", "libs", "setup")
+      const zhiNpmPathInfraPath = path.join(workspaceDir, "data", "plugins", "siyuan-plugin-picgo", "libs", "zhi-infra")
+      void this.moveFile(zhiNpmPathSetupJsPath, path.join(this.picgoApi.picgo.baseDir, "libs", "setup"))
+      void this.moveFile(zhiNpmPathInfraPath, path.join(this.picgoApi.picgo.baseDir, "libs", "zhi-infra"))
     }
 
     // 旧的配置位置

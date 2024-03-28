@@ -38,3 +38,20 @@ interface IUploaderListItemMetaInfo {
 }
 
 type ICheckBoxValueType = boolean | string | number
+
+interface INPMSearchResultObject {
+  package: {
+    name: string
+    scope: string
+    version: string
+    description: string
+    keywords: string[]
+    author: {
+      name: string
+    }
+    links: {
+      npm: string
+      homepage: string
+    }
+  }
+}
