@@ -152,7 +152,7 @@ export class PluginHandler implements IPluginHandler {
       // 1、 require zhi-infra
       const zhiInfraPath = `${this.ctx.baseDir}/libs/zhi-infra/index.cjs`
       const setupjsPath = `${this.ctx.baseDir}/libs/setup`
-      const result = await win.require(zhiInfraPath).default([setupjsPath, true])
+      await win.require(zhiInfraPath).default([setupjsPath, true])
 
       // 2、await zhi.npm.checkAndInitNode()
       await win.zhi.npm.checkAndInitNode()

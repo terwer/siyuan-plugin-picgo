@@ -610,9 +610,6 @@ class PicgoHelper {
 
   public async installPlugin(fullName: string) {
     const res = await this.ctx.pluginHandler.install([fullName], {}, {})
-    if (res.success) {
-      this.triggerPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST)
-    }
     return {
       success: res.success,
       body: fullName,

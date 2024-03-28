@@ -137,36 +137,40 @@ const installPlugin = (item: IPicGoPlugin) => {
       cancelButtonText: t("main.opt.cancel"),
       type: "warning",
     })
-      .then(async () => {
-        item.ing = true
-        formData.loading = true
-        try {
-          const res = await picgoHelper.installPlugin(item.fullName)
-          if (res.success) {
-            ElMessage.success(t("main.opt.success"))
-          } else {
-            ElMessage({
-              type: "error",
-              message: t("main.opt.failure") + "=>" + res.body + "安装失败：" + res.errMsg,
-            })
-          }
-        } catch (e) {
-          ElMessage({
-            type: "error",
-            message: t("main.opt.failure") + "=>" + e,
-          })
-          logger.error(t("main.opt.failure") + "=>" + e)
-        } finally {
-          item.ing = false
-          formData.loading = false
-        }
+      .then(() => {
+        doInstallPlugin(item)
       })
       .catch(() => {
         logger.warn("Install canceled")
       })
   } else {
-    item.ing = true
-    picgoHelper.installPlugin(item.fullName)
+    doInstallPlugin(item)
+  }
+}
+
+const doInstallPlugin = async (item: IPicGoPlugin) => {
+  item.ing = true
+  formData.loading = true
+  try {
+    const res = await picgoHelper.installPlugin(item.fullName)
+    if (res.success) {
+      cleanSearch()
+      ElMessage.success(t("main.opt.success"))
+    } else {
+      ElMessage({
+        type: "error",
+        message: t("main.opt.failure") + "=>" + res.body + "安装失败：" + res.errMsg,
+      })
+    }
+  } catch (e) {
+    ElMessage({
+      type: "error",
+      message: t("main.opt.failure") + "=>" + e,
+    })
+    logger.error(t("main.opt.failure") + "=>" + e)
+  } finally {
+    item.ing = false
+    formData.loading = false
   }
 }
 
