@@ -9,5 +9,5 @@
 
 import { EventEmitter } from "./nodePolyfill"
 
-const eventBus = new EventEmitter()
-export { eventBus }
+const picgoEventBus = new EventEmitter()
+export { picgoEventBus }

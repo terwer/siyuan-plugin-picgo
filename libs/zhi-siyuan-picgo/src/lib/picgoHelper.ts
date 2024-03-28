@@ -11,7 +11,6 @@
 
 import _ from "lodash-es"
 import {
-  eventBus,
   IBusEvent,
   IConfig,
   IPicBedType,
@@ -19,6 +18,7 @@ import {
   IPicGoPlugin,
   IUploaderConfigItem,
   IUploaderConfigListItem,
+  picgoEventBus,
   win,
 } from "universal-picgo"
 import { getRawData, trimValues } from "./utils/utils"
@@ -27,7 +27,13 @@ import IdUtil from "./utils/idUtil"
 import { IGuiMenuItem } from "./types"
 import { handleConfigWithFunction, handleStreamlinePluginName } from "./utils/common"
 import { IPicGoHelperType } from "./utils/enums"
-import { BrowserUtil } from "zhi-device"
+
+/**
+ * PicGo 自定义事件
+ */
+enum PicgoHelperEvents {
+  REFRESH_PLUGIN_LIST = "refreshPluginList",
+}
 
 /**
  * picgo 工具类
@@ -95,12 +101,56 @@ class PicgoHelper {
     Object.keys(cfg).forEach((name: string) => {
       const rawCfg = getRawData(cfg)
       _.set(this.reactiveCfg, name, rawCfg[name])
-      eventBus.emit(IBusEvent.CONFIG_CHANGE, {
+      picgoEventBus.emit(IBusEvent.CONFIG_CHANGE, {
         configName: name,
         value: rawCfg[name],
       })
     })
   }
+
+  // ===================================================================================================================
+
+  /**
+   * 注册 PicGo 事件（仅触发一次）
+   *
+   * @param eventName
+   * @param listener
+   */
+  public bindOncePicgoEvent(eventName: string, listener: any) {
+    picgoEventBus.on(eventName, listener)
+  }
+
+  /**
+   * 注册 PicGo 事件
+   *
+   * @param eventName
+   * @param listener
+   */
+  public bindPicgoEvent(eventName: string, listener: any) {
+    picgoEventBus.on(eventName, listener)
+  }
+
+  /**
+   * 取消注册 PicGo 事件
+   *
+   * @param eventName
+   * @param listener
+   */
+  public unbindPicgoEvent(eventName: string, listener: any) {
+    picgoEventBus.off(eventName, listener)
+  }
+
+  /**
+   * 触发事件
+   *
+   * @param eventName
+   * @param args
+   */
+  public triggerPicgoEvent(eventName: string, args?: any) {
+    picgoEventBus.emit(eventName, args)
+  }
+
+  // ===================================================================================================================
 
   /**
    * 获取所有的图床列表
@@ -478,8 +528,8 @@ class PicgoHelper {
         that.savePicgoConfig({
           [`picgoPlugins.${plugin.fullName}`]: true,
         })
-
-        BrowserUtil.reloadPageWithMessageCallback("插件已启用，即将刷新页面...")
+        that.triggerPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST)
+        // BrowserUtil.reloadPageWithMessageCallback("插件已启用，即将刷新页面...")
       },
     }
 
@@ -499,8 +549,8 @@ class PicgoHelper {
         if (plugin.config.uploader.name) {
           that.handleRestoreState("uploader", plugin.config.uploader.name)
         }
-
-        BrowserUtil.reloadPageWithMessageCallback("插件已禁用，即将刷新页面...")
+        that.triggerPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST)
+        // BrowserUtil.reloadPageWithMessageCallback("插件已禁用，即将刷新页面...")
       },
     }
 
@@ -588,4 +638,4 @@ class PicgoHelper {
   }
 }
 
-export { PicgoHelper }
+export { PicgoHelper, PicgoHelperEvents }

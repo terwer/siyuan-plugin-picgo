@@ -46,8 +46,6 @@ class SiyuanPicgoPostApi {
         deviceType === DeviceTypeEnum.DeviceType_Siyuan_MainWin ||
         deviceType === DeviceTypeEnum.DeviceType_Siyuan_RendererWin ||
         deviceType === DeviceTypeEnum.DeviceType_Siyuan_Widget
-      this.logger.debug("deviceType=>", deviceType)
-      this.logger.debug("isSiyuanOrSiyuanNewWin=>", String(isSiyuanOrSiyuanNewWin))
       return isSiyuanOrSiyuanNewWin
     })()
 

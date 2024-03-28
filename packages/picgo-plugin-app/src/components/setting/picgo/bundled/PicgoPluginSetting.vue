@@ -9,7 +9,7 @@
 
 <!--suppress HtmlUnknownAttribute, TypeScriptUnresolvedReference -->
 <script setup lang="ts">
-import { computed, onBeforeMount, reactive, ref, watch } from "vue"
+import { computed, onBeforeMount, onBeforeUnmount, reactive, ref, watch } from "vue"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import MaterialSymbolsShoppingBagOutlineSharp from "~icons/material-symbols/shopping-bag-outline-sharp"
 import MaterialSymbolsDownload from "~icons/material-symbols/download"
@@ -19,6 +19,7 @@ import { createAppLogger } from "@/utils/appLogger.ts"
 import MaterialSymbolsSettings from "~icons/material-symbols/settings"
 import PhBellSimpleSlashFill from "~icons/ph/bell-simple-slash-fill"
 import IconoirXmark from "~icons/iconoir/xmark"
+import { PicgoHelperEvents } from "zhi-siyuan-picgo/src"
 
 const props = defineProps({
   ctx: {
@@ -144,15 +145,28 @@ const loadPluginList = () => {
   const pluginList = picgoHelper.getPluginList()
   formData.pluginList = pluginList
   formData.pluginNameList = pluginList.map((item: any) => item.fullName)
-  logger.debug("插件列表已经成功加载.", pluginList)
 }
 
-onBeforeMount(() => {
+const initPage = () => {
   // load pluginlist
   loadPluginList()
 
   // show search reault after delay
   getSearchResult = _.debounce(_getSearchResult, 50)
+  logger.debug("picgo plugin store inited", formData.pluginList)
+}
+
+onBeforeMount(() => {
+  // bind events
+  picgoHelper.bindPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST, initPage)
+
+  // init
+  initPage()
+})
+
+onBeforeUnmount(() => {
+  // unbind events
+  picgoHelper.unbindPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST, initPage)
 })
 </script>
 

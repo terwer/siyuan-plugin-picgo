@@ -11,7 +11,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
 import { IConfig, IConfigChangePayload, IFullResponse, IPicGo, IResponse, Undefinable } from "../types"
 import { ILogger } from "zhi-lib-base"
-import { eventBus } from "../utils/eventBus"
+import { picgoEventBus } from "../utils/picgoEventBus"
 import { IBusEvent } from "../utils/enums"
 import { browserPathJoin } from "../utils/browserUtils"
 import { hasNodeEnv } from "universal-picgo-store"
@@ -102,7 +102,7 @@ class PicGoRequestWrapper {
     this.logger = ctx.getLogger("picgo-request")
 
     this.init()
-    eventBus.on(IBusEvent.CONFIG_CHANGE, (data: IConfigChangePayload<string | IConfig["picBed"]>) => {
+    picgoEventBus.on(IBusEvent.CONFIG_CHANGE, (data: IConfigChangePayload<string | IConfig["picBed"]>) => {
       switch (data.configName) {
         case "picBed":
           if ((data.value as IConfig["picBed"])?.proxy) {

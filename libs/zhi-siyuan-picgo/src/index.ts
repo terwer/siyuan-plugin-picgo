@@ -18,14 +18,14 @@ import {
   IImgInfo,
   IPicGo,
   IPicgoDb,
+  IPicGoPlugin,
   IPluginConfig,
   PicgoTypeEnum,
   PluginLoaderDb,
-  IPicGoPlugin,
   win,
 } from "universal-picgo"
 import { SiyuanConfig as SiyuanPicgoConfig } from "zhi-siyuan-api"
-import { PicgoHelper } from "./lib/picgoHelper"
+import { PicgoHelper, PicgoHelperEvents } from "./lib/picgoHelper"
 import { retrieveImageFromClipboardAsBlob } from "./lib/utils/browserClipboard"
 import { copyToClipboardInBrowser, generateUniqueName } from "./lib/utils/utils"
 import { ImageItem } from "./lib/models/ImageItem"
@@ -34,7 +34,7 @@ import { ParsedImage } from "./lib/models/ParsedImage"
 import { SIYUAN_PICGO_FILE_MAP_KEY } from "./lib/constants"
 import { handleConfigWithFunction, handleStreamlinePluginName } from "./lib/utils/common"
 
-export { SiyuanPicGo, SiyuanPicgoConfig, SiyuanPicgoPostApi, PicgoHelper }
+export { SiyuanPicGo, SiyuanPicgoConfig, SiyuanPicgoPostApi, PicgoHelper, PicgoHelperEvents }
 export { ImageItem, ImageParser, ParsedImage, SIYUAN_PICGO_FILE_MAP_KEY }
 export { retrieveImageFromClipboardAsBlob, copyToClipboardInBrowser, calculateMD5, generateUniqueName }
 export { handleConfigWithFunction, handleStreamlinePluginName }

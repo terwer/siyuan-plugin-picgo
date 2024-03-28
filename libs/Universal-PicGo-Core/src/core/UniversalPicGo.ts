@@ -35,7 +35,7 @@ import { ensureFileSync, ensureFolderSync, pathExistsSync } from "../utils/nodeU
 import { I18nManager } from "../i18n"
 import { browserPathJoin, getBrowserDirectoryPath } from "../utils/browserUtils"
 import { isConfigKeyInBlackList, isInputConfigValid } from "../utils/common"
-import { eventBus } from "../utils/eventBus"
+import { picgoEventBus } from "../utils/picgoEventBus"
 import { PicGoRequestWrapper } from "../lib/PicGoRequest"
 
 /*
@@ -152,7 +152,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
         delete config[name]
       }
       _.set(this._config, name, config[name])
-      eventBus.emit(IBusEvent.CONFIG_CHANGE, {
+      picgoEventBus.emit(IBusEvent.CONFIG_CHANGE, {
         configName: name,
         value: config[name],
       })
