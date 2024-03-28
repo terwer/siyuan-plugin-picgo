@@ -53,15 +53,17 @@ const formData = reactive({
     <el-radio-group :key="formData.settingType" v-model="formData.settingType" class="bundled-setting-group">
       <el-radio-button key="picbed" value="picbed">图床设置</el-radio-button>
       <el-radio-button key="picgo-config" value="picgo-config">PicGo设置</el-radio-button>
-      <!--
-      <el-radio-button key="picgo-plugin" value="picgo-plugin">插件商店</el-radio-button>
-      -->
+      <el-radio-button v-if="isInSiyuanOrSiyuanNewWin()" key="picgo-plugin" value="picgo-plugin"
+        >插件商店</el-radio-button
+      >
     </el-radio-group>
     <picbed-setting v-if="formData.settingType === 'picbed'" :ctx="props.ctx" :cfg="formData.cfg" />
     <picgo-config-setting v-if="formData.settingType === 'picgo-config'" :ctx="props.ctx" :cfg="formData.cfg" />
-    <!--
-    <picgo-plugin-setting v-if="formData.settingType === 'picgo-plugin'" :ctx="props.ctx" :cfg="formData.cfg" />
-    -->
+    <picgo-plugin-setting
+      v-if="isInSiyuanOrSiyuanNewWin() && formData.settingType === 'picgo-plugin'"
+      :ctx="props.ctx"
+      :cfg="formData.cfg"
+    />
   </div>
 </template>
 
