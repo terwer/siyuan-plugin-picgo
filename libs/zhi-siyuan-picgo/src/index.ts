@@ -21,6 +21,8 @@ import {
   IPluginConfig,
   PicgoTypeEnum,
   PluginLoaderDb,
+  IPicGoPlugin,
+  win,
 } from "universal-picgo"
 import { SiyuanConfig as SiyuanPicgoConfig } from "zhi-siyuan-api"
 import { PicgoHelper } from "./lib/picgoHelper"
@@ -30,10 +32,21 @@ import { ImageItem } from "./lib/models/ImageItem"
 import { ImageParser } from "./lib/parser/ImageParser"
 import { ParsedImage } from "./lib/models/ParsedImage"
 import { SIYUAN_PICGO_FILE_MAP_KEY } from "./lib/constants"
+import { handleConfigWithFunction, handleStreamlinePluginName } from "./lib/utils/common"
 
 export { SiyuanPicGo, SiyuanPicgoConfig, SiyuanPicgoPostApi, PicgoHelper }
 export { ImageItem, ImageParser, ParsedImage, SIYUAN_PICGO_FILE_MAP_KEY }
 export { retrieveImageFromClipboardAsBlob, copyToClipboardInBrowser, calculateMD5, generateUniqueName }
+export { handleConfigWithFunction, handleStreamlinePluginName }
 export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
 export { PicgoTypeEnum }
-export { type IPicGo, type IImgInfo, type IPicgoDb, type IConfig, type IExternalPicgoConfig, type IPluginConfig }
+export { win }
+export {
+  type IPicGo,
+  type IImgInfo,
+  type IPicgoDb,
+  type IConfig,
+  type IExternalPicgoConfig,
+  type IPluginConfig,
+  type IPicGoPlugin,
+}

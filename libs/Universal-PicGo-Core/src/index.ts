@@ -16,6 +16,7 @@ import {
   IUploaderConfigItem,
   IUploaderConfigListItem,
   IPluginConfig,
+  IPicGoPlugin,
 } from "./types"
 import { isFileOrBlob, calculateMD5 } from "./utils/common"
 
@@ -34,4 +35,5 @@ export {
   type IUploaderConfigItem,
   type IUploaderConfigListItem,
   type IPluginConfig,
+  type IPicGoPlugin,
 }

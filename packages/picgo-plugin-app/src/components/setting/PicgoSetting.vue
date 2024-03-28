@@ -56,6 +56,12 @@ onBeforeMount(() => {
 <template>
   <back-page :title="t('setting.picgo.picgo')">
     <el-form label-width="100px" class="picgo-setting-form">
+      <el-form-item label-width="110px" :label="t('picgo.siyuan.wait.timeout')" required>
+        <el-input
+          v-model="bundledPicGoSettingForm.siyuan.waitTimeout"
+          :placeholder="t('picgo.siyuan.wait.timeout.tip')"
+        />
+      </el-form-item>
       <el-form-item :label="t('upload.default.adaptor')" required>
         <el-select
           v-model="externalPicGoSettingForm.picgoType"
@@ -70,14 +76,6 @@ onBeforeMount(() => {
       </div>
       <div v-else>
         <external-picgo-setting :cfg="externalPicGoSettingForm" />
-      </div>
-      <div>
-        <el-form-item :label="t('picgo.siyuan.wait.timeout')">
-          <el-input
-            v-model="bundledPicGoSettingForm.siyuan.waitTimeout"
-            :placeholder="t('picgo.siyuan.wait.timeout.tip')"
-          />
-        </el-form-item>
       </div>
     </el-form>
   </back-page>
