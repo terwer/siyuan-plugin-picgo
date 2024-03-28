@@ -13,13 +13,12 @@ import { computed, onBeforeMount, onBeforeUnmount, reactive, ref, watch } from "
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import MaterialSymbolsShoppingBagOutlineSharp from "~icons/material-symbols/shopping-bag-outline-sharp"
 import MaterialSymbolsDownload from "~icons/material-symbols/download"
-import { IPicGoPlugin, PicgoHelper, win, handleStreamlinePluginName } from "zhi-siyuan-picgo"
+import { handleStreamlinePluginName, IPicGoPlugin, PicgoHelper, PicgoHelperEvents } from "zhi-siyuan-picgo"
 import _ from "lodash-es"
 import { createAppLogger } from "@/utils/appLogger.ts"
 import MaterialSymbolsSettings from "~icons/material-symbols/settings"
 import PhBellSimpleSlashFill from "~icons/ph/bell-simple-slash-fill"
 import IconoirXmark from "~icons/iconoir/xmark"
-import { PicgoHelperEvents } from "zhi-siyuan-picgo/src"
 import { ElMessage, ElMessageBox } from "element-plus"
 
 const props = defineProps({
@@ -140,14 +139,26 @@ const installPlugin = (item: IPicGoPlugin) => {
     })
       .then(async () => {
         item.ing = true
+        formData.loading = true
         try {
-          await picgoHelper.installPlugin(item.fullName)
+          const res = await picgoHelper.installPlugin(item.fullName)
+          if (res.success) {
+            ElMessage.success(t("main.opt.success"))
+          } else {
+            ElMessage({
+              type: "error",
+              message: t("main.opt.failure") + "=>" + res.body + "安装失败：" + res.errMsg,
+            })
+          }
         } catch (e) {
           ElMessage({
             type: "error",
             message: t("main.opt.failure") + "=>" + e,
           })
           logger.error(t("main.opt.failure") + "=>" + e)
+        } finally {
+          item.ing = false
+          formData.loading = false
         }
       })
       .catch(() => {

@@ -630,3 +630,15 @@ interface IUploaderListItemMetaInfo {
   _updatedAt: number
   _createdAt: number
 }
+
+export interface IPluginProcessResult {
+  success: boolean
+  /**
+   * the package.json's name filed
+   */
+  pkgName: string
+  /**
+   * the plugin name or the fs absolute path
+   */
+  fullName: string
+}

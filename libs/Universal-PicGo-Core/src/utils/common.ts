@@ -13,6 +13,7 @@ import imageSize from "./image-size"
 import { calculateHash } from "./hashUtil"
 import { Buffer } from "./nodePolyfill"
 import crypto from "crypto"
+import { ILogger } from "zhi-lib-base"
 
 export const isUrl = (url: string): boolean => url.startsWith("http://") || url.startsWith("https://")
 
@@ -446,3 +447,103 @@ export const getImageSize = (file: Buffer | typeof win.Buffer): IImgSize => {
 
 // 封装计算MD5哈希的方法
 export const calculateMD5 = (input: string) => crypto.createHash("md5").update(input).digest("hex")
+
+/**
+ * handle install/uninstall/update plugin name or path
+ * for example
+ * 1. picgo-plugin-xxx -> picgo-plugin-xxx
+ * 2. @xxx/picgo-plugin-xxx -> @xxx/picgo-plugin-xxx
+ * 3. xxx -> picgo-plugin-xxx
+ * 4. ./xxxx/picgo-plugin-xxx -> /absolutePath/.../xxxx/picgo-plugin-xxx
+ * 5. /absolutePath/.../picgo-plugin-xxx -> /absolutePath/.../picgo-plugin-xxx
+ * @param nameOrPath pluginName or pluginPath
+ * @param logger
+ */
+export const getProcessPluginName = (nameOrPath: string, logger: ILogger): string => {
+  if (!hasNodeEnv) {
+    throw new Error("getProcessPluginName is not supported in browser")
+  }
+  const fs = win.fs
+  const path = win.require("path")
+
+  const pluginNameType = getPluginNameType(nameOrPath)
+  switch (pluginNameType) {
+    case "normal":
+    case "scope":
+      return nameOrPath
+    case "simple":
+      return handleCompletePluginName(nameOrPath)
+    default: {
+      // now, the pluginNameType is unknow here
+      // 1. check if is an absolute path
+      let pluginPath = nameOrPath
+      if (path.isAbsolute(nameOrPath) && fs.existsSync(nameOrPath)) {
+        return handleUnixStylePath(pluginPath)
+      }
+      // 2. check if is a relative path
+      pluginPath = path.join(win.process.cwd(), nameOrPath)
+      if (fs.existsSync(pluginPath)) {
+        return handleUnixStylePath(pluginPath)
+      }
+      // 3. invalid nameOrPath
+      logger.warn(`Can't find plugin ${nameOrPath}`)
+      return ""
+    }
+  }
+}
+
+/**
+ * get the normal plugin name
+ * for example:
+ * 1. picgo-plugin-xxx -> picgo-plugin-xxx
+ * 2. @xxx/picgo-plugin-xxx -> @xxx/picgo-plugin-xxx
+ * 3. ./xxxx/picgo-plugin-xxx -> picgo-plugin-xxx
+ * 4. /absolutePath/.../picgo-plugin-xxx -> picgo-plugin-xxx
+ * 5. an exception: [package.json's name] !== [folder name]
+ * then use [package.json's name], usually match the scope package.
+ * 6. if plugin name has version: picgo-plugin-xxx@x.x.x then remove the version
+ * @param nameOrPath
+ * @param logger
+ */
+export const getNormalPluginName = (nameOrPath: string, logger: ILogger): string => {
+  if (!hasNodeEnv) {
+    throw new Error("getNormalPluginName is not supported in browser")
+  }
+  const fs = win.fs
+  const path = win.require("path")
+
+  const pluginNameType = getPluginNameType(nameOrPath)
+  switch (pluginNameType) {
+    case "normal":
+      return removePluginVersion(nameOrPath)
+    case "scope":
+      return removePluginVersion(nameOrPath, true)
+    case "simple":
+      return removePluginVersion(handleCompletePluginName(nameOrPath))
+    default: {
+      // now, the nameOrPath must be path
+      // the nameOrPath here will be ensured with unix style
+      // we need to find the package.json's name cause npm using the name in package.json's name filed
+      if (!fs.existsSync(nameOrPath)) {
+        logger.warn(`Can't find plugin: ${nameOrPath}`)
+        return ""
+      }
+      const packageJSONPath = path.posix.join(nameOrPath, "package.json")
+      if (!fs.existsSync(packageJSONPath)) {
+        logger.warn(`Can't find plugin: ${nameOrPath}`)
+        return ""
+      } else {
+        const pkg = fs.readJSONSync(packageJSONPath) || {}
+        if (!pkg.name?.includes("picgo-plugin-")) {
+          logger.warn(
+            `The plugin package.json's name filed is ${
+              (pkg.name as string) || "empty"
+            }, need to include the prefix: picgo-plugin-`
+          )
+          return ""
+        }
+        return pkg.name
+      }
+    }
+  }
+}
