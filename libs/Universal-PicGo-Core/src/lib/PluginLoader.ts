@@ -65,7 +65,7 @@ export class PluginLoader implements IPluginLoader {
         const path = this.resolvePlugin(this.ctx, name)
         return false
       })
-      this.logger.warn("load is not supported in browser")
+      this.logger.warn("plugin load is not supported in browser")
       return false
     }
   }
@@ -139,8 +139,7 @@ export class PluginLoader implements IPluginLoader {
 
     const path = win.require("path")
     const pluginDir = path.join(this.ctx.pluginBaseDir, "node_modules/")
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const plugin = require(pluginDir + name)(this.ctx)
+    const plugin = win.require(pluginDir + name)(this.ctx)
     this.pluginMap.set(name, plugin)
     return plugin
   }
