@@ -608,6 +608,11 @@ class PicgoHelper {
     })
   }
 
+  /**
+   * 安装插件
+   *
+   * @param fullName
+   */
   public async installPlugin(fullName: string) {
     const res = await this.ctx.pluginHandler.install([fullName], {}, {})
     return {
