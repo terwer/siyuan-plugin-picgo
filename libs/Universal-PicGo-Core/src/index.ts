@@ -5,25 +5,25 @@ import PluginLoaderDb from "./db/pluginLoder"
 import ExternalPicgoConfigDb from "./db/externalPicGo"
 import { picgoEventBus } from "./utils/picgoEventBus"
 import { currentWin, hasNodeEnv, parentWin, win } from "universal-picgo-store"
-import { PicgoTypeEnum, IBusEvent } from "./utils/enums"
+import { IBusEvent, PicgoTypeEnum } from "./utils/enums"
 import {
-  IPicGo,
-  IImgInfo,
-  IPicgoDb,
   IConfig,
   IExternalPicgoConfig,
+  IImgInfo,
   IPicBedType,
+  IPicGo,
+  IPicgoDb,
+  IPicGoPlugin,
+  IPluginConfig,
   IUploaderConfigItem,
   IUploaderConfigListItem,
-  IPluginConfig,
-  IPicGoPlugin,
 } from "./types"
-import { isFileOrBlob, calculateMD5 } from "./utils/common"
+import { calculateMD5, isFileOrBlob, isSiyuanProxyAvailable } from "./utils/common"
 
 export { UniversalPicGo, ExternalPicgo, picgoEventBus }
 export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
 export { PicgoTypeEnum, IBusEvent }
-export { isFileOrBlob, calculateMD5 }
+export { isFileOrBlob, calculateMD5, isSiyuanProxyAvailable }
 export { win, currentWin, parentWin, hasNodeEnv }
 export {
   type IPicGo,

@@ -85,7 +85,7 @@ const handleWeb = async (ctx: IPicGo): Promise<IPicGo> => {
             img.imgUrl = `https://${aliYunOptions.bucket}.${aliYunOptions.area}.aliyuncs.com/${path}${img.fileName}${optionUrl}`
           }
         } else {
-          throw new Error("Upload failed")
+          throw body
         }
       } catch (e: any) {
         let errMsg: any
