@@ -119,7 +119,57 @@ export class PluginHandler implements IPluginHandler {
   }
 
   async uninstall(plugins: string[]): Promise<IPluginHandlerResult<boolean>> {
-    throw new Error("PluginHandler.uninstall not implemented")
+    const processPlugins = plugins
+      .map((item: string) => handlePluginNameProcess(this.ctx, item))
+      .filter((item) => item.success)
+    const pkgNameList = processPlugins.map((item) => item.pkgName)
+    if (pkgNameList.length > 0) {
+      // uninstall plugins must use pkgNameList:
+      // npm uninstall will use the package.json's name
+      const result = await this.execCommand("uninstall", pkgNameList, this.ctx.baseDir)
+      if (result.success) {
+        pkgNameList.forEach((pluginName: string) => {
+          this.ctx.pluginLoader.unregisterPlugin(pluginName)
+        })
+        this.ctx.log.info(this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UNINSTALL_SUCCESS"))
+        this.ctx.emit("uninstallSuccess", {
+          title: this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UNINSTALL_SUCCESS"),
+          body: pkgNameList,
+        })
+        const res: IPluginHandlerResult<true> = {
+          success: true,
+          body: pkgNameList,
+        }
+        return res
+      } else {
+        const err = this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UNINSTALL_FAILED_REASON", {
+          code: `-1`,
+          data: result.body,
+        })
+        this.ctx.log.error(err)
+        this.ctx.emit("uninstallFailed", {
+          title: this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UNINSTALL_FAILED"),
+          body: err,
+        })
+        const res: IPluginHandlerResult<false> = {
+          success: false,
+          body: err,
+        }
+        return res
+      }
+    } else {
+      const err = this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UNINSTALL_FAILED_VALID")
+      this.ctx.log.error(err)
+      this.ctx.emit("uninstallFailed", {
+        title: this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UNINSTALL_FAILED"),
+        body: err,
+      })
+      const res: IPluginHandlerResult<false> = {
+        success: false,
+        body: err,
+      }
+      return res
+    }
   }
 
   async update(
@@ -127,7 +177,54 @@ export class PluginHandler implements IPluginHandler {
     options: IPluginHandlerOptions,
     env: IProcessEnv | undefined
   ): Promise<IPluginHandlerResult<boolean>> {
-    throw new Error("PluginHandler.update not implemented")
+    const processPlugins = plugins
+      .map((item: string) => handlePluginNameProcess(this.ctx, item))
+      .filter((item) => item.success)
+    const pkgNameList = processPlugins.map((item) => item.pkgName)
+    if (pkgNameList.length > 0) {
+      // update plugins must use pkgNameList:
+      // npm update will use the package.json's name
+      const result = await this.execCommand("update", pkgNameList, this.ctx.baseDir, options, env)
+      if (result.success) {
+        this.ctx.log.info(this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UPDATE_SUCCESS"))
+        this.ctx.emit("updateSuccess", {
+          title: this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UPDATE_SUCCESS"),
+          body: pkgNameList,
+        })
+        const res: IPluginHandlerResult<true> = {
+          success: true,
+          body: pkgNameList,
+        }
+        return res
+      } else {
+        const err = this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED_REASON", {
+          code: `-1`,
+          data: result.body,
+        })
+        this.ctx.log.error(err)
+        this.ctx.emit("updateFailed", {
+          title: this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED"),
+          body: err,
+        })
+        const res: IPluginHandlerResult<false> = {
+          success: false,
+          body: err,
+        }
+        return res
+      }
+    } else {
+      const err = this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED_VALID")
+      this.ctx.log.error(err)
+      this.ctx.emit("updateFailed", {
+        title: this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UPDATE_FAILED"),
+        body: err,
+      })
+      const res: IPluginHandlerResult<false> = {
+        success: false,
+        body: err,
+      }
+      return res
+    }
   }
 
   // ===================================================================================================================

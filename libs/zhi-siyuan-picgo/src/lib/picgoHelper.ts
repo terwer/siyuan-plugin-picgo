@@ -34,6 +34,9 @@ import { IPicGoHelperType } from "./utils/enums"
 enum PicgoHelperEvents {
   REFRESH_PLUGIN_LIST = "refreshPluginList",
   DO_PICGO_CONFIG_PLUGIN = "doPicgoConfigPlugin",
+  HANDLE_PLUGIN_ING = "handlePluginIng",
+  HANDLE_PLUGIN_UNINSTALLED = "handlePluginUninstalled",
+  HANDLE_PLUGIN_UPDATED = "handlePluginUpdated",
 }
 
 /**
@@ -553,9 +556,71 @@ class PicgoHelper {
       },
     }
 
+    // 卸载插件菜单
+    const uninstallItem = {
+      //
+      label: "卸载插件",
+      click() {
+        // 卸载中事件
+        that.triggerPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_ING, plugin.fullName)
+        // 卸载插件
+        that
+          .uninstallPlugin(plugin.fullName)
+          .then((res: any) => {
+            // 处理卸载事件
+            that.triggerPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_UNINSTALLED, {
+              success: res.success,
+              body: res.body,
+              errMsg: res.success ? "" : res.body,
+            })
+          })
+          .catch((e: any) => {
+            const errMsg = e.toString()
+            // 处理卸载事件
+            that.triggerPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_UNINSTALLED, {
+              success: false,
+              body: errMsg,
+              errMsg: errMsg,
+            })
+          })
+      },
+    }
+
+    // 更新插件
+    const updateItem = {
+      // setting.picgo.plugin.update
+      label: "更新插件",
+      click() {
+        // 更新中事件
+        that.triggerPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_ING, plugin.fullName)
+        // 更新插件
+        that
+          .updatelugin(plugin.fullName)
+          .then((res: any) => {
+            // 处理卸载事件
+            that.triggerPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_UPDATED, {
+              success: res.success,
+              body: res.body,
+              errMsg: res.success ? "" : res.body,
+            })
+          })
+          .catch((e: any) => {
+            const errMsg = e.toString()
+            // 处理更新事件
+            that.triggerPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_UPDATED, {
+              success: false,
+              body: errMsg,
+              errMsg: errMsg,
+            })
+          })
+      },
+    }
+
     // 固定菜单
     template.push(enableItem)
     template.push(disableItem)
+    template.push(uninstallItem)
+    template.push(updateItem)
 
     // 插件自定义菜单配置
     const pluginMenuTemplate = []
@@ -622,7 +687,33 @@ class PicgoHelper {
     }
   }
 
-  // ===================================================================================================================
+  /**
+   * 卸载插件
+   *
+   * @param fullName
+   */
+  public async uninstallPlugin(fullName: string) {
+    const res = await this.ctx.pluginHandler.uninstall([fullName])
+    return {
+      success: res.success,
+      body: fullName,
+      errMsg: res.success ? "" : res.body,
+    }
+  }
+
+  /**
+   * 更新插件
+   *
+   * @param fullName
+   */
+  public async updatelugin(fullName: string) {
+    const res = await this.ctx.pluginHandler.update([fullName], {}, {})
+    return {
+      success: res.success,
+      body: fullName,
+      errMsg: res.success ? "" : res.body,
+    }
+  }
 
   /**
    * restore Uploader & Transformer
@@ -630,7 +721,7 @@ class PicgoHelper {
    * @param item 插件项
    * @param name 名称
    */
-  private handleRestoreState(item: string, name: string) {
+  public handleRestoreState(item: string, name: string) {
     if (item === "uploader") {
       const current = this.getPicgoConfig("picBed.current")
       if (current === name) {
@@ -649,6 +740,7 @@ class PicgoHelper {
       }
     }
   }
+  // ===================================================================================================================
 
   /**
    * 增加配置元数据

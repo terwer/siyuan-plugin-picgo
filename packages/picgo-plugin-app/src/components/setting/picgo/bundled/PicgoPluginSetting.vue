@@ -20,6 +20,7 @@ import MaterialSymbolsSettings from "~icons/material-symbols/settings"
 import PhBellSimpleSlashFill from "~icons/ph/bell-simple-slash-fill"
 import IconoirXmark from "~icons/iconoir/xmark"
 import { ElMessage, ElMessageBox } from "element-plus"
+import { icons } from "@element-plus/icons-vue/global"
 
 const props = defineProps({
   ctx: {
@@ -178,6 +179,68 @@ const buildContextMenu = async (plugin: IPicGoPlugin) => {
   picgoHelper.buildPluginMenu(plugin)
 }
 
+const handlePluginStateIng = (res: string) => {
+  const fullName = res
+  formData.pluginList.forEach((item: IPicGoPlugin) => {
+    if (item.fullName === fullName || item.name === fullName) {
+      item.ing = true
+    }
+  })
+  formData.loading = true
+}
+
+const handlePluginStateUninstalled = (res: { success: boolean; body: string; errMsg: string }) => {
+  const fullName = res.body
+  const success = res.success
+  const errMsg = res.errMsg
+  if (success) {
+    formData.pluginList = formData.pluginList.filter((item: IPicGoPlugin) => {
+      if (item.fullName === fullName) {
+        // restore Uploader & Transformer after uninstalling
+        if (item.config.transformer.name) {
+          picgoHelper.handleRestoreState("transformer", item.config.transformer.name)
+        }
+        if (item.config.uploader.name) {
+          picgoHelper.handleRestoreState("uploader", item.config.uploader.name)
+        }
+      }
+      return item.fullName !== fullName
+    })
+
+    initPage()
+    ElMessage.success(t("setting.picgo.plugin.uninstall.success"))
+  } else {
+    formData.pluginList.forEach((item: IPicGoPlugin) => {
+      if (item.fullName === fullName || item.name === fullName) {
+        item.ing = false
+      }
+    })
+    ElMessage.error(errMsg)
+  }
+
+  formData.loading = false
+}
+
+const handlePluginStateUpdated = (res: { success: boolean; body: string; errMsg: string }) => {
+  const fullName = res.body
+  const success = res.success
+  const errMsg = res.errMsg
+
+  formData.pluginList.forEach((item: IPicGoPlugin) => {
+    if (item.fullName === fullName || item.name === fullName) {
+      item.ing = false
+    }
+  })
+
+  if (success) {
+    ElMessage.success(t("setting.picgo.plugin.update.success"))
+  } else {
+    ElMessage.error(errMsg)
+  }
+
+  formData.loading = false
+}
+
 const handlePicgoConfigPlugin = (args: { currentType: string; configName: string; config: any }) => {
   logger.debug("handlePicgoConfigPlugin args =>", args)
 
@@ -225,6 +288,9 @@ onBeforeMount(() => {
   // bind events
   picgoHelper.bindPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST, initPage)
   picgoHelper.bindPicgoEvent(PicgoHelperEvents.DO_PICGO_CONFIG_PLUGIN, handlePicgoConfigPlugin)
+  picgoHelper.bindPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_ING, handlePluginStateIng)
+  picgoHelper.bindPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_UNINSTALLED, handlePluginStateUninstalled)
+  picgoHelper.bindPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_UPDATED, handlePluginStateUpdated)
 
   // init
   initPage()
@@ -234,6 +300,9 @@ onBeforeUnmount(() => {
   // unbind events
   picgoHelper.unbindPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST, initPage)
   picgoHelper.unbindPicgoEvent(PicgoHelperEvents.DO_PICGO_CONFIG_PLUGIN, handlePicgoConfigPlugin)
+  picgoHelper.unbindPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_ING, handlePluginStateIng)
+  picgoHelper.unbindPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_UNINSTALLED, handlePluginStateUninstalled)
+  picgoHelper.unbindPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_UPDATED, handlePluginStateUpdated)
 })
 </script>
 
