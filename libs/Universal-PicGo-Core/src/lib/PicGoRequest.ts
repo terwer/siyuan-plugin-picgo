@@ -95,6 +95,7 @@ class PicGoRequestWrapper {
   private readonly ctx: IPicGo
   private readonly logger: ILogger
   private proxy: Undefinable<string> = ""
+  private siyuanProxy: Undefinable<string> = ""
   private options: AxiosRequestConfig<any> = {}
 
   constructor(ctx: IPicGo) {
@@ -118,8 +119,12 @@ class PicGoRequestWrapper {
 
   private init(): void {
     const proxy = this.ctx.getConfig<Undefinable<string>>("picBed.proxy")
+    const siyuanProxy = this.ctx.getConfig<Undefinable<string>>("siyuan.proxy")
     if (proxy) {
       this.proxy = proxy
+    }
+    if (siyuanProxy) {
+      this.siyuanProxy = siyuanProxy
     }
   }
 
@@ -160,20 +165,27 @@ class PicGoRequestWrapper {
 
     // compatible with old request options to new options
     const opt = requestInterceptor(userOptions)
-    if (!hasNodeEnv && userOptions.proxy !== false) {
-      if (!this.proxy || this.proxy.trim() === "") {
-        throw new Error(this.ctx.i18n.translate<ILocalesKey>("CORS_ANYWHERE_REQUIRED"))
-      }
-      if (opt.url?.includes("127.0.0.1") || opt.url?.includes("localhost")) {
-        // 本地地址需要配置本地代理才启用
-        if (this.proxy?.includes("127.0.0.1") || this.proxy?.includes("localhost")) {
-          opt.url = browserPathJoin(this.proxy, opt.url ?? "")
-        } else {
-          throw new Error(this.ctx.i18n.translate<ILocalesKey>("CORS_ANYWHERE_REQUIRED_LOCALHOST"))
+
+    // handle proxy
+    if (!this.siyuanProxy || this.siyuanProxy.trim() === "") {
+      if (!hasNodeEnv && userOptions.proxy !== false) {
+        if (!this.proxy || this.proxy.trim() === "") {
+          throw new Error(this.ctx.i18n.translate<ILocalesKey>("CORS_ANYWHERE_REQUIRED"))
         }
-      } else {
-        opt.url = browserPathJoin(this.proxy, opt.url ?? "")
+        if (opt.url?.includes("127.0.0.1") || opt.url?.includes("localhost")) {
+          // 本地地址需要配置本地代理才启用
+          if (this.proxy?.includes("127.0.0.1") || this.proxy?.includes("localhost")) {
+            opt.url = browserPathJoin(this.proxy, opt.url ?? "")
+          } else {
+            throw new Error(this.ctx.i18n.translate<ILocalesKey>("CORS_ANYWHERE_REQUIRED_LOCALHOST"))
+          }
+        } else {
+          opt.url = browserPathJoin(this.proxy, opt.url ?? "")
+        }
       }
+    } else {
+      this.logger.debug("opt =>", opt)
+      throw new Error(`siyuanProxy is not implemented => ${this.siyuanProxy}`)
     }
 
     const that = this
