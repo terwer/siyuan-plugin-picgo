@@ -37,8 +37,6 @@ const formData = reactive({
 
   settingType: "picbed" as SettingType,
 })
-
-alert(StrUtil.isEmptyString(formData.cfg.siyuan.proxy))
 </script>
 
 <template>

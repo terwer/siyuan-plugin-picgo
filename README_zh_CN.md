@@ -14,14 +14,48 @@
 
 ## 支持图床
 
-- Github
-- Gitlab
+- Github<sup>强烈推荐</sup>
+- Gitlab<sup>强烈推荐</sup>
 - 阿里云
 - 腾讯云
 - 又拍云
-- 七牛云
+- 七牛云<sup>强烈推荐</sup>
 - SM.MS
 - imgur
+
+## 配置
+
+1.6.0+ 采用新的存储逻辑，配置文件位置已改变。
+
+```
+1.5.6 之前的配置位置
+
+[工作空间]/data/storage/syp/picgo/picgo.cfg.json
+   [工作空间]/data/storage/syp/picgo/mac.applescript
+   [工作空间]/data/storage/syp/picgo/i18n-cli
+   [工作空间]/data/storage/syp/picgo/picgo-clipboard-images
+   [工作空间]/data/storage/syp/picgo/external-picgo-cfg.json
+   [工作空间]/data/storage/syp/picgo/picgo.log
+   [工作空间]/data/storage/syp/picgo/picgo.log
+   [工作空间]/data/storage/syp/picgo/package.json
+   [工作空间]/data/storage/syp/picgo/package-lock.json
+   [工作空间]/data/storage/syp/picgo/node_modules
+
+
+1.6.0+ 默认存储位置
+
+~/.universal-picgo/picgo.cfg.json
+~/.universal-picgo/mac.applescript
+~/.universal-picgo/i18n-cli
+~/.universal-picgo/picgo-clipboard-images
+~/.universal-picgo/external-picgo-cfg.json
+~/.universal-picgo/picgo.log
+~/.universal-picgo/package.json
+~/.universal-picgo/package-lock.json
+~/.universal-picgo/node_modules
+   ~/.universal-picgo/node_modules/plugin-1
+   ~/.universal-picgo/node_modules/plugin-2
+```
 
 ## 更新历史
 

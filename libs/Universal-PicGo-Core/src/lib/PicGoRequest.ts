@@ -184,8 +184,18 @@ class PicGoRequestWrapper {
         }
       }
     } else {
-      this.logger.debug("opt =>", opt)
-      throw new Error(`siyuanProxy is not implemented => ${this.siyuanProxy}`)
+      // 处理思源笔记代理
+      //
+      // 浏览器环境未配置代理 或者 配置了必须使用代理
+      // userOptions.proxy = true | undefined
+      const isBrowserUseSiyuanProxy = !hasNodeEnv && userOptions.proxy !== false
+      // Node 环境配置了必须使用代理
+      // userOptions.proxy = true
+      const isNodeUseSiyuanProxy = hasNodeEnv && (userOptions.proxy as boolean)
+      if (isBrowserUseSiyuanProxy || isNodeUseSiyuanProxy) {
+        this.logger.debug("opt =>", opt)
+        throw new Error(`siyuanProxy is not implemented => ${this.siyuanProxy}`)
+      }
     }
 
     const that = this

@@ -14,14 +14,48 @@ Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 
 ## Image Hosting Support
 
-- Github
-- Gitlab
+- Github<sup>recommended</sup>
+- Gitlab<sup>recommended</sup>
 - Alibaba Cloud
 - Tencent Cloud
 - Upyun
-- Qiniu Cloud
+- Qiniu Cloud<sup>recommended</sup>
 - SM.MS
 - imgur
+
+## Config
+
+New store path from 1.6.0
+
+```
+config below 1.5.6
+
+[工作空间]/data/storage/syp/picgo/picgo.cfg.json
+   [工作空间]/data/storage/syp/picgo/mac.applescript
+   [工作空间]/data/storage/syp/picgo/i18n-cli
+   [工作空间]/data/storage/syp/picgo/picgo-clipboard-images
+   [工作空间]/data/storage/syp/picgo/external-picgo-cfg.json
+   [工作空间]/data/storage/syp/picgo/picgo.log
+   [工作空间]/data/storage/syp/picgo/picgo.log
+   [工作空间]/data/storage/syp/picgo/package.json
+   [工作空间]/data/storage/syp/picgo/package-lock.json
+   [工作空间]/data/storage/syp/picgo/node_modules
+
+
+1.6.0+ config path
+
+~/.universal-picgo/picgo.cfg.json
+~/.universal-picgo/mac.applescript
+~/.universal-picgo/i18n-cli
+~/.universal-picgo/picgo-clipboard-images
+~/.universal-picgo/external-picgo-cfg.json
+~/.universal-picgo/picgo.log
+~/.universal-picgo/package.json
+~/.universal-picgo/package-lock.json
+~/.universal-picgo/node_modules
+   ~/.universal-picgo/node_modules/plugin-1
+   ~/.universal-picgo/node_modules/plugin-2
+```
 
 ## Changelog
 
