@@ -23,6 +23,7 @@ import {
   PicgoTypeEnum,
   PluginLoaderDb,
   win,
+  isSiyuanProxyAvailable,
 } from "universal-picgo"
 import { SiyuanConfig as SiyuanPicgoConfig } from "zhi-siyuan-api"
 import { PicgoHelper, PicgoHelperEvents } from "./lib/picgoHelper"
@@ -36,7 +37,13 @@ import { handleConfigWithFunction, handleStreamlinePluginName } from "./lib/util
 
 export { SiyuanPicGo, SiyuanPicgoConfig, SiyuanPicgoPostApi, PicgoHelper, PicgoHelperEvents }
 export { ImageItem, ImageParser, ParsedImage, SIYUAN_PICGO_FILE_MAP_KEY }
-export { retrieveImageFromClipboardAsBlob, copyToClipboardInBrowser, calculateMD5, generateUniqueName }
+export {
+  retrieveImageFromClipboardAsBlob,
+  copyToClipboardInBrowser,
+  calculateMD5,
+  generateUniqueName,
+  isSiyuanProxyAvailable,
+}
 export { handleConfigWithFunction, handleStreamlinePluginName }
 export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
 export { PicgoTypeEnum }

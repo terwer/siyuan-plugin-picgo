@@ -7,7 +7,7 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { IImgSize, IPathTransformedImgInfo, IPicGo, IPluginNameType } from "../types"
+import { IImgSize, IPathTransformedImgInfo, IPicGo, IPluginNameType, Undefinable } from "../types"
 import { hasNodeEnv, win } from "universal-picgo-store"
 import imageSize from "./image-size"
 import { calculateHash } from "./hashUtil"
@@ -547,4 +547,15 @@ export const getNormalPluginName = (nameOrPath: string, logger: ILogger): string
       }
     }
   }
+}
+
+/**
+ * 思源笔记代理是否可用
+ *
+ * @param siyuanProxy
+ */
+export const isSiyuanProxyAvailable = (siyuanProxy: Undefinable<string>) => {
+  const hasSiyuanProxy = siyuanProxy && siyuanProxy.trim() !== ""
+  const isSameOrigin = hasSiyuanProxy && siyuanProxy === win.location.origin
+  return isSameOrigin
 }

@@ -53,7 +53,9 @@ class SiyuanPicgoPostApi {
     this.picgoApi = new SiyuanPicGoUploadApi(isDev)
     this.cfgUpdating = false
 
-    this.updateConfig()
+    this.updateConfig().then(() => {
+      this.logger.info("picgo config updated")
+    })
   }
 
   /**
@@ -308,7 +310,7 @@ class SiyuanPicgoPostApi {
 
   // ===================================================================================================================
 
-  private updateConfig() {
+  private async updateConfig() {
     // 迁移旧插件配置
     let legacyCfgfolder = ""
     // 初始化思源 PicGO 配置
@@ -318,14 +320,14 @@ class SiyuanPicgoPostApi {
       legacyCfgfolder = path.join(workspaceDir, "data", "storage", "syp", "picgo")
       // 如果新插件采用了不同的目录，需要迁移旧插件 node_modules 文件夹
       if (legacyCfgfolder !== this.picgoApi.picgo.baseDir) {
-        void this.moveFile(legacyCfgfolder, this.picgoApi.picgo.baseDir)
+        await this.moveFile(legacyCfgfolder, this.picgoApi.picgo.baseDir)
       }
 
       // 迁移 zhiNpmPath
       const zhiNpmPathSetupJsPath = path.join(workspaceDir, "data", "plugins", "siyuan-plugin-picgo", "libs", "setup")
       const zhiNpmPathInfraPath = path.join(workspaceDir, "data", "plugins", "siyuan-plugin-picgo", "libs", "zhi-infra")
-      void this.moveFile(zhiNpmPathSetupJsPath, path.join(this.picgoApi.picgo.baseDir, "libs", "setup"))
-      void this.moveFile(zhiNpmPathInfraPath, path.join(this.picgoApi.picgo.baseDir, "libs", "zhi-infra"))
+      await this.moveFile(zhiNpmPathSetupJsPath, path.join(this.picgoApi.picgo.baseDir, "libs", "setup"))
+      await this.moveFile(zhiNpmPathInfraPath, path.join(this.picgoApi.picgo.baseDir, "libs", "zhi-infra"))
     }
 
     // 旧的配置位置
@@ -337,6 +339,13 @@ class SiyuanPicgoPostApi {
     //
     // 新配置位置
     // ~/.universal-picgo
+
+    // init new config
+    const ctx = this.ctx()
+    ctx.saveConfig({
+      "siyuan.proxy": this.siyuanConfig.apiUrl,
+    })
+    this.logger.debug(`siyuan.proxy inited in picgo => ${this.siyuanConfig.apiUrl}`)
   }
 
   private async moveFile(from: string, to: string) {
@@ -352,26 +361,17 @@ class SiyuanPicgoPostApi {
     this.cfgUpdating = true
     this.logger.info(`will move ${from} to ${to}`)
     // 目的地存在复制
-    if (existTo) {
-      this.copyFolder(from, to)
-        .then(() => {
-          this.cfgUpdating = false
-        })
-        .catch((e: any) => {
-          this.cfgUpdating = false
-          this.logger.error(`copy ${from} to ${to} failed: ${e}`)
-        })
-    } else {
-      // 不存在移动过去
-      fs.promises
-        .rename(from, to)
-        .then(() => {
-          this.cfgUpdating = false
-        })
-        .catch((e: any) => {
-          this.cfgUpdating = false
-          this.logger.error(`move ${from} to ${to} failed: ${e}`)
-        })
+    try {
+      if (existTo) {
+        await this.copyFolder(from, to)
+      } else {
+        // 不存在移动过去
+        await fs.promises.rename(from, to)
+      }
+    } catch (e) {
+      this.logger.error(`move ${from} to ${to} failed: ${e}`)
+    } finally {
+      this.cfgUpdating = false
     }
   }
 

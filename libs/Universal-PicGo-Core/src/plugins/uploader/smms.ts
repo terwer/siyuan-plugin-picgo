@@ -24,7 +24,8 @@ const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDo
     method: "POST",
     url: `https://${domain}/api/v2/upload`,
     headers: {
-      "Content-Type": "multipart/form-data",
+      // multipart/form-data 是自动设置的，这里不需要
+      // "Content-Type": "multipart/form-data",
       // "User-Agent": "PicGo",
       Authorization: apiToken,
     },
@@ -67,12 +68,13 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
             title: ctx.i18n.translate<ILocalesKey>("UPLOAD_FAILED"),
             body: body.message,
           })
-          throw new Error(body.message)
+          throw new Error(body?.message ?? body ?? "unknown error")
         }
       } catch (e: any) {
         let errMsg: any
         if (e?.statusCode) {
-          errMsg = e.response?.body?.error ?? e.response?.body?.message ?? e.stack ?? "unknown error"
+          errMsg =
+            e.response?.body?.error ?? e.response?.body?.message ?? e.response?.body ?? e.stack ?? "unknown error"
         } else {
           errMsg = e.toString()
         }

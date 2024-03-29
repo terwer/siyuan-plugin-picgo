@@ -14,6 +14,7 @@ import PicbedSetting from "$components/setting/picgo/bundled/PicbedSetting.vue"
 import PicgoConfigSetting from "$components/setting/picgo/bundled/PicgoConfigSetting.vue"
 import PicgoPluginSetting from "$components/setting/picgo/bundled/PicgoPluginSetting.vue"
 import { useSiyuanDevice } from "$composables/useSiyuanDevice.ts"
+import { isSiyuanProxyAvailable } from "zhi-siyuan-picgo"
 
 const { t } = useVueI18n()
 const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
@@ -40,7 +41,7 @@ const formData = reactive({
 
 <template>
   <div>
-    <el-form-item :label="t('setting.cors.title')" :required="!isInSiyuanOrSiyuanNewWin()">
+    <el-form-item v-if="!isSiyuanProxyAvailable(formData.cfg.siyuan.proxy)" :label="t('setting.cors.title')">
       <el-input v-model="formData.cfg.picBed.proxy" :placeholder="t('setting.cors.title.tip')" />
       <div>
         <a href="https://blog.terwer.space/static/20240312140915-rvxrqp2" target="_blank">

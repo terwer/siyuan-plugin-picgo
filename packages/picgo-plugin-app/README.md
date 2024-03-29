@@ -27,7 +27,7 @@ New store path from 1.6.0
    [工作空间]/data/storage/syp/picgo/node_modules
 
 
-1.6.0+ 默认插件位置
+1.6.0+ 默认存储位置
 
 ~/.universal-picgo/picgo.cfg.json
 ~/.universal-picgo/mac.applescript
