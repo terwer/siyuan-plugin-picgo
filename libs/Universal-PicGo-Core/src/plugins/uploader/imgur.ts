@@ -27,7 +27,8 @@ const postOptions = (options: IImgurConfig, fileName: string, imgBase64: string)
     url: "https://api.imgur.com/3/image",
     headers: {
       Authorization: `Client-ID ${clientId}`,
-      "content-type": "multipart/form-data",
+      // multipart/form-data 是自动设置的，这里不需要
+      // "content-type": "multipart/form-data",
       // Host: "api.imgur.com",
       // "User-Agent": "PicGo",
     },

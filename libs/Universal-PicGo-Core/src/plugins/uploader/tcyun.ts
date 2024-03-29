@@ -79,7 +79,8 @@ const postOptions = (
       headers: {
         // Host: `${area}.file.myqcloud.com`,
         Authorization: signature.signature,
-        contentType: "multipart/form-data",
+        // multipart/form-data 是自动设置的，这里不需要
+        // contentType: "multipart/form-data",
         userAgent: `PicGo;${version};null;null`,
       },
       data: {

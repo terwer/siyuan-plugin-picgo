@@ -110,7 +110,7 @@ async function siyuanProxyInterceptor(
   }
 
   // contentType
-  const contentType = options.headers["Content-Type"] || "application/json"
+  let contentType = options.headers["Content-Type"] || "application/json"
 
   // header
   const headers = {
@@ -127,7 +127,13 @@ async function siyuanProxyInterceptor(
   // GET or HEAD cannot have request body
   if (options.method !== "GET" && options.method !== "HEAD") {
     const myRequest = new Request("", { method: options.method, body: options.data })
+    console.log("generate temp myRequest =>", myRequest)
     payloadBuf = await myRequest.arrayBuffer()
+    // multipart/form-data 需要自动设置
+    const formDataContentType = myRequest.headers.get("Content-Type") ?? ""
+    if (formDataContentType.includes("multipart/form-data")) {
+      contentType = formDataContentType
+    }
   }
   const payload = CodingUtil.encodeToBase64String(payloadBuf)
 
