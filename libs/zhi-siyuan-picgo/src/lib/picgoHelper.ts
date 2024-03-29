@@ -740,6 +740,23 @@ class PicgoHelper {
       }
     }
   }
+
+  public async importPlugin() {
+    const { dialog, getCurrentWindow } = win.require("@electron/remote")
+    const res = await dialog.showOpenDialog(getCurrentWindow(), {
+      properties: ["openDirectory"],
+    })
+    const filePaths = res.filePaths
+
+    if (filePaths.length > 0) {
+      const res = await this.ctx.pluginHandler.install(filePaths, {}, {})
+      if (res.success) {
+        this.triggerPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST)
+      } else {
+        throw new Error("导入插件失败，请检查picgo.log，错误信息：" + res.body)
+      }
+    }
+  }
   // ===================================================================================================================
 
   /**

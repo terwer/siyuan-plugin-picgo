@@ -14,6 +14,7 @@ import { calculateHash } from "./hashUtil"
 import { Buffer } from "./nodePolyfill"
 import crypto from "crypto"
 import { ILogger } from "zhi-lib-base"
+import { readJSONSync } from "./nodeUtils"
 
 export const isUrl = (url: string): boolean => url.startsWith("http://") || url.startsWith("https://")
 
@@ -533,7 +534,7 @@ export const getNormalPluginName = (nameOrPath: string, logger: ILogger): string
         logger.warn(`Can't find plugin: ${nameOrPath}`)
         return ""
       } else {
-        const pkg = fs.readJSONSync(packageJSONPath) || {}
+        const pkg = readJSONSync(fs, packageJSONPath) || {}
         if (!pkg.name?.includes("picgo-plugin-")) {
           logger.warn(
             `The plugin package.json's name filed is ${

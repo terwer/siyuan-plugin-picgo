@@ -76,7 +76,15 @@ const openHomepage = (url: string) => {
   }
 }
 
-const handleImportLocalPlugin = () => {}
+const handleImportLocalPlugin = async () => {
+  try {
+    await picgoHelper.importPlugin()
+    ElMessage.success(t("main.opt.success"))
+  } catch (e) {
+    const errMsg = t("main.opt.failure") + "=>" + e
+    ElMessage.error(errMsg)
+  }
+}
 
 const handleSearchResult = (item: INPMSearchResultObject) => {
   const name = handleStreamlinePluginName(item.package.name)
