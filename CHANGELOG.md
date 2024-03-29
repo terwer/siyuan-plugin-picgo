@@ -1,11 +1,28 @@
 # Changelog
 
+## [1.7.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.7.0...siyuan-plugin-picgo-v1.7.1) (2024-03-29)
+### Bug Fixes
+* add error message when upload failed ([c16a3ec](https://github.com/terwer/siyuan-plugin-picgo/commit/c16a3ec4ea9c391187c47b2ed30474d6be70072f))
+* add plugins support ([bf054c7](https://github.com/terwer/siyuan-plugin-picgo/commit/bf054c7a125214291542046c4ff7bb255c4ef936))
+* only pc version support enable or disable plugin ([ea29c7f](https://github.com/terwer/siyuan-plugin-picgo/commit/ea29c7f6e354ef91c59fb7e0190db56ce6b53e9e))
+* only pc version support events trigger ([ca98301](https://github.com/terwer/siyuan-plugin-picgo/commit/ca98301f462ab90ba976c48224b2f58008db91c8))
+* only pc version support improve install experience ([17df472](https://github.com/terwer/siyuan-plugin-picgo/commit/17df472916dfa1265bfb82af2a40817e53bd8db2))
+* only pc version support install plugin from npm ([0e85234](https://github.com/terwer/siyuan-plugin-picgo/commit/0e85234b1b354d43639d5d0d59ce63a789f3b782))
+* only pc version support local plugins ([ab01ffc](https://github.com/terwer/siyuan-plugin-picgo/commit/ab01ffc78ec8015ae51c646e36f24117fc57a69b))
+* only pc version support node download and npm command ([3aa36f8](https://github.com/terwer/siyuan-plugin-picgo/commit/3aa36f88cf7c577255a2e21826918117bd1cd54c))
+* only pc version support plugin config ([6505361](https://github.com/terwer/siyuan-plugin-picgo/commit/6505361c52f710fbf39ca61576f02a98041475d6))
+* only pc version support plugin list ([499c3bb](https://github.com/terwer/siyuan-plugin-picgo/commit/499c3bb9320f213d13db32966104c9824e377462))
+* only pc version support plugins ([ad77535](https://github.com/terwer/siyuan-plugin-picgo/commit/ad7753540ab694a6ba42114bc60928ab23603f93))
+* only pc version support uninstall and update plugins ([719f851](https://github.com/terwer/siyuan-plugin-picgo/commit/719f851b597420bf8e2bd0ba85c33ae26e614cff))
+### Miscellaneous
+* **deps-dev:** bump vite-plugin-dts from 3.7.3 to 3.8.0 ([3d185eb](https://github.com/terwer/siyuan-plugin-picgo/commit/3d185eb12768c32f40cd2c83ffa7e7741adbff41))
+* **deps-dev:** bump vite-plugin-dts from 3.8.0 to 3.8.1 ([03cc0bf](https://github.com/terwer/siyuan-plugin-picgo/commit/03cc0bf6ae34df73f2493bac97056b0df3f61180))
+* fix ts error ([2ee39e6](https://github.com/terwer/siyuan-plugin-picgo/commit/2ee39e60c3b76783d28ea8e298c52ab822b3cc40))
 ## [1.7.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.6.0...siyuan-plugin-picgo-v1.7.0) (2024-03-27)
 ### Features
 * allow config timeout ([34cf0bb](https://github.com/terwer/siyuan-plugin-picgo/commit/34cf0bb94f596368ebf62fd16d33881a17515c5c))
 * show image state in status bar ([aa48d09](https://github.com/terwer/siyuan-plugin-picgo/commit/aa48d097fbf86a66e1e54a73b6107946c8390321))
 * support validate image block ([6c53003](https://github.com/terwer/siyuan-plugin-picgo/commit/6c53003c4141d849b21895ae6f36df88ab99cedc))
-### Bug Fixes
 * add clean script ([378fdeb](https://github.com/terwer/siyuan-plugin-picgo/commit/378fdeb2fefe209dbdb0d28acfae16633bd70953))
 * call origin upload error ([5e5c00a](https://github.com/terwer/siyuan-plugin-picgo/commit/5e5c00a200fb1537756740e53e7b6161f1da5313))
 * docker load error ([9402b65](https://github.com/terwer/siyuan-plugin-picgo/commit/9402b6539cd567e86504c352b3c748420b5430d6))
@@ -98,7 +115,6 @@
 * fix typo ([c0c82a7](https://github.com/terwer/siyuan-plugin-picgo/commit/c0c82a79de2ef8d2b082fbc482f5b1b5f4051dcf))
 * fix vue conflict ([6cbce25](https://github.com/terwer/siyuan-plugin-picgo/commit/6cbce25c9e7d33ccf3aae2b03074f29edfea8486))
 * import error ([aa068bb](https://github.com/terwer/siyuan-plugin-picgo/commit/aa068bb68efc2df79a4ab6dcea6ca5104853be69))
-### Miscellaneous
 * add file or blob support ([1b36f70](https://github.com/terwer/siyuan-plugin-picgo/commit/1b36f70413b00ce3829b8cafdeb1388943f59778))
 * add license ([3e51524](https://github.com/terwer/siyuan-plugin-picgo/commit/3e51524ca897dcbc1bc606e00b93ff05b35c07e6))
 * add more pages ([c825d68](https://github.com/terwer/siyuan-plugin-picgo/commit/c825d685e5c85615980efb72b8ec0bfaca02ecc3))
