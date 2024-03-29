@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.8.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.7.1...siyuan-plugin-picgo-v1.8.0) (2024-03-29)
+
+
+### Features
+
+* auto use siyuan-note bundled proxy ([1fd2f22](https://github.com/terwer/siyuan-plugin-picgo/commit/1fd2f227d974cc6435541d5db6cd99c1c458ad76))
+* auto use siyuan-note bundled proxy ([d7f5f36](https://github.com/terwer/siyuan-plugin-picgo/commit/d7f5f36af8416b10bace30e677ffb65bab022d9b))
+* auto use siyuan-note bundled proxy ([dd9ee34](https://github.com/terwer/siyuan-plugin-picgo/commit/dd9ee346c643bb31dc2f10766dd8af977e725829))
+* auto use siyuan-note bundled proxy ([8382af8](https://github.com/terwer/siyuan-plugin-picgo/commit/8382af89359300c361ee99aa7e815e924041842c))
+* auto use siyuan-note bundled proxy ([0c10b9a](https://github.com/terwer/siyuan-plugin-picgo/commit/0c10b9ab70632de6a5436f493327861ca4bfafdb))
+
 ## [1.7.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.7.0...siyuan-plugin-picgo-v1.7.1) (2024-03-29)
 ### Bug Fixes
 * add error message when upload failed ([c16a3ec](https://github.com/terwer/siyuan-plugin-picgo/commit/c16a3ec4ea9c391187c47b2ed30474d6be70072f))
