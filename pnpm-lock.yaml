@@ -257,8 +257,8 @@ importers:
         specifier: ^5.2.6
         version: 5.2.6(@types/node@20.11.30)(stylus@0.63.0)
       vite-plugin-dts:
-        specifier: ^3.8.0
-        version: 3.8.0(@types/node@20.11.30)(typescript@5.4.3)(vite@5.2.6)
+        specifier: ^3.8.1
+        version: 3.8.1(@types/node@20.11.30)(typescript@5.4.3)(vite@5.2.6)
       vite-plugin-node-polyfills:
         specifier: ^0.21.0
         version: 0.21.0(vite@5.2.6)
@@ -7350,8 +7350,8 @@ packages:
       - supports-color
     dev: true
 
-  /vite-plugin-dts@3.8.0(@types/node@20.11.30)(typescript@5.4.3)(vite@5.2.6):
-    resolution: {integrity: sha512-wt9ST1MwS5lkxHtA3M30+lSA3TO8RnaUu3YUPmGgY1iKm+vWZmB7KBss6qspyUlto9ynLNHYG2eJ09d2Q4/7Qg==}
+  /vite-plugin-dts@3.8.1(@types/node@20.11.30)(typescript@5.4.3)(vite@5.2.6):
+    resolution: {integrity: sha512-zEYyQxH7lKto1VTKZHF3ZZeOPkkJgnMrePY4VxDHfDSvDjmYMMfWjZxYmNwW8QxbaItWJQhhXY+geAbyNphI7g==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
       typescript: '*'
