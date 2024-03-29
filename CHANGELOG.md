@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.7.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.7.0...siyuan-plugin-picgo-v1.7.1) (2024-03-29)
+
+
+### Bug Fixes
+
+* add error message when upload failed ([c16a3ec](https://github.com/terwer/siyuan-plugin-picgo/commit/c16a3ec4ea9c391187c47b2ed30474d6be70072f))
+* add plugins support ([bf054c7](https://github.com/terwer/siyuan-plugin-picgo/commit/bf054c7a125214291542046c4ff7bb255c4ef936))
+* only PC version support enable or disable plugin ([ea29c7f](https://github.com/terwer/siyuan-plugin-picgo/commit/ea29c7f6e354ef91c59fb7e0190db56ce6b53e9e))
+* only PC version support events trigger ([ca98301](https://github.com/terwer/siyuan-plugin-picgo/commit/ca98301f462ab90ba976c48224b2f58008db91c8))
+* only PC version support improve install experience ([5b05641](https://github.com/terwer/siyuan-plugin-picgo/commit/5b0564181e14fe9e815c1cc81231dfc35d116ae4))
+* only PC version support improve install experience ([17df472](https://github.com/terwer/siyuan-plugin-picgo/commit/17df472916dfa1265bfb82af2a40817e53bd8db2))
+* only PC version support install plugin from npm ([0e85234](https://github.com/terwer/siyuan-plugin-picgo/commit/0e85234b1b354d43639d5d0d59ce63a789f3b782))
+* only PC version support local plugins ([ab01ffc](https://github.com/terwer/siyuan-plugin-picgo/commit/ab01ffc78ec8015ae51c646e36f24117fc57a69b))
+* only PC version support node download and npm command ([025ebd0](https://github.com/terwer/siyuan-plugin-picgo/commit/025ebd08b80979781e47b385d9494663605dfb82))
+* only PC version support node download and npm command ([3aa36f8](https://github.com/terwer/siyuan-plugin-picgo/commit/3aa36f88cf7c577255a2e21826918117bd1cd54c))
+* only PC version support plugin config ([6505361](https://github.com/terwer/siyuan-plugin-picgo/commit/6505361c52f710fbf39ca61576f02a98041475d6))
+* only PC version support plugin list ([499c3bb](https://github.com/terwer/siyuan-plugin-picgo/commit/499c3bb9320f213d13db32966104c9824e377462))
+* only PC version support plugins ([ad77535](https://github.com/terwer/siyuan-plugin-picgo/commit/ad7753540ab694a6ba42114bc60928ab23603f93))
+* only PC version support uninstall and update plugins ([719f851](https://github.com/terwer/siyuan-plugin-picgo/commit/719f851b597420bf8e2bd0ba85c33ae26e614cff))
+
+
+### Miscellaneous
+
+* **deps-dev:** bump vite-plugin-dts from 3.7.3 to 3.8.0 ([3d185eb](https://github.com/terwer/siyuan-plugin-picgo/commit/3d185eb12768c32f40cd2c83ffa7e7741adbff41))
+* **deps-dev:** bump vite-plugin-dts from 3.8.0 to 3.8.1 ([03cc0bf](https://github.com/terwer/siyuan-plugin-picgo/commit/03cc0bf6ae34df73f2493bac97056b0df3f61180))
+* fix ts error ([2ee39e6](https://github.com/terwer/siyuan-plugin-picgo/commit/2ee39e60c3b76783d28ea8e298c52ab822b3cc40))
+
 ## [1.7.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.6.0...siyuan-plugin-picgo-v1.7.0) (2024-03-27)
 ### Features
 * allow config timeout ([34cf0bb](https://github.com/terwer/siyuan-plugin-picgo/commit/34cf0bb94f596368ebf62fd16d33881a17515c5c))
