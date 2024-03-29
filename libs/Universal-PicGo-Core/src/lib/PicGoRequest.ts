@@ -264,20 +264,19 @@ class PicGoRequestWrapper {
     let opt = requestInterceptor(userOptions)
 
     // handle proxy
-    if (isSiyuanProxyAvailable(this.siyuanProxy)) {
+    //
+    // 浏览器环境未配置代理 或者 配置了必须使用代理
+    // userOptions.proxy = true | undefined
+    const isBrowserUseSiyuanProxy = !hasNodeEnv && userOptions.proxy !== false
+    // Node 环境配置了必须使用代理
+    // userOptions.proxy = true
+    const isNodeUseSiyuanProxy = hasNodeEnv && (userOptions.proxy as boolean)
+    const isUseSiyuanProxy = isBrowserUseSiyuanProxy || isNodeUseSiyuanProxy
+    if (isSiyuanProxyAvailable(this.siyuanProxy) && isUseSiyuanProxy) {
       // 处理思源笔记代理
-      //
-      // 浏览器环境未配置代理 或者 配置了必须使用代理
-      // userOptions.proxy = true | undefined
-      const isBrowserUseSiyuanProxy = !hasNodeEnv && userOptions.proxy !== false
-      // Node 环境配置了必须使用代理
-      // userOptions.proxy = true
-      const isNodeUseSiyuanProxy = hasNodeEnv && (userOptions.proxy as boolean)
-      if (isBrowserUseSiyuanProxy || isNodeUseSiyuanProxy) {
-        this.logger.debug("opt =>", opt)
-        opt = await siyuanProxyInterceptor(this.siyuanProxy, opt)
-        this.logger.debug("newopt =>", opt)
-      }
+      this.logger.debug("opt =>", opt)
+      opt = await siyuanProxyInterceptor(this.siyuanProxy, opt)
+      this.logger.debug("newopt =>", opt)
 
       // 处理返回值
       const siyuanResp = await instance.request(opt)
@@ -302,6 +301,9 @@ class PicGoRequestWrapper {
       const respContentType = userRespData.contentType
       switch (respContentType) {
         case "application/json":
+          respBody = safeParse(respBody.toString())
+          break
+        case "application/json; charset=utf-8":
           respBody = safeParse(respBody.toString())
           break
         case "application/xml":
