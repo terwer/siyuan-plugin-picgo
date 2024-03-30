@@ -217,7 +217,15 @@ export class ImageParser {
 
       // 使用正则表达式和replace方法来实现replaceAll方法
       // 将search转换为正则表达式，使用g标志表示全局匹配
-      const imgRegex = new RegExp(img, "g")
+      //
+      // 注意需要编码，否则无法替换
+      // 问题说明：由于原始图片链接中包含特殊字符，如斜杠和点，这些字符在正则表达式中具有特殊含义，可能导致匹配失败。需要对原始图片链接中的特殊字符进行转义处理，以确保正则表达式能够正确匹配。
+      // 修复方法：对原始图片链接中的特殊字符进行转义处理，然后再创建正则表达式进行匹配替换。
+      // MDN 的解释
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#flags_in_constructor
+      const escapedImg = img.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // 转义处理
+      const imgRegex = new RegExp(escapedImg, "g")
+      this.logger.debug("imgRegex =>", imgRegex)
       newcontent = newcontent.replace(imgRegex, newImg)
     }
 
