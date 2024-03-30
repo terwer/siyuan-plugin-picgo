@@ -1,10 +1,14 @@
 # Changelog
 
-## [1.8.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.7.1...siyuan-plugin-picgo-v1.8.0) (2024-03-29)
+## [1.9.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.8.0...siyuan-plugin-picgo-v1.9.0) (2024-03-30)
 ### Features
+* publish picgo packages ([31265d2](https://github.com/terwer/siyuan-plugin-picgo/commit/31265d2af7ad4508e538851d6e11e9478aa66734))
+### Bug Fixes
+* auto publish npm packages ([9072294](https://github.com/terwer/siyuan-plugin-picgo/commit/90722946d475bcbd9ac1da7a05596ca55c0eea0e))
+* post image replace not work ([b552a2a](https://github.com/terwer/siyuan-plugin-picgo/commit/b552a2a1f18b80718fe736163a8dec3d6b97b752))
+## [1.8.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.7.1...siyuan-plugin-picgo-v1.8.0) (2024-03-29)
 * auto use siyuan-note bundled proxy ([0c10b9a](https://github.com/terwer/siyuan-plugin-picgo/commit/0c10b9ab70632de6a5436f493327861ca4bfafdb))
 ## [1.7.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.7.0...siyuan-plugin-picgo-v1.7.1) (2024-03-29)
-### Bug Fixes
 * add error message when upload failed ([c16a3ec](https://github.com/terwer/siyuan-plugin-picgo/commit/c16a3ec4ea9c391187c47b2ed30474d6be70072f))
 * add plugins support ([bf054c7](https://github.com/terwer/siyuan-plugin-picgo/commit/bf054c7a125214291542046c4ff7bb255c4ef936))
 * only pc version support enable or disable plugin ([ea29c7f](https://github.com/terwer/siyuan-plugin-picgo/commit/ea29c7f6e354ef91c59fb7e0190db56ce6b53e9e))
