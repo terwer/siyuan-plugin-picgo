@@ -17,13 +17,13 @@ For PicGo projects to write &amp; read data from browser, node or electron
 ## Dev
 
 ```bash
-pnpm dev -F Universal-PicGo-Store
+pnpm dev -F universal-picgo-store
 ```
 
 ## Build
 
 ```bash
-pnpm build -F Universal-PicGo-Store
+pnpm build -F universal-picgo-store
 ```
 
 ## Test
@@ -31,11 +31,11 @@ pnpm build -F Universal-PicGo-Store
 Execute the unit tests via [vitest](https://vitest.dev)
 
 ```bash
-pnpm test -F Universal-PicGo-Store
+pnpm test -F universal-picgo-store
 ```
 
 ## Publish
 
 ```bash
-pnpm publish -F Universal-PicGo-Store --tag latest
+pnpm publish -F universal-picgo-store --tag latest
 ```

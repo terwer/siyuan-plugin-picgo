@@ -79,6 +79,16 @@ jobs:
         run: pnpm package
         if: ${{ steps.release.outputs.release_created }}
 
+      # Build for production and Archive package
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          pnpm publish -F universal-picgo-store --tag latest
+          pnpm publish -F universal-picgo --tag latest
+          pnpm publish -F zhi-siyuan-picgo --tag latest
+        if: ${{ steps.release.outputs.release_created }}
+
       # Upload package to release
       # https://github.com/philips-labs/terraform-aws-github-runner/blob/main/.github/workflows/release.yml#L46
       - name: Upload package.zip to the release

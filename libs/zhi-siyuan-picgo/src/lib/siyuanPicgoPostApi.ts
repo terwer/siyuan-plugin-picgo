@@ -157,6 +157,7 @@ class SiyuanPicgoPostApi {
       ret.hasImages = true
 
       const imageItemArray = await this.doConvertImagesToImagesItemArray(attrs, uniqueLocalImages)
+      this.logger.debug("pared image array =>", imageItemArray)
 
       const replaceMap = {} as any
       let hasLocalImages = false
