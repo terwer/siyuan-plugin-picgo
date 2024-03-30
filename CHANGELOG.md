@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.9.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.8.0...siyuan-plugin-picgo-v1.9.0) (2024-03-30)
+
+
+### Features
+
+* publish picgo packages ([31265d2](https://github.com/terwer/siyuan-plugin-picgo/commit/31265d2af7ad4508e538851d6e11e9478aa66734))
+
+
+### Bug Fixes
+
+* auto publish npm packages ([9072294](https://github.com/terwer/siyuan-plugin-picgo/commit/90722946d475bcbd9ac1da7a05596ca55c0eea0e))
+* post image replace not work ([b552a2a](https://github.com/terwer/siyuan-plugin-picgo/commit/b552a2a1f18b80718fe736163a8dec3d6b97b752))
+
 ## [1.8.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.7.1...siyuan-plugin-picgo-v1.8.0) (2024-03-29)
 ### Features
 * auto use siyuan-note bundled proxy ([0c10b9a](https://github.com/terwer/siyuan-plugin-picgo/commit/0c10b9ab70632de6a5436f493327861ca4bfafdb))
