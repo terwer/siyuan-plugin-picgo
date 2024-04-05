@@ -25,7 +25,7 @@
     "siyuan": "^0.9.6",
     "stylus": "^0.63.0",
     "svelte": "^4.2.12",
-    "typescript": "^5.4.3",
+    "typescript": "^5.4.4",
     "vite": "^5.2.6",
     "vite-plugin-dts": "^3.8.1",
     "vite-plugin-node-polyfills": "^0.21.0",
