@@ -135,8 +135,8 @@ importers:
         specifier: ^10.9.0
         version: 10.9.0(vue@3.4.21)
       element-plus:
-        specifier: ^2.6.2
-        version: 2.6.2(vue@3.4.21)
+        specifier: ^2.7.0
+        version: 2.7.0(vue@3.4.21)
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -3577,8 +3577,8 @@ packages:
       jake: 10.8.7
     dev: true
 
-  /element-plus@2.6.2(vue@3.4.21):
-    resolution: {integrity: sha512-WFMv1v83l437Xu+GeeM+ytxd9VUQpR4418BowvTVIPYItsoj6yK0ITIuSv19iCesF405FbAOaCIHXhJch0ilFA==}
+  /element-plus@2.7.0(vue@3.4.21):
+    resolution: {integrity: sha512-WAiaFLavuWFxof9qwkC27jvkh9nRcNnB506g1vvJSiVaVqjCBWUFCIyJKeN11M1qcv2cS5VV5PfSLjTIkrw87A==}
     peerDependencies:
       vue: ^3.2.0
     dependencies:
