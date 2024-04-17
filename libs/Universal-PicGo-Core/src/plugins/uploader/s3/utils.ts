@@ -33,11 +33,11 @@ class FileNameGenerator {
   }
 
   public month(): string {
-    return (this.date.getMonth() + 1).toString().padStart(2, '0');
+    return (this.date.getMonth() + 1).toString().padStart(2, "0")
   }
 
   public day(): string {
-    return this.date.getDate().toString().padStart(2, '0');
+    return this.date.getDate().toString().padStart(2, "0")
   }
 
   public fullName(): string | undefined {
@@ -45,11 +45,11 @@ class FileNameGenerator {
   }
 
   public fileName(): string {
-    return (this.info.fileName ?? '').replace(this.info.extname ?? '', '')
+    return (this.info.fileName ?? "").replace(this.info.extname ?? "", "")
   }
 
   public extName(): string {
-    return (this.info.extname ?? '').replace('.', '')
+    return (this.info.extname ?? "").replace(".", "")
   }
 
   public md5(): string {
@@ -108,6 +108,7 @@ export function formatPath(info: IImgInfo, format?: string): string {
 
   for (const key of FileNameGenerator.fields) {
     const re = new RegExp(`{${key}}`, "g")
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     formatPath = formatPath.replace(re, fileNameGenerator[key]())
   }
@@ -128,9 +129,7 @@ export async function extractInfo(info: IImgInfo): Promise<{
 
   if (info.base64Image) {
     const body = info.base64Image.replace(/^data:[/\w]+;base64,/, "")
-    result.contentType = info.base64Image.match(
-      /[^:]\w+\/[\w-+\d.]+(?=;|,)/
-    )?.[0]
+    result.contentType = info.base64Image.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)?.[0]
     result.body = Buffer.from(body, "base64")
     result.contentEncoding = "base64"
   } else {
