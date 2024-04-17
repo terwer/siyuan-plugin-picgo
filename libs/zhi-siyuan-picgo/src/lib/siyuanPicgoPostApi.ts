@@ -279,7 +279,7 @@ class SiyuanPicgoPostApi {
     } else {
       filePaths.push(imageFullPath)
     }
-    this.logger.warn("start uploading =>", filePaths)
+    this.logger.info("start uploading =>", filePaths)
 
     // 批量上传
     const imageJson: any = await this.originalUpload(filePaths)

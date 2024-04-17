@@ -114,7 +114,7 @@ const handleConfigChange = (val: any) => {
 }
 
 const doSubmit = (val: any) => {
-  logger.debug("准备保存配置val", val)
+  logger.debug(`准备保存 ${props.configType} 配置val`, val)
   switch (props.configType) {
     case "plugin":
       picgoHelper.savePicgoConfig({

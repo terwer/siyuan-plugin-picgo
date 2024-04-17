@@ -49,6 +49,10 @@ export const copyToClipboardInBrowser = (text: string) => {
  * get raw data from reactive or ref
  */
 export const getRawData = (args: any): any => {
+  // 兼容空值
+  if (!args) {
+    return null
+  }
   if (Array.isArray(args)) {
     const data = args.map((item: any) => {
       if (isRef(item)) {

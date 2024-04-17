@@ -61,7 +61,7 @@ class PicgoHelper {
   private readonly readonlyCfg: IConfig
 
   /**
-   * 狗子 PicGo 帮组类
+   * PicGo 帮助类
    *
    * @param ctx 上下文
    * @param reactiveCfg 响应式配置对象
