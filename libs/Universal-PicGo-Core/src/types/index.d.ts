@@ -231,6 +231,25 @@ export interface IImgurConfig {
   proxy: string
 }
 
+/** 内置 AWS S3 图床配置项 */
+export interface IAwsS3Config {
+  accessKeyID: string
+  secretAccessKey: string
+  bucketName: string
+  uploadPath: string
+  region?: string
+  endpoint?: string
+  customUrl?: string
+  pathStyleAccess?: boolean
+  rejectUnauthorized?: boolean
+  acl?: string
+  // S3或S3兼容服务一般支持对桶设置CORS策略，优先修改桶的CORS策略
+  // SiYuan 桌面版没有CORS问题
+  // SiYuan 内置的 CORS Proxy 在iOS版上没跑通
+  // 桌面浏览器访问桌面版或iOS版是支持使用内置的 CORS Proxy 的
+  corsProxy?: boolean
+}
+
 /** PicGo 配置文件类型定义 */
 export interface IConfig {
   picBed: {
@@ -243,6 +262,7 @@ export interface IConfig {
     github?: IGithubConfig
     aliyun?: IAliyunConfig
     imgur?: IImgurConfig
+    awss3?: IAwsS3Config
     transformer?: string
     /** for uploader */
     proxy?: string

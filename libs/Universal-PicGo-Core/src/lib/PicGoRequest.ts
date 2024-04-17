@@ -110,7 +110,7 @@ async function siyuanProxyInterceptor(
   }
 
   // contentType
-  let contentType = options.headers["Content-Type"] || "application/json"
+  let contentType = options.headers["Content-Type"] || options.headers["content-type"] || "application/json"
 
   // header
   const headers = {
@@ -332,6 +332,14 @@ class PicGoRequestWrapper {
             body: respBody,
           },
           body: respBody,
+
+          // AxiosResponse
+          headers: userRespData.headers,
+          status: userRespData.status,
+          statusText: "",
+          data: respBody,
+          config: siyuanResp.config,   // just a placeholder, don't use it
+          request: siyuanResp.request, // just a placeholder, don't use it
         } as any
       } else {
         let customResp: any
