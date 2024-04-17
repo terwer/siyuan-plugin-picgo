@@ -21,7 +21,7 @@
     "vite": "^5.2.9",
     "vite-plugin-html": "^3.2.2",
     "vitest": "^1.4.0",
-    "vue-tsc": "^2.0.7"
+    "vue-tsc": "^2.0.13"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
