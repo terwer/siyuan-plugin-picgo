@@ -22,6 +22,7 @@ Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 - Qiniu Cloud<sup>recommended</sup>
 - SM.MS
 - imgur
+- Amazon S3<sup>recommended</sup>, thanks to @hzj629206
 
 ## Config
 
@@ -30,16 +31,16 @@ New store path from 1.6.0
 ```
 config below 1.5.6
 
-[工作空间]/data/storage/syp/picgo/picgo.cfg.json
-   [工作空间]/data/storage/syp/picgo/mac.applescript
-   [工作空间]/data/storage/syp/picgo/i18n-cli
-   [工作空间]/data/storage/syp/picgo/picgo-clipboard-images
-   [工作空间]/data/storage/syp/picgo/external-picgo-cfg.json
-   [工作空间]/data/storage/syp/picgo/picgo.log
-   [工作空间]/data/storage/syp/picgo/picgo.log
-   [工作空间]/data/storage/syp/picgo/package.json
-   [工作空间]/data/storage/syp/picgo/package-lock.json
-   [工作空间]/data/storage/syp/picgo/node_modules
+[workspace]/data/storage/syp/picgo/picgo.cfg.json
+   [workspace]/data/storage/syp/picgo/mac.applescript
+   [workspace]/data/storage/syp/picgo/i18n-cli
+   [workspace]/data/storage/syp/picgo/picgo-clipboard-images
+   [workspace]/data/storage/syp/picgo/external-picgo-cfg.json
+   [workspace]/data/storage/syp/picgo/picgo.log
+   [workspace]/data/storage/syp/picgo/picgo.log
+   [workspace]/data/storage/syp/picgo/package.json
+   [workspace]/data/storage/syp/picgo/package-lock.json
+   [workspace]/data/storage/syp/picgo/node_modules
 
 
 1.6.0+ config path
