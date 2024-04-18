@@ -268,7 +268,7 @@ export default class PicgoPlugin extends Plugin {
     pluginInstance.logger.debug("repalced new block md", newImageContent)
     await siyuanApi.updateBlock(nodeId, newImageContent, "markdown")
 
-    pluginInstance.noticeInfo("图片元数据更新成功")
+    pluginInstance.noticeInfo("🎉图片元数据更新成功")
   }
 
   /**

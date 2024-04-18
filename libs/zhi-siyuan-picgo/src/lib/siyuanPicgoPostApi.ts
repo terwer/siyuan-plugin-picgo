@@ -18,6 +18,7 @@ import { ParsedImage } from "./models/ParsedImage"
 import { PicgoPostResult } from "./models/PicgoPostResult"
 import { ImageParser } from "./parser/ImageParser"
 import { SiyuanPicGoUploadApi } from "./siyuanPicGoUploadApi"
+import { replaceImageLink } from "./utils/utils"
 
 /**
  * Picgo与文章交互的通用方法
@@ -108,6 +109,8 @@ class SiyuanPicgoPostApi {
       }
 
       const imageItem = new ImageItem(originUrl, imgUrl, retImg.isLocal, retImg.alt, retImg.title)
+      // 块 ID 赋值进去
+      imageItem.blockId = retImg.blockId
       // fileMap 查出来的是是否上传，上传了，isLocal就false
       if (fileMap[imageItem.hash]) {
         const newImageItem = fileMap[imageItem.hash]
@@ -312,12 +315,38 @@ class SiyuanPicgoPostApi {
 
     //处理链接替换
     if (!ignoreReplaceLink) {
-      // 不强制忽略则去查询配置
-      const ctx = this.ctx()
-      // 是否替换链接
-      const SIYUAN_REPLACE_LINK = ctx.getConfig("siyuan.replaceLink") ?? true
-      if (SIYUAN_REPLACE_LINK) {
-        this.logger.info("链接替换已开启，准备替换链接")
+      // 如果没有块 ID，则不替换
+      if (StrUtil.isEmptyString(imageItem.blockId)) {
+        this.logger.warn("图床未插入文档，不做链接替换")
+      } else {
+        // 不强制忽略则去查询配置
+        const ctx = this.ctx()
+        // 是否替换链接
+        const SIYUAN_REPLACE_LINK = ctx.getConfig("siyuan.replaceLink") ?? true
+        if (SIYUAN_REPLACE_LINK) {
+          this.logger.info("链接替换已开启，准备替换链接")
+
+          const newImageBlock = await this.siyuanApi.getBlockByID(imageItem.blockId)
+          // newImageBlock.markdown
+          // "![image](assets/image-20240327190812-yq6esh4.png)"
+          this.logger.debug("newImageBlock.markdown", newImageBlock.markdown)
+          // 如果查询出来的块信息不对，不更新，防止误更新
+          if (!newImageBlock.markdown.includes(imageItem.originUrl)) {
+            this.logger.warn("块信息不符合，取消更新")
+          } else {
+            // =========================================================================================================
+            // 正式更新替换
+            // id: string
+            // data: string
+            // dataType?: "markdown" | "dom"
+            const newImageContent = replaceImageLink(newImageBlock.markdown, imageItem.originUrl, imageItem.url)
+            // const newImageContent = `![${newImageItem.alt}](${newImageItem.url})`
+            this.logger.debug("repalced new block md", newImageContent)
+            await this.siyuanApi.updateBlock(imageItem.blockId, newImageContent, "markdown")
+
+            this.logger.info("🤩图片链接替换成功")
+          }
+        }
       }
     } else {
       this.logger.info("当前是思源笔记剪切板模式上传，暂时忽略链接替换，后面使用轮询处理替换链接")
