@@ -82,93 +82,146 @@ export class ImageParser {
     return ret
   }
 
-  /**
-   * 解析图片块为远程图片链接
-   *
-   * @param markdownText 图片块
-   * @private
-   */
+  // /**
+  //  * 解析图片块为远程图片链接
+  //  *
+  //  * @param markdownText 图片块
+  //  * @private
+  //  */
+  // public parseRemoteImagesToArray(markdownText: string): ParsedImage[] {
+  //   this.logger.debug("准备解析文本中的远程图片=>", markdownText)
+  //   // 定义正则表达式来匹配以 http 或 https 开头的 Markdown 格式的图片链接
+  //   // 只能匹配有属性和备注的情况
+  //   // const regex = /!\[(.*?)\]\(((https|http|ftp)?:\/\/[^\s/$.?#].[^\s]*)\s*"(.*?)"\)\s*{:\s*([^\n]*)}/g
+  //   // 同时兼容有属性和没有属性的情况
+  //   const regex = /!\[(.*?)\]\((https?:\/\/\S+\.(?:jpe?g|png|gif))(?:\s+"(?:[^"\\]|\\.)*")?\s*(?:{:\s*([^\n]*)})?\)/g
+  //
+  //   // 匹配普通图片链接：
+  //   // ![Cat](https://example.com/cat.png)
+  //   // 匹配结果:
+  //   // match[1]: "Cat"
+  //   // match[2]: "https://example.com/cat.png"
+  //   // match[3]: undefined
+  //
+  //   // 匹配带注释的图片链接：
+  //   // ![Dog](https://example.com/dog.jpg "A dog in the park")
+  //   // 匹配结果：
+  //   // match[1]: "Dog"
+  //   // match[2]: "https://example.com/dog.jpg"
+  //   // match[3]: "A dog in the park"
+  //
+  //   // 匹配带属性的图片链接：
+  //   // ![Fish](https://example.com/fish.gif){width=200 height=150}
+  //   // 匹配结果：
+  //   // match[1]: "Fish"
+  //   // match[2]: "https://example.com/fish.gif"
+  //   // match[3]: "width=200 height=150"
+  //
+  //   // 使用正则表达式来匹配 Markdown 格式的图片链接，并提取其中的各个属性
+  //   const ParsedImages = []
+  //   for (const match of markdownText.matchAll(regex)) {
+  //     const altText = match[1] ? match[1] : ""
+  //     const url = match[2] ? match[2] : ""
+  //     const title = match[3] ? match[3].replace(/"/g, "") : ""
+  //
+  //     // 将图片链接的各个属性封装成一个对象，并添加到数组中
+  //     ParsedImages.push({
+  //       url,
+  //       alt: altText,
+  //       title,
+  //       isLocal: false,
+  //     })
+  //   }
+  //   this.logger.debug("远程图片解析完毕.", ParsedImages)
+  //   return ParsedImages
+  // }
+
   public parseRemoteImagesToArray(markdownText: string): ParsedImage[] {
     this.logger.debug("准备解析文本中的远程图片=>", markdownText)
-    // 定义正则表达式来匹配以 http 或 https 开头的 Markdown 格式的图片链接
-    // 只能匹配有属性和备注的情况
-    // const regex = /!\[(.*?)\]\(((https|http|ftp)?:\/\/[^\s/$.?#].[^\s]*)\s*"(.*?)"\)\s*{:\s*([^\n]*)}/g
-    // 同时兼容有属性和没有属性的情况
-    const regex = /!\[(.*?)\]\((https?:\/\/\S+\.(?:jpe?g|png|gif))(?:\s+"(?:[^"\\]|\\.)*")?\s*(?:{:\s*([^\n]*)})?\)/g
 
-    // 匹配普通图片链接：
-    // ![Cat](https://example.com/cat.png)
-    // 匹配结果:
-    // match[1]: "Cat"
-    // match[2]: "https://example.com/cat.png"
-    // match[3]: undefined
+    const regex = /!\[(.*?)\]\((https?:\/\/\S+?\.(?:jpe?g|png|gif))(?:\s+"([^"]*)")?(?:{([^}]*)})?\)/g
 
-    // 匹配带注释的图片链接：
-    // ![Dog](https://example.com/dog.jpg "A dog in the park")
-    // 匹配结果：
-    // match[1]: "Dog"
-    // match[2]: "https://example.com/dog.jpg"
-    // match[3]: "A dog in the park"
+    const parsedImages = []
+    let match
 
-    // 匹配带属性的图片链接：
-    // ![Fish](https://example.com/fish.gif){width=200 height=150}
-    // 匹配结果：
-    // match[1]: "Fish"
-    // match[2]: "https://example.com/fish.gif"
-    // match[3]: "width=200 height=150"
-
-    // 使用正则表达式来匹配 Markdown 格式的图片链接，并提取其中的各个属性
-    const ParsedImages = []
-    for (const match of markdownText.matchAll(regex)) {
+    while ((match = regex.exec(markdownText)) !== null) {
       const altText = match[1] ? match[1] : ""
       const url = match[2] ? match[2] : ""
-      const title = match[3] ? match[3].replace(/"/g, "") : ""
+      const title = match[3] ? match[3] : ""
 
-      // 将图片链接的各个属性封装成一个对象，并添加到数组中
-      ParsedImages.push({
+      parsedImages.push({
         url,
         alt: altText,
         title,
         isLocal: false,
+        blockId: "",
       })
     }
-    this.logger.debug("远程图片解析完毕.", ParsedImages)
-    return ParsedImages
+
+    return parsedImages
   }
 
-  /**
-   * 解析图片块为本地图片链接
-   *
-   * @param markdownText 图片块
-   */
+  // /**
+  //  * 解析图片块为本地图片链接
+  //  *
+  //  * @param markdownText 图片块
+  //  */
+  // public parseLocalImagesToArray(markdownText: string): ParsedImage[] {
+  //   this.logger.debug("准备解析文本中的本地图片=>", markdownText)
+  //
+  //   // 定义正则表达式来匹配以 assets 开头但不以 http、https 或 ftp 开头的 Markdown 格式的图片链接
+  //   // const regex = /!\[(.*?)\]\(((?!http|https|ftp)assets\/.*?)\s*("(?:.*[^"])")?\)\s*(\{(?:.*[^"])})?/g
+  //   const regex = /!\[(.*?)\]\(((?!http|https|ftp)assets\/.*?)\s*("(?:[^"\\]|\\.)*")?\s*(\{(?:[^"\\]|\\.)*\})?\)/g
+  //   // 这样的正则表达式可以同时匹配到以下格式的图片链接：
+  //   // ![图片](assets/image.png)
+  //   // ![带注释的图片](assets/image.png "注释")
+  //   // ![带属性的图片](assets/image.png){width=100 height=200}
+  //
+  //   // 使用正则表达式来匹配 Markdown 格式的图片链接，并提取其中的各个属性
+  //   const ParsedImages = []
+  //   for (const match of markdownText.matchAll(regex)) {
+  //     const altText = match[1] ? match[1] : ""
+  //     const url = match[2] ? match[2] : ""
+  //     const title = match[3] ? match[3].replace(/"/g, "") : ""
+  //
+  //     // 将图片链接的各个属性封装成一个对象，并添加到数组中
+  //     ParsedImages.push({
+  //       url,
+  //       alt: altText,
+  //       title,
+  //       isLocal: true,
+  //     })
+  //   }
+  //   this.logger.debug("本地图片解析完毕.", ParsedImages)
+  //   return ParsedImages
+  // }
   public parseLocalImagesToArray(markdownText: string): ParsedImage[] {
     this.logger.debug("准备解析文本中的本地图片=>", markdownText)
 
     // 定义正则表达式来匹配以 assets 开头但不以 http、https 或 ftp 开头的 Markdown 格式的图片链接
-    // const regex = /!\[(.*?)\]\(((?!http|https|ftp)assets\/.*?)\s*("(?:.*[^"])")?\)\s*(\{(?:.*[^"])})?/g
-    const regex = /!\[(.*?)\]\(((?!http|https|ftp)assets\/.*?)\s*("(?:[^"\\]|\\.)*")?\s*(\{(?:[^"\\]|\\.)*\})?\)/g
-    // 这样的正则表达式可以同时匹配到以下格式的图片链接：
-    // ![图片](assets/image.png)
-    // ![带注释的图片](assets/image.png "注释")
-    // ![带属性的图片](assets/image.png){width=100 height=200}
+    const regex = /!\[([^[\]]*)]\((assets\/.*?)\s*(?:(?:"([^"]*)")|(?:'([^']*)'))?\)/g
 
     // 使用正则表达式来匹配 Markdown 格式的图片链接，并提取其中的各个属性
-    const ParsedImages = []
-    for (const match of markdownText.matchAll(regex)) {
-      const altText = match[1] ? match[1] : ""
+    const parsedImages: ParsedImage[] = []
+    let match
+
+    while ((match = regex.exec(markdownText)) !== null) {
+      const altText = match[1] ? match[1] : "" // 使用匹配到的第一个括号内的文本作为 alt 文本
+
       const url = match[2] ? match[2] : ""
-      const title = match[3] ? match[3].replace(/"/g, "") : ""
+      const title = match[3] ? match[3] : match[4] ? match[4] : ""
 
       // 将图片链接的各个属性封装成一个对象，并添加到数组中
-      ParsedImages.push({
+      parsedImages.push({
         url,
         alt: altText,
         title,
         isLocal: true,
+        blockId: "",
       })
     }
-    this.logger.debug("本地图片解析完毕.", ParsedImages)
-    return ParsedImages
+
+    return parsedImages
   }
 
   /**

@@ -53,6 +53,10 @@ export const usePicgoInitPage = (props: any, deps: any) => {
       // retImgs = retImgs.concat(retImgs, parsedImages)
       // 下面的写法可以去重
       retImgs = [...new Set([...retImgs, ...parsedImages])]
+      // 设置 blockId 属性
+      retImgs = retImgs.map((image) => {
+        return { ...image, blockId: page.id }
+      })
     })
     logger.debug("解析出来的所有的图片地址=>", retImgs)
 

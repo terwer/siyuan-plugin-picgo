@@ -30,11 +30,18 @@ export class ParsedImage {
    * 是否本地
    */
   isLocal: boolean
+  /**
+   * 图片所属的块 ID，如果没有，则忽略链接替换
+   *
+   * @since 1.10.0
+   */
+  blockId: string
 
   constructor() {
     this.url = ""
     this.isLocal = false
     this.alt = ""
     this.title = ""
+    this.blockId = ""
   }
 }

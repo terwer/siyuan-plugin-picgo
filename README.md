@@ -22,7 +22,7 @@ Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 - Qiniu Cloud<sup>recommended</sup>
 - SM.MS
 - imgur
-- Amazon S3<sup>recommended</sup>, thanks to @hzj629206
+- Amazon S3<sup>recommended</sup>, thanks to [@hzj629206](https://github.com/hzj629206)
 
 ## Config
 

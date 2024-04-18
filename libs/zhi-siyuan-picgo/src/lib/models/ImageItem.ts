@@ -80,6 +80,12 @@ export class ImageItem {
    * 是否本地
    */
   isLocal: boolean
+  /**
+   * 图片所属的块 ID，如果没有，则忽略链接替换
+   *
+   * @since 1.10.0
+   */
+  blockId: string
 
   constructor(originUrl: string, url: string, isLocal: boolean, alt?: string, title?: string) {
     this.originUrl = originUrl
@@ -90,5 +96,6 @@ export class ImageItem {
     this.isLocal = isLocal
     this.alt = alt ?? ""
     this.title = title ?? ""
+    this.blockId = ""
   }
 }

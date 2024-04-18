@@ -7,53 +7,62 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { SiyuanPicGo } from "./lib/siyuanPicgo"
-import { SiyuanPicgoPostApi } from "./lib/siyuanPicgoPostApi"
 import {
-  calculateMD5,
   ConfigDb,
   ExternalPicgoConfigDb,
   IConfig,
   IExternalPicgoConfig,
   IImgInfo,
   IPicGo,
-  IPicgoDb,
   IPicGoPlugin,
+  IPicgoDb,
   IPluginConfig,
   PicgoTypeEnum,
   PluginLoaderDb,
-  win,
+  calculateMD5,
   isSiyuanProxyAvailable,
+  win,
 } from "universal-picgo"
 import { SiyuanConfig as SiyuanPicgoConfig } from "zhi-siyuan-api"
-import { PicgoHelper, PicgoHelperEvents } from "./lib/picgoHelper"
-import { retrieveImageFromClipboardAsBlob } from "./lib/utils/browserClipboard"
-import { copyToClipboardInBrowser, generateUniqueName } from "./lib/utils/utils"
-import { ImageItem } from "./lib/models/ImageItem"
-import { ImageParser } from "./lib/parser/ImageParser"
-import { ParsedImage } from "./lib/models/ParsedImage"
 import { SIYUAN_PICGO_FILE_MAP_KEY } from "./lib/constants"
+import { ImageItem } from "./lib/models/ImageItem"
+import { ParsedImage } from "./lib/models/ParsedImage"
+import { ImageParser } from "./lib/parser/ImageParser"
+import { PicgoHelper, PicgoHelperEvents } from "./lib/picgoHelper"
+import { SiyuanPicGo } from "./lib/siyuanPicgo"
+import { SiyuanPicgoPostApi } from "./lib/siyuanPicgoPostApi"
+import { retrieveImageFromClipboardAsBlob } from "./lib/utils/browserClipboard"
 import { handleConfigWithFunction, handleStreamlinePluginName } from "./lib/utils/common"
+import { copyToClipboardInBrowser, generateUniqueName, replaceImageLink } from "./lib/utils/utils"
 
-export { SiyuanPicGo, SiyuanPicgoConfig, SiyuanPicgoPostApi, PicgoHelper, PicgoHelperEvents }
-export { ImageItem, ImageParser, ParsedImage, SIYUAN_PICGO_FILE_MAP_KEY }
 export {
-  retrieveImageFromClipboardAsBlob,
-  copyToClipboardInBrowser,
+  ConfigDb,
+  ExternalPicgoConfigDb,
+  ImageItem,
+  ImageParser,
+  ParsedImage,
+  PicgoHelper,
+  PicgoHelperEvents,
+  PicgoTypeEnum,
+  PluginLoaderDb,
+  SIYUAN_PICGO_FILE_MAP_KEY,
+  SiyuanPicGo,
+  SiyuanPicgoConfig,
+  SiyuanPicgoPostApi,
   calculateMD5,
+  copyToClipboardInBrowser,
   generateUniqueName,
+  handleConfigWithFunction,
+  handleStreamlinePluginName,
   isSiyuanProxyAvailable,
-}
-export { handleConfigWithFunction, handleStreamlinePluginName }
-export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
-export { PicgoTypeEnum }
-export { win }
-export {
-  type IPicGo,
-  type IImgInfo,
-  type IPicgoDb,
+  replaceImageLink,
+  retrieveImageFromClipboardAsBlob,
+  win,
   type IConfig,
   type IExternalPicgoConfig,
-  type IPluginConfig,
+  type IImgInfo,
+  type IPicGo,
   type IPicGoPlugin,
+  type IPicgoDb,
+  type IPluginConfig,
 }
