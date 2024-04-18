@@ -114,7 +114,9 @@ export default class PicgoPlugin extends Plugin {
       // 每次都要最新
       const attrs = await siyuanApi.getBlockAttrs(pageId)
       const imageItem = new ImageItem(generateUniqueName(), file as any, true, "", "")
-      const imageJsonObj: any = await picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, true)
+      // ！！注意
+      // 这里不替换，后面在替换
+      const imageJsonObj: any = await picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, true, true)
 
       // 处理后续
       if (imageJsonObj && imageJsonObj.length > 0) {

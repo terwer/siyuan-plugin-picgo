@@ -227,16 +227,20 @@ class SiyuanPicgoPostApi {
   /**
    * 上传单张图片到图床（当前图片单个上传，提供给外部调用）
    *
+   * 注意：所有的图片上传都会走这个
+   *
    * @param pageId 文章ID
    * @param attrs 文章属性
    * @param imageItem 图片信息
    * @param forceUpload 强制上传
+   * @param ignoreReplaceLink 忽略替换链接
    */
   public async uploadSingleImageToBed(
     pageId: string,
     attrs: any,
     imageItem: ImageItem,
-    forceUpload?: boolean
+    forceUpload?: boolean,
+    ignoreReplaceLink = false
   ): Promise<void> {
     const mapInfoStr = attrs[SIYUAN_PICGO_FILE_MAP_KEY] ?? "{}"
     const fileMap = JsonUtil.safeParse<any>(mapInfoStr, {})
@@ -305,6 +309,19 @@ class SiyuanPicgoPostApi {
     await this.siyuanApi.setBlockAttrs(pageId, {
       [SIYUAN_PICGO_FILE_MAP_KEY]: newFileMapStr,
     })
+
+    //处理链接替换
+    if (!ignoreReplaceLink) {
+      // 不强制忽略则去查询配置
+      const ctx = this.ctx()
+      // 是否替换链接
+      const SIYUAN_REPLACE_LINK = ctx.getConfig("siyuan.replaceLink") ?? true
+      if (SIYUAN_REPLACE_LINK) {
+        this.logger.info("链接替换已开启，准备替换链接")
+      }
+    } else {
+      this.logger.info("当前是思源笔记剪切板模式上传，暂时忽略链接替换，后面使用轮询处理替换链接")
+    }
 
     return imageJsonObj
   }
