@@ -152,4 +152,6 @@ export default {
     "The suggested value for the polling interval after pasting an image is typically 2.",
   "picgo.siyuan.clipboard.auto": "Automatic Clipboard Upload",
   "picgo.siyuan.replace.link": "Substitute Local Link",
+  "picgo.siyuan.txt.with.img.upload":
+    "When there are both text and images on the clipboard, should they be uploaded, e.g., in applications like PPT or Excel?",
 }

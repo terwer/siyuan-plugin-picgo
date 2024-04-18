@@ -83,6 +83,7 @@ export default class PicgoPlugin extends Plugin {
       return
     }
 
+    this.logger.debug("paste detail =>", detail)
     const files = detail.files
     if (!files || files.length == 0) {
       this.logger.debug("粘贴板无图片，跳过")
@@ -95,6 +96,17 @@ export default class PicgoPlugin extends Plugin {
     }
     const picgoPostApi = await SiyuanPicGo.getInstance(siyuanConfig as any, isDev)
     const ctx = picgoPostApi.ctx()
+
+    const hasPicAndText =
+      detail.siyuanHTML.trim() !== "" || detail.textHTML.trim() !== "" || detail.textPlain.trim() !== ""
+    if (hasPicAndText) {
+      // 过滤 PPT、Excel 粘贴内容
+      const SIYUAN_ALLOW_PIC_TEXT = ctx.getConfig("siyuan.txtImageSwitch") ?? true
+      if (!SIYUAN_ALLOW_PIC_TEXT) {
+        this.logger.warn("剪切板上有文字和图片，可能是 PPT 或者 Excel 粘贴内容，不上传")
+        return
+      }
+    }
 
     const SIYUAN_AUTO_UPLOAD = ctx.getConfig("siyuan.autoUpload") ?? true
     // 未启用自动上传，不上传

@@ -71,7 +71,7 @@ export default {
   "picgo.siyuan.tip": "您当前使用的是思源笔记PC客户端，PicGO已内置，只需配置即可",
   "picgo.upload.status": "上传状态",
   "picgo.upload.select.pic": "选择图片",
-  "picgo.upload.clipboard": "剪贴板上传",
+  "picgo.upload.clipboard": "剪切板上传",
   "picgo.upload.onclick": "一键上传",
   "picgo.download.onclick": "一键下载",
   "picgo.download.local.to.bed": "上传本地图片到图床",
@@ -146,4 +146,5 @@ export default {
   "picgo.siyuan.wait.timeout.tip": "粘贴图片之后的轮询间隔，一般情况建议值：2",
   "picgo.siyuan.clipboard.auto": "剪切板自动上传",
   "picgo.siyuan.replace.link": "替换本地连接",
+  "picgo.siyuan.txt.with.img.upload": "当剪切板同时有文字和图片时，是否上传，例如：PPT、Excel 等",
 }
