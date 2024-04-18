@@ -231,12 +231,12 @@ export default class PicgoPlugin extends Plugin {
     await siyuanApi.setBlockAttrs(pageId, {
       [SIYUAN_PICGO_FILE_MAP_KEY]: newFileMapStr,
     })
-    this.logger.info("🤩图片元数据更新成功")
+    pluginInstance.logger.info("🤩图片元数据更新成功")
 
     // =================================================================================================================
     // 不替换链接
     if (!isReplaceLink) {
-      this.logger.warn("未启用链接替换，不做替换")
+      pluginInstance.logger.warn("未启用链接替换，不做替换")
       return
     }
     // =================================================================================================================
