@@ -22,7 +22,7 @@
 - 七牛云<sup>强烈推荐</sup>
 - SM.MS
 - imgur
-- Amazon S3<sup>强烈推荐</sup> ，感谢 @hzj629206 的贡献
+- Amazon S3<sup>强烈推荐</sup> ，感谢 [@hzj629206](https://github.com/hzj629206) 的贡献
 
 ## 配置
 
