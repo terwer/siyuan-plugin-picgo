@@ -102,6 +102,8 @@ export default {
   "main.opt.warning.tip": "此操作不可恢复，是否继续？",
   "switch.active.text": "调试模式",
   "switch.unactive.text": "正常模式",
+  "switch.yes.text": "是",
+  "switch.no.text": "否",
   "setting.conf.import.picgo": "导入PicGO配置",
   "setting.conf.export.syp.tip":
     "将导出对应的json配置文件，强烈建议定期进行配置备份。原则上支持向后兼容。如有不兼容问题，会特别说明。",
@@ -138,6 +140,10 @@ export default {
   "setting.cors.title": "CORS 代理",
   "setting.cors.title.tip": "CORS 代理，浏览器、dcoker以及某些插件可能需要，可付费咨询 youweics@163.com",
   "upload.no.beds": "暂无可用图床，请前往「图床设置」新增图床",
-  "picgo.siyuan.wait.timeout": "同步延迟(秒)",
-  "picgo.siyuan.wait.timeout.tip": "图床同步延迟时间，大于这个时间才会去同步图床元数据",
+  "picgo.siyuan.wait.timeout": "轮询间隔(秒)",
+  "picgo.siyuan.wait.retryTimes": "重试次数",
+  "picgo.siyuan.wait.retryTimes.tips": "重试次数，一般情况建议值：5",
+  "picgo.siyuan.wait.timeout.tip": "粘贴图片之后的轮询间隔，一般情况建议值：2",
+  "picgo.siyuan.clipboard.auto": "剪切板自动上传",
+  "picgo.siyuan.replace.link": "替换本地连接",
 }

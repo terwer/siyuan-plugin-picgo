@@ -106,6 +106,8 @@ export default {
   "main.opt.warning.tip": "This operation cannot be undone, continue?",
   "switch.active.text": "Debug",
   "switch.unactive.text": "Normal",
+  "switch.yes.text": "Yes",
+  "switch.no.text": "No",
   "setting.conf.import.picgo": "Import PicGO configuration",
   "setting.conf.export.syp.tip":
     "The corresponding json configuration file will be exported, and regular configuration backup is strongly recommended. In principle, backward compatibility is supported. If there is any incompatibility problem, it will be specially explained.",
@@ -144,6 +146,10 @@ export default {
     "The CORS proxy is essential for browsers and Docker environments. For further consultation, feel free to contact youweics@163.com.",
   "upload.no.beds":
     'No image hosting service is currently available. Kindly proceed to "Image Hosting Settings" to add a new image hosting service.',
-  "picgo.siyuan.wait.timeout": "Sync timeout(seconds)",
-  "picgo.siyuan.wait.timeout.tip": "Timeout when handle picbed sync",
+  "picgo.siyuan.wait.timeout": "Polling Interval (Seconds)",
+  "picgo.siyuan.wait.retryTimes.tips": "The recommended value for the retry attempts, under usual circumstances, is 5.",
+  "picgo.siyuan.wait.timeout.tip":
+    "The suggested value for the polling interval after pasting an image is typically 2.",
+  "picgo.siyuan.clipboard.auto": "Automatic Clipboard Upload",
+  "picgo.siyuan.replace.link": "Substitute Local Link",
 }

@@ -11,13 +11,15 @@
 
 import { App, IObject, Plugin } from "siyuan"
 import { simpleLogger } from "zhi-lib-base"
+import { IPicGo, ImageItem, SIYUAN_PICGO_FILE_MAP_KEY, SiyuanPicGo, generateUniqueName } from "zhi-siyuan-picgo"
 import { isDev, siyuanApiToken, siyuanApiUrl } from "./Constants"
-import { initTopbar } from "./topbar"
+import { ILogger } from "./appLogger"
 import { showPage } from "./dialog"
 import { PageRoute } from "./pageRoute"
-import { ILogger } from "./appLogger"
-import { generateUniqueName, ImageItem, IPicGo, SIYUAN_PICGO_FILE_MAP_KEY, SiyuanPicGo } from "zhi-siyuan-picgo"
 import { initStatusBar, updateStatusBar } from "./statusBar"
+import { initTopbar } from "./topbar"
+import { replaceImageLink } from "zhi-siyuan-picgo/src"
+import { JsTimer } from "./utils/utils"
 
 export default class PicgoPlugin extends Plugin {
   private logger: ILogger
@@ -86,9 +88,17 @@ export default class PicgoPlugin extends Plugin {
     }
     const picgoPostApi = await SiyuanPicGo.getInstance(siyuanConfig as any, isDev)
     const ctx = picgoPostApi.ctx()
+
+    const SIYUAN_AUTO_UPLOAD = ctx.getConfig("siyuan.autoUpload") || true
+    // 未启用自动上传，不上传
+    if (!SIYUAN_AUTO_UPLOAD) {
+      this.logger.warn("剪切板上传已禁用，不上传")
+      return
+    }
+
     const siyuanApi = picgoPostApi.siyuanApi
     if (files.length > 1) {
-      siyuanApi.pushErrMsg({
+      await siyuanApi.pushErrMsg({
         msg: "仅支持一次性上传单张图片",
         timeout: 7000,
       })
@@ -113,6 +123,14 @@ export default class PicgoPlugin extends Plugin {
           this.noticeError(siyuanApi, "PicGO配置错误，请检查配置。")
           return
         }
+
+        // 不替换链接
+        const SIYUAN_REPLACE_LINK = ctx.getConfig("siyuan.replaceLink") || true
+        if (!SIYUAN_REPLACE_LINK) {
+          this.logger.warn("未启用链接替换，不做替换")
+          return
+        }
+
         // 处理上传后续
         await this.handleAfterUpload(ctx, siyuanApi, pageId, file, img, imageItem)
       } else {
@@ -124,68 +142,118 @@ export default class PicgoPlugin extends Plugin {
   }
 
   private async handleAfterUpload(ctx: IPicGo, siyuanApi: any, pageId: string, file: any, img: any, oldImageitem: any) {
-    const SIYUAN_WAIT_SECONDS = ctx.getConfig("siyuan.waitTimeout") || 10
-    this.noticeInfo(`剪贴板图片上传完成。准备延迟${SIYUAN_WAIT_SECONDS}秒更新元数据，请勿刷新笔记！`)
-    setTimeout(async () => {
-      const formData = new FormData()
-      formData.append("file[]", file)
-      formData.append("id", pageId)
-      const res = await siyuanApi.uploadAsset(formData)
+    const SIYUAN_WAIT_SECONDS = ctx.getConfig("siyuan.waitTimeout") || 2
+    const SIYUAN_RETRY_TIMES = ctx.getConfig("siyuan.retryTimes") || 5
+    this.logger.debug("get siyuan upload cfg", {
+      waitTimeout: SIYUAN_WAIT_SECONDS,
+      retryTimes: SIYUAN_RETRY_TIMES,
+    })
+    this.noticeInfo(
+      `剪贴板图片上传完成。准备每${SIYUAN_WAIT_SECONDS}秒轮询一次，${SIYUAN_RETRY_TIMES}次之后仍然失败则结束！`
+    )
 
-      // 更新 PicGo fileMap 元数据，因为上面上传更新了，这里需要在查询一次
-      const newAttrs = await siyuanApi.getBlockAttrs(pageId)
-      const mapInfoStr = newAttrs[SIYUAN_PICGO_FILE_MAP_KEY] ?? "{}"
-      let fileMap = {}
-      try {
-        fileMap = JSON.parse(mapInfoStr)
-      } catch (e) {
-        // ignore
-      }
-      const succMap = res.succMap
-      let newImageItem: any
-      // noinspection LoopStatementThatDoesntLoopJS
-      for (const [key, value] of Object.entries(succMap)) {
-        // 删除旧的
-        delete fileMap[oldImageitem.hash]
-
-        // 只遍历里第一项
-        newImageItem = new ImageItem(value as string, img.imgUrl, false, key, key)
-        fileMap[newImageItem.hash] = newImageItem
-        break
-      }
-      if (!newImageItem) {
-        this.noticeError(siyuanApi, "元数据更新失败，未找到图片元数据")
-        return
-      }
-      const newFileMapStr = JSON.stringify(fileMap)
-      await siyuanApi.setBlockAttrs(pageId, {
-        [SIYUAN_PICGO_FILE_MAP_KEY]: newFileMapStr,
+    // 改成轮询和重试
+    const args = {
+      pluginInstance: this,
+      siyuanApi,
+      pageId,
+      file,
+      img,
+      oldImageitem,
+    }
+    const isSuccess = await JsTimer(
+      this.doUpdatePictureMetadata,
+      args,
+      (count) => count >= SIYUAN_RETRY_TIMES,
+      SIYUAN_WAIT_SECONDS * 1000
+    )
+    this.logger.info(`定时器已停止，处理结果：${isSuccess}`)
+    if (isSuccess) {
+      this.noticeInfo("😆图片链接替换成功")
+    } else {
+      siyuanApi.pushErrMsg({
+        msg: "😭图片可能已经上传成功，但是链接替换失败",
+        timeout: 7000,
       })
+    }
 
-      // 更新块
-      const nodeId = this.getDataNodeIdFromImgWithSrc(newImageItem.originUrl)
-      if (!nodeId) {
-        this.noticeError(siyuanApi, "元数据更新失败，未找到图片块 ID")
-        return
-      }
-      this.logger.info("😆found image nodeId=>", nodeId)
-      const newImageBlock = await siyuanApi.getBlockByID(nodeId)
-      // newImageBlock.markdown
-      // "![image](assets/image-20240327190812-yq6esh4.png)"
-      // 如果查询出来的块信息不对，不更新，防止误更新
-      if (!newImageBlock.markdown.includes(newImageItem.originUrl)) {
-        this.noticeError(siyuanApi, "元数据更新失败，块信息不符合，取消更新")
-        return
-      }
+    // @deprecated
+    // 已废弃，旧的延迟做法
+    // setTimeout(async () => {
+    //   await this.doUpdatePictureMetadata(siyuanApi, pageId, file, img, oldImageitem)
+    // }, SIYUAN_WAIT_SECONDS * 1000)
+  }
 
-      // id: string
-      // data: string
-      // dataType?: "markdown" | "dom"
-      const newImageContent = `![${newImageItem.alt}](${newImageItem.url})`
-      await siyuanApi.updateBlock(nodeId, newImageContent, "markdown")
+  private async doUpdatePictureMetadata(args: any) {
+    // args
+    const pluginInstance: any = args.pluginInstance
+    const siyuanApi: any = args.siyuanApi
+    const pageId: string = args.pageId
+    const file: any = args.file
+    const img: any = args.img
+    const oldImageitem: any = args.oldImageitem
 
-      this.noticeInfo("图片元数据更新成功")
-    }, SIYUAN_WAIT_SECONDS * 1000)
+    const formData = new FormData()
+    formData.append("file[]", file)
+    formData.append("id", pageId)
+    const res = await siyuanApi.uploadAsset(formData)
+
+    // 更新 PicGo fileMap 元数据，因为上面上传更新了，这里需要在查询一次
+    const newAttrs = await siyuanApi.getBlockAttrs(pageId)
+    const mapInfoStr = newAttrs[SIYUAN_PICGO_FILE_MAP_KEY] ?? "{}"
+    let fileMap = {}
+    try {
+      fileMap = JSON.parse(mapInfoStr)
+    } catch (e) {
+      // ignore
+    }
+    const succMap = res.succMap
+    let newImageItem: any
+    // noinspection LoopStatementThatDoesntLoopJS
+    for (const [key, value] of Object.entries(succMap)) {
+      // 删除旧的
+      delete fileMap[oldImageitem.hash]
+
+      // 只遍历里第一项
+      newImageItem = new ImageItem(value as string, img.imgUrl, false, key, key)
+      fileMap[newImageItem.hash] = newImageItem
+      break
+    }
+    if (!newImageItem) {
+      pluginInstance.noticeError(siyuanApi, "元数据更新失败，未找到图片元数据")
+      return
+    }
+    const newFileMapStr = JSON.stringify(fileMap)
+    await siyuanApi.setBlockAttrs(pageId, {
+      [SIYUAN_PICGO_FILE_MAP_KEY]: newFileMapStr,
+    })
+
+    // 更新块
+    const nodeId = pluginInstance.getDataNodeIdFromImgWithSrc(newImageItem.originUrl)
+    if (!nodeId) {
+      pluginInstance.noticeError(siyuanApi, "元数据更新失败，未找到图片块 ID")
+      return
+    }
+    pluginInstance.logger.info("😆found image nodeId=>", nodeId)
+    const newImageBlock = await siyuanApi.getBlockByID(nodeId)
+    // newImageBlock.markdown
+    // "![image](assets/image-20240327190812-yq6esh4.png)"
+    pluginInstance.logger.debug("newImageBlock.markdown", newImageBlock.markdown)
+    // 如果查询出来的块信息不对，不更新，防止误更新
+    if (!newImageBlock.markdown.includes(newImageItem.originUrl)) {
+      pluginInstance.noticeError(siyuanApi, "元数据更新失败，块信息不符合，取消更新")
+      return
+    }
+
+    // id: string
+    // data: string
+    // dataType?: "markdown" | "dom"
+    const newImageContent = replaceImageLink(newImageBlock.markdown, newImageItem.originUrl, newImageItem.url)
+    // const newImageContent = `![${newImageItem.alt}](${newImageItem.url})`
+    pluginInstance.logger.debug("repalced new block md", newImageContent)
+    await siyuanApi.updateBlock(nodeId, newImageContent, "markdown")
+
+    pluginInstance.noticeInfo("图片元数据更新成功")
   }
 
   private getDataNodeIdFromImgWithSrc(srcValue: string) {
@@ -214,6 +282,6 @@ export default class PicgoPlugin extends Plugin {
       msg: msg,
       timeout: 7000,
     })
-    updateStatusBar(this, `剪贴板图片上传失败，错误原因：${msg}`)
+    updateStatusBar(this, `图片上传出错，错误原因：${msg}`)
   }
 }

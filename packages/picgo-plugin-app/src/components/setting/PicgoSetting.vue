@@ -9,11 +9,11 @@
 
 <script setup lang="ts">
 import { useVueI18n } from "$composables/useVueI18n.ts"
+import { useBundledPicGoSetting } from "@/stores/useBundledPicGoSetting.ts"
+import { useExternalPicGoSetting } from "@/stores/useExternalPicGoSetting.ts"
+import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
 import { onBeforeMount, reactive } from "vue"
 import { PicgoTypeEnum } from "zhi-siyuan-picgo"
-import { useExternalPicGoSetting } from "@/stores/useExternalPicGoSetting.ts"
-import { useBundledPicGoSetting } from "@/stores/useBundledPicGoSetting.ts"
-import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
 
 const { t } = useVueI18n()
 const { getBundledPicGoSetting } = useBundledPicGoSetting()
@@ -49,7 +49,10 @@ const handlePicgoTypeChange = (val: any) => {
 onBeforeMount(() => {
   // init siyuan related picgo config
   bundledPicGoSettingForm.value.siyuan = bundledPicGoSettingForm.value.siyuan || {}
-  bundledPicGoSettingForm.value.siyuan.waitTimeout = bundledPicGoSettingForm.value.siyuan.waitTimeout || 10
+  bundledPicGoSettingForm.value.siyuan.waitTimeout = bundledPicGoSettingForm.value.siyuan.waitTimeout || 2
+  bundledPicGoSettingForm.value.siyuan.retryTimes = bundledPicGoSettingForm.value.siyuan.retryTimes || 5
+  bundledPicGoSettingForm.value.siyuan.autoUpload = bundledPicGoSettingForm.value.siyuan.autoUpload || true
+  bundledPicGoSettingForm.value.siyuan.replaceLink = bundledPicGoSettingForm.value.siyuan.replaceLink || true
 })
 </script>
 
@@ -61,6 +64,18 @@ onBeforeMount(() => {
           v-model="bundledPicGoSettingForm.siyuan.waitTimeout"
           :placeholder="t('picgo.siyuan.wait.timeout.tip')"
         />
+      </el-form-item>
+      <el-form-item label-width="110px" :label="t('picgo.siyuan.wait.retryTimes')" required>
+        <el-input
+          v-model="bundledPicGoSettingForm.siyuan.retryTimes"
+          :placeholder="t('picgo.siyuan.wait.retryTimes.tips')"
+        />
+      </el-form-item>
+      <el-form-item label-width="130px" :label="t('picgo.siyuan.clipboard.auto')">
+        <el-switch v-model="bundledPicGoSettingForm.siyuan.autoUpload" inline-prompt size="small"></el-switch>
+      </el-form-item>
+      <el-form-item label-width="120px" :label="t('picgo.siyuan.replace.link')">
+        <el-switch v-model="bundledPicGoSettingForm.siyuan.replaceLink" inline-prompt size="small"></el-switch>
       </el-form-item>
       <el-form-item :label="t('upload.default.adaptor')" required>
         <el-select
