@@ -134,7 +134,7 @@ class SiyuanPicgoPostApi {
   // ===================================================================================================================
 
   /**
-   * 上传当前文章图片到图床（单篇文档所有图片全部批量上传，提供给外部调用）
+   * 上传当前文章图片到图床（单篇文档所有图片全部批量上传，提供给外部调用，例如：发布工具）
    *
    * @param pageId 文章ID
    * @param attrs 文章属性
@@ -143,8 +143,21 @@ class SiyuanPicgoPostApi {
   public async uploadPostImagesToBed(pageId: string, attrs: any, mdContent: string): Promise<PicgoPostResult> {
     const ret = new PicgoPostResult()
 
-    const localImages = this.imageParser.parseLocalImagesToArray(mdContent)
-    const uniqueLocalImages = [...new Set([...localImages])]
+    const imageBlocks: any[] = await this.siyuanApi.getImageBlocksByID(pageId)
+    this.logger.debug("查询文章中的图片块=>", imageBlocks)
+
+    // 解析图片地址
+    let uniqueLocalImages: ParsedImage[] = []
+    imageBlocks.forEach((page) => {
+      const parsedLocalImages = this.imageParser.parseLocalImagesToArray(mdContent)
+      uniqueLocalImages = [...new Set([...uniqueLocalImages, ...parsedLocalImages])]
+      // 设置 blockId 属性
+      uniqueLocalImages = uniqueLocalImages.map((image: any) => {
+        return { ...image, blockId: page.id }
+      })
+    })
+    // const parsedLocalImages = this.imageParser.parseLocalImagesToArray(mdContent)
+    // const uniqueLocalImages = [...new Set([...localImages])]
     this.logger.debug("uniqueLocalImages=>", uniqueLocalImages)
 
     if (uniqueLocalImages.length === 0) {
