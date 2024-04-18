@@ -1,36 +1,21 @@
 # Changelog
 
 ## [1.10.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.9.0...siyuan-plugin-picgo-v1.10.0) (2024-04-18)
-
-
 ### Features
-
-* add amazon s3 support, thanks to [@hzj629206](https://github.com/hzj629206) ([7d6ff97](https://github.com/terwer/siyuan-plugin-picgo/commit/7d6ff97e56c9e7ce107d2e32e99fafaa60f96504))
 * add amazon s3 support, thanks to [@hzj629206](https://github.com/hzj629206) ([5413290](https://github.com/terwer/siyuan-plugin-picgo/commit/54132907992d3ae4b5a68a526833ed7a9dd03b66))
-* add switch for auto upload and replace link ([de999fa](https://github.com/terwer/siyuan-plugin-picgo/commit/de999fa7ef342b408fb98675aa74f61c61dd9511))
-* add switch for auto upload and replace link ([799f592](https://github.com/terwer/siyuan-plugin-picgo/commit/799f59249aaf0c1139e5ecbd03555ec0f9e0a8ff))
 * add switch for auto upload and replace link ([3073196](https://github.com/terwer/siyuan-plugin-picgo/commit/3073196ca86eac3c58ac0b63836edffb927f6921))
 * paste text and image add option ([506c8de](https://github.com/terwer/siyuan-plugin-picgo/commit/506c8de39d6358ae0bdf59a12b9d8857fc6a4fe6))
-* support replace link for api, like publish invoke ([8270fae](https://github.com/terwer/siyuan-plugin-picgo/commit/8270fae3ce957926c7fc05fb3d925d6d1ce14427))
 * support replace link for api, like publish invoke ([d7c5370](https://github.com/terwer/siyuan-plugin-picgo/commit/d7c537078851aab71488389ee2f6d7d2620dced3))
-* support replace link in dialog ([030cd79](https://github.com/terwer/siyuan-plugin-picgo/commit/030cd79cede010b4d266e1cdbb7e628ac3bded59))
 * support replace link in dialog ([8717ce2](https://github.com/terwer/siyuan-plugin-picgo/commit/8717ce242e2ac120012580616485b5a41c30861f))
-
-
 ### Bug Fixes
-
 * **deps:** bump @iconify/json from 2.2.196 to 2.2.201 ([d698568](https://github.com/terwer/siyuan-plugin-picgo/commit/d698568a4e6a0f5e47faca1b19c5995876c8da50))
 * **deps:** bump element-plus from 2.6.2 to 2.7.0 ([1e08775](https://github.com/terwer/siyuan-plugin-picgo/commit/1e08775538e919b48cc50083d72826ee371dc39c))
 * **deps:** bump vue-i18n from 9.10.2 to 9.12.1 ([8d7b9d0](https://github.com/terwer/siyuan-plugin-picgo/commit/8d7b9d07c644c8c91746b21df2c67b9b18036009))
 * **deps:** bump vue-i18n from 9.12.1 to 9.13.0 ([1863ff0](https://github.com/terwer/siyuan-plugin-picgo/commit/1863ff0645a2967d3dd94d65f915d1c2eeb72f6b))
 * **deps:** bump zhi-siyuan-api from 2.20.0 to 2.21.0 ([5d46a0d](https://github.com/terwer/siyuan-plugin-picgo/commit/5d46a0df022af00b14965f70d5e29f5983042c97))
-* image attr parse error ([a450376](https://github.com/terwer/siyuan-plugin-picgo/commit/a45037690037290db69d0f9b46347a16014b6182))
 * image attr parse error ([7ac02eb](https://github.com/terwer/siyuan-plugin-picgo/commit/7ac02ebda6d93db629b6a594de38a2cc3901991d))
 * image with same block replace error ([eb705c8](https://github.com/terwer/siyuan-plugin-picgo/commit/eb705c8abf0d1f65083a17cd9fea41b650124638))
-
-
 ### Miscellaneous
-
 * **deps-dev:** bump siyuan from 0.9.6 to 0.9.7 ([b3e2cac](https://github.com/terwer/siyuan-plugin-picgo/commit/b3e2cacbf3232a95fe74d6f60d9c226999d32386))
 * **deps-dev:** bump svelte from 4.2.12 to 4.2.14 ([ba52a4b](https://github.com/terwer/siyuan-plugin-picgo/commit/ba52a4b8a99654d1349339b86529cb9c1b92f5ee))
 * **deps-dev:** bump turbo from 1.13.0 to 1.13.2 ([85eecca](https://github.com/terwer/siyuan-plugin-picgo/commit/85eecca8b00be34b8a5edaa349a97d2abc11c827))
@@ -38,14 +23,10 @@
 * **deps-dev:** bump vite from 5.2.6 to 5.2.9 ([50c932d](https://github.com/terwer/siyuan-plugin-picgo/commit/50c932d50981e7ebaa9d69e5ed2215ca31dbbb45))
 * **deps-dev:** bump vitest from 1.4.0 to 1.5.0 ([20e1324](https://github.com/terwer/siyuan-plugin-picgo/commit/20e132446d028cfa237ae4de3b826ed5a4c795cf))
 * **deps-dev:** bump vue-tsc from 2.0.7 to 2.0.13 ([39f9fff](https://github.com/terwer/siyuan-plugin-picgo/commit/39f9fff8b602c0b7b33ccc2ec78d3ef34bcd2e8a))
-* remove some unused deps ([4a76e81](https://github.com/terwer/siyuan-plugin-picgo/commit/4a76e814ff8ecae27ddaffe9350096b9edbfbc05))
 * remove some unused deps ([b91cec3](https://github.com/terwer/siyuan-plugin-picgo/commit/b91cec3354f2eb76426a43556603fd7d196fa62c))
 * update docs ([a6471e9](https://github.com/terwer/siyuan-plugin-picgo/commit/a6471e96b8e3d7408af9b1371de4a73e100f667a))
-
 ## [1.9.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.8.0...siyuan-plugin-picgo-v1.9.0) (2024-03-30)
-### Features
 * publish picgo packages ([31265d2](https://github.com/terwer/siyuan-plugin-picgo/commit/31265d2af7ad4508e538851d6e11e9478aa66734))
-### Bug Fixes
 * auto publish npm packages ([9072294](https://github.com/terwer/siyuan-plugin-picgo/commit/90722946d475bcbd9ac1da7a05596ca55c0eea0e))
 * post image replace not work ([b552a2a](https://github.com/terwer/siyuan-plugin-picgo/commit/b552a2a1f18b80718fe736163a8dec3d6b97b752))
 ## [1.8.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.7.1...siyuan-plugin-picgo-v1.8.0) (2024-03-29)
@@ -63,7 +44,6 @@
 * only pc version support plugin list ([499c3bb](https://github.com/terwer/siyuan-plugin-picgo/commit/499c3bb9320f213d13db32966104c9824e377462))
 * only pc version support plugins ([ad77535](https://github.com/terwer/siyuan-plugin-picgo/commit/ad7753540ab694a6ba42114bc60928ab23603f93))
 * only pc version support uninstall and update plugins ([719f851](https://github.com/terwer/siyuan-plugin-picgo/commit/719f851b597420bf8e2bd0ba85c33ae26e614cff))
-### Miscellaneous
 * **deps-dev:** bump vite-plugin-dts from 3.7.3 to 3.8.0 ([3d185eb](https://github.com/terwer/siyuan-plugin-picgo/commit/3d185eb12768c32f40cd2c83ffa7e7741adbff41))
 * **deps-dev:** bump vite-plugin-dts from 3.8.0 to 3.8.1 ([03cc0bf](https://github.com/terwer/siyuan-plugin-picgo/commit/03cc0bf6ae34df73f2493bac97056b0df3f61180))
 * fix ts error ([2ee39e6](https://github.com/terwer/siyuan-plugin-picgo/commit/2ee39e60c3b76783d28ea8e298c52ab822b3cc40))
