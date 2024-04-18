@@ -304,6 +304,7 @@ class SiyuanPicgoPostApi {
     // 批量上传
     const imageJson: any = await this.originalUpload(filePaths)
     this.logger.debug("图片上传完成，imageJson=>", imageJson)
+    let newImageItem: ImageItem
     const imageJsonObj = JsonUtil.safeParse(imageJson, []) as any
     // 处理后续
     if (imageJsonObj && imageJsonObj.length > 0) {
@@ -313,7 +314,8 @@ class SiyuanPicgoPostApi {
           "图片上传失败，可能原因：PicGO配置错误或者该平台不支持图片覆盖，请检查配置或者尝试上传新图片。请打开picgo.log查看更多信息"
         )
       }
-      const newImageItem = new ImageItem(imageItem.originUrl, img.imgUrl, false, imageItem.alt, imageItem.title)
+      newImageItem = new ImageItem(imageItem.originUrl, img.imgUrl, false, imageItem.alt, imageItem.title)
+      newImageItem.blockId = imageItem.blockId
       fileMap[newImageItem.hash] = newImageItem
     } else {
       throw new Error("图片上传失败，可能原因：PicGO配置错误，请检查配置。请打开picgo.log查看更多信息")
@@ -329,33 +331,33 @@ class SiyuanPicgoPostApi {
     //处理链接替换
     if (!ignoreReplaceLink) {
       // 如果没有块 ID，则不替换
-      if (StrUtil.isEmptyString(imageItem.blockId)) {
-        this.logger.warn("图床未插入文档，不做链接替换")
+      if (StrUtil.isEmptyString(newImageItem.blockId)) {
+        this.logger.warn("[单个上传] 图床未插入文档，不做链接替换")
       } else {
         // 不强制忽略则去查询配置
         const ctx = this.ctx()
         // 是否替换链接
         const SIYUAN_REPLACE_LINK = ctx.getConfig("siyuan.replaceLink") ?? true
         if (SIYUAN_REPLACE_LINK) {
-          this.logger.info("链接替换已开启，准备替换链接")
+          this.logger.info("[单个上传] 链接替换已开启，准备替换链接")
 
-          const newImageBlock = await this.siyuanApi.getBlockByID(imageItem.blockId)
+          const newImageBlock = await this.siyuanApi.getBlockByID(newImageItem.blockId)
           // newImageBlock.markdown
           // "![image](assets/image-20240327190812-yq6esh4.png)"
-          this.logger.debug("newImageBlock.markdown", newImageBlock.markdown)
+          this.logger.debug("[单个上传] newImageBlock.markdown", newImageBlock.markdown)
           // 如果查询出来的块信息不对，不更新，防止误更新
-          if (!newImageBlock.markdown.includes(imageItem.originUrl)) {
-            this.logger.warn("块信息不符合，取消更新")
+          if (!newImageBlock.markdown.includes(newImageItem.originUrl)) {
+            this.logger.warn("[单个上传] 块信息不符合，取消更新")
           } else {
             // =========================================================================================================
             // 正式更新替换
             // id: string
             // data: string
             // dataType?: "markdown" | "dom"
-            const newImageContent = replaceImageLink(newImageBlock.markdown, imageItem.originUrl, imageItem.url)
+            const newImageContent = replaceImageLink(newImageBlock.markdown, newImageItem.originUrl, newImageItem.url)
             // const newImageContent = `![${newImageItem.alt}](${newImageItem.url})`
-            this.logger.debug("repalced new block md", newImageContent)
-            await this.siyuanApi.updateBlock(imageItem.blockId, newImageContent, "markdown")
+            this.logger.debug("[单个上传] repalced new block md", newImageContent)
+            await this.siyuanApi.updateBlock(newImageItem.blockId, newImageContent, "markdown")
 
             this.logger.info("🤩图片链接替换成功")
           }

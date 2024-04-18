@@ -9,7 +9,7 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { App, IObject, Plugin } from "siyuan"
+import { App, IObject, Plugin, confirm, Dialog } from "siyuan"
 import { simpleLogger } from "zhi-lib-base"
 import { IPicGo, ImageItem, SIYUAN_PICGO_FILE_MAP_KEY, SiyuanPicGo, generateUniqueName } from "zhi-siyuan-picgo"
 import { isDev, siyuanApiToken, siyuanApiUrl } from "./Constants"
@@ -20,6 +20,7 @@ import { initStatusBar, updateStatusBar } from "./statusBar"
 import { initTopbar } from "./topbar"
 import { replaceImageLink } from "zhi-siyuan-picgo/src"
 import { JsTimer } from "./utils/utils"
+import { icons } from "./utils/svg"
 
 export default class PicgoPlugin extends Plugin {
   private logger: ILogger
@@ -57,10 +58,16 @@ export default class PicgoPlugin extends Plugin {
 
   private async onEvent() {
     this.eventBus.on("paste", this.picturePasteEventListener)
+    this.eventBus.on("open-menu-image", this.pictureBlockEventListener)
+    this.logger.info("注册粘贴事件完成")
+    this.logger.info("注册图片菜单完成")
   }
 
   private offEvent() {
     this.eventBus.off("paste", () => {})
+    this.eventBus.off("open-menu-image", () => {})
+    this.logger.info("销毁粘贴事件完成")
+    this.logger.info("销毁图片菜单完成")
   }
 
   /**
@@ -136,6 +143,68 @@ export default class PicgoPlugin extends Plugin {
       this.noticeError(siyuanApi, e.toString())
     }
   }
+
+  /**
+   * 块菜单事件
+   */
+  protected readonly pictureBlockEventListener = async (e: CustomEvent) => {
+    // 获取菜单信息
+    const detail = e.detail
+    this.logger.debug("detail =>", detail)
+
+    const pageId = detail?.protyle?.block.rootID
+    if (!pageId) {
+      this.logger.error("无法获取文档 ID")
+      return
+    }
+
+    // 获取块菜单上下文
+    const context: any = detail?.menu?.menus
+    if (!context) {
+      this.logger.error("获取图片菜单失败")
+      return
+    }
+    this.logger.debug("当前上下文 =>", context)
+
+    const elem = detail.element as HTMLElement
+    const img = elem.querySelector("img")
+    const imageUrl = img.getAttribute("src")
+    const alt = img.getAttribute("alt")
+    this.logger.info("current image url =>", imageUrl)
+
+    // 使用 PicGo 插件上传
+    context.push({
+      iconHTML: `<span class="iconfont-icon">${icons.iconTopbar}</span>`,
+      label: this.i18n.uploadToBed,
+      click: async () => {
+        const siyuanConfig = {
+          apiUrl: siyuanApiUrl,
+          password: siyuanApiToken,
+        }
+        const picgoPostApi = await SiyuanPicGo.getInstance(siyuanConfig as any, isDev)
+        const ctx = picgoPostApi.ctx()
+
+        const siyuanApi = picgoPostApi.siyuanApi
+
+        const nodeId = this.getDataNodeIdFromImgWithSrc(imageUrl)
+        if (!nodeId) {
+          this.noticeError(siyuanApi, "未找到图片块 ID，无法上传图片")
+          return
+        }
+        this.logger.info("😆found image nodeId=>", nodeId)
+
+        const that = this
+        if (/^(http|https):\/\//i.test(imageUrl)) {
+          confirm("温馨提示", "已经是远程图片，是否仍然上传？", async (dialog: Dialog) => {
+            await that.doSelectedPictureUpload(picgoPostApi, siyuanApi, pageId, nodeId, imageUrl, false, alt)
+          })
+        } else {
+          await this.doSelectedPictureUpload(picgoPostApi, siyuanApi, pageId, nodeId, imageUrl, true, alt)
+        }
+      },
+    })
+  }
+  // ===================================================================================================================
 
   private async handleAfterUpload(
     ctx: IPicGo,
@@ -298,11 +367,52 @@ export default class PicgoPlugin extends Plugin {
     updateStatusBar(this, msg)
   }
 
+  private noticeSuccess(siyuanApi: any, msg: string) {
+    siyuanApi.pushMsg({
+      msg: msg,
+      timeout: 3000,
+    })
+    updateStatusBar(this, msg)
+  }
+
   private noticeError(siyuanApi: any, msg: string) {
     siyuanApi.pushErrMsg({
       msg: msg,
       timeout: 7000,
     })
     updateStatusBar(this, `图片上传出错，错误原因：${msg}`)
+  }
+
+  // ===================================================================================================================
+  private async doSelectedPictureUpload(
+    picgoPostApi: any,
+    siyuanApi: any,
+    pageId: string,
+    blockId: string,
+    imageUrl: string,
+    isLocal: boolean,
+    alt?: string,
+    title?: string
+  ) {
+    try {
+      this.noticeInfo("正在上传图片到 PicGo 图床...")
+
+      // pageId: string
+      // attrs: any
+      // 每次都要最新
+      const attrs = await siyuanApi.getBlockAttrs(pageId)
+      let url = imageUrl
+      if (isLocal) {
+        url = `${siyuanApiUrl}/${imageUrl}`
+      }
+      const imageItem = new ImageItem(imageUrl, url, isLocal, alt ?? "", title ?? "")
+      imageItem.blockId = blockId
+      this.logger.info("doSelectedPictureUpload imageItem =>", imageItem)
+      // 直接替换
+      await picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, true, false)
+      this.noticeSuccess(siyuanApi, "🎉图片上传成功")
+    } catch (e) {
+      this.noticeError(siyuanApi, "😭图片上传失败，错误信息：" + e)
+    }
   }
 }
