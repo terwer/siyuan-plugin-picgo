@@ -77,7 +77,7 @@ importers:
         version: 1.3.6(@nuxt/eslint-config@0.1.1(eslint@8.57.0))(@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@4.9.5))(eslint@8.57.0)(typescript@5.4.5))(astro-eslint-parser@0.13.3)(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint-config-turbo@1.13.0(eslint@8.57.0))(eslint-plugin-prettier@4.2.1(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint@8.57.0)(prettier@2.8.8))(eslint-plugin-svelte@2.35.1(eslint@8.57.0)(svelte@4.2.14)(ts-node@10.9.2(@types/node@20.12.5)(typescript@5.4.5)))(eslint-plugin-vue@9.24.0(eslint@8.57.0))(eslint@8.57.0)(prettier-plugin-svelte@2.10.1(prettier@2.8.8)(svelte@4.2.14))(prettier@2.8.8)(typescript@5.4.5)
       '@terwer/vite-config-custom':
         specifier: ^0.7.6
-        version: 0.7.6(@types/minimist@1.2.5)(jsdom@24.0.0)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@5.4.5)(vite-plugin-dts@3.8.1(@types/node@20.12.5)(rollup@4.13.0)(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-node-polyfills@0.21.0(rollup@4.13.0)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-static-copy@1.0.2(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-tsconfig-paths@4.3.2(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0))(vitest@1.4.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0))
+        version: 0.7.6(@types/minimist@1.2.5)(jsdom@24.0.0)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@5.4.5)(vite-plugin-dts@3.8.1(@types/node@20.12.5)(rollup@4.13.0)(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-node-polyfills@0.21.0(rollup@4.13.0)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-static-copy@1.0.2(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-tsconfig-paths@4.3.2(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0))(vitest@1.5.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0))
       '@types/mime':
         specifier: ^3.0.4
         version: 3.0.4
@@ -111,7 +111,7 @@ importers:
         version: 1.3.6(@nuxt/eslint-config@0.1.1(eslint@8.57.0))(@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@4.9.5))(eslint@8.57.0)(typescript@5.4.5))(astro-eslint-parser@0.13.3)(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint-config-turbo@1.13.0(eslint@8.57.0))(eslint-plugin-prettier@4.2.1(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint@8.57.0)(prettier@2.8.8))(eslint-plugin-svelte@2.35.1(eslint@8.57.0)(svelte@4.2.14)(ts-node@10.9.2(@types/node@20.12.5)(typescript@5.4.5)))(eslint-plugin-vue@9.24.0(eslint@8.57.0))(eslint@8.57.0)(prettier-plugin-svelte@2.10.1(prettier@2.8.8)(svelte@4.2.14))(prettier@2.8.8)(typescript@5.4.5)
       '@terwer/vite-config-custom':
         specifier: ^0.7.6
-        version: 0.7.6(@types/minimist@1.2.5)(jsdom@24.0.0)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@5.4.5)(vite-plugin-dts@3.8.1(@types/node@20.12.5)(rollup@4.13.0)(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-node-polyfills@0.21.0(rollup@4.13.0)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-static-copy@1.0.2(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-tsconfig-paths@4.3.2(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0))(vitest@1.4.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0))
+        version: 0.7.6(@types/minimist@1.2.5)(jsdom@24.0.0)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@5.4.5)(vite-plugin-dts@3.8.1(@types/node@20.12.5)(rollup@4.13.0)(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-node-polyfills@0.21.0(rollup@4.13.0)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-static-copy@1.0.2(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-tsconfig-paths@4.3.2(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0))(vitest@1.5.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0))
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -145,7 +145,7 @@ importers:
         version: 1.3.6(@nuxt/eslint-config@0.1.1(eslint@8.57.0))(@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@4.9.5))(eslint@8.57.0)(typescript@5.4.5))(astro-eslint-parser@0.13.3)(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint-config-turbo@1.13.0(eslint@8.57.0))(eslint-plugin-prettier@4.2.1(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint@8.57.0)(prettier@2.8.8))(eslint-plugin-svelte@2.35.1(eslint@8.57.0)(svelte@4.2.14)(ts-node@10.9.2(@types/node@20.12.5)(typescript@5.4.5)))(eslint-plugin-vue@9.24.0(eslint@8.57.0))(eslint@8.57.0)(prettier-plugin-svelte@2.10.1(prettier@2.8.8)(svelte@4.2.14))(prettier@2.8.8)(typescript@5.4.5)
       '@terwer/vite-config-custom':
         specifier: ^0.7.6
-        version: 0.7.6(@types/minimist@1.2.5)(jsdom@24.0.0)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@5.4.5)(vite-plugin-dts@3.8.1(@types/node@20.12.5)(rollup@4.13.0)(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-node-polyfills@0.21.0(rollup@4.13.0)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-static-copy@1.0.2(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-tsconfig-paths@4.3.2(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0))(vitest@1.4.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0))
+        version: 0.7.6(@types/minimist@1.2.5)(jsdom@24.0.0)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@5.4.5)(vite-plugin-dts@3.8.1(@types/node@20.12.5)(rollup@4.13.0)(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-node-polyfills@0.21.0(rollup@4.13.0)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-static-copy@1.0.2(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-tsconfig-paths@4.3.2(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0))(vitest@1.5.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0))
       '@types/uuid':
         specifier: ^9.0.8
         version: 9.0.8
@@ -174,8 +174,8 @@ importers:
         specifier: ^3.4.21
         version: 3.4.21(typescript@5.4.5)
       vue-i18n:
-        specifier: ^9.12.1
-        version: 9.12.1(vue@3.4.21(typescript@5.4.5))
+        specifier: ^9.13.0
+        version: 9.13.0(vue@3.4.21(typescript@5.4.5))
       vue-router:
         specifier: ^4.3.0
         version: 4.3.0(vue@3.4.21(typescript@5.4.5))
@@ -226,8 +226,8 @@ importers:
         specifier: ^3.2.2
         version: 3.2.2(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0))
       vitest:
-        specifier: ^1.4.0
-        version: 1.4.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0)
+        specifier: ^1.5.0
+        version: 1.5.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0)
       vue-tsc:
         specifier: ^2.0.13
         version: 2.0.13(typescript@5.4.5)
@@ -290,8 +290,8 @@ importers:
         specifier: ^4.3.2
         version: 4.3.2(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0))
       vitest:
-        specifier: ^1.4.0
-        version: 1.4.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0)
+        specifier: ^1.5.0
+        version: 1.5.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0)
 
 packages:
 
@@ -821,16 +821,16 @@ packages:
   '@iconify/utils@2.1.22':
     resolution: {integrity: sha512-6UHVzTVXmvO8uS6xFF+L/QTSpTzA/JZxtgU+KYGFyDYMEObZ1bu/b5l+zNJjHy+0leWjHI+C0pXlzGvv3oXZMA==}
 
-  '@intlify/core-base@9.12.1':
-    resolution: {integrity: sha512-l7djJEmXLAR44PdtKDEBev/TN9tREQz967/+jvN3WtICqFoy2Cz8kPtjDfvZctqPNzOonp+ESsDCUm+rjHsmdA==}
+  '@intlify/core-base@9.13.0':
+    resolution: {integrity: sha512-Lx8+YTrFpom7AtdbbuJHzgmr612/bceHU92v8ZPU9HU9/rczf+TmCs95BxWPIR4K42xh4MVMLsNzLUWiXcNaLg==}
     engines: {node: '>= 16'}
 
-  '@intlify/message-compiler@9.12.1':
-    resolution: {integrity: sha512-6QrMGdqKUJSkctyg56nvE+h86tjQZTjYFEfx3ghQAXKPXUd1v5josZXrwnSbIEWWeAentlwtB5qW1FE5r2S8AQ==}
+  '@intlify/message-compiler@9.13.0':
+    resolution: {integrity: sha512-zhESuudiDpFQhUOx/qrSMd7ZYHbmgCc0QzBc27cDUxaaAj3olbYJnsx3osiHPQyYnv/LuC+WTqoNOEBoHP6dqQ==}
     engines: {node: '>= 16'}
 
-  '@intlify/shared@9.12.1':
-    resolution: {integrity: sha512-xAAAxaMS7yUCkwXwqUVQmGCPbXSm6oHqMzcqr2IrxJQmC0DmuqoaW0yBeWyd/pG03PPXqGtWhJLnefsiVElzAQ==}
+  '@intlify/shared@9.13.0':
+    resolution: {integrity: sha512-fUwWcpDz9Wm4dSaz+6XmjoNXWBjZLJtT1Zf1cpLBELbCAOS8WBRscPtgOSfzm6JCqf5KgMI4g917f5TtEeez3A==}
     engines: {node: '>= 16'}
 
   '@jest/schemas@29.6.3':
@@ -1379,20 +1379,20 @@ packages:
       vite: ^5.0.0
       vue: ^3.2.25
 
-  '@vitest/expect@1.4.0':
-    resolution: {integrity: sha512-Jths0sWCJZ8BxjKe+p+eKsoqev1/T8lYcrjavEaz8auEJ4jAVY0GwW3JKmdVU4mmNPLPHixh4GNXP7GFtAiDHA==}
+  '@vitest/expect@1.5.0':
+    resolution: {integrity: sha512-0pzuCI6KYi2SIC3LQezmxujU9RK/vwC1U9R0rLuGlNGcOuDWxqWKu6nUdFsX9tH1WU0SXtAxToOsEjeUn1s3hA==}
 
-  '@vitest/runner@1.4.0':
-    resolution: {integrity: sha512-EDYVSmesqlQ4RD2VvWo3hQgTJ7ZrFQ2VSJdfiJiArkCerDAGeyF1i6dHkmySqk573jLp6d/cfqCN+7wUB5tLgg==}
+  '@vitest/runner@1.5.0':
+    resolution: {integrity: sha512-7HWwdxXP5yDoe7DTpbif9l6ZmDwCzcSIK38kTSIt6CFEpMjX4EpCgT6wUmS0xTXqMI6E/ONmfgRKmaujpabjZQ==}
 
-  '@vitest/snapshot@1.4.0':
-    resolution: {integrity: sha512-saAFnt5pPIA5qDGxOHxJ/XxhMFKkUSBJmVt5VgDsAqPTX6JP326r5C/c9UuCMPoXNzuudTPsYDZCoJ5ilpqG2A==}
+  '@vitest/snapshot@1.5.0':
+    resolution: {integrity: sha512-qpv3fSEuNrhAO3FpH6YYRdaECnnRjg9VxbhdtPwPRnzSfHVXnNzzrpX4cJxqiwgRMo7uRMWDFBlsBq4Cr+rO3A==}
 
-  '@vitest/spy@1.4.0':
-    resolution: {integrity: sha512-Ywau/Qs1DzM/8Uc+yA77CwSegizMlcgTJuYGAi0jujOteJOUf1ujunHThYo243KG9nAyWT3L9ifPYZ5+As/+6Q==}
+  '@vitest/spy@1.5.0':
+    resolution: {integrity: sha512-vu6vi6ew5N5MMHJjD5PoakMRKYdmIrNJmyfkhRpQt5d9Ewhw9nZ5Aqynbi3N61bvk9UvZ5UysMT6ayIrZ8GA9w==}
 
-  '@vitest/utils@1.4.0':
-    resolution: {integrity: sha512-mx3Yd1/6e2Vt/PUC98DcqTirtfxUyAZ32uK82r8rZzbtBeBo+nqgnjx/LvqQdWsrvNtm14VmurNgcf4nqY5gJg==}
+  '@vitest/utils@1.5.0':
+    resolution: {integrity: sha512-BDU0GNL8MWkRkSRdNFvCUCAVOeHaUlVJ9Tx0TYBZyXaaOTmGtUFObzchCivIBrIwKzvZA7A9sCejVhXM2aY98A==}
 
   '@volar/language-core@1.11.1':
     resolution: {integrity: sha512-dOcNn3i9GgZAcJt43wuaEykSluAuOkQgzni1cuxLxTV0nJKanQztp7FxyswdRILaKH+P2XZMPRp2S4MV/pElCw==}
@@ -4125,8 +4125,8 @@ packages:
     resolution: {integrity: sha512-Ii+sehpSfZy+At5nPdnyMhx78fEoPDkR2XW/zimHEL3MyGJQOCQ7WeP20jPYRz7ZCpcKLB21NxuXHF3bxjStBQ==}
     engines: {node: '>= 0.10'}
 
-  vite-node@1.4.0:
-    resolution: {integrity: sha512-VZDAseqjrHgNd4Kh8icYHWzTKSCZMhia7GyHfhtzLW33fZlG9SwsB6CEhgyVOWkJfJ2pFLrp/Gj1FSfAiqH9Lw==}
+  vite-node@1.5.0:
+    resolution: {integrity: sha512-tV8h6gMj6vPzVCa7l+VGq9lwoJjW8Y79vst8QZZGiuRAfijU+EEWuc0kFpmndQrWhMMhet1jdSF+40KSZUqIIw==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
 
@@ -4192,15 +4192,15 @@ packages:
       terser:
         optional: true
 
-  vitest@1.4.0:
-    resolution: {integrity: sha512-gujzn0g7fmwf83/WzrDTnncZt2UiXP41mHuFYFrdwaLRVQ6JYQEiME2IfEjU3vcFL3VKa75XhI3lFgn+hfVsQw==}
+  vitest@1.5.0:
+    resolution: {integrity: sha512-d8UKgR0m2kjdxDWX6911uwxout6GHS0XaGH1cksSIVVG8kRlE7G7aBw7myKQCvDI5dT4j7ZMa+l706BIORMDLw==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
       '@edge-runtime/vm': '*'
       '@types/node': ^18.0.0 || >=20.0.0
-      '@vitest/browser': 1.4.0
-      '@vitest/ui': 1.4.0
+      '@vitest/browser': 1.5.0
+      '@vitest/ui': 1.5.0
       happy-dom: '*'
       jsdom: '*'
     peerDependenciesMeta:
@@ -4237,8 +4237,8 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  vue-i18n@9.12.1:
-    resolution: {integrity: sha512-cqkBt10YzxF3tNGA7/95VMfFdk8nEoguzB7K7R9rldiSnHyWeokq6GOWMThfK/siTr2lLfM9nqolD/er//t4Iw==}
+  vue-i18n@9.13.0:
+    resolution: {integrity: sha512-NlZ+e8rhGSGNk/Vfh4IUvlPRjljPCRslbNYgQmYZY+sLXZgahw8fylQguZU3e8ntJDvitfe40f8p3udOiKMS0A==}
     engines: {node: '>= 16'}
     peerDependencies:
       vue: ^3.0.0
@@ -5302,17 +5302,17 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@intlify/core-base@9.12.1':
+  '@intlify/core-base@9.13.0':
     dependencies:
-      '@intlify/message-compiler': 9.12.1
-      '@intlify/shared': 9.12.1
+      '@intlify/message-compiler': 9.13.0
+      '@intlify/shared': 9.13.0
 
-  '@intlify/message-compiler@9.12.1':
+  '@intlify/message-compiler@9.13.0':
     dependencies:
-      '@intlify/shared': 9.12.1
+      '@intlify/shared': 9.13.0
       source-map-js: 1.2.0
 
-  '@intlify/shared@9.12.1': {}
+  '@intlify/shared@9.13.0': {}
 
   '@jest/schemas@29.6.3':
     dependencies:
@@ -5846,7 +5846,7 @@ snapshots:
       prettier-plugin-svelte: 2.10.1(prettier@2.8.8)(svelte@4.2.14)
       typescript: 5.4.5
 
-  '@terwer/vite-config-custom@0.7.6(@types/minimist@1.2.5)(jsdom@24.0.0)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@5.4.5)(vite-plugin-dts@3.8.1(@types/node@20.12.5)(rollup@4.13.0)(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-node-polyfills@0.21.0(rollup@4.13.0)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-static-copy@1.0.2(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-tsconfig-paths@4.3.2(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0))(vitest@1.4.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0))':
+  '@terwer/vite-config-custom@0.7.6(@types/minimist@1.2.5)(jsdom@24.0.0)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@5.4.5)(vite-plugin-dts@3.8.1(@types/node@20.12.5)(rollup@4.13.0)(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-node-polyfills@0.21.0(rollup@4.13.0)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-plugin-static-copy@1.0.2(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite-tsconfig-paths@4.3.2(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)))(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0))(vitest@1.5.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0))':
     dependencies:
       '@types/minimist': 1.2.5
       jsdom: 24.0.0
@@ -5858,7 +5858,7 @@ snapshots:
       vite-plugin-node-polyfills: 0.21.0(rollup@4.13.0)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0))
       vite-plugin-static-copy: 1.0.2(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0))
       vite-tsconfig-paths: 4.3.2(typescript@5.4.5)(vite@5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0))
-      vitest: 1.4.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0)
+      vitest: 1.5.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0)
 
   '@tokenizer/token@0.1.1': {}
 
@@ -6065,29 +6065,29 @@ snapshots:
       vite: 5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)
       vue: 3.4.21(typescript@5.4.5)
 
-  '@vitest/expect@1.4.0':
+  '@vitest/expect@1.5.0':
     dependencies:
-      '@vitest/spy': 1.4.0
-      '@vitest/utils': 1.4.0
+      '@vitest/spy': 1.5.0
+      '@vitest/utils': 1.5.0
       chai: 4.4.1
 
-  '@vitest/runner@1.4.0':
+  '@vitest/runner@1.5.0':
     dependencies:
-      '@vitest/utils': 1.4.0
+      '@vitest/utils': 1.5.0
       p-limit: 5.0.0
       pathe: 1.1.2
 
-  '@vitest/snapshot@1.4.0':
+  '@vitest/snapshot@1.5.0':
     dependencies:
       magic-string: 0.30.8
       pathe: 1.1.2
       pretty-format: 29.7.0
 
-  '@vitest/spy@1.4.0':
+  '@vitest/spy@1.5.0':
     dependencies:
       tinyspy: 2.2.1
 
-  '@vitest/utils@1.4.0':
+  '@vitest/utils@1.5.0':
     dependencies:
       diff-sequences: 29.6.3
       estree-walker: 3.0.3
@@ -9164,7 +9164,7 @@ snapshots:
 
   validator@13.11.0: {}
 
-  vite-node@1.4.0(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0):
+  vite-node@1.5.0(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0):
     dependencies:
       cac: 6.7.14
       debug: 4.3.4
@@ -9252,13 +9252,13 @@ snapshots:
       stylus: 0.63.0
       terser: 5.30.0
 
-  vitest@1.4.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0):
+  vitest@1.5.0(@types/node@20.12.5)(jsdom@24.0.0)(stylus@0.63.0)(terser@5.30.0):
     dependencies:
-      '@vitest/expect': 1.4.0
-      '@vitest/runner': 1.4.0
-      '@vitest/snapshot': 1.4.0
-      '@vitest/spy': 1.4.0
-      '@vitest/utils': 1.4.0
+      '@vitest/expect': 1.5.0
+      '@vitest/runner': 1.5.0
+      '@vitest/snapshot': 1.5.0
+      '@vitest/spy': 1.5.0
+      '@vitest/utils': 1.5.0
       acorn-walk: 8.3.2
       chai: 4.4.1
       debug: 4.3.4
@@ -9272,7 +9272,7 @@ snapshots:
       tinybench: 2.6.0
       tinypool: 0.8.3
       vite: 5.2.9(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)
-      vite-node: 1.4.0(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)
+      vite-node: 1.5.0(@types/node@20.12.5)(stylus@0.63.0)(terser@5.30.0)
       why-is-node-running: 2.2.2
     optionalDependencies:
       '@types/node': 20.12.5
@@ -9305,10 +9305,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vue-i18n@9.12.1(vue@3.4.21(typescript@5.4.5)):
+  vue-i18n@9.13.0(vue@3.4.21(typescript@5.4.5)):
     dependencies:
-      '@intlify/core-base': 9.12.1
-      '@intlify/shared': 9.12.1
+      '@intlify/core-base': 9.13.0
+      '@intlify/shared': 9.13.0
       '@vue/devtools-api': 6.6.1
       vue: 3.4.21(typescript@5.4.5)
 
