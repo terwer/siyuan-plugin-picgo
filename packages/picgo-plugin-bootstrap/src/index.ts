@@ -89,7 +89,7 @@ export default class PicgoPlugin extends Plugin {
     const picgoPostApi = await SiyuanPicGo.getInstance(siyuanConfig as any, isDev)
     const ctx = picgoPostApi.ctx()
 
-    const SIYUAN_AUTO_UPLOAD = ctx.getConfig("siyuan.autoUpload") || true
+    const SIYUAN_AUTO_UPLOAD = ctx.getConfig("siyuan.autoUpload") ?? true
     // 未启用自动上传，不上传
     if (!SIYUAN_AUTO_UPLOAD) {
       this.logger.warn("剪切板上传已禁用，不上传")
@@ -123,16 +123,10 @@ export default class PicgoPlugin extends Plugin {
           this.noticeError(siyuanApi, "PicGO配置错误，请检查配置。")
           return
         }
-
-        // 不替换链接
-        const SIYUAN_REPLACE_LINK = ctx.getConfig("siyuan.replaceLink") || true
-        if (!SIYUAN_REPLACE_LINK) {
-          this.logger.warn("未启用链接替换，不做替换")
-          return
-        }
-
+        // 是否替换链接
+        const SIYUAN_REPLACE_LINK = ctx.getConfig("siyuan.replaceLink") ?? true
         // 处理上传后续
-        await this.handleAfterUpload(ctx, siyuanApi, pageId, file, img, imageItem)
+        await this.handleAfterUpload(ctx, siyuanApi, pageId, file, img, imageItem, SIYUAN_REPLACE_LINK)
       } else {
         this.noticeError(siyuanApi, "PicGO配置错误，请检查配置。")
       }
@@ -141,9 +135,17 @@ export default class PicgoPlugin extends Plugin {
     }
   }
 
-  private async handleAfterUpload(ctx: IPicGo, siyuanApi: any, pageId: string, file: any, img: any, oldImageitem: any) {
-    const SIYUAN_WAIT_SECONDS = ctx.getConfig("siyuan.waitTimeout") || 2
-    const SIYUAN_RETRY_TIMES = ctx.getConfig("siyuan.retryTimes") || 5
+  private async handleAfterUpload(
+    ctx: IPicGo,
+    siyuanApi: any,
+    pageId: string,
+    file: any,
+    img: any,
+    oldImageitem: any,
+    isReplaceLink: boolean
+  ) {
+    const SIYUAN_WAIT_SECONDS = ctx.getConfig("siyuan.waitTimeout") ?? 2
+    const SIYUAN_RETRY_TIMES = ctx.getConfig("siyuan.retryTimes") ?? 5
     this.logger.debug("get siyuan upload cfg", {
       waitTimeout: SIYUAN_WAIT_SECONDS,
       retryTimes: SIYUAN_RETRY_TIMES,
@@ -160,6 +162,7 @@ export default class PicgoPlugin extends Plugin {
       file,
       img,
       oldImageitem,
+      isReplaceLink,
     }
     const isSuccess = await JsTimer(
       this.doUpdatePictureMetadata,
@@ -192,6 +195,7 @@ export default class PicgoPlugin extends Plugin {
     const file: any = args.file
     const img: any = args.img
     const oldImageitem: any = args.oldImageitem
+    const isReplaceLink: boolean = args.isReplaceLink
 
     const formData = new FormData()
     formData.append("file[]", file)
@@ -227,6 +231,15 @@ export default class PicgoPlugin extends Plugin {
     await siyuanApi.setBlockAttrs(pageId, {
       [SIYUAN_PICGO_FILE_MAP_KEY]: newFileMapStr,
     })
+    this.logger.info("🤩图片元数据更新成功")
+
+    // =================================================================================================================
+    // 不替换链接
+    if (!isReplaceLink) {
+      this.logger.warn("未启用链接替换，不做替换")
+      return
+    }
+    // =================================================================================================================
 
     // 更新块
     const nodeId = pluginInstance.getDataNodeIdFromImgWithSrc(newImageItem.originUrl)
@@ -256,6 +269,12 @@ export default class PicgoPlugin extends Plugin {
     pluginInstance.noticeInfo("图片元数据更新成功")
   }
 
+  /**
+   * 在当前文档的 dom 中查找指定链接的图片
+   *
+   * @param srcValue
+   * @private
+   */
   private getDataNodeIdFromImgWithSrc(srcValue: string) {
     const imgElement = document.querySelector(`img[src="${srcValue}"]`)
     if (imgElement) {
@@ -265,11 +284,11 @@ export default class PicgoPlugin extends Plugin {
         return dataNodeId
       } else {
         this.logger.error("Parent div element with data-node-id attribute not found.")
-        return null
+        throw new Error("Parent div element with data-node-id attribute not found.")
       }
     } else {
       this.logger.error("Image element with specified src attribute not found.")
-      return null
+      throw new Error("Image element with specified src attribute not found.")
     }
   }
 
