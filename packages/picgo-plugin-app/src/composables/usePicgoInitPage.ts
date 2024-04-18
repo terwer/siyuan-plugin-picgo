@@ -46,6 +46,7 @@ export const usePicgoInitPage = (props: any, deps: any) => {
 
     // 解析图片地址
     let retImgs: ParsedImage[] = []
+    debugger
     imageBlocks.forEach((page) => {
       const parsedImages: ParsedImage[] = imageParser.parseImagesToArray(page.markdown)
 

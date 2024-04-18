@@ -60,28 +60,7 @@ onBeforeMount(() => {
 <template>
   <back-page :title="t('setting.picgo.picgo')">
     <el-form label-width="100px" class="picgo-setting-form">
-      <el-form-item label-width="110px" :label="t('picgo.siyuan.wait.timeout')" required>
-        <el-input
-          v-model="bundledPicGoSettingForm.siyuan.waitTimeout"
-          :placeholder="t('picgo.siyuan.wait.timeout.tip')"
-        />
-      </el-form-item>
-      <el-form-item label-width="87px" :label="t('picgo.siyuan.wait.retryTimes')" required>
-        <el-input
-          v-model="bundledPicGoSettingForm.siyuan.retryTimes"
-          :placeholder="t('picgo.siyuan.wait.retryTimes.tips')"
-        />
-      </el-form-item>
-      <el-form-item label-width="130px" :label="t('picgo.siyuan.clipboard.auto')">
-        <el-switch v-model="bundledPicGoSettingForm.siyuan.autoUpload" inline-prompt size="small"></el-switch>
-      </el-form-item>
-      <el-form-item label-width="115px" :label="t('picgo.siyuan.replace.link')">
-        <el-switch v-model="bundledPicGoSettingForm.siyuan.replaceLink" inline-prompt size="small"></el-switch>
-      </el-form-item>
-      <el-form-item label-width="428px" :label="t('picgo.siyuan.txt.with.img.upload')">
-        <el-switch v-model="bundledPicGoSettingForm.siyuan.txtImageSwitch" inline-prompt size="small"></el-switch>
-      </el-form-item>
-      <el-form-item label-width="106px" :label="t('upload.default.adaptor')" required>
+      <el-form-item :label="t('upload.default.adaptor')" required>
         <el-select
           v-model="externalPicGoSettingForm.picgoType"
           :placeholder="t('common.select')"
@@ -90,11 +69,40 @@ onBeforeMount(() => {
           <el-option v-for="item in formData.picgoTypeList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
+
+      <el-divider border-style="dashed" />
+
       <div v-if="externalPicGoSettingForm.picgoType === PicgoTypeEnum.Bundled">
         <bundled-picgo-setting :ctx="ctx" :cfg="bundledPicGoSettingForm" />
       </div>
       <div v-else>
         <external-picgo-setting :cfg="externalPicGoSettingForm" />
+      </div>
+
+      <el-divider border-style="dashed" />
+
+      <div>
+        <el-form-item label-width="110px" :label="t('picgo.siyuan.wait.timeout')" required>
+          <el-input
+            v-model="bundledPicGoSettingForm.siyuan.waitTimeout"
+            :placeholder="t('picgo.siyuan.wait.timeout.tip')"
+          />
+        </el-form-item>
+        <el-form-item label-width="87px" :label="t('picgo.siyuan.wait.retryTimes')" required>
+          <el-input
+            v-model="bundledPicGoSettingForm.siyuan.retryTimes"
+            :placeholder="t('picgo.siyuan.wait.retryTimes.tips')"
+          />
+        </el-form-item>
+        <el-form-item label-width="130px" :label="t('picgo.siyuan.clipboard.auto')">
+          <el-switch v-model="bundledPicGoSettingForm.siyuan.autoUpload" inline-prompt size="small"></el-switch>
+        </el-form-item>
+        <el-form-item label-width="115px" :label="t('picgo.siyuan.replace.link')">
+          <el-switch v-model="bundledPicGoSettingForm.siyuan.replaceLink" inline-prompt size="small"></el-switch>
+        </el-form-item>
+        <el-form-item label-width="428px" :label="t('picgo.siyuan.txt.with.img.upload')">
+          <el-switch v-model="bundledPicGoSettingForm.siyuan.txtImageSwitch" inline-prompt size="small"></el-switch>
+        </el-form-item>
       </div>
     </el-form>
   </back-page>
