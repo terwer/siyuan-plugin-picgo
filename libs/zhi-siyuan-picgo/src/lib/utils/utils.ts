@@ -7,8 +7,8 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { isReactive, isRef, toRaw, unref } from "vue"
 import { ElMessage } from "element-plus"
+import { isReactive, isRef, toRaw, unref } from "vue"
 
 /**
  * 复制网页内容到剪贴板
@@ -105,4 +105,27 @@ export function generateUniqueName() {
   const randomString = generateRandomString(6) // 生成长度为6的随机字符串
   const uniqueName = `${currentTime}_${randomString}`
   return uniqueName + ".png"
+}
+
+/**
+ * 替换图片链接
+ *
+ * // 测试用例
+ * ```
+ * const testString = "![image1](aaaa.png) ![image1](https://example.com/image-20240327190812-yq6es5.png) Some text here";
+ * const imageLink = "image-20240327190812-yq6es5\\.png";
+ * const newImageLink = "new-image.png";
+ *
+ * const replacedString = replaceImageLink(testString, imageLink, newImageLink);
+ * console.log(replacedString);
+ * ```
+ *
+ * @param str
+ * @param imageLink
+ * @param newImageLink
+ * @returns
+ */
+export function replaceImageLink(str: string, imageLink: string, newImageLink: string) {
+  const regex = new RegExp(`(!\\[[^\\]]*\\]\\([^)]*)${imageLink}(\\)(?![^\\[]*]))`, "g")
+  return str.replace(regex, `$1${newImageLink}$2`)
 }

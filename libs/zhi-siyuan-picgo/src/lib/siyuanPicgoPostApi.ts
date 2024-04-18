@@ -7,17 +7,17 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { ILogger, simpleLogger } from "zhi-lib-base"
-import { SiyuanPicGoUploadApi } from "./siyuanPicGoUploadApi"
-import { hasNodeEnv, IImgInfo, IPicGo, isFileOrBlob, win } from "universal-picgo"
-import { ParsedImage } from "./models/ParsedImage"
-import { ImageItem } from "./models/ImageItem"
-import { SIYUAN_PICGO_FILE_MAP_KEY } from "./constants"
+import { IImgInfo, IPicGo, hasNodeEnv, isFileOrBlob, win } from "universal-picgo"
 import { JsonUtil, StrUtil } from "zhi-common"
-import { SiyuanConfig, SiyuanKernelApi } from "zhi-siyuan-api"
-import { ImageParser } from "./parser/ImageParser"
-import { PicgoPostResult } from "./models/PicgoPostResult"
 import { DeviceDetection, DeviceTypeEnum, SiyuanDevice } from "zhi-device"
+import { ILogger, simpleLogger } from "zhi-lib-base"
+import { SiyuanConfig, SiyuanKernelApi } from "zhi-siyuan-api"
+import { SIYUAN_PICGO_FILE_MAP_KEY } from "./constants"
+import { ImageItem } from "./models/ImageItem"
+import { ParsedImage } from "./models/ParsedImage"
+import { PicgoPostResult } from "./models/PicgoPostResult"
+import { ImageParser } from "./parser/ImageParser"
+import { SiyuanPicGoUploadApi } from "./siyuanPicGoUploadApi"
 
 /**
  * Picgo与文章交互的通用方法
