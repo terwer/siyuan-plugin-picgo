@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.10.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.0...siyuan-plugin-picgo-v1.10.1) (2024-04-22)
+### Bug Fixes
+* blob is not supported is fixed ([0bfc306](https://github.com/terwer/siyuan-plugin-picgo/commit/0bfc30651f833fdc4edabd2272697805d5d3ae80))
+* image url join error for qiniu yun ([0fcd68f](https://github.com/terwer/siyuan-plugin-picgo/commit/0fcd68f802637b37a02272c43c5ede0b344f5310))
 ## [1.10.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.9.0...siyuan-plugin-picgo-v1.10.0) (2024-04-18)
 ### Features
 * add amazon s3 support, thanks to [@hzj629206](https://github.com/hzj629206) ([5413290](https://github.com/terwer/siyuan-plugin-picgo/commit/54132907992d3ae4b5a68a526833ed7a9dd03b66))
@@ -7,7 +11,6 @@
 * paste text and image add option ([506c8de](https://github.com/terwer/siyuan-plugin-picgo/commit/506c8de39d6358ae0bdf59a12b9d8857fc6a4fe6))
 * support replace link for api, like publish invoke ([d7c5370](https://github.com/terwer/siyuan-plugin-picgo/commit/d7c537078851aab71488389ee2f6d7d2620dced3))
 * support replace link in dialog ([8717ce2](https://github.com/terwer/siyuan-plugin-picgo/commit/8717ce242e2ac120012580616485b5a41c30861f))
-### Bug Fixes
 * **deps:** bump @iconify/json from 2.2.196 to 2.2.201 ([d698568](https://github.com/terwer/siyuan-plugin-picgo/commit/d698568a4e6a0f5e47faca1b19c5995876c8da50))
 * **deps:** bump element-plus from 2.6.2 to 2.7.0 ([1e08775](https://github.com/terwer/siyuan-plugin-picgo/commit/1e08775538e919b48cc50083d72826ee371dc39c))
 * **deps:** bump vue-i18n from 9.10.2 to 9.12.1 ([8d7b9d0](https://github.com/terwer/siyuan-plugin-picgo/commit/8d7b9d07c644c8c91746b21df2c67b9b18036009))
