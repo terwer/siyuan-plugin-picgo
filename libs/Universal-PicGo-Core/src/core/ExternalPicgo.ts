@@ -12,7 +12,8 @@ import ExternalPicgoConfigDb from "../db/externalPicGo"
 import { IImgInfo, IPicGo } from "../types"
 import { PicgoTypeEnum } from "../utils/enums"
 import { browserPathJoin } from "../utils/browserUtils"
-import { isFileOrBlob } from "../utils/common"
+import { fileToBuffer, isFileOrBlob } from "../utils/common"
+import { CodingUtil } from "../utils/CodingUtil"
 
 /**
  *外部的PicGO 上传 Api
@@ -48,17 +49,25 @@ class ExternalPicgo {
     }
 
     // check blob
-    let hasBlob = false
+    const newInput = []
     if (input) {
       for (const inputItem of input) {
-        if (isFileOrBlob(inputItem) || typeof inputItem !== "string") {
-          hasBlob = true
-          break
+        if (isFileOrBlob(inputItem)) {
+          this.logger.warn("try to get path from blob", inputItem.path)
+          if (inputItem.path.trim() === "") {
+            this.logger.warn("blob path is empty")
+            continue
+          }
+          newInput.push(inputItem.path)
+        } else {
+          newInput.push(inputItem)
         }
       }
+      input = newInput
     }
-    if (hasBlob) {
-      throw new Error("blob is not supported via external picgo api")
+
+    if (input?.length === 0) {
+      throw new Error(`cannot not find valid image`)
     }
 
     this.requestUrl = this.db.get("extPicgoApiUrl") ?? this.requestUrl
