@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.10.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.0...siyuan-plugin-picgo-v1.10.1) (2024-04-22)
+
+
+### Bug Fixes
+
+* blob is not supported is fixed ([0bfc306](https://github.com/terwer/siyuan-plugin-picgo/commit/0bfc30651f833fdc4edabd2272697805d5d3ae80))
+* image url join error for qiniu yun ([ac686c2](https://github.com/terwer/siyuan-plugin-picgo/commit/ac686c2f9327480befb1a1866f9766929b709a44))
+* image url join error for qiniu yun ([0fcd68f](https://github.com/terwer/siyuan-plugin-picgo/commit/0fcd68f802637b37a02272c43c5ede0b344f5310))
+
 ## [1.10.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.9.0...siyuan-plugin-picgo-v1.10.0) (2024-04-18)
 ### Features
 * add amazon s3 support, thanks to [@hzj629206](https://github.com/hzj629206) ([5413290](https://github.com/terwer/siyuan-plugin-picgo/commit/54132907992d3ae4b5a68a526833ed7a9dd03b66))
