@@ -15,6 +15,7 @@ import mime from "mime-types"
 import { AxiosRequestConfig } from "axios"
 import { Mac } from "./digest"
 import { PutPolicy } from "./rs"
+import { browserPathJoin } from "../../../utils/browserUtils"
 
 function postOptions(options: IQiniuConfig, fileName: string, token: string, imgBase64: string): AxiosRequestConfig {
   const area = selectArea(options.area || "z0")
@@ -78,8 +79,8 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           delete img.base64Image
           delete img.buffer
           const baseUrl = qiniuOptions.url
-          const options = qiniuOptions.options
-          img.imgUrl = `${baseUrl}/${body.key as string}${options}`
+          const options = qiniuOptions.options ?? ""
+          img.imgUrl = browserPathJoin(baseUrl, body.key, options)
         } else {
           ctx.emit(IBuildInEvent.NOTIFICATION, {
             title: ctx.i18n.translate<ILocalesKey>("UPLOAD_FAILED"),
