@@ -27,7 +27,7 @@
     "@element-plus/icons-vue": "^2.3.1",
     "@iconify/json": "^2.2.201",
     "@vueuse/core": "^10.9.0",
-    "element-plus": "^2.7.0",
+    "element-plus": "^2.7.1",
     "lodash-es": "^4.17.21",
     "unplugin-icons": "^0.18.5",
     "vue": "^3.4.21",
