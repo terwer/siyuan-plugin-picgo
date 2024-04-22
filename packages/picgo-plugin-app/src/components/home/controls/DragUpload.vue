@@ -81,26 +81,26 @@ const handleExceed = (_e: any) => {
   ElMessage.error("selected files exceed to upload limit  " + limit.value)
 }
 
-const handlePasteAction = (e: any) => {
-  e.preventDefault()
+// const handlePasteAction = (e: any) => {
+//   e.preventDefault()
+//
+//   retrieveImageFromClipboardAsBlob(e, function (imageBlob: any) {
+//     if (imageBlob && imageBlob instanceof Blob) {
+//       const file = new File([imageBlob], "image.png", { type: "image/png" })
+//       handleDragAction(file)
+//     } else {
+//       ElMessage.error("image not found in browser clipboard")
+//     }
+//   })
+// }
 
-  retrieveImageFromClipboardAsBlob(e, function (imageBlob: any) {
-    if (imageBlob && imageBlob instanceof Blob) {
-      const file = new File([imageBlob], "image.png", { type: "image/png" })
-      handleDragAction(file)
-    } else {
-      ElMessage.error("image not found in browser clipboard")
-    }
-  })
-}
-
-onBeforeMount(() => {
-  window.addEventListener("paste", handlePasteAction)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener("paste", handlePasteAction)
-})
+// onBeforeMount(() => {
+//   window.addEventListener("paste", handlePasteAction)
+// })
+//
+// onBeforeUnmount(() => {
+//   window.removeEventListener("paste", handlePasteAction)
+// })
 </script>
 
 <template>
