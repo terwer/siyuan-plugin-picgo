@@ -1,23 +1,15 @@
 # Changelog
 
 ## [1.10.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.1...siyuan-plugin-picgo-v1.10.2) (2024-04-23)
-
-
 ### Bug Fixes
-
 * clipboard upload not work for external picgo ([0fcd437](https://github.com/terwer/siyuan-plugin-picgo/commit/0fcd4378479a7630792e08548034144619eb8092))
 * **deps:** bump @iconify/json from 2.2.202 to 2.2.203 ([2aba99d](https://github.com/terwer/siyuan-plugin-picgo/commit/2aba99d74466d13d6d4b79808c1c234af25b48b3))
 * **deps:** bump vue from 3.4.23 to 3.4.24 ([2d627d2](https://github.com/terwer/siyuan-plugin-picgo/commit/2d627d23bc087cc577b69e9bc7ea0c7aea0c410a))
 * github path error ([e3e2b87](https://github.com/terwer/siyuan-plugin-picgo/commit/e3e2b8791ca138a2206c86f6af3ca37b914f8088))
 * other platforms path error ([b80eb2b](https://github.com/terwer/siyuan-plugin-picgo/commit/b80eb2bbcb8d43eacf9670b209af5a9cfe132fbf))
-
-
 ### Miscellaneous
-
 * **deps-dev:** bump vue-tsc from 2.0.13 to 2.0.14 ([0a63d3c](https://github.com/terwer/siyuan-plugin-picgo/commit/0a63d3cca9077f63dfb008eb2e5e4c42bb631cba))
-
 ## [1.10.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.0...siyuan-plugin-picgo-v1.10.1) (2024-04-22)
-### Bug Fixes
 * blob is not supported is fixed ([0bfc306](https://github.com/terwer/siyuan-plugin-picgo/commit/0bfc30651f833fdc4edabd2272697805d5d3ae80))
 * image url join error for qiniu yun ([0fcd68f](https://github.com/terwer/siyuan-plugin-picgo/commit/0fcd68f802637b37a02272c43c5ede0b344f5310))
 ## [1.10.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.9.0...siyuan-plugin-picgo-v1.10.0) (2024-04-18)
@@ -34,7 +26,6 @@
 * **deps:** bump zhi-siyuan-api from 2.20.0 to 2.21.0 ([5d46a0d](https://github.com/terwer/siyuan-plugin-picgo/commit/5d46a0df022af00b14965f70d5e29f5983042c97))
 * image attr parse error ([7ac02eb](https://github.com/terwer/siyuan-plugin-picgo/commit/7ac02ebda6d93db629b6a594de38a2cc3901991d))
 * image with same block replace error ([eb705c8](https://github.com/terwer/siyuan-plugin-picgo/commit/eb705c8abf0d1f65083a17cd9fea41b650124638))
-### Miscellaneous
 * **deps-dev:** bump siyuan from 0.9.6 to 0.9.7 ([b3e2cac](https://github.com/terwer/siyuan-plugin-picgo/commit/b3e2cacbf3232a95fe74d6f60d9c226999d32386))
 * **deps-dev:** bump svelte from 4.2.12 to 4.2.14 ([ba52a4b](https://github.com/terwer/siyuan-plugin-picgo/commit/ba52a4b8a99654d1349339b86529cb9c1b92f5ee))
 * **deps-dev:** bump turbo from 1.13.0 to 1.13.2 ([85eecca](https://github.com/terwer/siyuan-plugin-picgo/commit/85eecca8b00be34b8a5edaa349a97d2abc11c827))
