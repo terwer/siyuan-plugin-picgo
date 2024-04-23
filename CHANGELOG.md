@@ -11,6 +11,11 @@
 * github path error ([e3e2b87](https://github.com/terwer/siyuan-plugin-picgo/commit/e3e2b8791ca138a2206c86f6af3ca37b914f8088))
 * other platforms path error ([b80eb2b](https://github.com/terwer/siyuan-plugin-picgo/commit/b80eb2bbcb8d43eacf9670b209af5a9cfe132fbf))
 
+
+### Miscellaneous
+
+* **deps-dev:** bump vue-tsc from 2.0.13 to 2.0.14 ([0a63d3c](https://github.com/terwer/siyuan-plugin-picgo/commit/0a63d3cca9077f63dfb008eb2e5e4c42bb631cba))
+
 ## [1.10.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.0...siyuan-plugin-picgo-v1.10.1) (2024-04-22)
 ### Bug Fixes
 * blob is not supported is fixed ([0bfc306](https://github.com/terwer/siyuan-plugin-picgo/commit/0bfc30651f833fdc4edabd2272697805d5d3ae80))
