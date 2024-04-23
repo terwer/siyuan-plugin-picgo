@@ -13,6 +13,7 @@ import mime from "mime-types"
 import { ILocalesKey } from "../../i18n/zh-CN"
 import { bufferToBase64 } from "../../utils/common"
 import { IBuildInEvent } from "../../utils/enums"
+import { browserPathJoin } from "../../utils/browserUtils"
 
 const postOptions = (fileName: string, options: IGithubConfig, data: any): AxiosRequestConfig => {
   const path = options.path || ""
@@ -66,9 +67,12 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
             delete img.base64Image
             delete img.buffer
             if (githubOptions.customUrl) {
-              img.imgUrl = `${githubOptions.customUrl}/${encodeURI(githubOptions.path)}${encodeURIComponent(
-                img.fileName
-              )}`
+              let imgUrl = githubOptions.customUrl
+              if (githubOptions.path) {
+                imgUrl = browserPathJoin(imgUrl, encodeURI(githubOptions.path))
+              }
+              imgUrl = browserPathJoin(imgUrl, encodeURIComponent(img.fileName))
+              img.imgUrl = imgUrl
             } else {
               img.imgUrl = body.content.download_url
             }
