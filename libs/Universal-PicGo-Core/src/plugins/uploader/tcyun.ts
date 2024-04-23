@@ -69,7 +69,7 @@ const postOptions = (
   version: string
 ): AxiosRequestConfig => {
   const area = options.area
-  const path = options.path
+  const path = options.path || ""
   if (!options.version || options.version === "v4") {
     return {
       method: "POST",

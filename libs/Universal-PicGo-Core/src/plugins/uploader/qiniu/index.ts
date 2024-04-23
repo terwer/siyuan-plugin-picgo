@@ -79,7 +79,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           delete img.base64Image
           delete img.buffer
           const baseUrl = qiniuOptions.url
-          const options = qiniuOptions.options
+          const options = qiniuOptions.options || ""
           img.imgUrl = browserPathJoin(baseUrl, body.key, options)
         } else {
           ctx.emit(IBuildInEvent.NOTIFICATION, {

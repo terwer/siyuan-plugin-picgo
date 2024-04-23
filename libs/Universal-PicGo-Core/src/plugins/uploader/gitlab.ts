@@ -24,7 +24,8 @@ const postOptions = (userConfig: IGitlabConfig, base64Image: string, fileName: s
   }
 
   const repo = encodeURIComponent(userConfig.repo)
-  const filepath = encodeURIComponent(userConfig.path + fileName)
+  const userPath = userConfig.path || ""
+  const filepath = encodeURIComponent(userPath + fileName)
   return {
     method: "POST",
     url: `${userConfig.url}/api/v4/projects/${repo}/repository/files/${filepath}`,
