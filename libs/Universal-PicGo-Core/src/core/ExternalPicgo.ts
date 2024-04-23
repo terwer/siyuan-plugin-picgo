@@ -66,10 +66,6 @@ class ExternalPicgo {
       input = newInput
     }
 
-    if (input?.length === 0) {
-      throw new Error(`cannot not find valid image`)
-    }
-
     this.requestUrl = this.db.get("extPicgoApiUrl") ?? this.requestUrl
     let ret: IImgInfo[] = []
 
