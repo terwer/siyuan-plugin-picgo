@@ -22,10 +22,10 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
       client,
       index: idx,
       bucketName: userConfig.bucketName,
-      path: formatPath(item, userConfig.uploadPath),
+      path: formatPath(item, userConfig.uploadPath || ""),
       item: item,
       acl: userConfig.acl || "public-read",
-      customUrl: userConfig.customUrl,
+      customUrl: userConfig.customUrl || "",
       corsProxy: userConfig.corsProxy,
     })
   )

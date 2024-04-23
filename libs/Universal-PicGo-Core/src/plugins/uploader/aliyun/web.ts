@@ -58,8 +58,8 @@ const handleWeb = async (ctx: IPicGo): Promise<IPicGo> => {
   }
 
   const imgList = ctx.output
-  const customUrl = aliYunOptions.customUrl
-  const path = aliYunOptions.path
+  const customUrl = aliYunOptions.customUrl || ""
+  const path = aliYunOptions.path || ""
   for (const img of imgList) {
     if (img.fileName) {
       let image = img.buffer
