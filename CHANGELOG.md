@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.10.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.1...siyuan-plugin-picgo-v1.10.2) (2024-04-23)
+
+
+### Bug Fixes
+
+* clipboard upload not work for external picgo ([0fcd437](https://github.com/terwer/siyuan-plugin-picgo/commit/0fcd4378479a7630792e08548034144619eb8092))
+* **deps:** bump @iconify/json from 2.2.202 to 2.2.203 ([2aba99d](https://github.com/terwer/siyuan-plugin-picgo/commit/2aba99d74466d13d6d4b79808c1c234af25b48b3))
+* **deps:** bump vue from 3.4.23 to 3.4.24 ([2d627d2](https://github.com/terwer/siyuan-plugin-picgo/commit/2d627d23bc087cc577b69e9bc7ea0c7aea0c410a))
+* github path error ([e3e2b87](https://github.com/terwer/siyuan-plugin-picgo/commit/e3e2b8791ca138a2206c86f6af3ca37b914f8088))
+* other platforms path error ([b80eb2b](https://github.com/terwer/siyuan-plugin-picgo/commit/b80eb2bbcb8d43eacf9670b209af5a9cfe132fbf))
+
 ## [1.10.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.0...siyuan-plugin-picgo-v1.10.1) (2024-04-22)
 ### Bug Fixes
 * blob is not supported is fixed ([0bfc306](https://github.com/terwer/siyuan-plugin-picgo/commit/0bfc30651f833fdc4edabd2272697805d5d3ae80))
