@@ -156,8 +156,8 @@ importers:
         specifier: ^2.3.1
         version: 2.3.1(vue@3.4.24)
       '@iconify/json':
-        specifier: ^2.2.201
-        version: 2.2.202
+        specifier: ^2.2.203
+        version: 2.2.203
       '@vueuse/core':
         specifier: ^10.9.0
         version: 10.9.0(vue@3.4.24)
@@ -1820,8 +1820,8 @@ packages:
     resolution: {integrity: sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==}
     dev: true
 
-  /@iconify/json@2.2.202:
-    resolution: {integrity: sha512-ohR6hsbWPUYscf8FW2HdyN8L07mrhJraruVyMBDWltU2JzY6W0NDB0mIpZ5+3vuhvlecSZyWL95XiH0QFQpoFg==}
+  /@iconify/json@2.2.203:
+    resolution: {integrity: sha512-SjtZP6JGbklux1Nf8nQYDZTYRxdKvXLsRQIRvSgMc2z8z9UHpoRakpe8JGT7w1RjK6MMVIfal7Nrf9w8yjKDcA==}
     dependencies:
       '@iconify/types': 2.0.0
       pathe: 1.1.2
