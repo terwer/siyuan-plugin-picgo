@@ -24,7 +24,7 @@
     "siyuan": "^0.9.7",
     "stylus": "^0.63.0",
     "typescript": "^5.4.5",
-    "vite": "^5.2.9",
+    "vite": "^5.2.12",
     "vite-plugin-dts": "^3.8.1",
     "vite-plugin-node-polyfills": "^0.21.0",
     "vite-plugin-static-copy": "^1.0.2",
