@@ -43,7 +43,7 @@
     "axios": "^1.6.8",
     "dayjs": "^1.11.10",
     "js-yaml": "^4.1.0",
-    "mime": "^2.5.2",
+    "mime": "^4.0.3",
     "mime-types": "^2.1.35",
     "queue": "^7.0.0",
     "universal-picgo-store": "workspace:*",
