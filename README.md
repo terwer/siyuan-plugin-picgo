@@ -23,6 +23,7 @@ Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 - SM.MS
 - imgur
 - Amazon S3<sup>recommended</sup>, thanks to [@hzj629206](https://github.com/hzj629206)
+- Lsky pro<sup> v1.11.0+</sup>
 
 ## Config
 

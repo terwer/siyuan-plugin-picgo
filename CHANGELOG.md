@@ -1,19 +1,33 @@
 # Changelog
 
-## [1.10.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.1...siyuan-plugin-picgo-v1.10.2) (2024-04-23)
+## [1.11.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.2...siyuan-plugin-picgo-v1.11.0) (2024-06-04)
+### Features
+* [#21](https://github.com/terwer/siyuan-plugin-picgo/issues/21) support lsky pro 2.1+ ([c26415f](https://github.com/terwer/siyuan-plugin-picgo/commit/c26415f193c0c6db106aafebdceca03f4e5e43c8))
 ### Bug Fixes
+* ci error ([959b697](https://github.com/terwer/siyuan-plugin-picgo/commit/959b697f2f1308e48f5268091e7d5087e3eed327))
+* **deps:** bump @iconify/json from 2.2.203 to 2.2.216 ([2de98ae](https://github.com/terwer/siyuan-plugin-picgo/commit/2de98aebe3503d967b5b3e55ba9f6fee8635bed5))
+* **deps:** bump @smithy/fetch-http-handler in /libs/universal-picgo-core ([4e3a3d5](https://github.com/terwer/siyuan-plugin-picgo/commit/4e3a3d5576927c1c4853e78a65f396f469359819))
+* **deps:** bump @smithy/protocol-http in /libs/universal-picgo-core ([088909d](https://github.com/terwer/siyuan-plugin-picgo/commit/088909de14d06ffe618480c747d57a89b665d4c3))
+* **deps:** bump @smithy/querystring-builder ([af482cd](https://github.com/terwer/siyuan-plugin-picgo/commit/af482cd55821a2992f42a9a995514829acfe04fd))
+* **deps:** bump @smithy/types in /libs/universal-picgo-core ([7c498cf](https://github.com/terwer/siyuan-plugin-picgo/commit/7c498cf42972c95ca2dee75841b3160a7f3d8398))
+* **deps:** bump element-plus from 2.7.0 to 2.7.4 ([3a24079](https://github.com/terwer/siyuan-plugin-picgo/commit/3a240796d71368467b0e833a2b7c928c73a1d7b5))
+* **deps:** bump mime from 2.6.0 to 4.0.3 in /libs/universal-picgo-core ([3f1808a](https://github.com/terwer/siyuan-plugin-picgo/commit/3f1808a425fe0e367a42b573eaf57e307a81aba0))
+* **deps:** bump pnpm/action-setup from 2.2.4 to 4.0.0 ([505a17a](https://github.com/terwer/siyuan-plugin-picgo/commit/505a17a9449a9e42a4c7012996e1971d12afdf36))
+* **deps:** bump unplugin-icons in /packages/picgo-plugin-app ([b59ec77](https://github.com/terwer/siyuan-plugin-picgo/commit/b59ec77a0a2d1f0884e11fdcabde0b244833029e))
+### Miscellaneous
+* **deps-dev:** bump unplugin-vue-components ([f8fad45](https://github.com/terwer/siyuan-plugin-picgo/commit/f8fad4505967ebcbf0ddd469559208cde673c82b))
+* **deps-dev:** bump vite-plugin-node-polyfills ([4f66b19](https://github.com/terwer/siyuan-plugin-picgo/commit/4f66b19b168a297c033e013f0c01c20bb733d933))
+## [1.10.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.1...siyuan-plugin-picgo-v1.10.2) (2024-04-23)
 * clipboard upload not work for external picgo ([0fcd437](https://github.com/terwer/siyuan-plugin-picgo/commit/0fcd4378479a7630792e08548034144619eb8092))
 * **deps:** bump @iconify/json from 2.2.202 to 2.2.203 ([2aba99d](https://github.com/terwer/siyuan-plugin-picgo/commit/2aba99d74466d13d6d4b79808c1c234af25b48b3))
 * **deps:** bump vue from 3.4.23 to 3.4.24 ([2d627d2](https://github.com/terwer/siyuan-plugin-picgo/commit/2d627d23bc087cc577b69e9bc7ea0c7aea0c410a))
 * github path error ([e3e2b87](https://github.com/terwer/siyuan-plugin-picgo/commit/e3e2b8791ca138a2206c86f6af3ca37b914f8088))
 * other platforms path error ([b80eb2b](https://github.com/terwer/siyuan-plugin-picgo/commit/b80eb2bbcb8d43eacf9670b209af5a9cfe132fbf))
-### Miscellaneous
 * **deps-dev:** bump vue-tsc from 2.0.13 to 2.0.14 ([0a63d3c](https://github.com/terwer/siyuan-plugin-picgo/commit/0a63d3cca9077f63dfb008eb2e5e4c42bb631cba))
 ## [1.10.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.0...siyuan-plugin-picgo-v1.10.1) (2024-04-22)
 * blob is not supported is fixed ([0bfc306](https://github.com/terwer/siyuan-plugin-picgo/commit/0bfc30651f833fdc4edabd2272697805d5d3ae80))
 * image url join error for qiniu yun ([0fcd68f](https://github.com/terwer/siyuan-plugin-picgo/commit/0fcd68f802637b37a02272c43c5ede0b344f5310))
 ## [1.10.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.9.0...siyuan-plugin-picgo-v1.10.0) (2024-04-18)
-### Features
 * add amazon s3 support, thanks to [@hzj629206](https://github.com/hzj629206) ([5413290](https://github.com/terwer/siyuan-plugin-picgo/commit/54132907992d3ae4b5a68a526833ed7a9dd03b66))
 * add switch for auto upload and replace link ([3073196](https://github.com/terwer/siyuan-plugin-picgo/commit/3073196ca86eac3c58ac0b63836edffb927f6921))
 * paste text and image add option ([506c8de](https://github.com/terwer/siyuan-plugin-picgo/commit/506c8de39d6358ae0bdf59a12b9d8857fc6a4fe6))
