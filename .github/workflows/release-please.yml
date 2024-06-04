@@ -37,7 +37,7 @@ jobs:
 
       # Install pnpm
       - name: Install pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4.0.0
         id: pnpm-install
         with:
           version: 8
@@ -84,9 +84,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          pnpm publish -F universal-picgo-store --tag latest
-          pnpm publish -F universal-picgo --tag latest
-          pnpm publish -F zhi-siyuan-picgo --tag latest
+          pnpm publish -F universal-picgo-store --tag latest --no-git-check
+          pnpm publish -F universal-picgo --tag latest --no-git-check
+          pnpm publish -F zhi-siyuan-picgo --tag latest --no-git-check
         if: ${{ steps.release.outputs.release_created }}
 
       # Upload package to release

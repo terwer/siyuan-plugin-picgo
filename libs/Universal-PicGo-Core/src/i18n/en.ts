@@ -138,6 +138,16 @@ export const EN: ILocales = {
   PICBED_AWSS3PLIST_MESSAGE_ACL: "Ex. public-read",
   PICBED_AWSS3PLIST_MESSAGE_CORS_PROXY: "Enable when suffering from CORS issue",
 
+  PICBED_LSKY: "Lsky Pro",
+  PICBED_ISKY_SERVER: "Api url",
+  PICBED_ISKY_MESSAGE_SERVER: "Example: http://localhost:9080",
+  PICBED_ISKY_EMAIL: "Email",
+  PICBED_ISKY_MESSAGE_EMAIL: "Email",
+  PICBED_ISKY_PASSWORD: "Password",
+  PICBED_ISKY_MESSAGE_PASSWORD: "Password",
+  PICBED_ISKY_STRATEGYID: "Policy ID",
+  PICBED_ISKY_MESSAGE_STRATEGYID: "Optional, please leave blank when using default storage policy",
+
   // Plugin Handler
   PLUGIN_HANDLER_PLUGIN_INSTALL_SUCCESS: "Plugin installed successfully",
   PLUGIN_HANDLER_PLUGIN_INSTALL_FAILED: "Plugin installation failed",

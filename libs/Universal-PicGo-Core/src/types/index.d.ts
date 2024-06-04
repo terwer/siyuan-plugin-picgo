@@ -250,6 +250,14 @@ export interface IAwsS3Config {
   corsProxy?: boolean
 }
 
+/** 兰空图床配置项 */
+export interface ILskyConfig {
+  server: string
+  email: string
+  password: string
+  strategyId?: string
+}
+
 /** PicGo 配置文件类型定义 */
 export interface IConfig {
   picBed: {
