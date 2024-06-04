@@ -17,6 +17,7 @@ import upyunUploader from "./upyun"
 import SMMSUploader from "./smms"
 import imgurUploader from "./imgur"
 import awss3Uploader from "./awss3"
+import lskyUploader from "./lsky"
 
 const buildInUploaders: IPicGoPlugin = () => {
   return {
@@ -30,6 +31,7 @@ const buildInUploaders: IPicGoPlugin = () => {
       SMMSUploader(ctx)
       imgurUploader(ctx)
       awss3Uploader(ctx)
+      lskyUploader(ctx)
     },
   }
 }

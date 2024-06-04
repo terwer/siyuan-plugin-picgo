@@ -138,6 +138,16 @@ export const ZH_TW: ILocales = {
   PICBED_AWSS3PLIST_MESSAGE_ACL: "例如：public-read",
   PICBED_AWSS3PLIST_MESSAGE_CORS_PROXY: "需要時啟用",
 
+  PICBED_LSKY: "蘭空圖床",
+  PICBED_ISKY_SERVER: "API 地址",
+  PICBED_ISKY_MESSAGE_SERVER: "示例: http://localhost:9080",
+  PICBED_ISKY_EMAIL: "郵箱",
+  PICBED_ISKY_MESSAGE_EMAIL: "郵箱，用於生成鑒權 token",
+  PICBED_ISKY_PASSWORD: "密碼",
+  PICBED_ISKY_MESSAGE_PASSWORD: "密碼，用於生成鑒權 token",
+  PICBED_ISKY_STRATEGYID: "策略 ID",
+  PICBED_ISKY_MESSAGE_STRATEGYID: "選填, 使用默認存儲策略時請留空",
+
   // Plugin Handler
   PLUGIN_HANDLER_PLUGIN_INSTALL_SUCCESS: "插件安裝成功",
   PLUGIN_HANDLER_PLUGIN_INSTALL_FAILED: "插件安裝失敗",
