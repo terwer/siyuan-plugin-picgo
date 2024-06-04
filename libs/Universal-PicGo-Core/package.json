@@ -35,7 +35,7 @@
     "@aws-sdk/client-s3": "^3.421.0",
     "@aws-sdk/s3-request-presigner": "^3.421.0",
     "@smithy/types": "^3.0.0",
-    "@smithy/protocol-http": "^3.3.0",
+    "@smithy/protocol-http": "^4.0.0",
     "@smithy/querystring-builder": "^2.2.0",
     "@smithy/fetch-http-handler": "^3.0.1",
     "@picgo/i18n": "^1.0.0",
