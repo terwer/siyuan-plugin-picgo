@@ -29,7 +29,7 @@
     "@terwer/vite-config-custom": "^0.7.6",
     "@types/mime": "^3.0.4",
     "@types/mime-types": "^2.1.4",
-    "vite-plugin-node-polyfills": "^0.21.0"
+    "vite-plugin-node-polyfills": "^0.22.0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.421.0",
