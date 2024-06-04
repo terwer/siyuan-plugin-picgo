@@ -57,8 +57,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       mime:
-        specifier: ^2.5.2
-        version: 2.6.0
+        specifier: ^4.0.3
+        version: 4.0.3
       mime-types:
         specifier: ^2.1.35
         version: 2.1.35
@@ -156,8 +156,8 @@ importers:
         specifier: ^2.3.1
         version: 2.3.1(vue@3.4.27)
       '@iconify/json':
-        specifier: ^2.2.203
-        version: 2.2.215
+        specifier: ^2.2.216
+        version: 2.2.216
       '@vueuse/core':
         specifier: ^10.9.0
         version: 10.10.0(vue@3.4.27)
@@ -1817,8 +1817,8 @@ packages:
     resolution: {integrity: sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==}
     dev: true
 
-  /@iconify/json@2.2.215:
-    resolution: {integrity: sha512-uXEk3uB5pqNQmYw004lDQwaRVHbNKTDvHkOI0x24QvOGPqhQ+CbcWUlT/fOnwcjwPjsHxeAgUpwKz84sh0jpDg==}
+  /@iconify/json@2.2.216:
+    resolution: {integrity: sha512-dS2yVIAel1oIAGnaxR+EJyDRjKV9GGm9tUd8Pd8VEF91HB4HJrsMzkvz23GHDWyIITGdinx4ZUjMz3hOAv+D4Q==}
     dependencies:
       '@iconify/types': 2.0.0
       pathe: 1.1.2
@@ -6687,6 +6687,12 @@ packages:
   /mime@2.6.0:
     resolution: {integrity: sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==}
     engines: {node: '>=4.0.0'}
+    hasBin: true
+    dev: false
+
+  /mime@4.0.3:
+    resolution: {integrity: sha512-KgUb15Oorc0NEKPbvfa0wRU+PItIEZmiv+pyAO2i0oTIVTJhlzMclU7w4RXWQrSOVH5ax/p/CkIO7KI4OyFJTQ==}
+    engines: {node: '>=16'}
     hasBin: true
     dev: false
 
