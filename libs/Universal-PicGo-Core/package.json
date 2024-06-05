@@ -40,7 +40,7 @@
     "@smithy/fetch-http-handler": "^3.0.1",
     "@picgo/i18n": "^1.0.0",
     "ali-oss": "^6.20.0",
-    "axios": "^1.6.8",
+    "axios": "^1.7.2",
     "dayjs": "^1.11.11",
     "js-yaml": "^4.1.0",
     "mime": "^4.0.3",
