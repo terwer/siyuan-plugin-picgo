@@ -17,7 +17,7 @@
     "rollup-plugin-livereload": "^2.0.5",
     "typescript": "^5.4.5",
     "unplugin-auto-import": "^0.17.5",
-    "unplugin-vue-components": "^0.27.0",
+    "unplugin-vue-components": "^0.27.3",
     "vite": "^5.2.9",
     "vite-plugin-html": "^3.2.2",
     "vitest": "^1.5.0",
