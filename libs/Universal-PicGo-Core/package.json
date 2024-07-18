@@ -48,7 +48,7 @@
     "queue": "^7.0.0",
     "universal-picgo-store": "workspace:*",
     "zhi-lib-base": "^0.8.0",
-    "file-type": "^16.2.0"
+    "file-type": "^19.2.0"
   },
   "publishConfig": {
     "access": "public"
