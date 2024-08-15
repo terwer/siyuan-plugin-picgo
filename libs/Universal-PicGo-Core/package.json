@@ -32,7 +32,7 @@
     "vite-plugin-node-polyfills": "^0.22.0"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.421.0",
+    "@aws-sdk/client-s3": "^3.631.0",
     "@aws-sdk/s3-request-presigner": "^3.421.0",
     "@smithy/types": "^3.0.0",
     "@smithy/protocol-http": "^4.0.0",
