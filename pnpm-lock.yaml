@@ -13,7 +13,7 @@ importers:
         version: 1.0.9(@commitlint/cli@17.8.1)(@commitlint/config-angular@17.8.1)(@commitlint/cz-commitlint@17.8.1(commitizen@4.3.0(@types/node@20.5.1)(typescript@5.4.5))(inquirer@8.2.6))(@commitlint/prompt-cli@17.8.1)(commitizen@4.3.0(@types/node@20.5.1)(typescript@5.4.5))(husky@8.0.3)(inquirer@8.2.6)(is-ci@3.0.1)
       '@terwer/eslint-config-custom':
         specifier: ^1.3.6
-        version: 1.3.6(@nuxt/eslint-config@0.1.1(eslint@8.57.0))(@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@4.9.5))(eslint@8.57.0)(typescript@5.4.5))(astro-eslint-parser@0.13.3)(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint-config-turbo@1.13.2(eslint@8.57.0))(eslint-plugin-prettier@4.2.1(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint@8.57.0)(prettier@2.8.8))(eslint-plugin-svelte@2.37.0(eslint@8.57.0)(svelte@4.2.15)(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.4.5)))(eslint-plugin-vue@9.25.0(eslint@8.57.0))(eslint@8.57.0)(prettier-plugin-svelte@2.10.1(prettier@2.8.8)(svelte@4.2.15))(prettier@2.8.8)(typescript@5.4.5)
+        version: 1.3.6(@nuxt/eslint-config@0.1.1(eslint@8.57.0))(@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(typescript@5.4.5))(astro-eslint-parser@0.13.3)(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint-config-turbo@1.13.2(eslint@8.57.0))(eslint-plugin-prettier@4.2.1(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint@8.57.0)(prettier@2.8.8))(eslint-plugin-svelte@2.37.0(eslint@8.57.0)(svelte@4.2.15)(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.4.5)))(eslint-plugin-vue@9.25.0(eslint@8.57.0))(eslint@8.57.0)(prettier-plugin-svelte@2.10.1(prettier@2.8.8)(svelte@4.2.15))(prettier@2.8.8)(typescript@5.4.5)
       turbo:
         specifier: ^1.13.2
         version: 1.13.2
@@ -30,8 +30,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@smithy/fetch-http-handler':
-        specifier: ^3.0.1
-        version: 3.0.1
+        specifier: ^3.2.4
+        version: 3.2.4
       '@smithy/protocol-http':
         specifier: ^4.0.0
         version: 4.0.0
@@ -816,6 +816,7 @@ packages:
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
     engines: {node: '>=10.10.0'}
+    deprecated: Use @eslint/config-array instead
 
   '@humanwhocodes/module-importer@1.0.1':
     resolution: {integrity: sha512-bxveV4V8v5Yb4ncFTT3rPSgZBOpCkjfK0y4oVVVJwIuDVBRMDXrPyXRL988i5ap9m9bnyEEjWfm5WkBmtffLfA==}
@@ -823,6 +824,7 @@ packages:
 
   '@humanwhocodes/object-schema@2.0.3':
     resolution: {integrity: sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==}
+    deprecated: Use @eslint/object-schema instead
 
   '@iconify/json@2.2.216':
     resolution: {integrity: sha512-dS2yVIAel1oIAGnaxR+EJyDRjKV9GGm9tUd8Pd8VEF91HB4HJrsMzkvz23GHDWyIITGdinx4ZUjMz3hOAv+D4Q==}
@@ -1088,8 +1090,8 @@ packages:
   '@smithy/fetch-http-handler@2.5.0':
     resolution: {integrity: sha512-BOWEBeppWhLn/no/JxUL/ghTfANTjT7kg3Ww2rPqTUY9R4yHPXxJ9JhMe3Z03LN3aPwiwlpDIUcVw1xDyHqEhw==}
 
-  '@smithy/fetch-http-handler@3.0.1':
-    resolution: {integrity: sha512-uaH74i5BDj+rBwoQaXioKpI0SHBJFtOVwzrCpxZxphOW0ki5jhj7dXvDMYM2IJem8TpdFvS2iC08sjOblfFGFg==}
+  '@smithy/fetch-http-handler@3.2.4':
+    resolution: {integrity: sha512-kBprh5Gs5h7ug4nBWZi1FZthdqSM+T7zMmsZxx0IBvWUn7dK3diz2SHn7Bs4dQGFDk8plDv375gzenDoNwrXjg==}
 
   '@smithy/hash-blob-browser@2.2.0':
     resolution: {integrity: sha512-SGPoVH8mdXBqrkVCJ1Hd1X7vh1zDXojNN1yZyZTZsCno99hVue9+IYzWDjq/EQDDXxmITB0gBmuyPh8oAZSTcg==}
@@ -1156,12 +1158,20 @@ packages:
     resolution: {integrity: sha512-qOQZOEI2XLWRWBO9AgIYuHuqjZ2csyr8/IlgFDHDNuIgLAMRx2Bl8ck5U5D6Vh9DPdoaVpuzwWMa0xcdL4O/AQ==}
     engines: {node: '>=16.0.0'}
 
+  '@smithy/protocol-http@4.1.0':
+    resolution: {integrity: sha512-dPVoHYQ2wcHooGXg3LQisa1hH0e4y0pAddPMeeUPipI1tEOqL6A4N0/G7abeq+K8wrwSgjk4C0wnD1XZpJm5aA==}
+    engines: {node: '>=16.0.0'}
+
   '@smithy/querystring-builder@2.2.0':
     resolution: {integrity: sha512-L1kSeviUWL+emq3CUVSgdogoM/D9QMFaqxL/dd0X7PCNWmPXqt+ExtrBjqT0V7HLN03Vs9SuiLrG3zy3JGnE5A==}
     engines: {node: '>=14.0.0'}
 
   '@smithy/querystring-builder@3.0.0':
     resolution: {integrity: sha512-bW8Fi0NzyfkE0TmQphDXr1AmBDbK01cA4C1Z7ggwMAU5RDz5AAv/KmoRwzQAS0kxXNf/D2ALTEgwK0U2c4LtRg==}
+    engines: {node: '>=16.0.0'}
+
+  '@smithy/querystring-builder@3.0.3':
+    resolution: {integrity: sha512-vyWckeUeesFKzCDaRwWLUA1Xym9McaA6XpFfAK5qI9DKJ4M33ooQGqvM4J+LalH4u/Dq9nFiC8U6Qn1qi0+9zw==}
     engines: {node: '>=16.0.0'}
 
   '@smithy/querystring-parser@2.2.0':
@@ -1190,6 +1200,10 @@ packages:
 
   '@smithy/types@3.0.0':
     resolution: {integrity: sha512-VvWuQk2RKFuOr98gFhjca7fkBS+xLLURT8bUjk5XQoV0ZLm7WPwWPPY3/AwzTLuUBDeoKDCthfe1AsTUWaSEhw==}
+    engines: {node: '>=16.0.0'}
+
+  '@smithy/types@3.3.0':
+    resolution: {integrity: sha512-IxvBBCTFDHbVoK7zIxqA1ZOdc4QfM5HM7rGleCuHi7L1wnKv5Pn69xXJQ9hgxH60ZVygH9/JG0jRgtUncE3QUA==}
     engines: {node: '>=16.0.0'}
 
   '@smithy/url-parser@2.2.0':
@@ -2572,6 +2586,7 @@ packages:
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
+    deprecated: Glob versions prior to v9 are no longer supported
 
   global-directory@4.0.1:
     resolution: {integrity: sha512-wHTUcDUoZ1H5/0iVqEudYW4/kAlN5cZ3j/bXn0Dpbizl9iaUVeWSHqiOjsgk6OW2bkLclbBjzewBz6weQ1zA2Q==}
@@ -2745,6 +2760,7 @@ packages:
 
   inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
+    deprecated: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
 
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
@@ -5766,11 +5782,11 @@ snapshots:
       '@smithy/util-base64': 2.3.0
       tslib: 2.6.2
 
-  '@smithy/fetch-http-handler@3.0.1':
+  '@smithy/fetch-http-handler@3.2.4':
     dependencies:
-      '@smithy/protocol-http': 4.0.0
-      '@smithy/querystring-builder': 3.0.0
-      '@smithy/types': 3.0.0
+      '@smithy/protocol-http': 4.1.0
+      '@smithy/querystring-builder': 3.0.3
+      '@smithy/types': 3.3.0
       '@smithy/util-base64': 3.0.0
       tslib: 2.6.2
 
@@ -5881,6 +5897,11 @@ snapshots:
       '@smithy/types': 3.0.0
       tslib: 2.6.2
 
+  '@smithy/protocol-http@4.1.0':
+    dependencies:
+      '@smithy/types': 3.3.0
+      tslib: 2.6.2
+
   '@smithy/querystring-builder@2.2.0':
     dependencies:
       '@smithy/types': 2.12.0
@@ -5890,6 +5911,12 @@ snapshots:
   '@smithy/querystring-builder@3.0.0':
     dependencies:
       '@smithy/types': 3.0.0
+      '@smithy/util-uri-escape': 3.0.0
+      tslib: 2.6.2
+
+  '@smithy/querystring-builder@3.0.3':
+    dependencies:
+      '@smithy/types': 3.3.0
       '@smithy/util-uri-escape': 3.0.0
       tslib: 2.6.2
 
@@ -5931,6 +5958,10 @@ snapshots:
       tslib: 2.6.2
 
   '@smithy/types@3.0.0':
+    dependencies:
+      tslib: 2.6.2
+
+  '@smithy/types@3.3.0':
     dependencies:
       tslib: 2.6.2
 
@@ -6064,7 +6095,7 @@ snapshots:
   '@terwer/eslint-config-custom@1.3.6(@nuxt/eslint-config@0.1.1(eslint@8.57.0))(@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@4.9.5))(eslint@8.57.0)(typescript@5.4.5))(astro-eslint-parser@0.13.3)(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint-config-turbo@1.13.2(eslint@8.57.0))(eslint-plugin-prettier@4.2.1(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint@8.57.0)(prettier@2.8.8))(eslint-plugin-svelte@2.37.0(eslint@8.57.0)(svelte@4.2.15)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5)))(eslint-plugin-vue@9.25.0(eslint@8.57.0))(eslint@8.57.0)(prettier-plugin-svelte@2.10.1(prettier@2.8.8)(svelte@4.2.15))(prettier@2.8.8)(typescript@5.4.5)':
     dependencies:
       '@nuxt/eslint-config': 0.1.1(eslint@8.57.0)
-      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@4.9.5))(eslint@8.57.0)(typescript@5.4.5)
+      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(typescript@5.4.5)
       astro-eslint-parser: 0.13.3
       eslint: 8.57.0
       eslint-config-prettier: 8.10.0(eslint@8.57.0)
@@ -6076,10 +6107,10 @@ snapshots:
       prettier-plugin-svelte: 2.10.1(prettier@2.8.8)(svelte@4.2.15)
       typescript: 5.4.5
 
-  '@terwer/eslint-config-custom@1.3.6(@nuxt/eslint-config@0.1.1(eslint@8.57.0))(@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@4.9.5))(eslint@8.57.0)(typescript@5.4.5))(astro-eslint-parser@0.13.3)(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint-config-turbo@1.13.2(eslint@8.57.0))(eslint-plugin-prettier@4.2.1(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint@8.57.0)(prettier@2.8.8))(eslint-plugin-svelte@2.37.0(eslint@8.57.0)(svelte@4.2.15)(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.4.5)))(eslint-plugin-vue@9.25.0(eslint@8.57.0))(eslint@8.57.0)(prettier-plugin-svelte@2.10.1(prettier@2.8.8)(svelte@4.2.15))(prettier@2.8.8)(typescript@5.4.5)':
+  '@terwer/eslint-config-custom@1.3.6(@nuxt/eslint-config@0.1.1(eslint@8.57.0))(@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(typescript@5.4.5))(astro-eslint-parser@0.13.3)(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint-config-turbo@1.13.2(eslint@8.57.0))(eslint-plugin-prettier@4.2.1(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint@8.57.0)(prettier@2.8.8))(eslint-plugin-svelte@2.37.0(eslint@8.57.0)(svelte@4.2.15)(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.4.5)))(eslint-plugin-vue@9.25.0(eslint@8.57.0))(eslint@8.57.0)(prettier-plugin-svelte@2.10.1(prettier@2.8.8)(svelte@4.2.15))(prettier@2.8.8)(typescript@5.4.5)':
     dependencies:
       '@nuxt/eslint-config': 0.1.1(eslint@8.57.0)
-      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@4.9.5))(eslint@8.57.0)(typescript@5.4.5)
+      '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(typescript@5.4.5)
       astro-eslint-parser: 0.13.3
       eslint: 8.57.0
       eslint-config-prettier: 8.10.0(eslint@8.57.0)
@@ -6178,7 +6209,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@4.9.5))(eslint@8.57.0)(typescript@5.4.5)':
+  '@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(typescript@5.4.5)':
     dependencies:
       '@eslint-community/regexpp': 4.10.0
       '@typescript-eslint/parser': 5.62.0(eslint@8.57.0)(typescript@5.4.5)

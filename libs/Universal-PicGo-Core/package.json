@@ -37,7 +37,7 @@
     "@smithy/types": "^3.0.0",
     "@smithy/protocol-http": "^4.0.0",
     "@smithy/querystring-builder": "^3.0.0",
-    "@smithy/fetch-http-handler": "^3.0.1",
+    "@smithy/fetch-http-handler": "^3.2.4",
     "@picgo/i18n": "^1.0.0",
     "ali-oss": "^6.20.0",
     "axios": "^1.6.8",
