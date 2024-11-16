@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.0...siyuan-plugin-picgo-v1.11.1) (2024-11-16)
+
+
+### Miscellaneous
+
+* release 1.11.1 ([d797c34](https://github.com/terwer/siyuan-plugin-picgo/commit/d797c34071115196ae5009efab20e340c6e2eaa5))
+
 ## [1.11.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.2...siyuan-plugin-picgo-v1.11.0) (2024-06-04)
 ### Features
 * [#21](https://github.com/terwer/siyuan-plugin-picgo/issues/21) support lsky pro 2.1+ ([c26415f](https://github.com/terwer/siyuan-plugin-picgo/commit/c26415f193c0c6db106aafebdceca03f4e5e43c8))
