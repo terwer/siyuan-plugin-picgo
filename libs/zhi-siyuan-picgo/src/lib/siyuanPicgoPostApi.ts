@@ -428,7 +428,10 @@ class SiyuanPicgoPostApi {
         await this.copyFolder(from, to)
       } else {
         // 不存在移动过去
-        await fs.promises.rename(from, to)
+        // https://stackoverflow.com/a/76459661/4037224
+        // await fs.promises.rename(from, to)
+        await fs.promises.copyFile(from, to, { recursive: true })
+        await fs.promises.rmdir(from, { recursive: true })
       }
     } catch (e) {
       this.logger.error(`move ${from} to ${to} failed: ${e}`)
