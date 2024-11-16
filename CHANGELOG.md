@@ -1,16 +1,15 @@
 # Changelog
 
+## [1.11.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.1...siyuan-plugin-picgo-v1.11.2) (2024-11-16)
+### Bug Fixes
+* make siyuanpicgo singleton ([e493573](https://github.com/terwer/siyuan-plugin-picgo/commit/e493573f1cae7aaa683d31d59d13f6c25d54f070))
+* move file error ([d949e50](https://github.com/terwer/siyuan-plugin-picgo/commit/d949e50b8a4d8b4330164079e97a89f3bb5474c4))
 ## [1.11.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.0...siyuan-plugin-picgo-v1.11.1) (2024-11-16)
-
-
 ### Miscellaneous
-
 * release 1.11.1 ([d797c34](https://github.com/terwer/siyuan-plugin-picgo/commit/d797c34071115196ae5009efab20e340c6e2eaa5))
-
 ## [1.11.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.2...siyuan-plugin-picgo-v1.11.0) (2024-06-04)
 ### Features
 * [#21](https://github.com/terwer/siyuan-plugin-picgo/issues/21) support lsky pro 2.1+ ([c26415f](https://github.com/terwer/siyuan-plugin-picgo/commit/c26415f193c0c6db106aafebdceca03f4e5e43c8))
-### Bug Fixes
 * ci error ([959b697](https://github.com/terwer/siyuan-plugin-picgo/commit/959b697f2f1308e48f5268091e7d5087e3eed327))
 * **deps:** bump @iconify/json from 2.2.203 to 2.2.216 ([2de98ae](https://github.com/terwer/siyuan-plugin-picgo/commit/2de98aebe3503d967b5b3e55ba9f6fee8635bed5))
 * **deps:** bump @smithy/fetch-http-handler in /libs/universal-picgo-core ([4e3a3d5](https://github.com/terwer/siyuan-plugin-picgo/commit/4e3a3d5576927c1c4853e78a65f396f469359819))
@@ -21,7 +20,6 @@
 * **deps:** bump mime from 2.6.0 to 4.0.3 in /libs/universal-picgo-core ([3f1808a](https://github.com/terwer/siyuan-plugin-picgo/commit/3f1808a425fe0e367a42b573eaf57e307a81aba0))
 * **deps:** bump pnpm/action-setup from 2.2.4 to 4.0.0 ([505a17a](https://github.com/terwer/siyuan-plugin-picgo/commit/505a17a9449a9e42a4c7012996e1971d12afdf36))
 * **deps:** bump unplugin-icons in /packages/picgo-plugin-app ([b59ec77](https://github.com/terwer/siyuan-plugin-picgo/commit/b59ec77a0a2d1f0884e11fdcabde0b244833029e))
-### Miscellaneous
 * **deps-dev:** bump unplugin-vue-components ([f8fad45](https://github.com/terwer/siyuan-plugin-picgo/commit/f8fad4505967ebcbf0ddd469559208cde673c82b))
 * **deps-dev:** bump vite-plugin-node-polyfills ([4f66b19](https://github.com/terwer/siyuan-plugin-picgo/commit/4f66b19b168a297c033e013f0c01c20bb733d933))
 ## [1.10.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.1...siyuan-plugin-picgo-v1.10.2) (2024-04-23)

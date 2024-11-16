@@ -1,6 +1,6 @@
 {
   "name": "siyuan-plugin-picgo",
-  "version": "1.11.1",
+  "version": "1.11.2",
   "description": "picgo plugin for siyuan-note",
   "scripts": {
     "clean": "./scripts/clean.sh",
