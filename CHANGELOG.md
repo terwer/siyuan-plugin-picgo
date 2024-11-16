@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.1...siyuan-plugin-picgo-v1.11.2) (2024-11-16)
+
+
+### Bug Fixes
+
+* move file error ([d949e50](https://github.com/terwer/siyuan-plugin-picgo/commit/d949e50b8a4d8b4330164079e97a89f3bb5474c4))
+
 ## [1.11.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.0...siyuan-plugin-picgo-v1.11.1) (2024-11-16)
 
 
