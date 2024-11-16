@@ -1,17 +1,10 @@
 # Changelog
 
 ## [1.11.3](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.2...siyuan-plugin-picgo-v1.11.3) (2024-11-16)
-
-
-### Bug Fixes
-
-* make SiyuanPicGo singleton ([96acb49](https://github.com/terwer/siyuan-plugin-picgo/commit/96acb4918a93eff6f7fd0cb07402becd3e6308d1))
-* move file error ([b98f3d0](https://github.com/terwer/siyuan-plugin-picgo/commit/b98f3d0800b1526768bd7e715b8cef6e6456095c))
-
-## [1.11.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.1...siyuan-plugin-picgo-v1.11.2) (2024-11-16)
 ### Bug Fixes
 * make siyuanpicgo singleton ([e493573](https://github.com/terwer/siyuan-plugin-picgo/commit/e493573f1cae7aaa683d31d59d13f6c25d54f070))
 * move file error ([d949e50](https://github.com/terwer/siyuan-plugin-picgo/commit/d949e50b8a4d8b4330164079e97a89f3bb5474c4))
+## [1.11.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.1...siyuan-plugin-picgo-v1.11.2) (2024-11-16)
 ## [1.11.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.0...siyuan-plugin-picgo-v1.11.1) (2024-11-16)
 ### Miscellaneous
 * release 1.11.1 ([d797c34](https://github.com/terwer/siyuan-plugin-picgo/commit/d797c34071115196ae5009efab20e340c6e2eaa5))
