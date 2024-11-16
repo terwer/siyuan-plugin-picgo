@@ -53,12 +53,12 @@ class ExternalPicgo {
     if (input) {
       for (const inputItem of input) {
         if (isFileOrBlob(inputItem)) {
-          this.logger.warn("try to get path from blob", inputItem.path)
-          if (inputItem.path.trim() === "") {
-            this.logger.warn("blob path is empty")
-            continue
+          this.logger.warn(`try to get path from blob => ${inputItem.path}`)
+          if (inputItem.path && inputItem.path.trim() !== "") {
+            newInput.push(inputItem.path)
+          } else {
+            this.logger.warn("blob path is empty, treat as clipboard image")
           }
-          newInput.push(inputItem.path)
         } else {
           newInput.push(inputItem)
         }
@@ -75,7 +75,7 @@ class ExternalPicgo {
 
     let data
     // 传递了路径，上传具体图片，否则上传剪贴板
-    if (input) {
+    if (input && input.length > 0) {
       data = { list: input }
     }
 
