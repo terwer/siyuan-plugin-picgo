@@ -1,28 +1,13 @@
 {
-  "include-component-in-tag": true,
-  "tag-separator": "@",
-  "release-type": "node",
-  "separate-pull-requests": true,
-  "changelog-path": "CHANGELOG.md",
-  "bump-minor-pre-major": false,
-  "bump-patch-for-minor-pre-major": false,
-  "draft": false,
-  "prerelease": false,
   "packages": {
-    "./libs/Universal-PicGo-Core": {
-      "package-name": "universal-picgo"
-    },
-    "./libs/Universal-PicGo-Store": {
-      "package-name": "universal-picgo-store"
-    },
-    "./libs/zhi-siyuan-picgo": {
-      "package-name": "zhi-siyuan-picgo"
-    },
-    "./packages/picgo-plugin-app": {
-      "package-name": "picgo-plugin-app"
-    },
-    "./packages/picgo-plugin-bootstrap": {
-      "package-name": "picgo-plugin-bootstrap"
+    ".": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "node",
+      "target-branch": "main",
+      "bump-minor-pre-major": false,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false
     }
   },
   "pull-request-header": ":robot: A new release will be created",
