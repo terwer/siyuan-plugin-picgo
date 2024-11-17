@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.5](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.4...siyuan-plugin-picgo-v1.11.5) (2024-11-17)
+
+
+### Bug Fixes
+
+* copy file error in some cases ([06a3bd1](https://github.com/terwer/siyuan-plugin-picgo/commit/06a3bd16b85db0c38c59946444a842fcc8c4b0ee))
+
 ## [1.11.4](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.3...siyuan-plugin-picgo-v1.11.4) (2024-11-17)
 ### Bug Fixes
 * copy file error in some cases ([bf56986](https://github.com/terwer/siyuan-plugin-picgo/commit/bf56986eca3f27e550aa7f3d2c854ec2071e51a6))
