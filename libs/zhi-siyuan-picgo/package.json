@@ -1,6 +1,6 @@
 {
   "name": "zhi-siyuan-picgo",
-  "version": "1.11.4",
+  "version": "1.11.5",
   "type": "module",
   "description": "picgo lib for siyuan-note",
   "main": "./dist/index.js",
