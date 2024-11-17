@@ -461,6 +461,10 @@ class SiyuanPicgoPostApi {
         // 递归复制子文件夹
         await this.copyFolder(sourcePath, destPath)
       } else {
+        const destDir = path.dirname(destPath)
+        if (!fs.existsSync(destDir)) {
+          await fs.promises.mkdir(destDir, { recursive: true })
+        }
         await fs.promises.copyFile(sourcePath, destPath)
       }
     }
