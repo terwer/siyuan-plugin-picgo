@@ -422,16 +422,15 @@ class SiyuanPicgoPostApi {
     // 存在旧文件采取迁移
     this.cfgUpdating = true
     this.logger.info(`will move ${from} to ${to}`)
-    // 目的地存在复制
     try {
       if (existTo) {
-        await this.copyFolder(from, to)
+        // 目的地存在复制
+        await this.copyFolder(from, to, true)
       } else {
         // 不存在移动过去
         // https://stackoverflow.com/a/76459661/4037224
         // await fs.promises.rename(from, to)
-        await fs.promises.copyFile(from, to, { recursive: true })
-        await fs.promises.rmdir(from, { recursive: true })
+        await this.copyFolder(from, to)
       }
     } catch (e) {
       this.logger.error(`move ${from} to ${to} failed: ${e}`)
@@ -440,9 +439,13 @@ class SiyuanPicgoPostApi {
     }
   }
 
-  private async copyFolder(from: string, to: string) {
+  private async copyFolder(from: string, to: string, overwrite: boolean = false): Promise<any> {
     const fs = win.fs
     const path = win.require("path")
+
+    if (overwrite) {
+      await fs.promises.rmdir(to, { recursive: true })
+    }
 
     const files = await fs.promises.readdir(from)
     for (const file of files) {
