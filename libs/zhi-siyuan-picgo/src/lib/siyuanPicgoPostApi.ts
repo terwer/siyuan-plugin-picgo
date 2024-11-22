@@ -201,10 +201,13 @@ class SiyuanPicgoPostApi {
           isLocal = false
           const newfileMap = JsonUtil.safeParse<any>(newattrs[SIYUAN_PICGO_FILE_MAP_KEY], {})
           newImageItem = newfileMap[imageItem.hash]
-        } catch (e) {
+          ret.flag = true
+        } catch (e:any) {
           newattrs = attrs
           isLocal = true
           newImageItem = imageItem
+          ret.flag = false
+          ret.errmsg = e.toString()
           this.logger.warn("单个图片上传异常", { pageId, attrs, imageItem })
           this.logger.warn("单个图片上传失败，错误信息如下", e)
         }
@@ -230,7 +233,6 @@ class SiyuanPicgoPostApi {
       ret.mdContent = this.imageParser.replaceImagesWithImageItemArray(mdContent, replaceMap)
       this.logger.debug("图片链接替换完成，新正文=>", JSON.stringify({ newmdContent: ret.mdContent }))
 
-      ret.flag = true
       this.logger.debug("正文替换完成，最终结果=>", ret)
     } catch (e: any) {
       ret.flag = false
