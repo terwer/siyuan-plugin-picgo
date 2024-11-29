@@ -12,7 +12,7 @@ import { createAppLogger } from "@/utils/appLogger.ts"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { reactive } from "vue"
 import { generateUniqueName, ImageItem } from "zhi-siyuan-picgo"
-import { ElMessage } from "element-plus"
+import { ElMessage, ElMessageBox } from "element-plus"
 import { useSiyuanApi } from "$composables/useSiyuanApi.ts"
 import { StrUtil } from "zhi-common"
 import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
@@ -239,6 +239,47 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
         })
         logger.error(t("main.opt.failure") + "=>" + e)
       }
+    },
+    doForceUploaddAllImagesToBed: async () => {
+      ElMessageBox.confirm(t("picgo.upload.onclick.force.tips"), t("main.opt.warning"), {
+        confirmButtonText: t("main.opt.ok"),
+        cancelButtonText: t("main.opt.cancel"),
+        type: "warning",
+      })
+        .then(async () => {
+          picgoCommonData.isUploadLoading = true
+
+          try {
+            const imageItemArray = picgoCommonData.fileList.files
+
+            for (let i = 0; i < imageItemArray.length; i++) {
+              const imageItem = imageItemArray[i]
+              await picgoUploadMethods.doUploadImageToBed(imageItem, true)
+            }
+
+            picgoCommonData.isUploadLoading = false
+            ElMessage.success("图片已经全部上传至图床")
+          } catch (e) {
+            picgoCommonData.isUploadLoading = false
+
+            ElMessage({
+              type: "error",
+              message: t("main.opt.failure") + "=>" + e,
+            })
+            logger.error(t("main.opt.failure") + "=>" + e)
+          }
+        })
+        .catch((e) => {
+          picgoCommonData.isUploadLoading = false
+
+          if (e.toString().indexOf("cancel") <= -1) {
+            ElMessage({
+              type: "error",
+              message: t("main.opt.failure") + "，图片上传异常=>" + e,
+            })
+            logger.error(t("main.opt.failure") + "=>" + e)
+          }
+        })
     },
     doDownloadAllImagesToLocal: async () => {
       if (StrUtil.isEmptyString(props.pageId)) {

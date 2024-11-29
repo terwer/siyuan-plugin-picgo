@@ -115,7 +115,8 @@ class SiyuanPicgoPostApi {
       if (fileMap[imageItem.hash]) {
         const newImageItem = fileMap[imageItem.hash]
         this.logger.debug("newImageItem=>", newImageItem)
-        if (!newImageItem.isLocal) {
+        // 注意：可能存在元数据没有的情况，这种情况要跳过
+        if (newImageItem.isLocal === false) {
           imageItem.isLocal = false
           imageItem.url = newImageItem.url
         }
@@ -184,7 +185,7 @@ class SiyuanPicgoPostApi {
         }
 
         if (!imageItem.isLocal) {
-          this.logger.debug("已经上传过图床，请勿重复上传=>", imageItem.originUrl)
+          this.logger.debug("[外部调用]已经上传过图床，请勿重复上传=>", imageItem.originUrl)
           continue
         }
 
@@ -282,7 +283,9 @@ class SiyuanPicgoPostApi {
         const win = SiyuanDevice.siyuanWindow()
         const dataDir: string = win.siyuan.config.system.dataDir
         imageFullPath = `${dataDir}/assets/${imageItem.name}`
-        this.logger.info(`Will upload picture from ${imageFullPath}, imageItem =>`, imageItem)
+        this.logger.info(`Will upload picture from ${imageFullPath}, imageItem =>`, {
+          imageItem,
+        })
 
         const fs = win.require("fs")
         if (!fs.existsSync(imageFullPath)) {
@@ -349,7 +352,10 @@ class SiyuanPicgoPostApi {
           this.logger.debug("[单个上传] newImageBlock.markdown", newImageBlock.markdown)
           // 如果查询出来的块信息不对，不更新，防止误更新
           if (!newImageBlock.markdown.includes(newImageItem.originUrl)) {
-            this.logger.warn("[单个上传] 块信息不符合，取消更新")
+            this.logger.warn("[单个上传] 块信息不符合，取消更新", {
+              newImageItem,
+              newImageBlock,
+            })
           } else {
             // =========================================================================================================
             // 正式更新替换

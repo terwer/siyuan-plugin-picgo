@@ -73,6 +73,9 @@ export default {
   "picgo.upload.select.pic": "选择图片",
   "picgo.upload.clipboard": "剪切板上传",
   "picgo.upload.onclick": "一键上传",
+  "picgo.upload.onclick.force": "一键强制上传",
+  "picgo.upload.onclick.force.tips":
+    "此操作会全部重新上传「当前文档」内的「所有图片」（包括已经上传过图床的图片，一般用于图床切换的数据迁移，其他情况请谨慎操作），是否继续？",
   "picgo.download.onclick": "一键下载",
   "picgo.download.local.to.bed": "上传本地图片到图床",
   "picgo.download.bed.to.local": "下载远程图片到本地",

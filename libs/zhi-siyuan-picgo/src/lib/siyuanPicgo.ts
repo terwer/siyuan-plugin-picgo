@@ -26,13 +26,13 @@ class SiyuanPicGo {
 
     // 如果 siyuanApi 尚未创建，初始化它
     if (!this.siyuanApiInstance) {
-      console.log("初始化 SiyuanKernelApi 实例")
+      this.logger.debug("初始化 SiyuanKernelApi 实例")
       this.siyuanApiInstance = new SiyuanKernelApi(siyuanConfig)
     }
 
     // 如果 picgo 尚未创建，初始化它
     if (!this.picgoInstance) {
-      console.log("初始化 SiyuanPicgoPostApi 实例")
+      this.logger.debug("初始化 SiyuanPicgoPostApi 实例")
       this.picgoInstance = new SiyuanPicgoPostApi(siyuanConfig, isDev)
 
       // 异步检查配置迁移状态
@@ -47,6 +47,7 @@ class SiyuanPicGo {
    * 检查 PicGo 配置迁移的状态
    */
   private static async checkConfigMigration(siyuanApi: SiyuanKernelApi, picgo: SiyuanPicgoPostApi): Promise<void> {
+    const that = this
     return new Promise<void>((resolve) => {
       let needUpdate = false
 
@@ -57,7 +58,7 @@ class SiyuanPicGo {
             msg: "检测到旧配置，正在迁移配置，请勿进行任何操作...",
             timeout: 1000,
           })
-          console.warn("检测到旧配置，正在迁移配置，请勿进行任何操作...")
+          that.logger?.warn("检测到旧配置，正在迁移配置，请勿进行任何操作...")
           setTimeout(checkConfig, 1000) // 递归检查
         } else {
           if (needUpdate) {
@@ -65,9 +66,9 @@ class SiyuanPicGo {
               msg: "PicGO 图床历史配置迁移完成",
               timeout: 7000,
             })
-            console.log("PicGO 图床历史配置迁移完成")
+            that.logger?.info("PicGO 图床历史配置迁移完成🎉")
           }
-          console.log("PicGO 实例已就绪")
+          that.logger?.info("PicGO instance is ready😄")
           resolve()
         }
       }
