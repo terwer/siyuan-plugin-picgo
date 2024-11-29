@@ -1,7 +1,7 @@
 {
   "name": "picgo-plugin-app",
   "private": true,
-  "version": "1.11.6",
+  "version": "1.12.0",
   "type": "module",
   "scripts": {
     "serve": "python -u scripts/serve.py && vite",

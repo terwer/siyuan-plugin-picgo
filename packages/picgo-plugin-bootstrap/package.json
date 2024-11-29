@@ -1,6 +1,6 @@
 {
   "name": "picgo-plugin-bootstrap",
-  "version": "1.11.6",
+  "version": "1.12.0",
   "description": "plugin bootstrap for siyuan-note",
   "type": "module",
   "repository": "terwer/siyuan-plugin-bootstrap",

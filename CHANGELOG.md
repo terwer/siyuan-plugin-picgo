@@ -1,20 +1,12 @@
 # Changelog
 
 ## [1.12.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.6...siyuan-plugin-picgo-v1.12.0) (2024-11-29)
-
-
 ### Features
-
 * [#638](https://github.com/terwer/siyuan-plugin-picgo/issues/638) optimize the link replacement logic ([e910018](https://github.com/terwer/siyuan-plugin-picgo/commit/e910018835dfe2b029af459126db9c58dbfa6355))
-
-
 ### Bug Fixes
-
 * [#504](https://github.com/terwer/siyuan-plugin-picgo/issues/504) use https as api protocol ([4d39b1e](https://github.com/terwer/siyuan-plugin-picgo/commit/4d39b1e4e3d21b7858caee272d193c4a31f07890))
 * only replace link must not show error ([a33af49](https://github.com/terwer/siyuan-plugin-picgo/commit/a33af49b12987db3399fe8c3d94fcf6b3983b7b9))
-
 ## [1.11.6](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.5...siyuan-plugin-picgo-v1.11.6) (2024-11-22)
-### Bug Fixes
 * show error when upload failed ([a1e1ba2](https://github.com/terwer/siyuan-plugin-picgo/commit/a1e1ba20a3c53cc0145268bb42406cf1a7035f26))
 ## [1.11.5](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.4...siyuan-plugin-picgo-v1.11.5) (2024-11-17)
 * copy file error in some cases ([bf56986](https://github.com/terwer/siyuan-plugin-picgo/commit/bf56986eca3f27e550aa7f3d2c854ec2071e51a6))
@@ -27,7 +19,6 @@
 ### Miscellaneous
 * release 1.11.1 ([d797c34](https://github.com/terwer/siyuan-plugin-picgo/commit/d797c34071115196ae5009efab20e340c6e2eaa5))
 ## [1.11.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.2...siyuan-plugin-picgo-v1.11.0) (2024-06-04)
-### Features
 * [#21](https://github.com/terwer/siyuan-plugin-picgo/issues/21) support lsky pro 2.1+ ([c26415f](https://github.com/terwer/siyuan-plugin-picgo/commit/c26415f193c0c6db106aafebdceca03f4e5e43c8))
 * ci error ([959b697](https://github.com/terwer/siyuan-plugin-picgo/commit/959b697f2f1308e48f5268091e7d5087e3eed327))
 * **deps:** bump @iconify/json from 2.2.203 to 2.2.216 ([2de98ae](https://github.com/terwer/siyuan-plugin-picgo/commit/2de98aebe3503d967b5b3e55ba9f6fee8635bed5))
