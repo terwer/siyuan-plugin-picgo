@@ -1,6 +1,6 @@
 {
   "name": "universal-picgo-store",
-  "version": "1.11.6",
+  "version": "1.12.0",
   "type": "module",
   "description": "For PicGo projects to write &amp; read data from browser, node or electron",
   "main": "./dist/index.js",
