@@ -84,7 +84,7 @@ const postOptions = (options: IUpyunConfig, fileName: string, saveKey: string, i
 
   return {
     method: "POST",
-    url: `http://v0.api.upyun.com/${options.bucket}`,
+    url: `https://v0.api.upyun.com/${options.bucket}`,
     headers: {
       // multipart/form-data 是自动设置的，这里不需要
       // "Content-Type": "multipart/form-data",

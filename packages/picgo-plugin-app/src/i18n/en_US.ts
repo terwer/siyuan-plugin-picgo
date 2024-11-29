@@ -73,6 +73,9 @@ export default {
     "If you are using a browser plug -in, you need to download the configuration Picgo client from here: https://github.com/Molunerfinn/PicGo/releases",
   "picgo.siyuan.tip":
     "If you are using Siyuan notes pendants, you need to configure your own integration of PICGO. The pendant version of the PICGO configuration file is:`[Siyuan Workspace]/data/widgets/sy-post-publisher/lib/picgo/picgo.cfg.json`，Please refer to the official picgo document for configuration：https://picgo.github.io/PicGo-Core-Doc/zh/guide/config.html#%E6%89%8B%E5%8A%A8%E7%94%9F%E6%88%90",
+  "picgo.upload.onclick.force": "Upload All Images Forcefully",
+  "picgo.upload.onclick.force.tips":
+    "This operation will re-upload all images (including those already uploaded to the image bed). This is generally used when switching image beds. Please do not proceed unless necessary. Do you want to continue?",
   "picgo.upload.status": "Upload status",
   "picgo.upload.select.pic": "Select picture",
   "picgo.upload.clipboard": "Clipboard picture",

@@ -34,7 +34,7 @@ export const usePicgoInitPage = (props: any, deps: any) => {
   // private methods
   const initPage = async () => {
     const pageId = props.pageId
-    console.log("pageId=>", pageId)
+    logger.debug("pageId=>", pageId)
 
     // 图片信息
     const imageBlocks: any[] = await siyuanApi.getImageBlocksByID(pageId)
@@ -48,16 +48,13 @@ export const usePicgoInitPage = (props: any, deps: any) => {
     let retImgs: ParsedImage[] = []
     imageBlocks.forEach((page) => {
       const parsedImages: ParsedImage[] = imageParser.parseImagesToArray(page.markdown)
-
-      // 会有很多重复值
-      // retImgs = retImgs.concat(retImgs, parsedImages)
-      // 下面的写法可以去重
-      retImgs = [...new Set([...retImgs, ...parsedImages])]
-      // 设置 blockId 属性
-      retImgs = retImgs.map((image) => {
+      const retImgsWithBlockId = parsedImages.map((image) => {
         return { ...image, blockId: page.id }
       })
+      retImgs = retImgs.concat(retImgsWithBlockId)
     })
+    // 去重
+    retImgs = [...new Set([...retImgs])]
     logger.debug("解析出来的所有的图片地址=>", retImgs)
 
     // 将字符串数组格式的图片信息转换成图片对象数组

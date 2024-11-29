@@ -69,7 +69,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
         ctx.emit(IBuildInEvent.NOTIFICATION, {
           title: ctx.i18n.translate<ILocalesKey>("UPLOAD_FAILED"),
           body: ctx.i18n.translate<ILocalesKey>("CHECK_SETTINGS_AND_NETWORK"),
-          text: "http://docs.imgur.com/api/errno/",
+          text: "https://docs.imgur.com/api/errno/",
         })
         if (e?.statusCode) {
           errMsg = e.response?.body?.data.error ?? e.response?.body?.data ?? e.stack ?? "unknown error"

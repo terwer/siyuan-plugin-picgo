@@ -6,6 +6,12 @@
 
 Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 
+## Recommended Configuration
+
+Breaking News!Using MinIO with the PicGo plugin is recommended, if you don't know how, I've written a step-by-step guide with screenshots, [click here to view](https://siyuan.wiki/s/20241129133646-lz08gnl).
+
+## Version Compatibility
+
 > Important Note:
 >
 > Please refrain from updating this plugin for versions of siyuan-note prior to `3.0.3`; the highest permissible version remains `1.5.1`. For siyuan-note versions `3.0.3` and beyond, the PicGO plugin may be upgraded to `1.6.0+`.
