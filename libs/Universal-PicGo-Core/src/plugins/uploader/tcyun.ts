@@ -73,7 +73,7 @@ const postOptions = (
   if (!options.version || options.version === "v4") {
     return {
       method: "POST",
-      url: `http://${area}.file.myqcloud.com/files/v2/${signature.appId}/${signature.bucket}/${encodeURI(
+      url: `https://${area}.file.myqcloud.com/files/v2/${signature.appId}/${signature.bucket}/${encodeURI(
         path
       )}${fileName}`,
       headers: {
@@ -92,7 +92,7 @@ const postOptions = (
   } else {
     return {
       method: "PUT",
-      url: `http://${options.bucket}.cos.${options.area}.myqcloud.com/${encodeURIComponent(path)}${encodeURIComponent(
+      url: `https://${options.bucket}.cos.${options.area}.myqcloud.com/${encodeURIComponent(path)}${encodeURIComponent(
         fileName
       )}`,
       headers: {

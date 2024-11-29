@@ -26,7 +26,7 @@ function postOptions(options: IQiniuConfig, fileName: string, token: string, img
     .replace(/\//g, "_")
   return {
     method: "POST",
-    url: `http://upload${area}.qiniup.com/putb64/-1/key/${base64FileName}`,
+    url: `https://upload${area}.qiniup.com/putb64/-1/key/${base64FileName}`,
     headers: {
       Authorization: `UpToken ${token}`,
       "Content-Type": mime.lookup(fileName) || "application/octet-stream",
