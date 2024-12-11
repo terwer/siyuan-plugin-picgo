@@ -13,6 +13,7 @@ import { ILogger } from "zhi-lib-base"
 import { AxiosRequestConfig } from "axios"
 import { IJSON } from "universal-picgo-store"
 import { PicgoTypeEnum } from "../utils/enums"
+import { ObjectCannedACL } from "@aws-sdk/client-s3/dist-types/models/models_0"
 
 export interface IPicGo extends EventEmitter {
   /**
@@ -242,7 +243,7 @@ export interface IAwsS3Config {
   customUrl?: string
   pathStyleAccess?: boolean
   rejectUnauthorized?: boolean
-  acl?: string
+  acl?: ObjectCannedACL | undefined
   // S3或S3兼容服务一般支持对桶设置CORS策略，优先修改桶的CORS策略
   // SiYuan 桌面版没有CORS问题
   // SiYuan 内置的 CORS Proxy 在iOS版上没跑通

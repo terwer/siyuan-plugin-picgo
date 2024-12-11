@@ -3,6 +3,7 @@ import { formatPath } from "./s3/utils"
 import { IAwsS3Config, IPicGo, IPluginConfig } from "../../types"
 import { ILocalesKey } from "../../i18n/zh-CN"
 import { IBuildInEvent } from "../../utils/enums"
+import { ObjectCannedACL } from "@aws-sdk/client-s3"
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const userConfig: IAwsS3Config = ctx.getConfig("picBed.awss3")
@@ -24,7 +25,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
       bucketName: userConfig.bucketName,
       path: formatPath(item, userConfig.uploadPath || ""),
       item: item,
-      acl: userConfig.acl || "public-read",
+      acl: userConfig.acl || ObjectCannedACL.public_read,
       customUrl: userConfig.customUrl || "",
       corsProxy: userConfig.corsProxy,
     })

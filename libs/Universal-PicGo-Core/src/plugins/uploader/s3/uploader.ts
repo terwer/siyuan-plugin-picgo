@@ -4,6 +4,7 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   PutObjectCommandOutput,
+  ObjectCannedACL,
 } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { HttpRequest, HttpResponse } from "@smithy/protocol-http"
@@ -175,7 +176,7 @@ interface createUploadTaskOpts {
   path: string
   item: IImgInfo
   index: number
-  acl: string
+  acl: ObjectCannedACL | undefined
   customUrl?: string
   corsProxy?: boolean
 }
