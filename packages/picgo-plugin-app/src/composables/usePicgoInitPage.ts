@@ -54,7 +54,8 @@ export const usePicgoInitPage = (props: any, deps: any) => {
       retImgs = retImgs.concat(retImgsWithBlockId)
     })
     // 去重
-    retImgs = [...new Set([...retImgs])]
+    // retImgs = [...new Set([...retImgs])]
+    retImgs = retImgs.filter((item, index, self) => index === self.findIndex((t) => t.url === item.url))
     logger.debug("解析出来的所有的图片地址=>", retImgs)
 
     // 将字符串数组格式的图片信息转换成图片对象数组
