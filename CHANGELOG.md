@@ -1,9 +1,13 @@
 # Changelog
 
+## [1.12.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.12.0...siyuan-plugin-picgo-v1.12.1) (2024-12-11)
+### Bug Fixes
+* [#639](https://github.com/terwer/siyuan-plugin-picgo/issues/639) duplicate images in pic list ([4b01c7e](https://github.com/terwer/siyuan-plugin-picgo/commit/4b01c7e5ce83aff520440e88853b309f3458a912))
+### Miscellaneous
+* fix type error ([142486c](https://github.com/terwer/siyuan-plugin-picgo/commit/142486c886fc16d1016b71dd21b07eac3a305c3e))
 ## [1.12.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.6...siyuan-plugin-picgo-v1.12.0) (2024-11-29)
 ### Features
 * [#638](https://github.com/terwer/siyuan-plugin-picgo/issues/638) optimize the link replacement logic ([e910018](https://github.com/terwer/siyuan-plugin-picgo/commit/e910018835dfe2b029af459126db9c58dbfa6355))
-### Bug Fixes
 * [#504](https://github.com/terwer/siyuan-plugin-picgo/issues/504) use https as api protocol ([4d39b1e](https://github.com/terwer/siyuan-plugin-picgo/commit/4d39b1e4e3d21b7858caee272d193c4a31f07890))
 * only replace link must not show error ([a33af49](https://github.com/terwer/siyuan-plugin-picgo/commit/a33af49b12987db3399fe8c3d94fcf6b3983b7b9))
 ## [1.11.6](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.5...siyuan-plugin-picgo-v1.11.6) (2024-11-22)
@@ -16,7 +20,6 @@
 * move file error ([d949e50](https://github.com/terwer/siyuan-plugin-picgo/commit/d949e50b8a4d8b4330164079e97a89f3bb5474c4))
 ## [1.11.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.1...siyuan-plugin-picgo-v1.11.2) (2024-11-16)
 ## [1.11.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.0...siyuan-plugin-picgo-v1.11.1) (2024-11-16)
-### Miscellaneous
 * release 1.11.1 ([d797c34](https://github.com/terwer/siyuan-plugin-picgo/commit/d797c34071115196ae5009efab20e340c6e2eaa5))
 ## [1.11.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.10.2...siyuan-plugin-picgo-v1.11.0) (2024-06-04)
 * [#21](https://github.com/terwer/siyuan-plugin-picgo/issues/21) support lsky pro 2.1+ ([c26415f](https://github.com/terwer/siyuan-plugin-picgo/commit/c26415f193c0c6db106aafebdceca03f4e5e43c8))
