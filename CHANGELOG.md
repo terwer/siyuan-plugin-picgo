@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.12.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.12.0...siyuan-plugin-picgo-v1.12.1) (2024-12-11)
+
+
+### Bug Fixes
+
+* [#639](https://github.com/terwer/siyuan-plugin-picgo/issues/639) duplicate images in pic list ([4b01c7e](https://github.com/terwer/siyuan-plugin-picgo/commit/4b01c7e5ce83aff520440e88853b309f3458a912))
+
+
+### Miscellaneous
+
+* fix type error ([142486c](https://github.com/terwer/siyuan-plugin-picgo/commit/142486c886fc16d1016b71dd21b07eac3a305c3e))
+
 ## [1.12.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.11.6...siyuan-plugin-picgo-v1.12.0) (2024-11-29)
 ### Features
 * [#638](https://github.com/terwer/siyuan-plugin-picgo/issues/638) optimize the link replacement logic ([e910018](https://github.com/terwer/siyuan-plugin-picgo/commit/e910018835dfe2b029af459126db9c58dbfa6355))
