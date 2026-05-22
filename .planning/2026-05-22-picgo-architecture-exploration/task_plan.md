@@ -6,7 +6,7 @@
 
 ## 当前阶段
 
-阶段 6：校验与汇总（complete）
+阶段 8：OpenSpec 校验与汇总（complete）
 
 ## 阶段
 
@@ -27,6 +27,12 @@
   - 避免单点修复措辞，强调职责分层、发布边界、运行时适配和公共契约。
 - [x] 阶段 6：校验与汇总
   - 运行 OpenSpec 校验，整理本次修改和证据索引。
+- [x] 阶段 7：粘贴上传时序缺陷与产品架构根因探索
+  - 基于 `picgo-plugin-bootstrap`、`siyuanPicgoPostApi` 和全仓 preventDefault/paste 扫描，证明当前路径是双上传/后置补偿。
+  - 将“必须阻断默认行为、插件唯一接管、单事务上传、禁止 mock 和 fallback”写入 OpenSpec。
+- [x] 阶段 8：OpenSpec 校验与汇总
+  - 运行 `openspec validate picgo-internal-refactor --strict`。
+  - 汇总已写入的顶层设计、重写方向和验证门禁。
 
 ## 决策原则
 
@@ -34,5 +40,6 @@
 - 不修改实现代码；本轮只更新 OpenSpec 与规划记录。
 - 把 `node_modules` 和生成产物视为证据来源之一，但不能替代源码架构判断。
 - 每两次关键查看/搜索后同步 `findings.md` 或 `progress.md`。
+
 
 

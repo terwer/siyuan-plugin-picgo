@@ -234,3 +234,70 @@
 
 - 已运行：`openspec validate picgo-internal-refactor --strict`
 - 结果：`Change 'picgo-internal-refactor' is valid`
+
+## 2026-05-22 阶段 7 证据：粘贴上传时序缺陷
+
+### 用户补充事实的理解
+
+- 用户指出：历史上为了避开思源笔记已有的“粘贴图片会触发思源内部 API/默认上传/插入”行为，采用了 hack 式“双上传/后置替换”方案。
+- 用户指出：更正确的设计应在接管粘贴上传时调用 `source.preventDefault()`，从事件源阻止思源默认粘贴行为，而不是事后补偿。
+
+### 当前代码证据
+
+- `packages/picgo-plugin-bootstrap/src/index.ts` 在 `onEvent()` 中注册 `this.eventBus.on("paste", this.picturePasteEventListener)`。
+- `picturePasteEventListener(e)` 读取 `e.detail`、`detail.files`、`detail.siyuanHTML/textHTML/textPlain`，但没有读取/调用 `detail.source`、`source.preventDefault()` 或任何 `preventDefault`。
+- 粘贴图片链路当前执行顺序：
+  1. 获取 `pageId = detail?.protyle?.block.rootID`。
+  2. 初始化 `SiyuanPicGo.getInstance()` 与 PicGo `ctx`。
+  3. 根据 `siyuan.txtImageSwitch`、`siyuan.autoUpload` 判断是否继续。
+  4. `new ImageItem(generateUniqueName(), file, true, "", "")`。
+  5. 调用 `picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, true, true)`，这里 `ignoreReplaceLink=true`，即先上传到图床但暂不替换文档链接。
+  6. `handleAfterUpload()` 根据 `siyuan.waitTimeout`/`siyuan.retryTimes` 启动 `JsTimer` 轮询。
+  7. `doUpdatePictureMetadata()` 每次尝试都会 `siyuanApi.uploadAsset(formData)`，把同一个剪贴板 `file` 上传到思源 assets。
+  8. 再读取 block attrs，删除旧 `oldImageitem.hash`，用 `uploadAsset` 的 `succMap` 构造 `new ImageItem(value, img.imgUrl, false, key, key)` 写回 `custom-picgo-file-map-key`。
+  9. 通过 `document.querySelector(img[src="..."])` 找 DOM 中刚插入/上传的本地图片，再 `getBlockByID` 与 `updateBlock` 替换 markdown。
+
+### 为什么这是致命设计缺陷
+
+- 上传流程有两个事实来源：PicGo 图床上传结果 `img.imgUrl` 与 SiYuan `uploadAsset` 返回的 `succMap`/本地 asset 路径。
+- 文档插入不是由插件一次性控制，而是依赖思源默认粘贴行为或后续 `uploadAsset`/DOM 状态完成；插件只能通过轮询、DOM 查询和 block markdown 包含关系来补偿。
+- `waitTimeout` / `retryTimes` 成为时序补丁，说明关键流程依赖异步竞态而不是明确事务边界。
+- `ignoreReplaceLink=true` 明确表明剪贴板模式先跳过正常替换，后续再由 bootstrap 特殊逻辑处理，是一条与普通单图上传不同的旁路。
+- `uploadAsset` 在补偿阶段再次上传同一文件到思源 assets，因此即使最终链接替换为图床，也会产生额外本地 asset/元数据同步复杂度。
+
+### 正确设计方向（待 OpenSpec 约束）
+
+- 粘贴接管应在事件最早可控点判断是否由 PicGo 插件处理。
+- 一旦决定由插件处理，必须阻止思源默认粘贴/内部上传路径，例如验证并调用用户指出的 `source.preventDefault()`。
+- 插件应形成单一上传事务：读取剪贴板文件 → PicGo 上传 → 在文档中插入/替换最终图床链接 → 写入必要元数据。
+- 不应再依赖“双上传 + uploadAsset + 轮询 + DOM 查找 + markdown 后置替换”作为主路径。
+
+## 2026-05-22 阶段 7 补充证据：不是补一行 preventDefault，而是重写事务架构
+
+### 进一步代码证据
+
+- `packages/picgo-plugin-bootstrap/src/index.ts:76-157` 的 `picturePasteEventListener` 在判断 `pageId`、files、`siyuan.txtImageSwitch`、`siyuan.autoUpload` 后，直接进入 `SiyuanPicGo.getInstance()`、`getBlockAttrs()`、`uploadSingleImageToBed(..., true, true)` 和 `handleAfterUpload()`；没有任何同步 takeover/阻断默认行为步骤。
+- `packages/picgo-plugin-bootstrap/src/index.ts:221-271` 的 `handleAfterUpload()` 把 `siyuan.waitTimeout` / `siyuan.retryTimes` 作为产品配置来轮询后续替换，说明正确性被建立在时序等待上。
+- `packages/picgo-plugin-bootstrap/src/index.ts:273-353` 的 `doUpdatePictureMetadata()` 在 PicGo 上传成功后再次 `siyuanApi.uploadAsset(formData)`，再 `setBlockAttrs()`、`document.querySelector()`、`getBlockByID()`、`updateBlock()`，形成典型“先让宿主产生本地 asset，再偷换成远端图床链接”的补偿链路。
+- `packages/picgo-plugin-bootstrap/src/index.ts:361-370` 通过 DOM `img[src=...]` 反查 `data-node-id`，证明文档变更事实不是由插件事务直接产生，而是由宿主渲染后的 DOM 状态推导。
+- `packages/picgo-plugin-bootstrap/src/index.ts:409-425` 的菜单/已有图片上传路径会设置 `imageItem.blockId` 并调用 `uploadSingleImageToBed(..., ignoreReplaceLink=false)` 直接更新块；剪贴板路径却传 `ignoreReplaceLink=true`，说明 paste 是一条特殊旁路。
+- `libs/zhi-siyuan-picgo/src/lib/siyuanPicgoPostApi.ts:257-375` 中 `ignoreReplaceLink=true` 分支明确记录“当前是思源笔记剪切板模式上传，暂时忽略链接替换，后面使用轮询处理替换链接”，这是旧设计自证的补偿结构。
+- 全仓 preventDefault/paste 扫描只发现 `DragUpload.vue` 中已注释的浏览器 paste `e.preventDefault()`；生产 `eventBus.on("paste")` 路径没有默认行为阻断。
+
+### 产品/架构根因
+
+- 旧设计把“用户输入接管、上传业务、文档写入、元数据一致性、失败回滚”全部压进一个补偿型事件处理器，且事务起点不属于插件。
+- 只给现有 listener 补 `source.preventDefault()` 仍不够：如果继续保留 `uploadAsset`、`JsTimer`、DOM 查询和 markdown 后置偷换，仍然是双事实源和半成功状态。
+- 正确方向是重写为产品级 `PasteUploadTransaction`：
+  - `PasteEventAdapter`：解析真实 SiYuan paste event，并在任何异步上传前同步阻断默认行为。
+  - `PicGoUploadService`：只负责 File/Blob → remote image result。
+  - `DocumentMutationPort`：阻断默认粘贴后显式写入最终图床链接，不依赖默认本地 asset 或 DOM 反查。
+  - `MetadataRepository`：只基于同一个 transaction result 写 `custom-picgo-file-map-key`。
+  - `RollbackPolicy`：预先定义 PicGo 上传失败、文档写入失败、metadata 提交失败后的 bounded 状态。
+
+### 已写入 OpenSpec 的强化结论
+
+- `proposal.md` 已加入：粘贴上传必须从 event handler 内的补偿脚本彻底重写为 product-level `PasteUploadTransaction`。
+- `design.md` 已新增 `Future Paste Upload Architecture`，明确新分层、禁止项、旧链路只能作为反面证据。
+- `tasks.md` 已新增 2.9-2.14 与 3.3.3：覆盖 `PasteEventAdapter`、`PasteUploadTransaction`、`DocumentMutationPort`、`MetadataRepository`、旧路径删除计划、真实宿主插入 API spike 和失败路径验证。
+- `specs/picgo-paste-upload-ownership/spec.md` 已新增事务边界、旧补偿路径删除、回滚先设计后实现三组需求。

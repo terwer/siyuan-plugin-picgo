@@ -55,3 +55,32 @@
 - 已更新 `openspec/changes/picgo-internal-refactor/tasks.md`：加入 package role 基线、product/lib 冲突证据、分层设计、深层 import 隔离、lifecycle ownership、manifest/export 策略与依赖方向检查。
 - 已新增 `openspec/changes/picgo-internal-refactor/specs/picgo-product-library-boundary/spec.md`。
 - 已校验 OpenSpec：通过。
+
+## 2026-05-22 追加需求：粘贴上传时序缺陷
+
+用户补充事实：之前为了避开思源笔记已有的“粘贴即触发内部 API/上传”行为，采用了 hack 式上传两次/后置替换方案；这被认为是最差设计，导致上传时序非常混乱。用户认为正确方向是在上传接管时调用 `source.preventDefault()`，从源头阻止思源默认粘贴处理。
+
+本阶段要求：不能直接按用户结论写；必须先深度阅读当前 paste/upload 链路，搞懂事件对象、默认行为、插件上传、轮询替换、元数据更新之间的关系，再写 OpenSpec。
+
+## 2026-05-22 阶段 7 执行日志
+
+- 已分段阅读 `packages/picgo-plugin-bootstrap/src/index.ts` 的 paste listener、`handleAfterUpload`、`doUpdatePictureMetadata`、菜单上传路径。
+- 已阅读 `libs/zhi-siyuan-picgo/src/lib/siyuanPicgoPostApi.ts` 的 `uploadSingleImageToBed`、`ignoreReplaceLink` 分支、`setBlockAttrs` 和链接替换逻辑。
+- 已确认当前源码中生产 paste 链路没有 `preventDefault`；唯一 `preventDefault` 是 `DragUpload.vue` 中已注释的浏览器 paste 旧代码。
+- 已确认当前剪贴板主路径包含 PicGo 上传 + SiYuan `uploadAsset` + 定时轮询 + DOM 查询 + block markdown 替换。
+- 下一步：把“paste ownership / default behavior interception / single transaction”写入 OpenSpec。
+
+## 2026-05-22 阶段 7 OpenSpec 强化日志
+
+- 已按用户要求把粘贴问题从“补一行 preventDefault”提升为产品级架构缺陷：旧链路事务起点、文档写入和回滚对象都不属于插件，因此不可控。
+- 已更新 `openspec/changes/picgo-internal-refactor/proposal.md`：补充 `PasteUploadTransaction`，明确要证明不再依赖 SiYuan 默认本地 asset 作为中转事实源。
+- 已更新 `openspec/changes/picgo-internal-refactor/design.md`：新增 `Future Paste Upload Architecture`，定义 `PasteEventAdapter`、`PasteUploadTransaction`、`PicGoUploadService`、`DocumentMutationPort`、`MetadataRepository`、`RollbackPolicy`，并写明旧链路只能删除/隔离，不能 fallback。
+- 已更新 `openspec/changes/picgo-internal-refactor/tasks.md`：新增 2.9-2.14 与 3.3.3，要求真实宿主插入 API spike、删除旧补偿路径和验证失败回滚。
+- 已更新 `openspec/changes/picgo-internal-refactor/specs/picgo-paste-upload-ownership/spec.md`：新增“按事务边界重写”“旧补偿路径删除而非包裹”“先设计回滚再实现”需求。
+- 未修改任何实现代码。
+
+## 2026-05-22 阶段 8 校验日志
+
+- 已运行：`openspec validate picgo-internal-refactor --strict`
+- 结果：`Change 'picgo-internal-refactor' is valid`
+- 已将阶段 7/8 标记完成。

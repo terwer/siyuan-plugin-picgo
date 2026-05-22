@@ -6,6 +6,7 @@
 - [ ] 1.3 明确“不可变对外 API”清单，写入验证日志。
 - [ ] 1.4 记录 package role 基线：区分插件产品入口、Vue app、Siyuan integration lib、PicGo core、store、host adapter、build script。
 - [ ] 1.5 记录当前 product/lib 冲突证据：`zhi-siyuan-picgo/src` 深层 import、UI 依赖进入 lib、`win/hasNodeEnv` 转出口、静态单例、core 构造副作用、npm 插件管理进入 core。
+- [ ] 1.6 记录当前粘贴上传时序缺陷：paste 事件未阻断默认行为、PicGo 先上传、SiYuan `uploadAsset` 二次上传、`JsTimer` 轮询、DOM 查询、block markdown 后置替换。
 
 ## 2. Internal architecture cleanup
 
@@ -22,6 +23,15 @@
 - [ ] 2.3.2 将 UI 设置 helper、PicGo 插件商店/npm 管理、Siyuan 配置迁移从通用 lib 主入口中隔离到 product 或 host adapter 层。
 - [ ] 2.4 制定并落地 bundle 审计门禁：目标产物不得出现未解释的 direct `eval`、`new Function`、动态 require、Node polyfill 泄漏。
 - [ ] 2.5 制定 package manifest/export 策略：明确 public/internal exports、条件入口、禁止深层 `src` import、插件产品构建与 lib 发布构建的输入差异。
+- [ ] 2.6 设计粘贴上传 ownership：启用自动上传时必须先调用真实宿主事件的默认行为阻断能力（如 `source.preventDefault()`），再由插件单事务处理上传和文档写入。
+- [ ] 2.7 移除粘贴自动上传主路径中的双上传/后置补偿设计：不得继续依赖 SiYuan `uploadAsset`、等待默认 asset 出现、DOM 查询和 markdown 偷换作为正常路径。
+- [ ] 2.8 设计粘贴失败回滚语义：PicGo 上传失败、文档写入失败、元数据写入失败时必须有明确用户可理解结果，禁止半成功状态。
+- [ ] 2.9 设计 `PasteEventAdapter`：集中解析真实 SiYuan paste event、同步判断 takeover 条件、在任何异步上传前调用 `source.preventDefault()` 或等价阻断能力。
+- [ ] 2.10 设计 `PasteUploadTransaction`：作为粘贴自动上传唯一 use case，串联输入快照、PicGo 上传、文档写入、元数据提交、通知和回滚。
+- [ ] 2.11 设计 `DocumentMutationPort`：阻断默认粘贴后通过明确编辑器/块事务写入最终图床链接，不依赖默认本地 asset、DOM 查询或 markdown 后置偷换推导目标块。
+- [ ] 2.12 设计 `MetadataRepository` 与提交顺序：只基于同一个 transaction result 写 `custom-picgo-file-map-key`，文档写入失败时不得提交远端/本地混合映射。
+- [ ] 2.13 明确旧剪贴板补偿路径删除计划：`ignoreReplaceLink=true` 旁路、`siyuanApi.uploadAsset(formData)` 二次上传、`JsTimer` 轮询、`document.querySelector(img[src])` 在自动粘贴主路径中必须移除而不是包裹。
+- [ ] 2.14 做真实宿主插入 API spike：验证阻断默认粘贴后如何把最终图床 markdown/DOM 插入当前光标或目标块；未验证成功前不得回退到默认 asset 中转设计。
 
 ## 3. Contract protection and verification
 
@@ -31,6 +41,9 @@
 - [ ] 3.2.1 跑 Rolldown/Vite 等构建并检查产物审计结果，确认 direct `eval` 类告警不是被 ignore/alias 掩盖，而是通过运行时边界与依赖策略消除或被明确隔离。
 - [ ] 3.2.2 分别验证插件产品 bundle 与可发布 lib bundle：两者不得依赖同一份未区分 target 的胖入口作为唯一事实来源。
 - [ ] 3.3 运行 SiYuan 宿主或等价 smoke，确认对外 API 与用户可见行为未变化。
+- [ ] 3.3.1 运行真实 SiYuan 粘贴 smoke：证明 `source.preventDefault()` 或等价机制实际阻断默认粘贴/内部上传，不能只用 mock。
+- [ ] 3.3.2 验证粘贴图片只产生一个插件-owned 事务：不产生未管理的默认本地 asset，不需要轮询等待，不需要后置偷换链接，元数据与最终文档链接一致。
+- [ ] 3.3.3 验证粘贴失败路径：PicGo 上传失败、文档写入失败、元数据提交失败分别进入设计好的 bounded rollback 状态，不留下本地 asset/远端 URL/metadata 半成功混合状态。
 
 ## 4. Review and closure
 
