@@ -1,5 +1,10 @@
 import { IPicGo, generateUniqueName } from "zhi-siyuan-picgo"
 
+interface PasteTakeoverConfig {
+  autoUpload: boolean
+  allowPicAndText: boolean
+}
+
 export interface PasteInputSnapshot {
   transactionId: string
   pageId: string
@@ -89,6 +94,11 @@ class PasteEventAdapter {
   }
 
   public tryTakeover(event: CustomEvent, ctx: IPicGo): PasteTakeoverResult {
+    return this.tryTakeoverWithConfig(event, this.readConfigFromContext(ctx))
+  }
+
+  public tryTakeoverWithConfig(event: CustomEvent, config?: Partial<PasteTakeoverConfig>): PasteTakeoverResult {
+    const finalConfig = this.normalizeConfig(config)
     const candidate = this.inspectCandidate(event)
     if (!candidate.candidate || !candidate.detail || !candidate.pageId || !candidate.files) {
       return { taken: false, reason: candidate.reason ?? "not-candidate" }
@@ -99,15 +109,11 @@ class PasteEventAdapter {
     const textPlain = candidate.textPlain ?? ""
     const siyuanHTML = candidate.siyuanHTML ?? ""
     const hasPicAndText = siyuanHTML.trim() !== "" || textHTML.trim() !== "" || textPlain.trim() !== ""
-    if (hasPicAndText) {
-      const allowPicAndText = ctx.getConfig<boolean>("siyuan.txtImageSwitch", true)
-      if (!allowPicAndText) {
-        return { taken: false, reason: "pic-and-text-disabled" }
-      }
+    if (hasPicAndText && !finalConfig.allowPicAndText) {
+      return { taken: false, reason: "pic-and-text-disabled" }
     }
 
-    const autoUpload = ctx.getConfig<boolean>("siyuan.autoUpload", true)
-    if (!autoUpload) {
+    if (!finalConfig.autoUpload) {
       return { taken: false, reason: "auto-upload-disabled" }
     }
 
@@ -134,6 +140,31 @@ class PasteEventAdapter {
     return {
       taken: true,
       snapshot,
+    }
+  }
+
+  public readBrowserConfig(): PasteTakeoverConfig {
+    const fallback: PasteTakeoverConfig = {
+      autoUpload: true,
+      allowPicAndText: false,
+    }
+
+    if (typeof window === "undefined" || !window.localStorage) {
+      return fallback
+    }
+
+    try {
+      const raw = window.localStorage.getItem("universal-picgo/picgo.cfg.json")
+      if (!raw) {
+        return fallback
+      }
+      const cfg = JSON.parse(raw)
+      return {
+        autoUpload: cfg?.siyuan?.autoUpload ?? fallback.autoUpload,
+        allowPicAndText: cfg?.siyuan?.txtImageSwitch ?? fallback.allowPicAndText,
+      }
+    } catch {
+      return fallback
     }
   }
 
@@ -286,6 +317,20 @@ class PasteEventAdapter {
 
     return ""
   }
+
+  private readConfigFromContext(ctx: IPicGo): PasteTakeoverConfig {
+    return this.normalizeConfig({
+      autoUpload: ctx.getConfig<boolean>("siyuan.autoUpload", true),
+      allowPicAndText: ctx.getConfig<boolean>("siyuan.txtImageSwitch", false),
+    })
+  }
+
+  private normalizeConfig(config?: Partial<PasteTakeoverConfig>): PasteTakeoverConfig {
+    return {
+      autoUpload: config?.autoUpload ?? true,
+      allowPicAndText: config?.allowPicAndText ?? false,
+    }
+  }
 }
 
-export { PasteEventAdapter }
+export { PasteEventAdapter, type PasteTakeoverConfig }

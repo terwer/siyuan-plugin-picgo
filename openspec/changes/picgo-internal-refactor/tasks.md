@@ -40,13 +40,14 @@
 - [x] 3.2 跑各 package 的 build / lint / test 基线，并记录差异。
 - [x] 3.2.1 跑 Rolldown/Vite 等构建并检查产物审计结果，确认 direct `eval` 类告警不是被 ignore/alias 掩盖，而是通过运行时边界与依赖策略消除或被明确隔离。
 - [x] 3.2.2 分别验证插件产品 bundle 与可发布 lib bundle：两者不得依赖同一份未区分 target 的胖入口作为唯一事实来源。
-- [ ] 3.3 运行 SiYuan 宿主或等价 smoke，确认对外 API 与用户可见行为未变化。
-- [ ] 3.3.1 运行真实 SiYuan 粘贴 smoke：证明 `source.preventDefault()` 或等价机制实际阻断默认粘贴/内部上传，不能只用 mock。
-- [ ] 3.3.2 验证粘贴图片只产生一个插件-owned 事务：不产生未管理的默认本地 asset，不需要轮询等待，不需要后置偷换链接，元数据与最终文档链接一致。
-- [ ] 3.3.3 验证粘贴失败路径：PicGo 上传失败、文档写入失败、元数据提交失败分别进入设计好的 bounded rollback 状态，不留下本地 asset/远端 URL/metadata 半成功混合状态。
+- [x] 3.3 运行 SiYuan 宿主或等价 smoke，确认对外 API 与用户可见行为未变化。
+- [x] 3.3.1 运行真实 SiYuan 粘贴 smoke：证明 `source.preventDefault()` 或等价机制实际阻断默认粘贴/内部上传，不能只用 mock。
+- [x] 3.3.2 验证粘贴图片只产生一个插件-owned 事务：不产生未管理的默认本地 asset，不需要轮询等待，不需要后置偷换链接，元数据与最终文档链接一致。
+- [x] 3.3.3 验证粘贴失败路径：PicGo 上传失败、文档写入失败、元数据提交失败分别进入设计好的 bounded rollback 状态，不留下本地 asset/远端 URL/metadata 半成功混合状态。
 
 ## 4. Review and closure
 
 - [x] 4.1 汇总内部重构结果、保留的 API 契约和已知风险。
 - [x] 4.2 审计是否存在任何对外 API 破坏；如有，拆分成新变更。
 - [x] 4.3 更新证据日志，准备后续 apply/archiving 流程。
+

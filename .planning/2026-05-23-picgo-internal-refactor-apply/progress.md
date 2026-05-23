@@ -220,10 +220,107 @@
   - Core hash/HMAC 从 Node `crypto` 改为 `cryptoUtil`，使用 `js-md5` + `hash.js`。
   - Core Vite `nodePolyfills` 移除 `crypto` include，避免 `asn1.js -> vm`。
 - 验证：
-  - `pnpm build -F universal-picgo` 通过。
-  - 捕获日志检查显示四条均 absent：`path`、`fs`、`http`、`vm`。
-  - `pnpm --dir libs/Universal-PicGo-Core exec vitest run` 通过：4 files / 5 tests。
-  - `pnpm --dir libs/Universal-PicGo-Store exec vitest run` 通过：2 files / 4 tests。
-  - `pnpm --dir libs/zhi-siyuan-picgo exec vitest run` 通过：2 files / 8 tests。
-  - `pnpm build -F zhi-siyuan-picgo`、`pnpm build -F picgo-plugin-app`、`pnpm build -F picgo-plugin-bootstrap` 通过。
-  - `pnpm audit:picgo-refactor` 通过。
+- `pnpm build -F universal-picgo` 通过。
+- 捕获日志检查显示四条均 absent：`path`、`fs`、`http`、`vm`。
+- `pnpm --dir libs/Universal-PicGo-Core exec vitest run` 通过：4 files / 5 tests。
+- `pnpm --dir libs/Universal-PicGo-Store exec vitest run` 通过：2 files / 4 tests。
+- `pnpm --dir libs/zhi-siyuan-picgo exec vitest run` 通过：2 files / 8 tests。
+- `pnpm build -F zhi-siyuan-picgo`、`pnpm build -F picgo-plugin-app`、`pnpm build -F picgo-plugin-bootstrap` 通过。
+- `pnpm audit:picgo-refactor` 通过。
+
+## 2026-05-23 MinIO / S3 403 排查结果
+
+- 已用 `chrome-devtools` 登录 MinIO Console：账号 `admin` / `tyw123456`。
+- Console 里 bucket `test` 存在，权限显示 `R/W`。
+- 直接用 `@aws-sdk/client-s3` 对 `http://127.0.0.1:9000` 做本地验证时：
+  - `region=auto` / 空 region 会报 `AuthorizationHeaderMalformed`，提示期望 region 为 `local-win-home`。
+  - `region=local-win-home` 时，`ListObjectsV2` 与 `PutObject` 都成功。
+- 结论：当前插件的 403 不是账号密码问题，主要是 **S3 region 配错**；需要把 PicGo 的 S3 配置里的 `region` 改成 `local-win-home`，再测 `endpoint=http://127.0.0.1:9000`、`pathStyleAccess=true`。
+
+## 2026-05-23 MinIO 403 二次自证记录
+
+- 已从真实运行配置读取 `C:\Users\Administrator\.universal-picgo\picgo.cfg.json`，而不是截图手抄：当前 `picBed.awss3` 的 `bucketName=test`、`region=local-win-home`、`endpoint=http://127.0.0.1:9000`、`acl=public-read`，AccessKeyID 长度 20，SecretAccessKey 长度 40。
+- 用该真实配置直连当前 MinIO 做 SDK 测试：`GetBucketLocation`、`ListObjectsV2`、`PutObject(public-read)` 全部返回 `InvalidAccessKeyId` / HTTP 403。
+- 用 root 凭据 `admin` / `tyw123456`、同一 `region=local-win-home`、同一 endpoint/bucket、同样 `ACL=public-read` 测试成功，证明 region、bucket、endpoint、public-read ACL 本身可用。
+- Docker 容器 `portable-minio-minio-1` 的 `/data/.minio.sys/config/iam` 下没有 users/service-accounts 文件；MinIO Console API `/api/v1/service-accounts` 返回 `[]`。
+- 因此前“主要是 region 配错”的判断已废弃；当前证据指向：插件配置里的 access key 不存在于当前 MinIO 实例。
+
+## 2026-05-23 21:18:07 test 工作空间右键上传 smoke 成功
+
+- 用户重启后只确认并操作 D:\Users\Administrator\Documents\mydocs\SiyuanWorkspace\test，当前 kernel 端口为 50077。
+- Chrome 页面标题：未命名 - test - 思源笔记 v3.6.5。
+- 已刷新 test 页面，使插件重新读取 localStorage['universal-picgo/picgo.cfg.json'] 中的 MinIO S3 配置。
+- 右键现有图片 ssets/image-20260520214954-a17143g.png 并点击 上传到PicGo图床：
+  - console：Uploading... Current uploader is [awss3]；
+  - network：OPTIONS http://127.0.0.1:9000/test/... [204]、PUT http://127.0.0.1:9000/test/... [200]；
+  - 页面图片链接替换为 http://127.0.0.1:9000/test/2026/05/ae44fa8b5be668d9235fdfa5d4989cbb.png；
+  - 页面提示 🎉图片上传成功。
+
+## 2026-05-23 21:25:24 真实粘贴 smoke 发现默认 asset 竞态并修复阻断时机
+
+- 通过系统剪贴板向 	est 工作空间真实 Ctrl+V 粘贴 	mp/paste-smoke.png。
+- 现象：插件进入 paste upload transaction started 并成功 wss3 上传、/api/block/insertBlock 写入远端 markdown，但网络同时出现 POST http://127.0.0.1:50077/upload [200]，页面也出现本地 ssets/image-20260523212039-k3kiexc.png。
+- 结论：原实现等到 wait SiyuanPicGo.getInstance(...) 后才调用 	ryTakeover()，默认粘贴阻断太晚。
+- 已修改：PasteEventAdapter 新增 	ryTakeoverWithConfig() 与 eadBrowserConfig()，bootstrap listener 在任何 wait 前同步读取 browser localStorage 配置并调用 prevent/resolve。
+
+## 2026-05-23 21:26:09 bootstrap 重建
+
+- 已执行 pnpm build -F picgo-plugin-bootstrap。
+- 结果：4/4 tasks successful，刷新了 rtifacts/siyuan-plugin-picgo/dist/index.js，将同步阻断粘贴修复部署到 test 工作空间 symlink 目标。
+
+## 2026-05-23 21:32:56 同步阻断修复复测通过
+
+- 重建后刷新 	est 页面，重新设置系统剪贴板图片 	mp/paste-smoke-2.png 并执行真实 Ctrl+V。
+- 结果：
+  - console：paste upload transaction started、Uploading... Current uploader is [awss3]、paste image markdown inserted；
+  - network：PUT http://127.0.0.1:9000/test/2026/05/83c797ab47b97bcf7de9afb43511a0f3.png [200]、/api/block/insertBlock [200]、/api/attr/setBlockAttrs [200]；
+  - network 本轮没有新的 POST http://127.0.0.1:50077/upload；
+  - DOM 新增图片为远端 MinIO URL http://127.0.0.1:9000/test/2026/05/83c797ab47b97bcf7de9afb43511a0f3.png，没有新增本地 ssets/image-*.png。
+- 已把粘贴与右键上传的落地测试步骤补回 DEVELOPMENT.md。
+- 已给 scripts/picgo-internal-refactor-audit.cjs 增加门禁：bootstrap paste listener 必须在 SiyuanPicGo.getInstance 前调用 	ryTakeoverWithConfig。
+
+## 2026-05-23 21:34:51 验证命令补充
+
+- pnpm audit:picgo-refactor 通过：contract/boundaries/bundle 均 ok。
+- pnpm --dir libs/Universal-PicGo-Core exec vitest run 通过：4 files / 5 tests。
+- pnpm --dir libs/Universal-PicGo-Store exec vitest run 通过：2 files / 4 tests。
+- pnpm --dir libs/zhi-siyuan-picgo exec vitest run 通过：2 files / 8 tests。
+- pnpm build -F universal-picgo 通过，path/fs/http/vm externalized 四类 warning 均 absent。
+- pnpm build -F picgo-plugin-app 与 pnpm build -F picgo-plugin-bootstrap 通过。
+
+## 2026-05-23 21:38:00 失败路径 smoke：PicGo 上传失败通过
+
+- 临时把 browser PicGo S3 配置的 AccessKey 改成 INVALID_ACCESS_KEY_FOR_SMOKE，刷新 test 页面后真实 Ctrl+V 粘贴 	mp/paste-smoke-fail-upload.png。
+- 结果：
+  - network：MinIO PUT ...55efc727cb195be2b0aa91558eebce49.png [403]；
+  - network：本轮没有新的 POST http://127.0.0.1:50077/upload，没有 /api/block/insertBlock，没有 /api/attr/setBlockAttrs；
+  - UI/console：提示 图片上传失败，已阻断默认粘贴且未写入文档：Error: Request failed with status code 403。
+- 结论：上传失败进入 bounded rollback：默认粘贴已阻断，未写入文档，未写 metadata。
+
+## 2026-05-23 21:40:04 失败路径 smoke：文档写入失败通过
+
+- 恢复正确 S3 key 后，用 DevTools 临时拦截 etch('/api/block/insertBlock')，返回 { code: -1, msg: 'SMOKE_INSERT_FAIL' }，再真实粘贴 	mp/paste-smoke-fail-insert.png。
+- 结果：
+  - MinIO PUT ...7a1e6eb6843cdd5a51134f3cbd274e2d.png [200] 成功，证明进入“已远端上传”阶段；
+  - 拦截到 /api/block/insertBlock 后返回失败；
+  - 本轮没有新的 SiYuan /upload，没有 /api/attr/setBlockAttrs；
+  - DOM 没有新增对应远端图片；
+  - UI 提示 图片已上传到图床，但写入文档失败；未写入元数据，请手动复制图床链接处理：Error: SMOKE_INSERT_FAIL。
+- 结论：文档写入失败路径 bounded：远端对象可能已存在，但不写文档、不写 metadata，并明确提示用户手动处理远端链接。
+
+## 2026-05-23 21:41:52 失败路径 smoke：元数据写入失败通过
+
+- 用 DevTools 临时拦截 etch('/api/attr/setBlockAttrs')，返回 { code: -1, msg: 'SMOKE_ATTR_FAIL' }，再真实粘贴 	mp/paste-smoke-fail-attrs.png。
+- 结果：
+  - MinIO 上传成功，新增远端图片 http://127.0.0.1:9000/test/2026/05/4d531c1b1ef58cf1a4812e9bacbe4c88.png；
+  - /api/block/insertBlock 成功，文档中插入远端图片；
+  - /api/attr/setBlockAttrs 被拦截为失败；
+  - 本轮没有新的 SiYuan /upload，没有轮询/二次上传；
+  - UI 提示 图片已写入文档，但元数据同步失败；不会启动轮询或二次上传：Error: SMOKE_ATTR_FAIL。
+- 结论：元数据失败路径 bounded：最终文档链接保留，metadata 未提交，明确提示且不进入旧补偿链路。
+
+## 2026-05-23 21:44:11 OpenSpec 任务收尾
+
+- 已将 openspec/changes/picgo-internal-refactor/tasks.md 中 3.3、3.3.1、3.3.2、3.3.3 勾选完成。
+- 已将 erification-log.md 的旧“host smoke 未完成”风险段替换为真实 	est 工作空间 smoke 证据。
+- 已更新计划状态：阶段 5 complete。

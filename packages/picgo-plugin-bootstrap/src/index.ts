@@ -76,11 +76,7 @@ export default class PicgoPlugin extends Plugin {
    * 添加图片粘贴事件
    */
   protected readonly picturePasteEventListener = async (e: CustomEvent) => {
-    const pasteCandidate = this.pasteEventAdapter.inspectCandidate(e)
-    if (!pasteCandidate.candidate) {
-      this.logger.debug("粘贴事件未进入 PicGo 候选接管", pasteCandidate.reason)
-      return
-    }
+    const takeover = this.pasteEventAdapter.tryTakeoverWithConfig(e, this.pasteEventAdapter.readBrowserConfig())
 
     const siyuanConfig = {
       apiUrl: siyuanApiUrl,
@@ -90,7 +86,6 @@ export default class PicgoPlugin extends Plugin {
     const ctx = picgoPostApi.ctx()
     const siyuanApi = picgoPostApi.siyuanApi
 
-    const takeover = this.pasteEventAdapter.tryTakeover(e, ctx)
     if (!takeover.taken || !takeover.snapshot) {
       if (takeover.reason === "multiple-files-unsupported") {
         await siyuanApi.pushErrMsg({

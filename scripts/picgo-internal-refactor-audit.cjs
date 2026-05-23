@@ -164,6 +164,12 @@ function checkBoundaries() {
   for (const forbidden of ["uploadAsset(", "JsTimer", "handleAfterUpload", "doUpdatePictureMetadata"]) {
     if (bootstrapIndex.includes(forbidden)) failures.push(`bootstrap paste path still contains ${forbidden}`)
   }
+  const pasteListenerMatch = bootstrapIndex.match(
+    /picturePasteEventListener[\s\S]*?tryTakeoverWithConfig[\s\S]*?SiyuanPicGo\.getInstance/
+  )
+  if (!pasteListenerMatch) {
+    failures.push("bootstrap paste listener must call tryTakeoverWithConfig before async SiyuanPicGo.getInstance")
+  }
 
   const pasteDir = path.join(repoRoot, "packages/picgo-plugin-bootstrap/src/paste")
   const pasteFiles = walk(pasteDir, (file) => sourceExtensions.has(path.extname(file)))

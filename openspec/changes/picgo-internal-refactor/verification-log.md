@@ -465,13 +465,39 @@ Direct artifact probe after final builds:
 
 No externally approved breaking API change was introduced. Additive exports from `universal-picgo` (`getByPath`, `setByPath`, `unsetByPath`, `deepMerge`) are non-breaking.
 
-### Known remaining risk / not completed in this environment
+### Real SiYuan host smoke completion
 
-Real SiYuan host smoke was not run in this environment. Therefore the following remain unverified and must not be marked complete until host-level evidence exists:
+Real SiYuan host smoke has now been run against the `test` workspace only:
 
-- default paste/internal upload is actually prevented by `preventDefault`/`detail.resolve` in a real SiYuan paste event;
-- automatic image paste creates exactly one plugin-owned transaction and no unmanaged local asset;
-- upload/document/metadata failure paths reach the designed bounded rollback states in a real host.
+- host: `http://127.0.0.1:50077/stage/build/desktop/?r=qfp6swh`
+- title: `未命名 - test - 思源笔记 v3.6.5`
+- workspace: `D:\Users\Administrator\Documents\mydocs\SiyuanWorkspace\test`
+- plugin link target: `artifacts/siyuan-plugin-picgo/dist`
+
+Initial host paste smoke exposed a regression: the listener called `tryTakeover()` only after awaiting `SiyuanPicGo.getInstance(...)`, so SiYuan default paste had already posted a local asset through `POST http://127.0.0.1:50077/upload`. The fix moved takeover to the start of the listener: `PasteEventAdapter.tryTakeoverWithConfig()` now synchronously reads browser runtime config and calls `event.preventDefault()` / `detail.source.preventDefault()` / `detail.resolve(empty payload)` before any async PicGo initialization.
+
+After rebuilding `picgo-plugin-bootstrap` and reloading the `test` host, real `Ctrl+V` image paste produced:
+
+- console: `paste upload transaction started`, `Uploading... Current uploader is [awss3]`, `paste image markdown inserted`;
+- network: MinIO `PUT http://127.0.0.1:9000/test/2026/05/83c797ab47b97bcf7de9afb43511a0f3.png [200]`;
+- network: `/api/block/insertBlock [200]`, `/api/attr/getBlockAttrs [200]`, `/api/attr/setBlockAttrs [200]`;
+- network: no new `POST http://127.0.0.1:50077/upload` for the successful paste;
+- DOM: the new image link is the MinIO URL, with no new unmanaged `assets/image-*.png` intermediate.
+
+Right-click image smoke also passed in the same `test` host:
+
+- menu item: `上传到PicGo图床`;
+- console: `Uploading... Current uploader is [awss3]`;
+- network: MinIO `PUT ... [200]`;
+- DOM: image link replaced with `http://127.0.0.1:9000/test/2026/05/ae44fa8b5be668d9235fdfa5d4989cbb.png`.
+
+Failure-path host smoke passed:
+
+- PicGo upload failure: invalid S3 access key produced MinIO `PUT ... [403]`; there was no new SiYuan `/upload`, no `/api/block/insertBlock`, no `/api/attr/setBlockAttrs`; UI reported that default paste was blocked and no document write occurred.
+- Document mutation failure: mocked `/api/block/insertBlock` returned `SMOKE_INSERT_FAIL` after a successful MinIO upload; there was no metadata write and no SiYuan `/upload`; UI reported the remote upload existed but document write failed.
+- Metadata commit failure: mocked `/api/attr/setBlockAttrs` returned `SMOKE_ATTR_FAIL` after successful MinIO upload and block insert; no SiYuan `/upload`, polling, or second asset upload occurred; UI reported recoverable metadata-sync failure.
+
+The audit script now also checks that the bootstrap paste listener calls `tryTakeoverWithConfig` before `SiyuanPicGo.getInstance`, preventing regressions to async-after-default behavior.
 
 ## 2026-05-23 externalized browser compatibility warnings eliminated
 
@@ -524,3 +550,4 @@ pnpm build -F picgo-plugin-bootstrap
 pnpm audit:picgo-refactor
 # contract/boundaries/bundle ok
 ```
+

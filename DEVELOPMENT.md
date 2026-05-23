@@ -144,10 +144,28 @@ pnpm makeLink
 
 随后在 SiYuan `test` 工作空间手工检查：
 
-- 插件能正常加载
-- 设置页能正常打开
-- 图片粘贴上传正常
-- 右键图片上传正常
+- 插件能正常加载：控制台出现 `PicGo Plugin loaded`
+- 设置页能正常打开并保存 PicGo 配置
+- 图片粘贴上传正常：
+  - 光标放到编辑器正文
+  - 复制一张图片后执行粘贴
+  - 控制台出现 `paste upload transaction started`
+  - Network 里出现 `PUT http://127.0.0.1:9000/<bucket>/... [200]`
+  - Network 里不应出现新的 SiYuan 默认本地上传 `POST http://127.0.0.1:<port>/upload`
+  - 文档中新插入的图片链接应为图床远端链接，不应是新的 `assets/image-*.png`
+- 右键图片上传正常：
+  - 右键文档中的图片
+  - 点击 `上传到PicGo图床`
+  - 控制台出现 `Uploading... Current uploader is [awss3]` 或当前配置的 uploader
+  - Network 里图床上传请求返回 200
+  - 文档中的图片链接替换为图床远端链接
+
+运行态配置注意：
+
+- 在 SiYuan 桌面端的浏览器运行态，PicGo core 读取的是 `localStorage['universal-picgo/picgo.cfg.json']`。
+- 设置页在桌面端会通过 JSON 存储写入工作空间文件，例如 `data/storage/syp/siyuan-cfg.json`；刷新页面后再测试上传。
+- 如果控制台显示 `Can not find smms config!`，说明当前运行态仍在使用默认 `smms` 配置，需要先在设置页保存正确图床配置并刷新。
+- 如果 S3/MinIO 返回 403，先确认当前运行态的 access key 是当前 MinIO 实例里存在的 key；不要只看 bucket 是否为 R/W。
 
 测试正式发布包时：
 

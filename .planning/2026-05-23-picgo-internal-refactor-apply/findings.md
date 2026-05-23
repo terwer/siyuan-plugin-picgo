@@ -101,3 +101,35 @@
 - 本机曾有 SiYuan 3.6.5 host 与 workspace API 可用，workspace 为 `D:\Users\Administrator\Documents\mydocs\SiyuanWorkspace\public`。
 - 该 workspace 的 `data/plugins/siyuan-plugin-picgo` 是既有旧版安装目录，不是本仓库 artifact 的 symlink；真实 smoke 需要先备份并可逆部署。
 - 当前由于错误调用 `/api/system/exit`，kernel 已退出且 6806 不可用；只剩 UI 进程，无法完成真实 paste/default-prevention smoke。
+
+## 2026-05-23 MinIO / S3 403 根因（已按真实配置二次自证）
+
+- 真实 PicGo 配置读取自 `C:\Users\Administrator\.universal-picgo\picgo.cfg.json`，不是截图手抄；当前 `picBed.awss3` 包含 `bucketName=test`、`region=local-win-home`、`endpoint=http://127.0.0.1:9000`、`acl=public-read`。
+- 用这组真实配置的 AccessKeyID/SecretAccessKey 对当前 MinIO 直连，`GetBucketLocation`、`ListObjectsV2`、`PutObject(public-read)` 均为 HTTP 403，错误码 `InvalidAccessKeyId`：`The Access Key Id you provided does not exist in our records.`
+- 用 root 凭据 `admin` / `tyw123456` 对同一个 bucket/region/endpoint/ACL 执行 `ListObjectsV2` 和 `PutObject(public-read)` 成功。
+- MinIO Console API `/api/v1/service-accounts` 返回 `[]`；容器 `portable-minio-minio-1` 的 `/data/.minio.sys/config/iam` 下未发现 users/service-accounts 文件。
+- 结论：当前插件 403 的直接原因不是 region、bucket R/W 或 ACL，而是插件配置里的 access key 不存在于当前 MinIO 实例。需要把 PicGo 配置中的 S3 key 更新为当前 MinIO 实例实际存在的 key（可用 root 凭据或重新创建 service account 后保存）。
+
+
+## 2026-05-23 21:18:07 test 工作空间 MinIO 运行态验证补充
+
+- 真实 SiYuan test host 当前端口：50077，标题：未命名 - test - 思源笔记 v3.6.5。
+- browser runtime 使用的 PicGo 配置来自 localStorage['universal-picgo/picgo.cfg.json']；如果该项仍为默认 smms，即使 C:\Users\Administrator\.universal-picgo\picgo.cfg.json 已更新，页面运行态仍会报 Can not find smms config!。
+- 写入/刷新 browser localStorage 后，右键菜单上传真实经过 wss3，MinIO PUT 返回 200，证明此前 403 已由无效旧 AccessKey 修复。
+
+## 2026-05-23 21:25:24 真实粘贴默认行为阻断根因
+
+- 真实 Ctrl+V smoke 证明：仅看 mock 或右键上传不够；旧 listener 虽然最终会执行 transaction，但在取 PicGo 单例/迁移配置的异步等待期间，SiYuan 默认 /upload 已经执行。
+- 正确门禁必须在 paste listener 开头、任何 async 初始化之前完成：解析候选、读取同步可用的 browser 配置、调用 vent.preventDefault() / detail.source.preventDefault() / detail.resolve(empty payload)。
+
+## 2026-05-23 21:32:56 粘贴 ownership 真实 host 结论
+
+- 修复后真实 SiYuan test host 证明：同步 	ryTakeoverWithConfig() 放在 listener 开头时，默认 /upload 不再触发，粘贴链路只剩插件-owned MinIO 上传 + /api/block/insertBlock + metadata commit。
+- 这满足 source.preventDefault/detail.resolve(empty payload) 必须早于任何 async 初始化的约束；相关审计脚本已增加静态顺序门禁，防止回归到异步后阻断。
+
+## 2026-05-23 21:41:52 粘贴失败路径真实 host 结论
+
+- 上传失败：无文档写入、无 metadata、无默认 /upload。
+- 文档写入失败：远端对象已存在，但无文档块、无 metadata、无默认 /upload。
+- metadata 失败：远端文档块存在，但 metadata 写入失败时只提示错误，不启动旧轮询、二次上传或后置替换。
+- 三条失败路径均在 	est 工作空间用真实粘贴触发并验证，符合 bounded rollback 设计。

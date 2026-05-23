@@ -6,7 +6,7 @@
 
 ## 当前阶段
 
-阶段 5：宿主 smoke 与收尾（blocked_on_host_smoke）
+阶段 5：宿主 smoke 与收尾（complete）
 
 ## 阶段
 
@@ -24,9 +24,8 @@
 - [x] 阶段 4：契约测试与审计脚本（OpenSpec 任务 3.1-3.2.2）
   - 增加公共导出、manifest、配置/存储契约、依赖方向、bundle 审计验证。
   - 分别验证产品 bundle 与可发布 lib bundle。
-- [ ] 阶段 5：宿主 smoke 与收尾（OpenSpec 任务 3.3-4.3，4.1-4.3 已完成，3.3 系列等待真实 SiYuan host smoke）
-  - 运行或记录无法运行真实 SiYuan 宿主 smoke 的阻塞条件。
-  - 汇总重构结果、API 审计、风险、证据日志，更新 OpenSpec 任务勾选。
+- [x] 阶段 5：宿主 smoke 与收尾（OpenSpec 任务 3.3-4.3，真实 SiYuan test host smoke 已完成）
+  - 已在 SiYuan `test` 工作空间完成右键上传、真实粘贴成功路径、上传失败、文档写入失败、元数据失败 smoke。`r`n  - 已汇总重构结果、API 审计、风险、证据日志，并更新 OpenSpec 任务勾选。
 
 ## 决策原则
 
@@ -34,4 +33,5 @@
 - 对外 API 默认不可变；如发现必须破坏兼容，暂停并提出新变更。
 - 优先小步、可回滚、可验证的修改；避免大规模目录搬迁。
 - 真实宿主行为优先于源码推断；若本环境无法运行 SiYuan host，不把真实 smoke 任务标记完成。
+
 
