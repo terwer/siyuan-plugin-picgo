@@ -19,11 +19,13 @@ import {
   IUploaderConfigListItem,
 } from "./types"
 import { calculateMD5, isFileOrBlob, isSiyuanProxyAvailable } from "./utils/common"
+import { deepMerge, getByPath, setByPath, unsetByPath } from "./utils/pathObject"
 
 export { UniversalPicGo, ExternalPicgo, picgoEventBus }
 export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
 export { PicgoTypeEnum, IBusEvent }
 export { isFileOrBlob, calculateMD5, isSiyuanProxyAvailable }
+export { deepMerge, getByPath, setByPath, unsetByPath }
 export { win, currentWin, parentWin, hasNodeEnv }
 export {
   type IPicGo,

@@ -12,6 +12,7 @@ import { copyToClipboardInBrowser, ImageItem } from "zhi-siyuan-picgo"
 import { BrowserUtil } from "zhi-device"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { reactive } from "vue"
+import { ElMessage } from "element-plus"
 
 enum UrlTypeEnum {
   URL = "url",
@@ -33,9 +34,14 @@ const formData = reactive({
   urlType: UrlTypeEnum.MD
 })
 
-const doCopy = (str: string) => {
+const doCopy = async (str: string) => {
   if (BrowserUtil.isInBrowser) {
-    copyToClipboardInBrowser(str)
+    const ok = await copyToClipboardInBrowser(str)
+    if (ok) {
+      ElMessage.success("复制成功")
+    } else {
+      ElMessage.error("复制失败")
+    }
   }
 }
 

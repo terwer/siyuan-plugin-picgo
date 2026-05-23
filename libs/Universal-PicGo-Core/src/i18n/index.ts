@@ -8,16 +8,16 @@
  */
 
 import { IBrowserLocal, II18nManager, ILocale, IPicGo, IStringKeyMap } from "../types"
-import { I18n, ObjectAdapter } from "@picgo/i18n"
+import { I18n, ObjectAdapter } from "./simpleI18n"
 import { ILocales, ILocalesKey, ZH_CN } from "./zh-CN"
 import { EN } from "./en"
 import { ZH_TW } from "./zh-TW"
 import yaml from "js-yaml"
-import _ from "lodash-es"
 import { hasNodeEnv, win } from "universal-picgo-store"
 import { ensureFolderSync, pathExistsSync } from "../utils/nodeUtils"
 import { browserPathJoin } from "../utils/browserUtils"
 import BrowserI18nDb from "./browserI18nDb"
+import { deepMerge } from "../utils/pathObject"
 
 const languageList: IStringKeyMap<IStringKeyMap<string>> = {
   "zh-CN": ZH_CN,
@@ -64,7 +64,7 @@ class I18nManager implements II18nManager {
     if (!originLocales) {
       return false
     }
-    const newLocales = _.merge(originLocales, locales)
+    const newLocales = deepMerge(originLocales, locales)
     this.objectAdapter.setLocale(language, newLocales)
     return true
   }

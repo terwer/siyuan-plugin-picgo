@@ -9,7 +9,6 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import _ from "lodash-es"
 import {
   IBusEvent,
   IConfig,
@@ -20,9 +19,10 @@ import {
   IUploaderConfigListItem,
   picgoEventBus,
   win,
+  getByPath,
+  setByPath,
 } from "universal-picgo"
 import { getRawData, trimValues } from "./utils/utils"
-import { readonly } from "vue"
 import IdUtil from "./utils/idUtil"
 import { IGuiMenuItem } from "./types"
 import { handleConfigWithFunction, handleStreamlinePluginName } from "./utils/common"
@@ -75,7 +75,7 @@ class PicgoHelper {
     }
     this.ctx = ctx
     this.reactiveCfg = reactiveCfg
-    this.readonlyCfg = readonly(this.reactiveCfg)
+    this.readonlyCfg = this.reactiveCfg
   }
 
   /**
@@ -88,7 +88,7 @@ class PicgoHelper {
     if (!key) {
       return this.readonlyCfg as unknown
     }
-    return _.get(this.readonlyCfg, key, defaultValue)
+    return getByPath(this.readonlyCfg, key, defaultValue)
   }
 
   /**
@@ -104,7 +104,7 @@ class PicgoHelper {
     // 刷新
     Object.keys(cfg).forEach((name: string) => {
       const rawCfg = getRawData(cfg)
-      _.set(this.reactiveCfg, name, rawCfg[name])
+      setByPath(this.reactiveCfg, name, rawCfg[name])
       picgoEventBus.emit(IBusEvent.CONFIG_CHANGE, {
         configName: name,
         value: rawCfg[name],

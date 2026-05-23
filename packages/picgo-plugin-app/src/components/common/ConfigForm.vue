@@ -13,7 +13,6 @@ import { reactive, ref, toRaw, watch } from "vue"
 import { IPluginConfig } from "zhi-siyuan-picgo"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { createAppLogger } from "@/utils/appLogger.ts"
-import _ from "lodash-es"
 import { PicgoHelper } from "zhi-siyuan-picgo"
 
 const logger = createAppLogger("picbed-config-form")
@@ -56,6 +55,17 @@ const $configForm = ref<FormInstance>()
 const configList = ref<IPluginConfig[]>([])
 const configRuleForm = reactive<IStringKeyMap>({})
 
+const cloneConfigItems = (items: any[]) => {
+  return items.map((item) => ({
+    ...item,
+    choices: Array.isArray(item.choices)
+      ? item.choices.map((choice: any) => (choice && typeof choice === "object" ? { ...choice } : choice))
+      : item.choices,
+  }))
+}
+
+const uniqueArray = (items: any[]) => Array.from(new Set(items))
+
 const getCurConfigFormData = () => {
   const configId = formData.configId
   let curConfig: any
@@ -91,7 +101,7 @@ const handleConfigChange = (val: any) => {
   const rawVal = toRaw(val)
 
   if (rawVal.length > 0) {
-    configList.value = _.cloneDeep(rawVal).map((item: any) => {
+    configList.value = cloneConfigItems(rawVal).map((item: any) => {
       if (!configId) return item
       let defaultValue = item.default !== undefined ? item.default : item.type === "checkbox" ? [] : null
       if (item.type === "checkbox") {
@@ -101,7 +111,8 @@ const handleConfigChange = (val: any) => {
               return i.checked
             })
             .map((i: any) => i.value) || []
-        defaultValue = _.union(defaultValue, defaults)
+        const existingDefaults = Array.isArray(defaultValue) ? defaultValue : defaultValue == null ? [] : [defaultValue]
+        defaultValue = uniqueArray([...existingDefaults, ...defaults])
       }
       if (config && config[item.name] !== undefined) {
         defaultValue = config[item.name]

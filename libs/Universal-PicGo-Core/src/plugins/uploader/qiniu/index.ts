@@ -11,11 +11,11 @@ import { ILocalesKey } from "../../../i18n/zh-CN"
 import { IPicGo, IPluginConfig, IQiniuConfig } from "../../../types"
 import { IBuildInEvent } from "../../../utils/enums"
 import { bufferToBase64, safeParse } from "../../../utils/common"
-import mime from "mime-types"
 import { AxiosRequestConfig } from "axios"
 import { Mac } from "./digest"
 import { PutPolicy } from "./rs"
 import { browserPathJoin } from "../../../utils/browserUtils"
+import { lookupMimeType } from "../../../utils/mimeLookup"
 
 function postOptions(options: IQiniuConfig, fileName: string, token: string, imgBase64: string): AxiosRequestConfig {
   const area = selectArea(options.area || "z0")
@@ -29,7 +29,7 @@ function postOptions(options: IQiniuConfig, fileName: string, token: string, img
     url: `https://upload${area}.qiniup.com/putb64/-1/key/${base64FileName}`,
     headers: {
       Authorization: `UpToken ${token}`,
-      "Content-Type": mime.lookup(fileName) || "application/octet-stream",
+      "Content-Type": lookupMimeType(fileName) || "application/octet-stream",
     },
     data: imgBase64,
     // proxy=false 表示浏览器换无需代理也可以直接使用

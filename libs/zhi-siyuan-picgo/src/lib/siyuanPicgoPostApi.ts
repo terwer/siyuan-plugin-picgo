@@ -328,10 +328,12 @@ class SiyuanPicgoPostApi {
 
     this.logger.debug("newFileMap=>", fileMap)
 
-    const newFileMapStr = JSON.stringify(fileMap)
-    await this.siyuanApi.setBlockAttrs(pageId, {
-      [SIYUAN_PICGO_FILE_MAP_KEY]: newFileMapStr,
-    })
+    if (!ignoreReplaceLink) {
+      const newFileMapStr = JSON.stringify(fileMap)
+      await this.siyuanApi.setBlockAttrs(pageId, {
+        [SIYUAN_PICGO_FILE_MAP_KEY]: newFileMapStr,
+      })
+    }
 
     //处理链接替换
     if (!ignoreReplaceLink) {
@@ -372,7 +374,7 @@ class SiyuanPicgoPostApi {
         }
       }
     } else {
-      this.logger.info("当前是思源笔记剪切板模式上传，暂时忽略链接替换，后面使用轮询处理替换链接")
+      this.logger.info("当前调用方负责文档写入和元数据提交，跳过通用单图上传的链接替换与元数据写入")
     }
 
     return imageJsonObj

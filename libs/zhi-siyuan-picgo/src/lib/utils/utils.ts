@@ -7,29 +7,20 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { ElMessage } from "element-plus"
-import { isReactive, isRef, toRaw, unref } from "vue"
-
 /**
- * 复制网页内容到剪贴板
+ * 复制网页内容到剪贴板。
+ *
+ * This helper intentionally stays UI-framework neutral. Product code may show
+ * Element Plus messages around the returned boolean, but the reusable lib entry
+ * must not import Vue/Element Plus just to expose clipboard utilities.
  *
  * @param text - 待复制的文本
  */
-export const copyToClipboardInBrowser = (text: string) => {
-  if (navigator && navigator.clipboard) {
-    // Copy the selected text to the clipboard
-    navigator.clipboard.writeText(text).then(
-      function () {
-        // The text has been successfully copied to the clipboard
-        ElMessage.success("复制成功")
-      },
-      function (e) {
-        // An error occurred while copying the text
-        ElMessage.error("复制失败=>" + e)
-      }
-    )
-  } else {
-    try {
+export const copyToClipboardInBrowser = async (text: string): Promise<boolean> => {
+  try {
+    if (navigator && navigator.clipboard) {
+      await navigator.clipboard.writeText(text)
+    } else {
       const input = document.createElement("input")
       input.style.position = "fixed"
       input.style.opacity = "0"
@@ -38,10 +29,11 @@ export const copyToClipboardInBrowser = (text: string) => {
       input.select()
       document.execCommand("copy")
       document.body.removeChild(input)
-      ElMessage.success("复制成功")
-    } catch (e) {
-      ElMessage.error("复制失败=>" + e)
     }
+    return true
+  } catch (e) {
+    console.warn("复制失败=>", e)
+    return false
   }
 }
 
@@ -55,31 +47,34 @@ export const getRawData = (args: any): any => {
   }
   if (Array.isArray(args)) {
     const data = args.map((item: any) => {
-      if (isRef(item)) {
-        return unref(item)
-      }
-      if (isReactive(item)) {
-        return toRaw(item)
-      }
       return getRawData(item)
     })
     return data
   }
   if (typeof args === "object") {
+    const rawArgs = toPlainRaw(args)
+    if (rawArgs !== args) {
+      return getRawData(rawArgs)
+    }
     const data = {} as any
-    Object.keys(args).forEach((key) => {
-      const item = args[key]
-      if (isRef(item)) {
-        data[key] = unref(item)
-      } else if (isReactive(item)) {
-        data[key] = toRaw(item)
-      } else {
-        data[key] = getRawData(item)
-      }
+    Object.keys(rawArgs).forEach((key) => {
+      data[key] = getRawData(rawArgs[key])
     })
     return data
   }
   return args
+}
+
+function toPlainRaw(value: any) {
+  if (value && typeof value === "object") {
+    if (value.__v_isRef === true && "value" in value) {
+      return value.value
+    }
+    if ("__v_raw" in value && typeof value.__v_raw === "object") {
+      return value.__v_raw
+    }
+  }
+  return value
 }
 
 export const trimValues = (obj: any) => {

@@ -1,25 +1,26 @@
 import { IJSON } from "../../types"
-import { LocalKey, LocalStorage } from "ts-localstorage"
 
 export class LocalStorageAdapter {
-  private readonly adapter: typeof LocalStorage
-  private readonly key: LocalKey<any>
+  private readonly key: string
 
   constructor(dbPath: string) {
-    this.adapter = LocalStorage
-    this.key = new LocalKey(dbPath, {})
+    this.key = dbPath
   }
 
   read(): IJSON {
-    const data = this.adapter.getItem(this.key)
+    const data = window.localStorage.getItem(this.key)
     /* istanbul ignore if */
     if (data === null) {
       return {}
     }
-    return data
+    try {
+      return JSON.parse(data) as IJSON
+    } catch {
+      return {}
+    }
   }
 
   write(obj: any): void {
-    this.adapter.setItem(this.key, obj)
+    window.localStorage.setItem(this.key, JSON.stringify(obj))
   }
 }

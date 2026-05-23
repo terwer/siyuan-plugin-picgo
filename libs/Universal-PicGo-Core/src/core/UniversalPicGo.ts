@@ -26,7 +26,6 @@ import transformers from "../plugins/transformer"
 import { PluginLoader } from "../lib/PluginLoader"
 import { LifecyclePlugins, setCurrentPluginName } from "../lib/LifecyclePlugins"
 import { PluginHandler } from "../lib/PluginHandler"
-import _ from "lodash-es"
 import getClipboardImage from "../utils/getClipboardImage"
 import { IBuildInEvent, IBusEvent } from "../utils/enums"
 import ConfigDb from "../db/config"
@@ -35,6 +34,7 @@ import { ensureFileSync, ensureFolderSync, pathExistsSync } from "../utils/nodeU
 import { I18nManager } from "../i18n"
 import { browserPathJoin, getBrowserDirectoryPath } from "../utils/browserUtils"
 import { isConfigKeyInBlackList, isInputConfigValid } from "../utils/common"
+import { getByPath, setByPath, unsetByPath } from "../utils/pathObject"
 import { picgoEventBus } from "../utils/picgoEventBus"
 import { PicGoRequestWrapper } from "../lib/PicGoRequest"
 
@@ -120,7 +120,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     if (!name) {
       return this._config as unknown as T
     } else {
-      return _.get(this._config, name, defaultValue)
+      return getByPath(this._config, name, defaultValue)
     }
   }
 
@@ -154,7 +154,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete config[name]
       }
-      _.set(this._config, name, config[name])
+      setByPath(this._config, name, config[name])
       picgoEventBus.emit(IBusEvent.CONFIG_CHANGE, {
         configName: name,
         value: config[name],
@@ -168,7 +168,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       this.log.warn(`the config.${key} can't be unset`)
       return
     }
-    _.unset(this.getConfig(key), propName)
+    unsetByPath(this.getConfig(key), propName)
   }
 
   async upload(input?: any[]): Promise<IImgInfo[] | Error> {

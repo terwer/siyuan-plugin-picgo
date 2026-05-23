@@ -9,14 +9,13 @@
 
 import { IAliyunConfig, IPicGo, IPluginConfig } from "../../../types"
 import { ILocalesKey } from "../../../i18n/zh-CN"
-import { hasNodeEnv } from "universal-picgo-store"
-import { handleNode } from "./node"
 import { handleWeb } from "./web"
 
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
-  if (hasNodeEnv) {
-    return handleNode(ctx)
-  }
+  // Use the host-neutral signed HTTP implementation for both browser and
+  // SiYuan/Electron targets. The previous Node SDK path imported ali-oss
+  // statically, which pulled core-js/lodash dynamic global fallbacks into the
+  // generic library/browser bundles.
   return handleWeb(ctx)
 }
 

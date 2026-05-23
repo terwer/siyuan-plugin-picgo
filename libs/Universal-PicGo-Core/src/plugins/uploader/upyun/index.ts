@@ -7,16 +7,16 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import crypto from "crypto"
 import { ILocalesKey } from "../../../i18n/zh-CN"
 import { IPicGo, IPluginConfig, IUpyunConfig } from "../../../types"
 import { base64ToBuffer, calculateMD5 } from "../../../utils/common"
 import { IBuildInEvent } from "../../../utils/enums"
 import { Buffer } from "../../../utils/nodePolyfill"
 import { AxiosRequestConfig } from "axios"
+import { digestHmacSha1 } from "../../../utils/cryptoUtil"
 
 function hmacsha1(secret: string, value: string) {
-  return crypto.createHmac("sha1", secret).update(value, "utf8").digest().toString("base64")
+  return digestHmacSha1(secret, value, "base64")
 }
 
 /**
