@@ -324,3 +324,20 @@
 - 已将 openspec/changes/picgo-internal-refactor/tasks.md 中 3.3、3.3.1、3.3.2、3.3.3 勾选完成。
 - 已将 erification-log.md 的旧“host smoke 未完成”风险段替换为真实 	est 工作空间 smoke 证据。
 - 已更新计划状态：阶段 5 complete。
+
+## 2026-05-23 22:08:18 移除设置页旧轮询配置
+
+- 用户指出设置页仍显示“轮询间隔/重试次数”，这与新 paste transaction 不再依赖轮询相矛盾。
+- 已从 packages/picgo-plugin-app/src/components/setting/PicgoSetting.vue UI 中移除 waitTimeout / etryTimes 两个表单项。
+- 保留 onBeforeMount 中的默认值初始化，仅作为旧配置兼容，不再暴露给用户修改。
+- 已给 scripts/picgo-internal-refactor-audit.cjs 增加门禁：若设置页再次出现 waitTimeout / etryTimes 的 -model，审计失败。
+- 已更新 erification-log.md，明确旧轮询配置隐藏而非继续展示。
+
+## 2026-05-23 22:10:44 设置页 UI 验证通过
+
+- 已执行 pnpm audit:picgo-refactor：通过。
+- 已执行 pnpm build -F picgo-plugin-app：通过并刷新 app artifact。
+- 在 SiYuan 	est 工作空间打开插件设置页 #/setting?showBack=true，DevTools 读取 iframe 文本确认：
+  - hasPolling=false，不再显示 轮询间隔；
+  - hasRetry=false，不再显示 重试次数；
+  - 仍显示 剪切板自动上传、替换本地连接、当剪切板同时有文字和图片时... 三个有效开关。

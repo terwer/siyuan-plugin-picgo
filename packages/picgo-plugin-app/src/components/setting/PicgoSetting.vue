@@ -49,6 +49,9 @@ const handlePicgoTypeChange = (val: any) => {
 onBeforeMount(() => {
   // init siyuan related picgo config
   bundledPicGoSettingForm.value.siyuan = bundledPicGoSettingForm.value.siyuan || {}
+  // Legacy keys are kept for config compatibility only. The new paste
+  // transaction no longer depends on polling/retry settings, so they must not
+  // be shown in the settings UI.
   bundledPicGoSettingForm.value.siyuan.waitTimeout = bundledPicGoSettingForm.value.siyuan.waitTimeout ?? 2
   bundledPicGoSettingForm.value.siyuan.retryTimes = bundledPicGoSettingForm.value.siyuan.retryTimes ?? 5
   bundledPicGoSettingForm.value.siyuan.autoUpload = bundledPicGoSettingForm.value.siyuan.autoUpload ?? true
@@ -82,18 +85,6 @@ onBeforeMount(() => {
       <el-divider border-style="dashed" />
 
       <div>
-        <el-form-item label-width="110px" :label="t('picgo.siyuan.wait.timeout')" required>
-          <el-input
-            v-model="bundledPicGoSettingForm.siyuan.waitTimeout"
-            :placeholder="t('picgo.siyuan.wait.timeout.tip')"
-          />
-        </el-form-item>
-        <el-form-item label-width="87px" :label="t('picgo.siyuan.wait.retryTimes')" required>
-          <el-input
-            v-model="bundledPicGoSettingForm.siyuan.retryTimes"
-            :placeholder="t('picgo.siyuan.wait.retryTimes.tips')"
-          />
-        </el-form-item>
         <el-form-item label-width="130px" :label="t('picgo.siyuan.clipboard.auto')">
           <el-switch v-model="bundledPicGoSettingForm.siyuan.autoUpload" inline-prompt size="small"></el-switch>
         </el-form-item>

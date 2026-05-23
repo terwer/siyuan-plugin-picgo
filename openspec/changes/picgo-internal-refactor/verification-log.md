@@ -72,7 +72,7 @@
 - `openSetting()` 打开 Vue app 设置页。
 - `paste` 事件当前在开启 `siyuan.autoUpload` 时尝试自动上传单张剪贴板图片。
 - `open-menu-image` 当前为图片块右键菜单追加“上传到图床”动作；本地图片会拼接 Siyuan API base URL 后上传，远程图片会弹确认后强制上传。
-- 设置页继续暴露内置/外部 PicGo 切换、图床配置、插件管理、Siyuan API 设置、粘贴轮询配置等入口。
+- 设置页继续暴露内置/外部 PicGo 切换、图床配置、插件管理、Siyuan API 设置等入口；旧粘贴轮询配置属于本次重构前的缺陷证据。
 
 ## 2026-05-23 build and test baseline
 
@@ -303,7 +303,7 @@ When a paste event is a candidate image paste and `siyuan.autoUpload` is enabled
 
 - Automatic paste path no longer contains bootstrap `handleAfterUpload`, `doUpdatePictureMetadata`, `JsTimer`, `siyuanApi.uploadAsset(formData)`, or `document.querySelector(img[src])` compensation.
 - `uploadSingleImageToBed(..., ignoreReplaceLink=true)` is retained only as a temporary PicGo upload primitive; `SiyuanPicgoPostApi` now skips its generic metadata write when `ignoreReplaceLink=true`, so the product transaction owns document mutation and metadata commit.
-- The old `siyuan.waitTimeout` / `siyuan.retryTimes` settings remain readable for API compatibility but are no longer correctness requirements for automatic paste takeover.
+- The old `siyuan.waitTimeout` / `siyuan.retryTimes` settings remain readable for API compatibility but are hidden from the settings UI and are no longer correctness requirements for automatic paste takeover.
 
 ### Host insertion API spike result
 
@@ -321,7 +321,7 @@ Implemented checks:
   - validates root `plugin.json` immutable fields;
   - validates baseline public export symbols in `universal-picgo`, `universal-picgo-store`, and `zhi-siyuan-picgo`;
   - validates `SIYUAN_PICGO_FILE_MAP_KEY`;
-  - validates current settings defaults for `siyuan.waitTimeout`, `siyuan.retryTimes`, `siyuan.autoUpload`, `siyuan.replaceLink`, `siyuan.txtImageSwitch`.
+  - validates config compatibility defaults for legacy `siyuan.waitTimeout` / `siyuan.retryTimes`, while ensuring those legacy polling controls are not exposed in the settings UI;
 - `boundaries`
   - fails on product code importing `zhi-siyuan-picgo/src`;
   - fails if bootstrap paste path reintroduces `uploadAsset(`, `JsTimer`, `handleAfterUpload`, or `doUpdatePictureMetadata`;
@@ -461,7 +461,7 @@ Direct artifact probe after final builds:
 - root `plugin.json` immutable fields remain unchanged;
 - baseline package export symbols remain present;
 - `SIYUAN_PICGO_FILE_MAP_KEY` remains `custom-picgo-file-map-key`;
-- settings defaults for `siyuan.waitTimeout`, `siyuan.retryTimes`, `siyuan.autoUpload`, `siyuan.replaceLink`, and `siyuan.txtImageSwitch` remain present.
+- config compatibility defaults for `siyuan.waitTimeout` and `siyuan.retryTimes` remain present, but their legacy polling controls are not exposed in the settings UI; active settings defaults for `siyuan.autoUpload`, `siyuan.replaceLink`, and `siyuan.txtImageSwitch` remain present.
 
 No externally approved breaking API change was introduced. Additive exports from `universal-picgo` (`getByPath`, `setByPath`, `unsetByPath`, `deepMerge`) are non-breaking.
 
@@ -550,4 +550,5 @@ pnpm build -F picgo-plugin-bootstrap
 pnpm audit:picgo-refactor
 # contract/boundaries/bundle ok
 ```
+
 

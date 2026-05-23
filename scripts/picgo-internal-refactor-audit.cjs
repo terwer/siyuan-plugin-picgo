@@ -143,6 +143,14 @@ function checkContract() {
   ]) {
     if (!settings.includes(expected)) failures.push(`setting default contract missing: ${expected}`)
   }
+  for (const legacyUiBinding of [
+    'v-model="bundledPicGoSettingForm.siyuan.waitTimeout"',
+    'v-model="bundledPicGoSettingForm.siyuan.retryTimes"',
+  ]) {
+    if (settings.includes(legacyUiBinding)) {
+      failures.push(`legacy paste polling setting is still exposed in UI: ${legacyUiBinding}`)
+    }
+  }
 
   return failures
 }
