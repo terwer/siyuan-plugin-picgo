@@ -14,6 +14,7 @@ import { readJSONSync } from "../utils/nodeUtils"
 import { IBuildInEvent } from "../utils/enums"
 import { setCurrentPluginName } from "./LifecyclePlugins"
 import { ILogger } from "zhi-lib-base"
+import { isPicGoPluginPackageName, isThirdPartyPluginRuntimeAvailable } from "../utils/pluginRuntime"
 
 /**
  * Local plugin loader, file system is required
@@ -21,7 +22,7 @@ import { ILogger } from "zhi-lib-base"
 export class PluginLoader implements IPluginLoader {
   private readonly ctx: IPicGo
   private readonly logger: ILogger
-  private db: PluginLoaderDb
+  private db?: PluginLoaderDb
   private list: string[] = []
   private readonly fullList: Set<string> = new Set()
   private readonly pluginMap: Map<string, IPicGoPluginInterface> = new Map()
@@ -29,12 +30,19 @@ export class PluginLoader implements IPluginLoader {
   constructor(ctx: IPicGo) {
     this.ctx = ctx
     this.logger = ctx.getLogger("plugin-loader")
-    this.db = new PluginLoaderDb(this.ctx)
+    if (isThirdPartyPluginRuntimeAvailable()) {
+      this.db = new PluginLoaderDb(this.ctx)
+    }
     this.init()
   }
 
   // load all third party plugin
   load(): boolean {
+    if (!isThirdPartyPluginRuntimeAvailable()) {
+      this.logger.warn("third-party PicGo plugins are ignored outside Electron runtime")
+      return false
+    }
+
     if (hasNodeEnv) {
       const fs = win.fs
       const path = win.require("path")
@@ -48,7 +56,7 @@ export class PluginLoader implements IPluginLoader {
       const deps = Object.keys(json.dependencies || {})
       const devDeps = Object.keys(json.devDependencies || {})
       const modules = deps.concat(devDeps).filter((name: string) => {
-        if (!/^picgo-plugin-|^@[^/]+\/picgo-plugin-/.test(name)) return false
+        if (!isPicGoPluginPackageName(name)) return false
         const path = this.resolvePlugin(this.ctx, name)
         return fs.existsSync(path)
       })
@@ -56,21 +64,15 @@ export class PluginLoader implements IPluginLoader {
         this.registerPlugin(module)
       }
       return true
-    } else {
-      const json = this.db.read(true)
-      const deps = Object.keys(json.dependencies || {})
-      const devDeps = Object.keys(json.devDependencies || {})
-      const modules = deps.concat(devDeps).filter((name: string) => {
-        if (!/^picgo-plugin-|^@[^/]+\/picgo-plugin-/.test(name)) return false
-        const path = this.resolvePlugin(this.ctx, name)
-        return false
-      })
-      this.logger.warn("plugin load is not supported in browser")
-      return false
     }
+    return false
   }
 
   registerPlugin(name: string, plugin?: IPicGoPlugin): void {
+    if (!isThirdPartyPluginRuntimeAvailable()) {
+      throw new Error("third-party PicGo plugins are not supported outside Electron runtime")
+    }
+
     if (hasNodeEnv) {
       if (!name) {
         this.ctx.log.warn("Please provide valid plugin")
@@ -115,6 +117,11 @@ export class PluginLoader implements IPluginLoader {
   }
 
   unregisterPlugin(name: string): void {
+    if (!isThirdPartyPluginRuntimeAvailable()) {
+      this.logger.warn("third-party PicGo plugin config is ignored outside Electron runtime")
+      return
+    }
+
     this.list = this.list.filter((item: string) => item !== name)
     this.fullList.delete(name)
     this.pluginMap.delete(name)
@@ -133,7 +140,7 @@ export class PluginLoader implements IPluginLoader {
     if (this.pluginMap.has(name)) {
       return this.pluginMap.get(name)
     }
-    if (!hasNodeEnv) {
+    if (!isThirdPartyPluginRuntimeAvailable()) {
       return undefined
     }
 
@@ -167,7 +174,7 @@ export class PluginLoader implements IPluginLoader {
 
   // get plugin entry
   private resolvePlugin(ctx: IPicGo, name: string): string {
-    if (hasNodeEnv) {
+    if (isThirdPartyPluginRuntimeAvailable()) {
       const path = win.require("path")
       return path.join(ctx.pluginBaseDir, "node_modules", name)
     } else {

@@ -38,6 +38,7 @@ import { isConfigKeyInBlackList, isInputConfigValid } from "../utils/common"
 import { getByPath, setByPath, unsetByPath } from "../utils/pathObject"
 import { picgoEventBus } from "../utils/picgoEventBus"
 import { PicGoRequestWrapper } from "../lib/PicGoRequest"
+import { isThirdPartyPluginRuntimeAvailable } from "../utils/pluginRuntime"
 
 /*
  * 通用 PicGO 对象定义
@@ -343,8 +344,13 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       uploaders(this).register(this)
       transformers(this).register(this)
       setCurrentPluginName("")
-      // load third-party plugins
-      this._pluginLoader.load()
+      // 第三方 PicGo 插件是 Electron-only 能力。非 Electron 端共享同一份 v2 主配置时，
+      // 必须忽略插件相关配置，避免浏览器、Docker、publisher 等平台误读取 PC-only 状态。
+      if (isThirdPartyPluginRuntimeAvailable()) {
+        this._pluginLoader.load()
+      } else {
+        this.log.info("third-party PicGo plugins are ignored outside Electron runtime")
+      }
       this.lifecycle = new Lifecycle(this)
     } catch (e: any) {
       this.emit(IBuildInEvent.UPLOAD_PROGRESS, -1)

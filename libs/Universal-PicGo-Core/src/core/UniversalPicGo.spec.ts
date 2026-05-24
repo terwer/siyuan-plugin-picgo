@@ -25,6 +25,7 @@ const createFakeNodeHost = () => {
       }
       return "{}"
     }),
+    readdirSync: vi.fn(() => []),
     realpathSync: vi.fn((file: string) => file),
     statSync: vi.fn(() => {
       throw Object.assign(new Error("not found"), { code: "ENOENT" })
@@ -116,5 +117,28 @@ describe("UniversalPicGo v2 path contract", () => {
     expect(picgo.configPath).toBe("/workspace/data/storage/syp/picgo/picgo.cfg.json")
     expect(picgo.baseDir).toBe("/workspace/data/storage/syp/picgo")
     expect(picgo.pluginBaseDir).toBe("/home/tester/.universal-picgo")
+  })
+
+  it("does not load third-party plugin config outside Electron runtime", () => {
+    suppressPicGoPathLogs()
+    const { fakeWin } = createFakeNodeHost()
+    fakeWin.process = {
+      pid: 1234,
+      versions: {
+        node: "20.0.0",
+      },
+    }
+    vi.spyOn(store, "hasNodeEnv", "get").mockReturnValue(true)
+    vi.spyOn(store, "win", "get").mockReturnValue(fakeWin)
+
+    const picgo = new UniversalPicGo({
+      configPath: "/workspace/data/storage/syp/picgo/picgo.cfg.json",
+      baseDir: "/home/tester/.universal-picgo",
+      pluginBaseDir: "/home/tester/.universal-picgo",
+      isDev: true,
+    })
+
+    expect(picgo.pluginLoader.getFullList()).toEqual([])
+    expect(picgo.pluginLoader.getList()).toEqual([])
   })
 })

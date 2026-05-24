@@ -46,4 +46,4 @@
 - [x] 6.4 执行相关 package build，确认 v2 路径改动不破坏 core、store、app、bootstrap、zhi-siyuan-picgo 构建。
 - [x] 6.5 在 SiYuan `test` 工作空间执行真实设置保存与上传 smoke，验证主配置写入 workspace 且上传成功。
 - [x] 6.6 验证 `~/.universal-picgo` 仍保存外部 PicGo 配置、插件依赖和运行时文件。
-- [ ] 6.7 在 publisher 项目执行外部 lib 集成 smoke，验证 publisher 通过 v2 契约读取 workspace 主配置并使用本机 runtime。
+- [x] 6.7 在 publisher 项目执行外部 lib 集成 smoke，验证 publisher 通过 v2 契约读取 workspace 主配置并使用本机 runtime。
