@@ -31,38 +31,62 @@
 - Amazon S3<sup>强烈推荐</sup> ，感谢 [@hzj629206](https://github.com/hzj629206) 的贡献
 - 兰空图床<sup> v1.11.0+</sup>
 
-## 配置
+## 配置路径
 
-1.6.0+ 采用新的存储逻辑，配置文件位置已改变。
+### v2.0.0
 
+v2.0.0 是破坏性整理版本，包含前一轮 PicGo 内部重构，也包含本次存储路径拆分。
+
+内置 PicGo 主配置回到工作空间，适合随思源工作空间同步：
+
+```text
+[工作空间]/data/storage/syp/picgo/
+  picgo.cfg.json
 ```
-1.5.6 之前的配置位置
 
+设备本地运行时仍留在本机目录，不随工作空间同步：
+
+```text
+~/.universal-picgo/
+  external-picgo-cfg.json
+  package.json
+  package-lock.json
+  node_modules/
+  libs/
+  i18n-cli/
+  picgo-clipboard-images/
+  mac.applescript / windows.ps1 / windows10.ps1 / linux.sh / wsl.sh
+  picgo.log
+```
+
+迁移规则：如果工作空间缺少 `picgo.cfg.json`，并且 `~/.universal-picgo/picgo.cfg.json` 存在，v2 只复制这一个文件到工作空间；不删除 home 旧文件，不覆盖已有工作空间配置，也不迁移整个目录。
+
+### 历史路径
+
+```text
+<= 1.5.6
 [工作空间]/data/storage/syp/picgo/picgo.cfg.json
-   [工作空间]/data/storage/syp/picgo/mac.applescript
-   [工作空间]/data/storage/syp/picgo/i18n-cli
-   [工作空间]/data/storage/syp/picgo/picgo-clipboard-images
-   [工作空间]/data/storage/syp/picgo/external-picgo-cfg.json
-   [工作空间]/data/storage/syp/picgo/picgo.log
-   [工作空间]/data/storage/syp/picgo/picgo.log
-   [工作空间]/data/storage/syp/picgo/package.json
-   [工作空间]/data/storage/syp/picgo/package-lock.json
-   [工作空间]/data/storage/syp/picgo/node_modules
+[工作空间]/data/storage/syp/picgo/external-picgo-cfg.json
+[工作空间]/data/storage/syp/picgo/package.json
+[工作空间]/data/storage/syp/picgo/package-lock.json
+[工作空间]/data/storage/syp/picgo/node_modules/
+[工作空间]/data/storage/syp/picgo/libs/
+[工作空间]/data/storage/syp/picgo/i18n-cli/
+[工作空间]/data/storage/syp/picgo/picgo-clipboard-images/
+[工作空间]/data/storage/syp/picgo/*.script
+[工作空间]/data/storage/syp/picgo/picgo.log
 
-
-1.6.0+ 默认存储位置
-
+1.6.0+
 ~/.universal-picgo/picgo.cfg.json
-~/.universal-picgo/mac.applescript
-~/.universal-picgo/i18n-cli
-~/.universal-picgo/picgo-clipboard-images
 ~/.universal-picgo/external-picgo-cfg.json
-~/.universal-picgo/picgo.log
 ~/.universal-picgo/package.json
 ~/.universal-picgo/package-lock.json
-~/.universal-picgo/node_modules
-   ~/.universal-picgo/node_modules/plugin-1
-   ~/.universal-picgo/node_modules/plugin-2
+~/.universal-picgo/node_modules/
+~/.universal-picgo/libs/
+~/.universal-picgo/i18n-cli/
+~/.universal-picgo/picgo-clipboard-images/
+~/.universal-picgo/*.script
+~/.universal-picgo/picgo.log
 ```
 
 ## 更新历史

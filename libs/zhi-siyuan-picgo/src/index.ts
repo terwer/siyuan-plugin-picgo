@@ -29,6 +29,13 @@ import { ImageItem } from "./lib/models/ImageItem"
 import { ParsedImage } from "./lib/models/ParsedImage"
 import { ImageParser } from "./lib/parser/ImageParser"
 import { PicgoHelper, PicgoHelperEvents } from "./lib/picgoHelper"
+import {
+  getDefaultLocalPicGoDir,
+  getSiyuanWorkspaceDir,
+  getWorkspacePicGoConfigPath,
+  resolveSiyuanPicGoPaths,
+  toUniversalPicGoOptions,
+} from "./lib/siyuanPicgoPaths"
 import { SiyuanPicGo } from "./lib/siyuanPicgo"
 import { SiyuanPicgoPostApi } from "./lib/siyuanPicgoPostApi"
 import { retrieveImageFromClipboardAsBlob } from "./lib/utils/browserClipboard"
@@ -54,9 +61,14 @@ export {
   generateUniqueName,
   handleConfigWithFunction,
   handleStreamlinePluginName,
+  getDefaultLocalPicGoDir,
+  getSiyuanWorkspaceDir,
+  getWorkspacePicGoConfigPath,
   isSiyuanProxyAvailable,
   replaceImageLink,
+  resolveSiyuanPicGoPaths,
   retrieveImageFromClipboardAsBlob,
+  toUniversalPicGoOptions,
   win,
   type IConfig,
   type IExternalPicgoConfig,
@@ -66,3 +78,10 @@ export {
   type IPicgoDb,
   type IPluginConfig,
 }
+
+export type {
+  SiyuanPicGoInstanceOptions,
+  SiyuanPicGoPathOverrides,
+  SiyuanPicGoPaths,
+} from "./lib/siyuanPicgoPaths"
+export type { SiyuanConfigLike } from "./lib/siyuanConfigLike"

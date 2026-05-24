@@ -197,6 +197,134 @@ function checkBoundaries() {
   return failures
 }
 
+function checkV2PathContract() {
+  const failures = []
+
+  const universalPicGo = read(path.join(repoRoot, "libs/Universal-PicGo-Core/src/core/UniversalPicGo.ts"))
+  for (const expected of [
+    "IUniversalPicGoOptions",
+    "this.usesOptionsObject ? this.getDefautBaseDir() : path.dirname(this.configPath)",
+    'this.zhiNpmPath = path.join(this.baseDir, "libs")',
+    "this.log.info(`this.configPath => ${this.configPath}`)",
+    "this.log.info(`this.baseDir => ${this.baseDir}`)",
+    "this.log.info(`this.pluginBaseDir => ${this.pluginBaseDir}`)",
+  ]) {
+    if (!universalPicGo.includes(expected)) {
+      failures.push(`UniversalPicGo v2 path contract missing: ${expected}`)
+    }
+  }
+
+  const types = read(path.join(repoRoot, "libs/Universal-PicGo-Core/src/types/index.d.ts"))
+  for (const expected of ["interface IUniversalPicGoOptions", "runtimeDir?: string", "pluginBaseDir?: string"]) {
+    if (!types.includes(expected)) failures.push(`IUniversalPicGoOptions contract missing: ${expected}`)
+  }
+
+  const configDb = read(path.join(repoRoot, "libs/Universal-PicGo-Core/src/db/config/index.ts"))
+  if (!configDb.includes("this.key = this.ctx.configPath")) {
+    failures.push("ConfigDb must keep using ctx.configPath as picgo.cfg.json storage key")
+  }
+
+  const externalDb = read(path.join(repoRoot, "libs/Universal-PicGo-Core/src/db/externalPicGo/index.ts"))
+  if (!externalDb.includes('path.join(this.ctx.pluginBaseDir, "external-picgo-cfg.json")')) {
+    failures.push("ExternalPicgoConfigDb must store external-picgo-cfg.json under ctx.pluginBaseDir")
+  }
+
+  const pluginLoaderDb = read(path.join(repoRoot, "libs/Universal-PicGo-Core/src/db/pluginLoder/index.ts"))
+  if (!pluginLoaderDb.includes('path.join(this.ctx.pluginBaseDir, "package.json")')) {
+    failures.push("PluginLoaderDb must store PicGo plugin package.json under ctx.pluginBaseDir")
+  }
+
+  const pluginLoader = read(path.join(repoRoot, "libs/Universal-PicGo-Core/src/lib/PluginLoader.ts"))
+  if (!pluginLoader.includes('path.join(this.ctx.pluginBaseDir, "node_modules/")')) {
+    failures.push("PluginLoader must load node_modules from ctx.pluginBaseDir")
+  }
+  if (!pluginLoader.includes('path.join(ctx.pluginBaseDir, "node_modules", name)')) {
+    failures.push("PluginLoader dependency resolver must resolve plugins through ctx.pluginBaseDir")
+  }
+
+  const pluginHandler = read(path.join(repoRoot, "libs/Universal-PicGo-Core/src/lib/PluginHandler.ts"))
+  for (const legacy of [
+    'execCommand("install", fullNameList, this.ctx.baseDir',
+    'execCommand("uninstall", pkgNameList, this.ctx.baseDir',
+    'execCommand("update", pkgNameList, this.ctx.baseDir',
+  ]) {
+    if (pluginHandler.includes(legacy)) {
+      failures.push(`PluginHandler npm cwd still uses runtime baseDir instead of pluginBaseDir: ${legacy}`)
+    }
+  }
+  for (const expected of [
+    'execCommand("install", fullNameList, this.ctx.pluginBaseDir',
+    'execCommand("uninstall", pkgNameList, this.ctx.pluginBaseDir',
+    'execCommand("update", pkgNameList, this.ctx.pluginBaseDir',
+    "`${this.ctx.baseDir}/libs/zhi-infra/index.cjs`",
+  ]) {
+    if (!pluginHandler.includes(expected)) failures.push(`PluginHandler v2 path usage missing: ${expected}`)
+  }
+
+  const helper = read(path.join(repoRoot, "libs/zhi-siyuan-picgo/src/lib/picgoHelper.ts"))
+  if (!helper.includes("this.ctx.pluginBaseDir")) {
+    failures.push("PicgoHelper.getPluginList must read plugins from ctx.pluginBaseDir")
+  }
+
+  const siyuanPaths = read(path.join(repoRoot, "libs/zhi-siyuan-picgo/src/lib/siyuanPicgoPaths.ts"))
+  for (const expected of [
+    '"data",',
+    '"storage",',
+    '"syp",',
+    '"picgo",',
+    '"picgo.cfg.json"',
+    "getDefaultLocalPicGoDir",
+    "migrateV2WorkspacePicGoConfig",
+    "fs.copyFileSync(homeConfigPath, workspaceConfigPath)",
+  ]) {
+    if (!siyuanPaths.includes(expected)) failures.push(`siyuanPicgoPaths v2 helper missing: ${expected}`)
+  }
+  for (const forbidden of ["renameSync", "rmSync", "rmdirSync", "unlinkSync", "fs.rm", "fs.rename"]) {
+    if (siyuanPaths.includes(forbidden)) {
+      failures.push(`siyuanPicgoPaths migration must be copy-only, found destructive primitive: ${forbidden}`)
+    }
+  }
+
+  const siyuanPost = read(path.join(repoRoot, "libs/zhi-siyuan-picgo/src/lib/siyuanPicgoPostApi.ts"))
+  for (const forbidden of ["moveFile(", "fs.promises.rmdir(from", "fs.rmdirSync(from", "fs.rmSync(from", "fs.unlinkSync(from"]) {
+    if (siyuanPost.includes(forbidden)) {
+      failures.push(`SiyuanPicgoPostApi must not move/delete migration source: ${forbidden}`)
+    }
+  }
+  if (!siyuanPost.includes("copyRuntimeFolder")) {
+    failures.push("SiyuanPicgoPostApi must copy runtime libs without reintroducing old directory migration")
+  }
+
+  const workspaceDir = process.env.SIYUAN_PICGO_AUDIT_WORKSPACE_DIR
+  if (workspaceDir) {
+    const configDir = path.join(workspaceDir, "data", "storage", "syp", "picgo")
+    if (fs.existsSync(configDir)) {
+      const forbiddenEntries = [
+        "node_modules",
+        "package.json",
+        "package-lock.json",
+        "libs",
+        "i18n-cli",
+        "picgo-clipboard-images",
+        "mac.applescript",
+        "windows.ps1",
+        "windows10.ps1",
+        "linux.sh",
+        "wsl.sh",
+        "picgo.log",
+        "external-picgo-cfg.json",
+      ]
+      for (const entry of forbiddenEntries) {
+        if (fs.existsSync(path.join(configDir, entry))) {
+          failures.push(`workspace PicGo config dir contains device-local/runtime entry: ${path.join(configDir, entry)}`)
+        }
+      }
+    }
+  }
+
+  return failures
+}
+
 function checkBundleArtifacts() {
   const failures = []
   const artifactDirs = [
@@ -250,6 +378,7 @@ function checkBundleArtifacts() {
 const checks = {
   contract: checkContract,
   boundaries: checkBoundaries,
+  "v2-paths": checkV2PathContract,
   bundle: checkBundleArtifacts,
 }
 

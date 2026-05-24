@@ -31,38 +31,62 @@ Breaking News!Using MinIO with the PicGo plugin is recommended, if you don't kno
 - Amazon S3<sup>recommended</sup>, thanks to [@hzj629206](https://github.com/hzj629206)
 - Lsky pro<sup> v1.11.0+</sup>
 
-## Config
+## Config paths
 
-New store path from 1.6.0
+### v2.0.0
 
+v2.0.0 is a breaking cleanup release. It includes the internal PicGo refactor and the storage path split.
+
+The bundled PicGo main config is synced with the SiYuan workspace:
+
+```text
+[workspace]/data/storage/syp/picgo/
+  picgo.cfg.json
 ```
-config below 1.5.6
 
+Device-local runtime files stay outside workspace sync:
+
+```text
+~/.universal-picgo/
+  external-picgo-cfg.json
+  package.json
+  package-lock.json
+  node_modules/
+  libs/
+  i18n-cli/
+  picgo-clipboard-images/
+  mac.applescript / windows.ps1 / windows10.ps1 / linux.sh / wsl.sh
+  picgo.log
+```
+
+Migration rule: if the workspace `picgo.cfg.json` is missing and `~/.universal-picgo/picgo.cfg.json` exists, v2 copies only that single file to the workspace. It does not delete the home file, does not overwrite an existing workspace config, and does not move the whole directory.
+
+### Historical paths
+
+```text
+<= 1.5.6
 [workspace]/data/storage/syp/picgo/picgo.cfg.json
-   [workspace]/data/storage/syp/picgo/mac.applescript
-   [workspace]/data/storage/syp/picgo/i18n-cli
-   [workspace]/data/storage/syp/picgo/picgo-clipboard-images
-   [workspace]/data/storage/syp/picgo/external-picgo-cfg.json
-   [workspace]/data/storage/syp/picgo/picgo.log
-   [workspace]/data/storage/syp/picgo/picgo.log
-   [workspace]/data/storage/syp/picgo/package.json
-   [workspace]/data/storage/syp/picgo/package-lock.json
-   [workspace]/data/storage/syp/picgo/node_modules
+[workspace]/data/storage/syp/picgo/external-picgo-cfg.json
+[workspace]/data/storage/syp/picgo/package.json
+[workspace]/data/storage/syp/picgo/package-lock.json
+[workspace]/data/storage/syp/picgo/node_modules/
+[workspace]/data/storage/syp/picgo/libs/
+[workspace]/data/storage/syp/picgo/i18n-cli/
+[workspace]/data/storage/syp/picgo/picgo-clipboard-images/
+[workspace]/data/storage/syp/picgo/*.script
+[workspace]/data/storage/syp/picgo/picgo.log
 
-
-1.6.0+ config path
-
+1.6.0+
 ~/.universal-picgo/picgo.cfg.json
-~/.universal-picgo/mac.applescript
-~/.universal-picgo/i18n-cli
-~/.universal-picgo/picgo-clipboard-images
 ~/.universal-picgo/external-picgo-cfg.json
-~/.universal-picgo/picgo.log
 ~/.universal-picgo/package.json
 ~/.universal-picgo/package-lock.json
-~/.universal-picgo/node_modules
-   ~/.universal-picgo/node_modules/plugin-1
-   ~/.universal-picgo/node_modules/plugin-2
+~/.universal-picgo/node_modules/
+~/.universal-picgo/libs/
+~/.universal-picgo/i18n-cli/
+~/.universal-picgo/picgo-clipboard-images/
+~/.universal-picgo/*.script
+~/.universal-picgo/picgo.log
 ```
 
 ## Changelog

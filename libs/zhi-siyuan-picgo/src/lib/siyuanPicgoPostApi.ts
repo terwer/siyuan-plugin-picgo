@@ -11,7 +11,8 @@ import { IImgInfo, IPicGo, hasNodeEnv, isFileOrBlob, win } from "universal-picgo
 import { JsonUtil, StrUtil } from "zhi-common"
 import { DeviceDetection, DeviceTypeEnum, SiyuanDevice } from "zhi-device"
 import { ILogger, simpleLogger } from "zhi-lib-base"
-import { SiyuanConfig, SiyuanKernelApi } from "zhi-siyuan-api"
+import { SiyuanKernelApi } from "zhi-siyuan-api"
+import type { SiyuanConfigLike } from "./siyuanConfigLike"
 import { SIYUAN_PICGO_FILE_MAP_KEY } from "./constants"
 import { ImageItem } from "./models/ImageItem"
 import { ParsedImage } from "./models/ParsedImage"
@@ -19,6 +20,7 @@ import { PicgoPostResult } from "./models/PicgoPostResult"
 import { ImageParser } from "./parser/ImageParser"
 import { SiyuanPicGoUploadApi } from "./siyuanPicGoUploadApi"
 import { replaceImageLink } from "./utils/utils"
+import { SiyuanPicGoPaths, migrateV2WorkspacePicGoConfig } from "./siyuanPicgoPaths"
 
 /**
  * Picgo与文章交互的通用方法
@@ -27,18 +29,18 @@ class SiyuanPicgoPostApi {
   private readonly logger: ILogger
   private readonly imageParser: ImageParser
   public readonly siyuanApi: SiyuanKernelApi
-  private readonly siyuanConfig: SiyuanConfig
+  private readonly siyuanConfig: SiyuanConfigLike
   private readonly isSiyuanOrSiyuanNewWin: boolean
   private readonly picgoApi: SiyuanPicGoUploadApi
   public cfgUpdating: boolean
 
-  constructor(siyuanConfig: SiyuanConfig, isDev?: boolean) {
+  constructor(siyuanConfig: SiyuanConfigLike, isDev?: boolean, paths?: SiyuanPicGoPaths) {
     this.logger = simpleLogger("picgo-post-api", "zhi-siyuan-picgo", isDev)
 
     this.imageParser = new ImageParser(isDev)
 
     this.siyuanConfig = siyuanConfig
-    this.siyuanApi = new SiyuanKernelApi(siyuanConfig)
+    this.siyuanApi = new SiyuanKernelApi(siyuanConfig as any)
 
     this.isSiyuanOrSiyuanNewWin = (() => {
       const deviceType = DeviceDetection.getDevice()
@@ -51,7 +53,7 @@ class SiyuanPicgoPostApi {
     })()
 
     // 初始化 PicGO
-    this.picgoApi = new SiyuanPicGoUploadApi(isDev)
+    this.picgoApi = new SiyuanPicGoUploadApi(isDev, paths)
     this.cfgUpdating = false
 
     this.updateConfig().then(() => {
@@ -383,34 +385,23 @@ class SiyuanPicgoPostApi {
   // ===================================================================================================================
 
   private async updateConfig() {
-    // 迁移旧插件配置
-    let legacyCfgfolder = ""
-    // 初始化思源 PicGO 配置
+    // v2 路径契约：
+    // - picgo.cfg.json 使用工作空间路径，适合随 SiYuan 同步
+    // - runtime、插件依赖、external-picgo-cfg.json 继续使用本机 ~/.universal-picgo
+    this.migrateV2WorkspaceConfig()
+
+    // 初始化 zhi 运行时依赖到本机 runtime。这里仍然从插件安装目录复制到 ~/.universal-picgo/libs，
+    // 但不再迁移或删除 [workspace]/data/storage/syp/picgo 整个目录。
     const workspaceDir = win?.siyuan?.config?.system?.workspaceDir ?? ""
     if (hasNodeEnv && workspaceDir !== "") {
       const path = win.require("path")
-      legacyCfgfolder = path.join(workspaceDir, "data", "storage", "syp", "picgo")
-      // 如果新插件采用了不同的目录，需要迁移旧插件 node_modules 文件夹
-      if (legacyCfgfolder !== this.picgoApi.picgo.baseDir) {
-        await this.moveFile(legacyCfgfolder, this.picgoApi.picgo.baseDir)
-      }
 
       // 迁移 zhiNpmPath
       const zhiNpmPathSetupJsPath = path.join(workspaceDir, "data", "plugins", "siyuan-plugin-picgo", "libs", "setup")
       const zhiNpmPathInfraPath = path.join(workspaceDir, "data", "plugins", "siyuan-plugin-picgo", "libs", "zhi-infra")
-      await this.moveFile(zhiNpmPathSetupJsPath, path.join(this.picgoApi.picgo.baseDir, "libs", "setup"))
-      await this.moveFile(zhiNpmPathInfraPath, path.join(this.picgoApi.picgo.baseDir, "libs", "zhi-infra"))
+      await this.copyRuntimeFolder(zhiNpmPathSetupJsPath, path.join(this.picgoApi.picgo.baseDir, "libs", "setup"), true)
+      await this.copyRuntimeFolder(zhiNpmPathInfraPath, path.join(this.picgoApi.picgo.baseDir, "libs", "zhi-infra"), true)
     }
-
-    // 旧的配置位置
-    // [工作空间]/data/storage/syp/picgo/picgo.cfg.json
-    //    [工作空间]/data/storage/syp/picgo/package.json
-    //    [工作空间]/data/storage/syp/picgo/mac.applescript
-    //    [工作空间]/data/storage/syp/picgo/i18n-cli
-    //    [工作空间]/data/storage/syp/picgo/picgo-clipboard-images
-    //
-    // 新配置位置
-    // ~/.universal-picgo
 
     // init new config
     const ctx = this.ctx()
@@ -420,7 +411,25 @@ class SiyuanPicgoPostApi {
     this.logger.debug(`siyuan.proxy inited in picgo => ${this.siyuanConfig.apiUrl}`)
   }
 
-  private async moveFile(from: string, to: string) {
+  private migrateV2WorkspaceConfig() {
+    const ctx = this.ctx()
+
+    this.logger.info("PicGo v2 path contract =>", {
+      configPath: ctx.configPath,
+      baseDir: ctx.baseDir,
+      pluginBaseDir: ctx.pluginBaseDir,
+    })
+    migrateV2WorkspacePicGoConfig(
+      {
+        configPath: ctx.configPath,
+        baseDir: ctx.baseDir,
+        pluginBaseDir: ctx.pluginBaseDir,
+      },
+      this.logger
+    )
+  }
+
+  private async copyRuntimeFolder(from: string, to: string, overwrite: boolean = false) {
     const fs = win.fs
     const existFrom = fs.existsSync(from)
     const existTo = fs.existsSync(to)
@@ -429,21 +438,18 @@ class SiyuanPicgoPostApi {
       return
     }
 
-    // 存在旧文件采取迁移
+    // 运行时依赖复制到本机目录，不删除源目录
     this.cfgUpdating = true
-    this.logger.info(`will move ${from} to ${to}`)
+    this.logger.info(`will copy runtime folder ${from} to ${to}`)
     try {
       if (existTo) {
         // 目的地存在复制
-        await this.copyFolder(from, to, true)
+        await this.copyFolder(from, to, overwrite)
       } else {
-        // 不存在移动过去
-        // https://stackoverflow.com/a/76459661/4037224
-        // await fs.promises.rename(from, to)
         await this.copyFolder(from, to)
       }
     } catch (e) {
-      this.logger.error(`move ${from} to ${to} failed: ${e}`)
+      this.logger.error(`copy ${from} to ${to} failed: ${e}`)
     } finally {
       this.cfgUpdating = false
     }
@@ -478,9 +484,6 @@ class SiyuanPicgoPostApi {
         await fs.promises.copyFile(sourcePath, destPath)
       }
     }
-
-    // 删除源文件夹
-    await fs.promises.rmdir(from, { recursive: true })
   }
 }
 

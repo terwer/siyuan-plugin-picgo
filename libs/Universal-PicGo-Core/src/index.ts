@@ -15,6 +15,7 @@ import {
   IPicgoDb,
   IPicGoPlugin,
   IPluginConfig,
+  IUniversalPicGoOptions,
   IUploaderConfigItem,
   IUploaderConfigListItem,
 } from "./types"
@@ -38,4 +39,5 @@ export {
   type IUploaderConfigListItem,
   type IPluginConfig,
   type IPicGoPlugin,
+  type IUniversalPicGoOptions,
 }

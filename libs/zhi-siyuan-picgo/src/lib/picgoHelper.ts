@@ -454,7 +454,7 @@ class PicgoHelper {
   public getPluginList(): IPicGoPlugin[] {
     const path = win.require("path")
 
-    const STORE_PATH = this.ctx.baseDir
+    const STORE_PATH = this.ctx.pluginBaseDir
     const pluginList = this.ctx.pluginLoader.getFullList()
     const list = [] as IPicGoPlugin[]
     for (const i in pluginList) {

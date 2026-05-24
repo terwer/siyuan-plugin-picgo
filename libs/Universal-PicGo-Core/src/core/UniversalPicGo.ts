@@ -19,6 +19,7 @@ import {
   IPicGoPluginInterface,
   IPluginLoader,
   IStringKeyMap,
+  IUniversalPicGoOptions,
 } from "../types"
 import { Lifecycle } from "./Lifecycle"
 import uploaders from "../plugins/uploader"
@@ -62,6 +63,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   i18n!: II18nManager
   VERSION: string = process.env.PICGO_VERSION ?? "unknown"
   private readonly isDev: boolean
+  private readonly usesOptionsObject: boolean
 
   get pluginLoader(): IPluginLoader {
     return this._pluginLoader
@@ -75,13 +77,23 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     return this.requestWrapper.PicGoRequest.bind(this.requestWrapper)
   }
 
-  constructor(configPath?: string, pluginBaseDir?: string, zhiNpmPath?: string, isDev?: boolean) {
+  constructor(options?: IUniversalPicGoOptions)
+  constructor(configPath?: string, pluginBaseDir?: string, zhiNpmPath?: string, isDev?: boolean)
+  constructor(
+    configPathOrOptions?: string | IUniversalPicGoOptions,
+    pluginBaseDir?: string,
+    zhiNpmPath?: string,
+    isDev?: boolean
+  ) {
     super()
-    this.isDev = isDev ?? false
+    this.usesOptionsObject = typeof configPathOrOptions === "object" && configPathOrOptions !== null
+    const options = this.normalizeOptions(configPathOrOptions, pluginBaseDir, zhiNpmPath, isDev)
+    this.isDev = options.isDev ?? false
     this.log = this.getLogger()
-    this.configPath = configPath ?? ""
-    this.pluginBaseDir = pluginBaseDir ?? ""
-    this.zhiNpmPath = zhiNpmPath ?? ""
+    this.configPath = options.configPath ?? ""
+    this.baseDir = options.baseDir ?? options.runtimeDir ?? ""
+    this.pluginBaseDir = options.pluginBaseDir ?? ""
+    this.zhiNpmPath = options.zhiNpmPath ?? ""
     this.output = []
     this.input = []
     this.helper = {
@@ -220,6 +232,23 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
 
   // ===================================================================================================================
 
+  private normalizeOptions(
+    configPathOrOptions?: string | IUniversalPicGoOptions,
+    pluginBaseDir?: string,
+    zhiNpmPath?: string,
+    isDev?: boolean
+  ): IUniversalPicGoOptions {
+    if (typeof configPathOrOptions === "object" && configPathOrOptions !== null) {
+      return configPathOrOptions
+    }
+    return {
+      configPath: configPathOrOptions ?? "",
+      pluginBaseDir: pluginBaseDir ?? "",
+      zhiNpmPath: zhiNpmPath ?? "",
+      isDev: isDev ?? false,
+    }
+  }
+
   private getDefautBaseDir(): string {
     if (hasNodeEnv) {
       const os = win.require("os")
@@ -236,7 +265,12 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
 
   private initConfigPath(): void {
     if (this.configPath === "") {
-      this.baseDir = this.getDefautBaseDir()
+      if (this.baseDir === "") {
+        this.baseDir = this.getDefautBaseDir()
+      } else if (hasNodeEnv) {
+        ensureFolderSync(win.fs, this.baseDir)
+      }
+
       if (hasNodeEnv) {
         const path = win.require("path")
         this.configPath = path.join(this.baseDir, "picgo.cfg.json")
@@ -252,13 +286,18 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
           this.configPath = ""
           throw Error("The configuration file only supports JSON format.")
         }
-        this.baseDir = path.dirname(this.configPath)
+        if (this.baseDir === "") {
+          this.baseDir = this.usesOptionsObject ? this.getDefautBaseDir() : path.dirname(this.configPath)
+        }
+        ensureFolderSync(fs, this.baseDir)
         const exist = pathExistsSync(fs, path, this.configPath)
         if (!exist) {
           ensureFileSync(fs, path, `${this.configPath}`)
         }
       } else {
-        this.baseDir = getBrowserDirectoryPath(this.configPath)
+        if (this.baseDir === "") {
+          this.baseDir = this.usesOptionsObject ? this.getDefautBaseDir() : getBrowserDirectoryPath(this.configPath)
+        }
       }
     }
 
@@ -268,6 +307,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
 
     this.log.debug("win =>", win)
     this.log.info(`hasNodeEnv => ${hasNodeEnv}`)
+    this.log.info(`this.configPath => ${this.configPath}`)
     this.log.info(`this.baseDir => ${this.baseDir}`)
     this.log.info(`this.pluginBaseDir => ${this.pluginBaseDir}`)
   }
@@ -278,10 +318,11 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       const path = win.require("path")
 
       if (this.zhiNpmPath === "") {
-        this.zhiNpmPath = this.configPath
+        this.zhiNpmPath = path.join(this.baseDir, "libs")
       }
       const dir = path.join(this.baseDir, "libs")
       ensureFolderSync(fs, dir)
+      this.log.info(`this.zhiNpmPath => ${this.zhiNpmPath}`)
     } else {
       this.log.warn("zhi is not supported in browser")
     }

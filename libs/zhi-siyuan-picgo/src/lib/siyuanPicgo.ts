@@ -8,8 +8,10 @@
  */
 
 import { SiyuanPicgoPostApi } from "./siyuanPicgoPostApi"
-import { SiyuanConfig, SiyuanKernelApi } from "zhi-siyuan-api"
 import { ILogger, simpleLogger } from "zhi-lib-base"
+import { migrateV2WorkspacePicGoConfig, resolveSiyuanPicGoPaths, type SiyuanPicGoInstanceOptions } from "./siyuanPicgoPaths"
+import type { SiyuanConfigLike } from "./siyuanConfigLike"
+import { SiyuanKernelApi } from "zhi-siyuan-api"
 
 /**
  * 思源笔记 PicGo 实例
@@ -18,22 +20,46 @@ class SiyuanPicGo {
   private static logger: ILogger | null = null
   private static siyuanApiInstance: SiyuanKernelApi | null = null
   private static picgoInstance: SiyuanPicgoPostApi | null = null
+  private static instanceKey: string | null = null
 
-  public static async getInstance(siyuanConfig: SiyuanConfig, isDev?: boolean): Promise<SiyuanPicgoPostApi> {
+  public static async getInstance(
+    siyuanConfig: SiyuanConfigLike,
+    isDevOrOptions?: boolean | SiyuanPicGoInstanceOptions
+  ): Promise<SiyuanPicgoPostApi> {
+    const isDev = typeof isDevOrOptions === "object" ? isDevOrOptions.isDev : isDevOrOptions
+    const pathOverrides = typeof isDevOrOptions === "object" ? isDevOrOptions.paths : undefined
+    const paths = resolveSiyuanPicGoPaths(pathOverrides)
+    const instanceKey = JSON.stringify({
+      apiUrl: siyuanConfig.apiUrl,
+      configPath: paths.configPath,
+      baseDir: paths.baseDir,
+      pluginBaseDir: paths.pluginBaseDir,
+      zhiNpmPath: paths.zhiNpmPath,
+    })
     if (!this.logger) {
       this.logger = simpleLogger("get-instance", "zhi-siyuan-picgo", isDev)
+    }
+
+    if (this.instanceKey !== null && this.instanceKey !== instanceKey) {
+      this.logger.info("PicGo instance path contract changed, reinitializing singleton")
+      this.siyuanApiInstance = null
+      this.picgoInstance = null
+      this.instanceKey = null
     }
 
     // 如果 siyuanApi 尚未创建，初始化它
     if (!this.siyuanApiInstance) {
       this.logger.debug("初始化 SiyuanKernelApi 实例")
-      this.siyuanApiInstance = new SiyuanKernelApi(siyuanConfig)
+      this.siyuanApiInstance = new SiyuanKernelApi(siyuanConfig as any)
     }
 
     // 如果 picgo 尚未创建，初始化它
     if (!this.picgoInstance) {
       this.logger.debug("初始化 SiyuanPicgoPostApi 实例")
-      this.picgoInstance = new SiyuanPicgoPostApi(siyuanConfig, isDev)
+      this.logger.info("resolved PicGo paths =>", paths)
+      migrateV2WorkspacePicGoConfig(paths, this.logger)
+      this.picgoInstance = new SiyuanPicgoPostApi(siyuanConfig, isDev, paths)
+      this.instanceKey = instanceKey
 
       // 异步检查配置迁移状态
       await this.checkConfigMigration(this.siyuanApiInstance, this.picgoInstance)

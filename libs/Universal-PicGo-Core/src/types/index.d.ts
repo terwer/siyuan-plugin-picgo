@@ -23,7 +23,11 @@ export interface IPicGo extends EventEmitter {
    */
   configPath: string
   /**
-   * the picgo configPath's baseDir
+   * Device-local runtime directory.
+   *
+   * In v2 this is intentionally independent from dirname(configPath): the
+   * main config may live in a synced workspace file while clipboard cache,
+   * i18n files, logs and helper libs stay under the local runtime directory.
    */
   baseDir: string
   /**
@@ -104,6 +108,40 @@ export interface IPicGo extends EventEmitter {
    * upload gogogo
    */
   upload: (input?: any[]) => Promise<IImgInfo[] | Error>
+}
+
+/**
+ * UniversalPicGo path options.
+ *
+ * In v2, `configPath` is allowed to point at a synced workspace file while
+ * `baseDir` / `pluginBaseDir` stay device-local for runtime files and plugins.
+ */
+export interface IUniversalPicGoOptions {
+  /**
+   * PicGo main config path.
+   */
+  configPath?: string
+  /**
+   * Device-local runtime directory. This is exposed as ctx.baseDir for
+   * compatibility with existing runtime code.
+   */
+  baseDir?: string
+  /**
+   * Alias of baseDir for callers that want clearer v2 wording.
+   */
+  runtimeDir?: string
+  /**
+   * Device-local third-party PicGo plugin directory.
+   */
+  pluginBaseDir?: string
+  /**
+   * zhi npm helper path.
+   */
+  zhiNpmPath?: string
+  /**
+   * Enable development logging.
+   */
+  isDev?: boolean
 }
 
 export type Nullable<T> = T | null
