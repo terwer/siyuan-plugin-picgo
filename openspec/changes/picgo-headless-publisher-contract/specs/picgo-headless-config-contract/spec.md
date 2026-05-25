@@ -1,122 +1,122 @@
 ## ADDED Requirements
 
-### Requirement: Headless consumers can create a PicGo manager without depending on an installed plugin product
+### Requirement: 无界面消费者可以在不依赖已安装插件产品的情况下创建 PicGo 管理器
 
-`zhi-siyuan-picgo` SHALL expose a public headless manager or equivalent facade for SiYuan consumers. Creating and using this facade MUST NOT require `siyuan-plugin-picgo` to already be installed as a SiYuan plugin, and MUST NOT require `/data/plugins/siyuan-plugin-picgo` to exist.
+`zhi-siyuan-picgo` SHALL 暴露面向 SiYuan 消费者的公共无界面管理器或等价门面。创建和使用该门面 MUST NOT 要求 `siyuan-plugin-picgo` 已经作为 SiYuan 插件安装，也不得要求 `/data/plugins/siyuan-plugin-picgo` 存在。
 
-#### Scenario: Publisher creates manager when the PicGo plugin product is not installed
+#### Scenario: Publisher 在未安装 PicGo 插件产品时创建管理器
 
-- **WHEN** an external consumer creates a headless manager in a SiYuan workspace where `/data/plugins/siyuan-plugin-picgo/plugin.json` does not exist
-- **THEN** manager creation SHALL succeed as long as the npm package and runtime environment are available
-- **AND** the PicGo lib contract SHALL NOT require the caller to perform plugin installation detection
+- **WHEN** 外部消费者在 `/data/plugins/siyuan-plugin-picgo/plugin.json` 不存在的 SiYuan 工作空间中创建无界面管理器
+- **THEN** 只要 npm 包和运行时环境可用，管理器创建 SHALL 成功
+- **AND** PicGo 库契约 SHALL 不要求调用方执行插件安装检测
 
-#### Scenario: Standalone PicGo plugin continues using the same underlying contract
+#### Scenario: 独立 PicGo 插件继续使用同一底层契约
 
-- **WHEN** `siyuan-plugin-picgo` internally uses PicGo configuration and upload behavior
-- **THEN** it SHALL continue to work normally as a product shell based on the same underlying lib contract
-- **AND** that product shell SHALL NOT become a required runtime dependency for external consumers
+- **WHEN** `siyuan-plugin-picgo` 内部使用 PicGo 配置和上传行为
+- **THEN** 它 SHALL 继续作为产品外壳基于同一底层库契约正常工作
+- **AND** 该产品外壳 SHALL NOT 成为外部消费者的必需运行依赖
 
-### Requirement: Headless consumers can read and save PicGo configuration
+### Requirement: 无界面消费者可以读取和保存 PicGo 配置
 
-Headless manager SHALL provide public methods to read the current PicGo configuration and save bounded configuration updates; callers do not need to instantiate internal DB classes directly.
+无界面管理器 SHALL 提供公共方法读取当前 PicGo 配置，并保存有边界的配置更新；调用方不需要直接实例化内部数据库类。
 
-#### Scenario: Read current configuration
+#### Scenario: 读取当前配置
 
-- **WHEN** an external consumer requests the current PicGo configuration
-- **THEN** manager SHALL return persisted configuration with default sections initialized
-- **AND** manager SHALL preserve unknown fields to ensure compatibility with future versions
+- **WHEN** 外部消费者请求当前 PicGo 配置
+- **THEN** 管理器 SHALL 返回已经初始化默认 section 的持久化配置
+- **AND** 管理器 SHALL 保留未知字段，确保后续版本兼容
 
-#### Scenario: Save one uploader configuration without overwriting unknown fields
+#### Scenario: 保存单个上传器配置且不覆盖未知字段
 
-- **WHEN** an external consumer saves the configuration for one uploader
-- **THEN** manager SHALL update only the target uploader configuration and necessary current-uploader metadata
-- **AND** unrelated uploader configuration, plugin configuration, and unknown fields SHALL remain unchanged
+- **WHEN** 外部消费者保存某一个上传器的配置
+- **THEN** 管理器 SHALL 只更新目标上传器配置和必要的当前上传器元数据
+- **AND** 无关上传器配置、插件配置和未知字段 SHALL 保持不变
 
-### Requirement: Headless consumers can manage the current uploader
+### Requirement: 无界面消费者可以管理当前上传器
 
-Headless manager SHALL expose public methods to read and set the current uploader used by upload operations.
+无界面管理器 SHALL 暴露公共方法读取和设置上传操作使用的当前上传器。
 
-#### Scenario: Set current uploader
+#### Scenario: 设置当前上传器
 
-- **WHEN** an external consumer sets the current uploader to a supported uploader id
-- **THEN** subsequent uploads based on the same persisted configuration SHALL use that uploader
-- **AND** configuration SHALL record the selected uploader using the PicGo canonical config structure
+- **WHEN** 外部消费者把当前上传器设置为受支持的上传器 id
+- **THEN** 后续基于同一持久化配置的上传 SHALL 使用该上传器
+- **AND** 配置 SHALL 使用 PicGo 标准配置结构记录所选上传器
 
-#### Scenario: Reject unknown uploader id
+#### Scenario: 拒绝未知上传器 id
 
-- **WHEN** an external consumer tries to set the current uploader to an unknown uploader id
-- **THEN** manager SHALL return or throw a structured validation error
-- **AND** the persisted current uploader SHALL NOT be modified
+- **WHEN** 外部消费者尝试把当前上传器设置为未知上传器 id
+- **THEN** 管理器 SHALL 返回或抛出结构化校验错误
+- **AND** 持久化的当前上传器 SHALL NOT 被修改
 
-### Requirement: Headless consumers can list supported built-in uploaders
+### Requirement: 无界面消费者可以列出受支持的内置上传器
 
-Headless manager SHALL provide the list of built-in uploaders available in the current runtime, including stable uploader ids that can be used to save configuration and perform uploads.
+无界面管理器 SHALL 提供当前运行时可用的内置上传器列表，其中包含可用于保存配置和执行上传的稳定上传器 id。
 
-#### Scenario: List built-in uploaders
+#### Scenario: 列出内置上传器
 
-- **WHEN** an external consumer requests the uploader list
-- **THEN** manager SHALL include the built-in uploaders registered by `universal-picgo`
-- **AND** each item SHALL include at least id, display name, whether it is built in, and whether schema is available
+- **WHEN** 外部消费者请求上传器列表
+- **THEN** 管理器 SHALL 包含 `universal-picgo` 注册的内置上传器
+- **AND** 每个条目 SHALL 至少包含 id、展示名称、是否内置、配置模式是否可用
 
-### Requirement: Headless consumers can get uploader configuration schema
+### Requirement: 无界面消费者可以获得上传器配置模式
 
-Headless manager SHALL expose configuration schema for supported built-in uploaders. The schema SHALL provide enough metadata for consumers to render lightweight configuration forms without importing `picgo-plugin-app` UI code.
+无界面管理器 SHALL 为受支持的内置上传器暴露配置模式。该配置模式 SHALL 提供足够元数据，让消费者可以在不导入 `picgo-plugin-app` 界面代码的情况下渲染轻量配置表单。
 
-#### Scenario: Get schema for a built-in uploader
+#### Scenario: 获取内置上传器的配置模式
 
-- **WHEN** an external consumer requests the schema for a supported built-in uploader
-- **THEN** manager SHALL return field metadata, including field name, field type, label or message key, whether required, known default value, whether sensitive, and options for list fields
+- **WHEN** 外部消费者请求受支持内置上传器的配置模式
+- **THEN** 管理器 SHALL 返回字段元数据，包括字段名、字段类型、label 或 message key、是否必填、已知默认值、是否敏感字段、list 字段可选值
 
-#### Scenario: Schema is not bound to Vue or Element Plus
+#### Scenario: 配置模式不绑定 Vue 或 Element Plus
 
-- **WHEN** a consumer reads uploader schema
-- **THEN** schema SHALL be plain serializable data
-- **AND** schema SHALL NOT depend on Vue components, Element Plus components, or `picgo-plugin-app` imports
+- **WHEN** 消费者读取上传器配置模式
+- **THEN** 配置模式 SHALL 是普通可序列化数据
+- **AND** 配置模式 SHALL NOT 依赖 Vue 组件、Element Plus 组件或 `picgo-plugin-app` imports
 
-### Requirement: Headless consumers can validate uploader configuration
+### Requirement: 无界面消费者可以校验上传器配置
 
-Headless manager SHALL expose uploader configuration validation before save and test upload.
+无界面管理器 SHALL 在保存和测试上传前暴露上传器配置校验能力。
 
-#### Scenario: Validate valid uploader configuration
+#### Scenario: 校验有效上传器配置
 
-- **WHEN** an external consumer validates the complete configuration for a supported uploader
-- **THEN** manager SHALL return a successful validation result
-- **AND** the result SHALL identify the validated uploader id
+- **WHEN** 外部消费者校验某个受支持上传器的完整配置
+- **THEN** 管理器 SHALL 返回成功校验结果
+- **AND** 结果 SHALL 标识被校验的上传器 id
 
-#### Scenario: Validate missing required fields
+#### Scenario: 校验缺失必填字段
 
-- **WHEN** an external consumer validates configuration that is missing required fields
-- **THEN** manager SHALL return structured validation failure including field names and messages
-- **AND** manager SHALL NOT persist invalid configuration unless the caller explicitly uses a documented unsafe raw escape hatch
+- **WHEN** 外部消费者校验缺少必填字段的配置
+- **THEN** 管理器 SHALL 返回结构化校验失败，包含字段名和提示信息
+- **AND** 除非调用方显式使用被文档标为 unsafe 的原始逃逸口，否则管理器 SHALL NOT 持久化无效配置
 
-### Requirement: Headless consumers can upload through managed configuration
+### Requirement: 无界面消费者可以通过托管配置上传
 
-Headless manager SHALL provide upload entrypoints that use the same managed configuration and current uploader state.
+无界面管理器 SHALL 提供使用同一托管配置和当前上传器状态的上传入口。
 
-#### Scenario: Upload one image
+#### Scenario: 上传单张图片
 
-- **WHEN** an external consumer uploads a supported image input through the headless manager
-- **THEN** manager SHALL use the current uploader from managed configuration
-- **AND** manager SHALL return PicGo image output, or return a structured error consistent with existing upload behavior
+- **WHEN** 外部消费者通过无界面管理器上传受支持的图片输入
+- **THEN** 管理器 SHALL 使用托管配置中的当前上传器
+- **AND** 管理器 SHALL 返回 PicGo 图片输出，或返回与现有上传行为一致的结构化错误
 
-#### Scenario: Upload Markdown images
+#### Scenario: 上传 Markdown 图片
 
-- **WHEN** an external consumer uploads images referenced in Markdown through the SiYuan facade
-- **THEN** facade SHALL preserve the existing Markdown replacement behavior of `SiyuanPicGo`
-- **AND** facade SHALL use the same configuration source as the headless manager
+- **WHEN** 外部消费者通过 SiYuan 门面上传 Markdown 中引用的图片
+- **THEN** 门面 SHALL 保留 `SiyuanPicGo` 已有的 Markdown 替换行为
+- **AND** 门面 SHALL 使用与无界面管理器相同的配置来源
 
-### Requirement: Headless contract uses canonical path resolution
+### Requirement: 无界面契约使用标准路径解析
 
-Headless manager SHALL use path resolution rules consistent with `picgo-v2-config-path-split`, and SHALL NOT require consumers to manually construct config/runtime/plugin paths.
+无界面管理器 SHALL 使用与 `picgo-v2-config-path-split` 一致的路径解析规则，SHALL NOT 要求消费者手动构造 config/runtime/plugin 路径。
 
-#### Scenario: Resolve paths in a SiYuan workspace
+#### Scenario: 在 SiYuan 工作空间中解析路径
 
-- **WHEN** a SiYuan consumer creates manager with SiYuan config
-- **THEN** `zhi-siyuan-picgo` SHALL internally resolve workspace config and local runtime paths
-- **AND** the consumer SHALL not need to know the physical path layout
+- **WHEN** SiYuan 消费者使用 SiYuan config 创建管理器
+- **THEN** `zhi-siyuan-picgo` SHALL 在内部解析工作空间配置和本地运行时路径
+- **AND** 消费者 SHALL 不需要知道物理路径布局
 
-#### Scenario: Keep device-local runtime separated
+#### Scenario: 保持设备本地运行时分离
 
-- **WHEN** manager initializes plugin runtime, logs, cache, external PicGo configuration, or dependency directories
-- **THEN** these device-local artifacts SHALL follow v2 path split rules
-- **AND** they SHALL NOT be saved to the workspace-synced `picgo.cfg.json` location unless the path split contract explicitly specifies it
+- **WHEN** 管理器初始化插件运行时、日志、缓存、外部 PicGo 配置或依赖目录
+- **THEN** 这些设备本地 artifact SHALL 遵循 v2 路径拆分规则
+- **AND** 除非路径拆分契约明确指定，否则它们 SHALL NOT 被保存到工作空间同步的 `picgo.cfg.json` 位置

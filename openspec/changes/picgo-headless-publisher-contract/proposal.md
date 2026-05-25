@@ -1,26 +1,26 @@
 ## Why
 
-`zhi-siyuan-picgo` is already used as an external lib by `siyuan-plugin-publisher`, but current consumers can still easily conflate the "PicGo upload core / configuration model" with the full `siyuan-plugin-picgo` plugin product. Publisher users are required to install the full PicGo plugin in order to use PicGo image-hosting capabilities, which creates a fragmented experience and also pushes Publisher V2 image-hosting settings toward the wrong plugin-dependency design.
+`zhi-siyuan-picgo` 已经作为外部库被 `siyuan-plugin-publisher` 使用，但当前消费者仍容易把“PicGo 上传内核 / 配置模型”和“完整 `siyuan-plugin-picgo` 插件产品”混在一起。Publisher 用户为了使用 PicGo 图床能力被要求安装完整 PicGo 插件，导致体验割裂，也让 Publisher V2 图床设置走向错误的插件依赖方案。
 
-A stable headless public contract now needs to be defined first in the PicGo repository: external plugins can independently read/save PicGo configuration, list image hosts, render a lightweight configuration UI, validate configuration, and perform uploads without depending on whether the `siyuan-plugin-picgo` plugin is installed.
+现在需要先在 PicGo 仓库定义一个稳定的无界面公共契约：外部插件可以独立读取/保存 PicGo 配置、列出图床、渲染轻量配置界面、校验配置并执行上传，而不依赖 `siyuan-plugin-picgo` 插件是否安装。
 
 ## What Changes
 
-- Add a PicGo headless manager contract for external consumers, with `zhi-siyuan-picgo` exposing the SiYuan scenario entrypoint.
-- Add configuration management capabilities: read full configuration, read the current image host, save image-host configuration, switch the current image host, write defaults, and perform conservative migration.
-- Add uploader metadata capabilities: list built-in uploaders, get uploader configuration schema, and declare field types/defaults/required flags/sensitive fields/descriptions.
-- Add configuration validation capabilities: provide structured validation results before saving and test uploads, so Publisher does not copy validation logic itself.
-- Add an upload capability contract: external consumers can use the same instance to upload files/Blobs/paths and call Markdown image upload-and-replace capability.
-- Clarify that the `siyuan-plugin-picgo` plugin product is no longer a runtime prerequisite for the external lib; external consumers only depend on the npm package and their own UI.
-- Clarify that this change is the upstream dependency of the `siyuan-plugin-publisher` repository change `publisher-picgo-headless-ui`; Publisher should integrate the new dependency only after the PicGo lib release is complete.
-- **BREAKING**: the v2 public contract may clean up old implicit path and plugin-detection assumptions, but must provide clear migration instructions and test steps.
+- 新增面向外部消费者的 PicGo 无界面管理器契约，由 `zhi-siyuan-picgo` 暴露 SiYuan 场景入口。
+- 新增配置管理能力：读取完整配置、读取当前图床、保存图床配置、切换当前图床、写入默认值、保守迁移。
+- 新增上传器元数据能力：列出内置上传器、获取上传器配置模式、声明字段类型/默认值/必填/敏感字段/说明。
+- 新增配置校验能力：在保存和测试上传前提供结构化校验结果，避免 Publisher 自己复制校验逻辑。
+- 新增上传能力契约：外部消费者可以用同一实例上传文件/Blob/路径，以及调用 Markdown 图片上传替换能力。
+- 明确 `siyuan-plugin-picgo` 插件产品不再是外部库的运行前置依赖；外部消费者只依赖 npm 包和自己的界面。
+- 明确本 change 是 `siyuan-plugin-publisher` 仓库 `publisher-picgo-headless-ui` 的上游依赖；PicGo 库发布完成后 Publisher 才接入新版依赖。
+- **BREAKING**：v2 公共契约允许整理旧的隐式路径和插件检测假设，但必须提供清晰的迁移说明和测试步骤。
 
 ## Capabilities
 
 ### New Capabilities
 
-- `picgo-headless-config-contract`: public contract for external consumers to independently manage PicGo configuration, image-host schema, and upload capabilities.
-- `picgo-publisher-integration-contract`: cross-repository integration boundary, release order, and mutual reference rules between the PicGo lib and Publisher.
+- `picgo-headless-config-contract`：外部消费者独立管理 PicGo 配置、图床配置模式和上传能力的公共契约。
+- `picgo-publisher-integration-contract`：PicGo 库与 Publisher 的跨仓库集成边界、发布顺序和互相引用规则。
 
 ### Modified Capabilities
 
@@ -28,16 +28,16 @@ A stable headless public contract now needs to be defined first in the PicGo rep
 
 ## Impact
 
-- Affected packages:
+- 受影响包：
   - `libs/Universal-PicGo-Core`
   - `libs/Universal-PicGo-Store`
   - `libs/zhi-siyuan-picgo`
-  - `packages/picgo-plugin-app` is only an internal consumer reference for the same underlying contract; it is not a UI package for Publisher to reuse.
-- Affected public API:
-  - `zhi-siyuan-picgo` export entrypoint for SiYuan consumers.
-  - `universal-picgo` export entrypoint for generic headless configuration/upload management.
-- Affected documentation:
-  - Release instructions and external consumer integration instructions in lib README / DEVELOPMENT.md.
-  - Cross-repository reference to Publisher change `publisher-picgo-headless-ui`.
-- Consumer impact:
-  - `siyuan-plugin-publisher` will later upgrade to the new lib and remove the hard dependency on the installed `siyuan-plugin-picgo` plugin product.
+  - `packages/picgo-plugin-app` 只作为同一底层契约的内部消费者参考；它不是给 Publisher 复用的界面包。
+- 受影响公共接口：
+  - `zhi-siyuan-picgo` 面向 SiYuan 消费者的导出入口。
+  - `universal-picgo` 面向通用无界面配置/上传管理的导出入口。
+- 受影响文档：
+  - 库 README / DEVELOPMENT.md 中的发版说明、外部消费者接入说明。
+  - 对 Publisher change `publisher-picgo-headless-ui` 的跨仓库引用。
+- 消费者影响：
+  - `siyuan-plugin-publisher` 后续会升级到新版库，并移除对已安装 `siyuan-plugin-picgo` 插件产品的强依赖。
