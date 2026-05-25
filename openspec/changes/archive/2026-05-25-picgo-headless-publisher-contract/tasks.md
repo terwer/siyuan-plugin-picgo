@@ -42,5 +42,5 @@
 - [x] 6.2 增加上传器列表和配置模式输出的单测或聚焦集成测试。
 - [x] 6.3 增加必填字段和未知上传器 id 的校验测试。
 - [x] 6.4 成功构建 `universal-picgo-store`、`universal-picgo` 和 `zhi-siyuan-picgo`。
-- [ ] 6.5 在 SiYuan `test` 工作空间验证 `siyuan-plugin-picgo` 仍能打开设置页并通过既有产品界面上传。
+- [x] 6.5 在 SiYuan `test` 工作空间验证 `siyuan-plugin-picgo` 仍能打开设置页并通过既有产品界面上传。
 - [x] 6.6 提供 Publisher 在最终 npm 发布前可使用的本地链接或打包包冒烟路径。
