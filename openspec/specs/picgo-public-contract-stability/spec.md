@@ -1,41 +1,41 @@
-# picgo-public-contract-stability Specification
+# picgo-public-contract-stability 规范
 
 ## Purpose
-TBD - created by archiving change picgo-internal-refactor. Update Purpose after archive.
+待定 - 由归档变更 picgo-internal-refactor 创建。归档后更新 Purpose。
 ## Requirements
-### Requirement: Public API stability under internal refactor
-The plugin SHALL preserve its public API surface while internal modules are refactored.
+### Requirement: 内部重构期间 public API 保持稳定
+插件 SHALL 在内部 modules 被重构时保持其 public API surface。
 
-#### Scenario: Existing plugin entry remains stable
-- **WHEN** the plugin is built and loaded by SiYuan
-- **THEN** the existing plugin entry and manifest-facing contract remain compatible with the current release behavior
+#### Scenario: 现有 plugin entry 保持稳定
+- **WHEN** 插件被构建并由 SiYuan 加载
+- **THEN** 现有 plugin entry 和 manifest-facing contract 与当前 release behavior 保持兼容
 
-#### Scenario: Public exports remain stable
-- **WHEN** downstream code imports the published workspace packages
-- **THEN** the exported symbols and module paths that form the public API remain available unless a separate breaking change is explicitly proposed
+#### Scenario: Public exports 保持稳定
+- **WHEN** downstream code imports 已发布的 workspace packages
+- **THEN** 构成 public API 的 exported symbols 和 module paths 保持可用，除非单独明确提出 breaking change
 
-### Requirement: Persistent data compatibility
-The plugin SHALL continue to read and write existing user configuration, cache, and storage data without requiring migration that breaks current installs.
+### Requirement: 持久化数据兼容
+插件 SHALL 继续读取和写入现有用户 configuration、cache 和 storage data，而不要求会破坏当前安装的 migration。
 
-#### Scenario: Existing data is still readable
-- **WHEN** a user opens an existing installation after the refactor
-- **THEN** previously stored configuration and metadata remain readable by the current runtime
+#### Scenario: 现有数据仍可读取
+- **WHEN** 用户在重构后打开现有安装
+- **THEN** 当前 runtime 仍可读取之前存储的 configuration 和 metadata
 
-#### Scenario: Existing data is still writable
-- **WHEN** the user changes settings or uploads images
-- **THEN** the plugin continues writing data in the same externally compatible contract unless a separate migration is explicitly approved
+#### Scenario: 现有数据仍可写入
+- **WHEN** 用户修改 settings 或上传 images
+- **THEN** 插件继续按相同的外部兼容 contract 写入数据，除非单独明确批准 migration
 
-### Requirement: User-visible behavior remains equivalent
-The plugin SHALL preserve the observable behavior of the current bootstrap, settings, upload, and Siyuan integration flows.
+### Requirement: 用户可见行为保持等价
+插件 SHALL 保持当前 bootstrap、settings、upload 和 Siyuan integration flows 的可观察行为。
 
-#### Scenario: Core flows behave the same
-- **WHEN** a user opens settings, uploads an image, or interacts with the Siyuan integration surface
-- **THEN** the user-visible flow remains functionally equivalent to the current release
+#### Scenario: 核心流程行为相同
+- **WHEN** 用户打开 settings、上传 image 或与 Siyuan integration surface 交互
+- **THEN** 用户可见流程与当前 release 在功能上保持等价
 
-### Requirement: Refactor completion requires contract verification
-The internal refactor SHALL NOT be considered complete until contract checks and runtime validation confirm that external behavior is unchanged.
+### Requirement: 重构完成需要 contract verification
+内部重构 SHALL NOT 在 contract checks 和 runtime validation 确认外部行为未改变之前被视为完成。
 
-#### Scenario: Verification gates pass
-- **WHEN** the refactor is ready for review
-- **THEN** contract tests, build checks, and host smoke provide evidence that the public API and user-visible behavior were preserved
+#### Scenario: Verification gates 通过
+- **WHEN** 重构准备 review
+- **THEN** contract tests、build checks 和 host smoke 提供 public API 与用户可见行为已被保留的证据
 

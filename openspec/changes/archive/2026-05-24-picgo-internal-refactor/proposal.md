@@ -1,35 +1,35 @@
 ## Why
 
-`siyuan-plugin-picgo` 的历史包袱已经明显影响可维护性：包与包之间存在深度耦合、内部职责混杂、实现细节外泄到跨包调用中。全量阅读当前代码后可以看到更根本的问题：该仓库同时承担“SiYuan 插件产品”和“可发布/可打包复用 lib”两种身份，但没有在架构上把 product shell、Siyuan 适配、PicGo domain core、运行时 adapter、UI helper、package public contract 分开；所谓“公用底层能力”实际通过胖 lib、全局 runtime 探测、深层 import、静态单例和全量打包复用，导致插件和 lib 长期互相打架。构建期出现的 direct `eval` / `eval("require")` 警告不是单行代码问题，而是运行时边界、依赖输入、预构建产物消费和打包策略长期未被顶层约束的架构信号。现在适合把内部结构重整一次，但必须冻结对外 API，并从根上补齐 product/library 分层、runtime/bundle 边界和粘贴上传事务边界设计，避免把维护成本和破坏风险继续传给后续功能。
+The historical baggage of `siyuan-plugin-picgo` has clearly affected maintainability: packages are deeply coupled, internal responsibilities are mixed, and implementation details leak into cross-package calls. After reading the current code in full, a more fundamental problem is visible: this repository simultaneously acts as a "SiYuan plugin product" and as a "publishable/package-reusable lib", but architecturally it does not separate the product shell, Siyuan adapter, PicGo domain core, runtime adapter, UI helper, and package public contract. The so-called "shared underlying capability" is actually reused through fat libs, global runtime probing, deep imports, static singletons, and full-bundle reuse, causing the plugin and lib to fight each other long-term. The direct `eval` / `eval("require")` warnings during build are not single-line code problems, but architectural signals that runtime boundaries, dependency inputs, prebuilt artifact consumption, and bundling strategy have not been constrained at the top level. It is now appropriate to reorganize the internal structure once, but the external API must be frozen, and product/library layering, runtime/bundle boundaries, and paste-upload transaction boundary design must be completed from the root so that maintenance cost and breakage risk are not passed on to later features.
 
 ## What Changes
 
-- 重新梳理 `picgo-plugin-bootstrap`、`picgo-plugin-app`、`Universal-PicGo-Core`、`Universal-PicGo-Store`、`zhi-siyuan-picgo` 的内部职责边界。
-- 明确插件产品与可发布 lib 是两个不同消费者：插件产品只能通过 product facade/host adapter 组合能力；可发布 lib 必须提供稳定、目标明确、无产品 UI 泄漏的公共入口。
-- 用稳定的包级 facade 替换跨包深层 import 和实现细节外泄，禁止 `zhi-siyuan-picgo/src` 这类源码穿透成为长期契约。
-- 从顶层定义浏览器/SiYuan 宿主/Node 构建期/测试环境的运行时能力边界，禁止以局部替换 direct `eval` 的方式掩盖环境混用。
-- 治理会把 `vm-browserify`、预构建 `zhi-siyuan-picgo/dist`、动态 `require` 探测等不透明依赖带入目标 bundle 的设计缺陷。
-- 治理 `zhi-siyuan-picgo` 同时暴露 core/db/runtime、包含 Vue/Element Plus/Electron helper、又承担 Siyuan 配置迁移和插件管理编排的胖 lib 设计。
-- 重建粘贴图片上传的 ownership：插件一旦启用自动上传，必须在事件源头阻断 SiYuan 默认粘贴/内部上传，由插件作为唯一事务处理方完成上传、插入/替换和元数据写入。
-- 废弃“双上传 + SiYuan `uploadAsset` + 轮询 DOM/块 + 后置偷换链接”的主路径；这不是可容忍 fallback，而是方向错误的不可控设计。
-- 将粘贴上传从 event handler 内的补偿脚本彻底重写为 product-level `PasteUploadTransaction`：同步决策与默认行为阻断、PicGo 上传、文档显式写入、元数据提交、失败回滚分别由清晰的 application service / port / adapter 承担。
-- 收敛重复的状态、存储、上传编排和 SiYuan 适配逻辑，降低模块间耦合。
-- 增加公共契约与运行时回归验证，锁定现有插件入口、导出、数据兼容性和用户可见行为。
-- **不改变对外 API**：不改公开导出名、不改强制配置字段、不改 manifest 结构、不改既有存储契约，除非后续单独提出新的变更。
+- Reorganize the internal responsibility boundaries of `picgo-plugin-bootstrap`, `picgo-plugin-app`, `Universal-PicGo-Core`, `Universal-PicGo-Store`, and `zhi-siyuan-picgo`.
+- Clarify that the plugin product and publishable lib are two different consumers: the plugin product can only compose capabilities through product facades/host adapters; the publishable lib must provide stable, target-specific public entrypoints without product UI leakage.
+- Replace cross-package deep imports and implementation-detail leakage with stable package-level facades, and forbid source penetration such as `zhi-siyuan-picgo/src` from becoming a long-term contract.
+- Define runtime capability boundaries for browser, SiYuan host, Node build-time, and test environments at the top level, and forbid hiding environment mixing through local replacement of direct `eval`.
+- Govern the design defects that bring opaque dependencies such as `vm-browserify`, prebuilt `zhi-siyuan-picgo/dist`, and dynamic `require` probing into target bundles.
+- Govern the fat-lib design where `zhi-siyuan-picgo` simultaneously exposes core/db/runtime, includes Vue/Element Plus/Electron helpers, and owns SiYuan configuration migration and plugin-management orchestration.
+- Rebuild paste image upload ownership: once automatic upload is enabled, the plugin must block SiYuan default paste/internal upload at the event source and act as the only transaction handler for upload, insert/replace, and metadata write.
+- Deprecate the main path of "double upload + SiYuan `uploadAsset` + DOM/block polling + post-hoc link stealing"; this is not an acceptable fallback, but a wrong and uncontrollable design direction.
+- Completely rewrite paste upload from the compensation script inside the event handler into product-level `PasteUploadTransaction`: synchronous decision and default behavior blocking, PicGo upload, explicit document write, metadata commit, and failure rollback are each owned by clear application services / ports / adapters.
+- Converge duplicated state, storage, upload orchestration, and SiYuan adapter logic to reduce coupling between modules.
+- Add public contract and runtime regression verification to lock down existing plugin entrypoints, exports, data compatibility, and user-visible behavior.
+- **Do not change external API**: do not change public export names, required configuration fields, manifest structure, or existing storage contract unless a separate follow-up change is proposed.
 
 ## Capabilities
 
 ### New Capabilities
-- `picgo-public-contract-stability`: 在内部重构期间保持现有公共入口、导出符号、插件清单、存储契约和用户可见行为稳定。
-- `picgo-runtime-boundary-integrity`: 从架构层约束运行时能力、依赖输入和打包产物，消除 direct `eval` 类警告背后的环境边界缺失。
-- `picgo-product-library-boundary`: 从顶层区分 SiYuan 插件产品与可发布 PicGo/Siyuan lib，重建 package role、依赖方向、公共入口和构建目标。
-- `picgo-paste-upload-ownership`: 粘贴图片上传必须由插件源头阻断默认行为并单事务接管，禁止双上传、轮询和事后补偿成为运行路径。
+- `picgo-public-contract-stability`: keep existing public entrypoints, exported symbols, plugin manifest, storage contract, and user-visible behavior stable during internal refactor.
+- `picgo-runtime-boundary-integrity`: constrain runtime capabilities, dependency inputs, and build artifacts at the architecture layer, eliminating the missing environment boundary behind direct `eval` warnings.
+- `picgo-product-library-boundary`: distinguish the SiYuan plugin product from publishable PicGo/Siyuan libs at the top level, rebuilding package roles, dependency direction, public entrypoints, and build targets.
+- `picgo-paste-upload-ownership`: paste image upload must be taken over by the plugin as a single transaction after blocking default behavior at the source, and double upload, polling, and post-hoc compensation must not become runtime paths.
 
 ### Modified Capabilities
-- 无
+- None
 
 ## Impact
 
-- 受影响代码主要集中在 `packages/`、`libs/` 和少量 `scripts/` 辅助工具；需要特别审计 `picgo-plugin-bootstrap`、`picgo-plugin-app`、`zhi-siyuan-picgo`、`universal-picgo`、`universal-picgo-store` 的依赖方向。
-- 对外影响面包括插件入口、包级导出、设置页与上传/粘贴/菜单等现有运行时流程；粘贴图片自动上传是高风险核心流程，必须以真实宿主行为验证，并证明不再依赖 SiYuan 默认本地 asset 作为中转事实源。
-- 需要补充契约测试、构建验证、bundle 审计、package role 审计、真实宿主粘贴 smoke 和宿主行为回归，确保重构不改变外部 API，且不再把 direct `eval`、`eval("require")`、`vm-browserify`、Vue/Element Plus UI helper、Electron-only helper 等错误层级能力带入不该出现的 lib 或 bundle；粘贴接管不得用 mock 代替真实宿主验证。
+- Affected code is mainly concentrated in `packages/`, `libs/`, and a small number of helper tools under `scripts/`; the dependency direction of `picgo-plugin-bootstrap`, `picgo-plugin-app`, `zhi-siyuan-picgo`, `universal-picgo`, and `universal-picgo-store` needs special audit.
+- External impact includes plugin entrypoints, package-level exports, settings page, and existing runtime flows such as upload/paste/menu; automatic paste image upload is a high-risk core flow and must be verified against real host behavior, proving that it no longer depends on SiYuan default local asset as an intermediate source of truth.
+- Contract tests, build verification, bundle audit, package role audit, real host paste smoke, and host behavior regression need to be added to ensure the refactor does not change external API and no longer brings wrong-layer capabilities such as direct `eval`, `eval("require")`, `vm-browserify`, Vue/Element Plus UI helpers, or Electron-only helpers into libs or bundles where they should not appear; paste takeover must not be proven with mocks instead of the real host.

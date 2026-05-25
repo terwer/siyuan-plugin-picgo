@@ -1,46 +1,46 @@
-## 1. Contract 形状
+## 1. Contract shape
 
-- [ ] 1.1 定义 `universal-picgo` 和 `zhi-siyuan-picgo` 的 public headless manager/facade API 名称、输入类型、返回类型和错误结构。
-- [ ] 1.2 明确哪些 API 属于通用 `universal-picgo`，哪些 SiYuan 专属 API 属于 `zhi-siyuan-picgo`。
-- [ ] 1.3 文档明确：外部消费者不需要安装 `siyuan-plugin-picgo` 插件产品。
-- [ ] 1.4 增加 TypeScript 导出类型：uploader 列表项、uploader schema 字段、校验结果、headless manager options。
+- [ ] 1.1 Define the public headless manager/facade API names, input types, return types, and error structures for `universal-picgo` and `zhi-siyuan-picgo`.
+- [ ] 1.2 Clarify which APIs belong to generic `universal-picgo` and which SiYuan-specific APIs belong to `zhi-siyuan-picgo`.
+- [ ] 1.3 Document clearly that external consumers do not need to install the `siyuan-plugin-picgo` plugin product.
+- [ ] 1.4 Add TypeScript exported types: uploader list item, uploader schema field, validation result, and headless manager options.
 
-## 2. 配置管理
+## 2. Configuration management
 
-- [ ] 2.1 实现 public 配置读取 API，能够初始化默认值并保留未知字段。
-- [ ] 2.2 实现有边界的 uploader 配置保存 API，不能覆盖无关配置 section。
-- [ ] 2.3 实现当前 uploader 读取/设置 API，并使用 PicGo canonical config structure。
-- [ ] 2.4 确保配置操作使用 `picgo-v2-config-path-split` 的 v2 path resolver，不创建第二套路由规则。
-- [ ] 2.5 如需要，增加旧配置迁移行为；迁移语义必须与 path split 的 copy-only/no-delete/no-overwrite 决策一致。
+- [ ] 2.1 Implement the public configuration read API, able to initialize defaults and preserve unknown fields.
+- [ ] 2.2 Implement bounded uploader configuration save API that cannot overwrite unrelated configuration sections.
+- [ ] 2.3 Implement current uploader read/set APIs and use the PicGo canonical config structure.
+- [ ] 2.4 Ensure configuration operations use the v2 path resolver from `picgo-v2-config-path-split` and do not create a second routing rule set.
+- [ ] 2.5 Add legacy configuration migration if needed; migration semantics must match the path split decisions of copy-only/no-delete/no-overwrite.
 
-## 3. Uploader 元数据和 Schema
+## 3. Uploader metadata and Schema
 
-- [ ] 3.1 盘点 `Universal-PicGo-Core` 注册的全部内置 uploaders。
-- [ ] 3.2 将每个内置 uploader 的配置定义规范化为可序列化 schema metadata。
-- [ ] 3.3 在 schema 中标记 token、secret、password 等敏感字段。
-- [ ] 3.4 在可用时包含默认值、必填标记、字段类型和 list 可选项。
-- [ ] 3.5 增加 audit：如果内置 uploader 缺少 schema，或存在无法表示为轻量 UI 字段的配置项，则失败。
+- [ ] 3.1 Inventory all built-in uploaders registered by `Universal-PicGo-Core`.
+- [ ] 3.2 Normalize each built-in uploader's configuration definition into serializable schema metadata.
+- [ ] 3.3 Mark sensitive fields such as token, secret, and password in the schema.
+- [ ] 3.4 Include defaults, required markers, field types, and list options when available.
+- [ ] 3.5 Add an audit: fail if a built-in uploader is missing a schema, or if a configuration item cannot be represented as lightweight UI fields.
 
-## 4. 校验和上传
+## 4. Validation and upload
 
-- [ ] 4.1 实现 uploader 配置校验 API，返回结构化字段级错误。
-- [ ] 4.2 确保保存和测试上传路径使用相同校验规则，除非走文档明确标记的 raw escape hatch。
-- [ ] 4.3 暴露使用托管配置和当前 uploader 的上传入口。
-- [ ] 4.4 确保既有 `SiyuanPicGo` Markdown 图片替换能力可以使用同一配置来源和路径解析。
-- [ ] 4.5 为未知 uploader id、缺失必填字段、无效配置和上传失败增加结构化错误处理。
+- [ ] 4.1 Implement uploader configuration validation API returning structured field-level errors.
+- [ ] 4.2 Ensure save and test-upload paths use the same validation rules unless they go through a documented raw escape hatch.
+- [ ] 4.3 Expose upload entrypoints that use managed configuration and the current uploader.
+- [ ] 4.4 Ensure the existing `SiyuanPicGo` Markdown image replacement capability can use the same configuration source and path resolution.
+- [ ] 4.5 Add structured error handling for unknown uploader id, missing required fields, invalid configuration, and upload failures.
 
-## 5. 文档和发版
+## 5. Documentation and release
 
-- [ ] 5.1 更新 lib README 或 DEVELOPMENT docs，增加 SiYuan 插件 headless consumer 使用示例。
-- [ ] 5.2 文档说明 `universal-picgo-store`、`universal-picgo`、`zhi-siyuan-picgo` 的构建和发版顺序。
-- [ ] 5.3 文档交叉引用 Publisher change `publisher-picgo-headless-ui`，说明 Publisher 实现必须在 lib release/link 之后开始。
-- [ ] 5.4 文档明确不提供的内容：共享 Vue UI、PicGo 插件产品依赖、完整第三方插件配置 UI。
+- [ ] 5.1 Update lib README or DEVELOPMENT docs with a SiYuan plugin headless consumer usage example.
+- [ ] 5.2 Document the build and release order for `universal-picgo-store`, `universal-picgo`, and `zhi-siyuan-picgo`.
+- [ ] 5.3 Cross-reference Publisher change `publisher-picgo-headless-ui` in the docs, explaining that Publisher implementation must start after lib release/link.
+- [ ] 5.4 Document what is not provided: shared Vue UI, dependency on the PicGo plugin product, and complete third-party plugin configuration UI.
 
-## 6. 验证
+## 6. Verification
 
-- [ ] 6.1 增加配置读取/保存/当前 uploader 操作的单测。
-- [ ] 6.2 增加 uploader 列表和 schema 输出的单测或聚焦集成测试。
-- [ ] 6.3 增加必填字段和未知 uploader id 的校验测试。
-- [ ] 6.4 成功构建 `universal-picgo-store`、`universal-picgo` 和 `zhi-siyuan-picgo`。
-- [ ] 6.5 在 SiYuan `test` 工作空间验证 `siyuan-plugin-picgo` 仍能打开设置页并通过既有产品 UI 上传。
-- [ ] 6.6 提供 Publisher 在最终 npm release 前可使用的 local-link 或 packed-package smoke 路径。
+- [ ] 6.1 Add unit tests for configuration read/save/current-uploader operations.
+- [ ] 6.2 Add unit tests or focused integration tests for uploader list and schema output.
+- [ ] 6.3 Add validation tests for required fields and unknown uploader id.
+- [ ] 6.4 Successfully build `universal-picgo-store`, `universal-picgo`, and `zhi-siyuan-picgo`.
+- [ ] 6.5 Verify in the SiYuan `test` workspace that `siyuan-plugin-picgo` can still open the settings page and upload through the existing product UI.
+- [ ] 6.6 Provide a local-link or packed-package smoke path that Publisher can use before the final npm release.

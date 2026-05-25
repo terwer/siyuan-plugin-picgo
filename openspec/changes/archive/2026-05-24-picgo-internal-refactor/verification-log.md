@@ -1,42 +1,42 @@
 # picgo-internal-refactor verification log
 
-本日志记录本变更实施期间的基线、契约清单、架构证据和验证结果。除非另有新变更批准，下面列出的“不可变对外 API”不得被本次内部重构破坏。
+This log records the baseline, contract list, architecture evidence, and verification results during implementation of this change. Unless another new change is approved, the "immutable external API" listed below must not be broken by this internal refactor.
 
 ## 2026-05-23 contract baseline
 
 ### Plugin manifest and product entry
 
-- 根 manifest：`plugin.json`
+- Root manifest: `plugin.json`
   - `name`: `siyuan-plugin-picgo`
   - `version`: `1.12.1`
   - `minAppVersion`: `2.9.0`
   - `backends`: `windows`, `linux`, `darwin`, `docker`, `android`, `ios`
   - `frontends`: `desktop`, `desktop-window`, `mobile`, `browser-desktop`, `browser-mobile`
-  - `displayName`, `description`, `readme`, `i18n`, `funding` 当前均视为 manifest-facing contract。
-- 插件产品入口：`packages/picgo-plugin-bootstrap/src/index.ts`
+  - `displayName`, `description`, `readme`, `i18n`, `funding` are all currently treated as manifest-facing contract.
+- Plugin product entrypoint: `packages/picgo-plugin-bootstrap/src/index.ts`
   - default export `PicgoPlugin extends Plugin`
-  - 运行时注册 topbar/statusbar/settings、`paste`、`open-menu-image`。
-  - 构建目标由 `packages/picgo-plugin-bootstrap/vite.config.ts` 输出到 `artifacts/siyuan-plugin-picgo/dist/index.js`，格式 `cjs`。
-- Vue app 入口：`packages/picgo-plugin-app/src/main.ts`
-  - 由 bootstrap dialog iframe 打开 `/plugins/siyuan-plugin-picgo/#...`。
-  - 构建目标由 `packages/picgo-plugin-app/vite.config.ts` 输出到同一个插件 artifacts 目录。
+  - Runtime registers topbar/statusbar/settings, `paste`, and `open-menu-image`.
+  - Build target is output by `packages/picgo-plugin-bootstrap/vite.config.ts` to `artifacts/siyuan-plugin-picgo/dist/index.js`, format `cjs`.
+- Vue app entrypoint: `packages/picgo-plugin-app/src/main.ts`
+  - Opened by the bootstrap dialog iframe at `/plugins/siyuan-plugin-picgo/#...`.
+  - Build target is output by `packages/picgo-plugin-app/vite.config.ts` to the same plugin artifacts directory.
 
 ### Workspace package public exports
 
-当前 package manifest 都只有 `main: ./dist/index.js` 和 `typings: ./dist/index.d.ts`，尚未定义 runtime-specific `exports`。因此下列源入口导出的符号是当前基线：
+Current package manifests only have `main: ./dist/index.js` and `typings: ./dist/index.d.ts`, and runtime-specific `exports` are not defined yet. Therefore the symbols exported by the following source entrypoints are the current baseline:
 
-- `universal-picgo`（`libs/Universal-PicGo-Core/src/index.ts`）
+- `universal-picgo` (`libs/Universal-PicGo-Core/src/index.ts`)
   - runtime/classes: `UniversalPicGo`, `ExternalPicgo`, `picgoEventBus`
   - db: `ConfigDb`, `PluginLoaderDb`, `ExternalPicgoConfigDb`
   - enums/events: `PicgoTypeEnum`, `IBusEvent`
   - utils: `isFileOrBlob`, `calculateMD5`, `isSiyuanProxyAvailable`
   - runtime probes: `win`, `currentWin`, `parentWin`, `hasNodeEnv`
   - types: `IPicGo`, `IImgInfo`, `IPicgoDb`, `IConfig`, `IExternalPicgoConfig`, `IPicBedType`, `IUploaderConfigItem`, `IUploaderConfigListItem`, `IPluginConfig`, `IPicGoPlugin`
-- `universal-picgo-store`（`libs/Universal-PicGo-Store/src/index.ts`）
+- `universal-picgo-store` (`libs/Universal-PicGo-Store/src/index.ts`)
   - `JSONStore`
   - `win`, `currentWin`, `parentWin`, `hasNodeEnv`
   - type `IJSON`
-- `zhi-siyuan-picgo`（`libs/zhi-siyuan-picgo/src/index.ts`）
+- `zhi-siyuan-picgo` (`libs/zhi-siyuan-picgo/src/index.ts`)
   - PicGo/Siyuan classes: `SiyuanPicGo`, `SiyuanPicgoPostApi`, `PicgoHelper`, `ImageItem`, `ImageParser`, `ParsedImage`
   - constants: `SIYUAN_PICGO_FILE_MAP_KEY`
   - helpers: `copyToClipboardInBrowser`, `generateUniqueName`, `handleConfigWithFunction`, `handleStreamlinePluginName`, `replaceImageLink`, `retrieveImageFromClipboardAsBlob`, `calculateMD5`, `isSiyuanProxyAvailable`
@@ -46,37 +46,37 @@
 ### Persistent configuration and storage contract
 
 - Siyuan/PicGo metadata:
-  - `SIYUAN_PICGO_FILE_MAP_KEY = "custom-picgo-file-map-key"`。
-  - 该 block attrs value 是 JSON 字符串，key 为 `ImageItem.hash`，value 为 `ImageItem` 形态。
-- 设置页当前默认值：
+  - `SIYUAN_PICGO_FILE_MAP_KEY = "custom-picgo-file-map-key"`.
+  - This block attrs value is a JSON string whose key is `ImageItem.hash` and whose value has the shape of `ImageItem`.
+- Current settings page defaults:
   - `siyuan.waitTimeout ?? 2`
   - `siyuan.retryTimes ?? 5`
   - `siyuan.autoUpload ?? true`
   - `siyuan.replaceLink ?? true`
   - `siyuan.txtImageSwitch ?? false`
-- 内置 PicGo 配置由 `ConfigDb(ctx)` 读写，外部 PicGo 配置由 `ExternalPicgoConfigDb(ctx)` 读写。
-- 重要配置字段包括但不限于：
+- Built-in PicGo configuration is read/written by `ConfigDb(ctx)`, and external PicGo configuration is read/written by `ExternalPicgoConfigDb(ctx)`.
+- Important configuration fields include but are not limited to:
   - `picBed.current`, `picBed.uploader`, `picBed.list`, `picBed.<type>`
   - `uploader.<type>.configList`, `uploader.<type>.defaultId`
   - `picgoPlugins.<pluginName>`
   - `siyuan.proxy`
   - `extPicgoApiUrl`, `useBundledPicgo`, `picgoType`
-- 当前 `UniversalPicGo` 默认基础目录为 `~/.universal-picgo`（浏览器 fallback 为 `universal-picgo`），默认配置文件为 `picgo.cfg.json`，插件生态状态使用 `package.json` / `package-lock.json` / `node_modules`。
-- 兼容迁移路径：
+- Current `UniversalPicGo` default base directory is `~/.universal-picgo` (browser fallback is `universal-picgo`), default configuration file is `picgo.cfg.json`, and plugin ecosystem state uses `package.json` / `package-lock.json` / `node_modules`.
+- Compatible migration paths:
   - legacy config folder: `[workspace]/data/storage/syp/picgo`
-  - legacy plugin assets: `[workspace]/data/plugins/siyuan-plugin-picgo/libs/setup` 与 `libs/zhi-infra`
+  - legacy plugin assets: `[workspace]/data/plugins/siyuan-plugin-picgo/libs/setup` and `libs/zhi-infra`
 
 ### User-visible runtime behavior baseline
 
-- onload 初始化 topbar/statusbar，并写入状态栏消息。
-- `openSetting()` 打开 Vue app 设置页。
-- `paste` 事件当前在开启 `siyuan.autoUpload` 时尝试自动上传单张剪贴板图片。
-- `open-menu-image` 当前为图片块右键菜单追加“上传到图床”动作；本地图片会拼接 Siyuan API base URL 后上传，远程图片会弹确认后强制上传。
-- 设置页继续暴露内置/外部 PicGo 切换、图床配置、插件管理、Siyuan API 设置等入口；旧粘贴轮询配置属于本次重构前的缺陷证据。
+- onload initializes topbar/statusbar and writes the status bar message.
+- `openSetting()` opens the Vue app settings page.
+- The `paste` event currently attempts to automatically upload one clipboard image when `siyuan.autoUpload` is enabled.
+- `open-menu-image` currently appends an "Upload to image host" action to the image block right-click menu; local images are uploaded after appending the Siyuan API base URL, and remote images show a confirmation before forced upload.
+- The settings page continues to expose entrypoints for built-in/external PicGo switching, image-host configuration, plugin management, and Siyuan API settings; old paste polling configuration is defect evidence from before this refactor.
 
 ## 2026-05-23 build and test baseline
 
-当前工作区未安装 `node_modules`，且未发现现有 `dist/` 或 `artifacts/` 输出，因此本节记录可复现命令与静态基线；实际构建结果需在依赖安装后补充。
+The current workspace has no `node_modules` installed and no existing `dist/` or `artifacts/` output was found, so this section records reproducible commands and static baseline; actual build results need to be supplemented after dependencies are installed.
 
 ### Root scripts
 
@@ -94,92 +94,92 @@
 - `libs/Universal-PicGo-Core`
   - `pnpm --filter universal-picgo build`
   - `pnpm --filter universal-picgo test`
-  - 无 package-level `lint` 脚本。
+  - No package-level `lint` script.
 - `libs/Universal-PicGo-Store`
   - `pnpm --filter universal-picgo-store build`
   - `pnpm --filter universal-picgo-store test`
-  - 无 package-level `lint` 脚本。
+  - No package-level `lint` script.
 - `libs/zhi-siyuan-picgo`
   - `pnpm --filter zhi-siyuan-picgo build`
   - `pnpm --filter zhi-siyuan-picgo test`
-  - 无 package-level `lint` 脚本。
+  - No package-level `lint` script.
 - `packages/picgo-plugin-app`
   - `pnpm --filter picgo-plugin-app build`
   - `pnpm --filter picgo-plugin-app lint`
 - `packages/picgo-plugin-bootstrap`
   - `pnpm --filter picgo-plugin-bootstrap build`
   - `pnpm --filter picgo-plugin-bootstrap test`
-  - 无 package-level `lint` 脚本。
+  - No package-level `lint` script.
 
 ### Build graph baseline
 
-- `turbo.json` 中 `build.dependsOn = ["^build"]`，lib 会先于依赖它们的 plugin packages 构建。
-- 三个 lib 包均用 Vite lib mode，入口 `src/index.ts`，输出 `dist/index.js`，格式 `es`，并复制 README/package manifest。
-- `Universal-PicGo-Core` 与 `Universal-PicGo-Store` 使用 `vite-plugin-node-polyfills`。
-- 三个 lib build 的 `rollupOptions.external` 当前均为 `[]`，即倾向把依赖和 polyfill 打入 lib 产物。
-- `picgo-plugin-bootstrap` 使用 Vite lib mode 输出 CJS `index.js`，`external: ["siyuan", "process"]`。
-- `picgo-plugin-app` 是 Vue/Vite app 构建，输出到插件 artifacts 目录。
+- `turbo.json` has `build.dependsOn = ["^build"]`, so libs build before plugin packages that depend on them.
+- All three lib packages use Vite lib mode, entry `src/index.ts`, output `dist/index.js`, format `es`, and copy README/package manifest.
+- `Universal-PicGo-Core` and `Universal-PicGo-Store` use `vite-plugin-node-polyfills`.
+- The `rollupOptions.external` of all three lib builds is currently `[]`, meaning dependencies and polyfills tend to be bundled into lib artifacts.
+- `picgo-plugin-bootstrap` uses Vite lib mode to output CJS `index.js`, with `external: ["siyuan", "process"]`.
+- `picgo-plugin-app` is a Vue/Vite app build and outputs to the plugin artifacts directory.
 
 ## 2026-05-23 eval / dynamic require warning baseline
 
-历史构建告警需要作为架构症状处理，而不是以 alias/ignore 掩盖。当前源码与构建配置给出的引入链如下：
+Historical build warnings need to be treated as architecture symptoms, not hidden with alias/ignore. The introduction chain shown by current source and build configuration is:
 
-1. `Universal-PicGo-Core` / `Universal-PicGo-Store` 启用 `vite-plugin-node-polyfills` 且 lib build `external: []`。
-2. `universal-picgo` 主入口转出 `win/currentWin/parentWin/hasNodeEnv`，内部多处 `win.require("path"|"os"|"fs"|...)`。
-3. `zhi-siyuan-picgo` 主入口转出 `universal-picgo` 的 runtime/db/core 能力，并把自身构建为 opaque `dist/index.js`。
-4. `picgo-plugin-bootstrap` 与 `picgo-plugin-app` 都消费 `zhi-siyuan-picgo`。
-5. 当 bundler 解析到预构建或全量打包过的 `zhi-siyuan-picgo/dist/index.js` / node polyfill / stream fallback 时，会把 `vm-browserify` direct `eval`、`eval(this.code)`、`eval("require")("stream")` 等动态执行/动态 require 模式带入目标 bundle。
+1. `Universal-PicGo-Core` / `Universal-PicGo-Store` enable `vite-plugin-node-polyfills`, and lib builds use `external: []`.
+2. `universal-picgo` main entrypoint re-exports `win/currentWin/parentWin/hasNodeEnv`, with multiple internal `win.require("path"|"os"|"fs"|...)` calls.
+3. `zhi-siyuan-picgo` main entrypoint re-exports runtime/db/core capabilities from `universal-picgo` and builds itself as opaque `dist/index.js`.
+4. `picgo-plugin-bootstrap` and `picgo-plugin-app` both consume `zhi-siyuan-picgo`.
+5. When the bundler resolves prebuilt or fully bundled `zhi-siyuan-picgo/dist/index.js` / node polyfill / stream fallback, dynamic execution/dynamic require patterns such as `vm-browserify` direct `eval`, `eval(this.code)`, and `eval("require")("stream")` are brought into target bundles.
 
-当前接受标准：后续构建必须证明目标 bundle 中的 direct `eval`、`new Function`、`eval("require")`、`vm-browserify`、非预期 Node polyfill 已消除或被显式隔离到允许目标；不能仅 suppress warning。
+Current acceptance standard: subsequent builds must prove that direct `eval`, `new Function`, `eval("require")`, `vm-browserify`, and unintended Node polyfills in target bundles have been eliminated or explicitly isolated to allowed targets; warnings must not merely be suppressed.
 
 ## 2026-05-23 package role baseline
 
 | Package / path | Baseline role | Current boundary risk |
 | --- | --- | --- |
-| `packages/picgo-plugin-bootstrap` | SiYuan plugin product shell / host event integration | 直接调 `SiyuanPicGo`、深层 import `zhi-siyuan-picgo/src`、paste 补偿编排在入口中 |
-| `packages/picgo-plugin-app` | Vue settings/upload UI app | UI store/组件直接持有 PicGo `ctx` 与 `PicgoHelper` |
-| `libs/zhi-siyuan-picgo` | Siyuan integration library / current application facade | 同时转出 core/db/runtime，包含 UI helper、Electron menu、配置迁移、Siyuan block mutation、静态单例 |
-| `libs/Universal-PicGo-Core` | PicGo domain core plus current plugin ecosystem runtime | 构造即初始化 db/request/builtins/plugin loader；npm 插件管理和 dynamic require 在 core 中 |
-| `libs/Universal-PicGo-Store` | Store adapter / runtime probe | `win/hasNodeEnv` 以全局探测方式作为公共 API 暴露 |
-| `scripts/*` | Build/release/link scripts | build/package 顺序依赖 artifacts 和 workspace dist 状态 |
-| `packages/picgo-plugin-app/public/libs/zhi-infra` | Bundled host/npm helper | 被 `PluginHandler` 从 runtime path 动态 require |
+| `packages/picgo-plugin-bootstrap` | SiYuan plugin product shell / host event integration | Directly calls `SiyuanPicGo`, deep-imports `zhi-siyuan-picgo/src`, and keeps paste compensation orchestration in the entrypoint |
+| `packages/picgo-plugin-app` | Vue settings/upload UI app | UI stores/components directly hold PicGo `ctx` and `PicgoHelper` |
+| `libs/zhi-siyuan-picgo` | Siyuan integration library / current application facade | simultaneously re-exports core/db/runtime, contains UI helpers, Electron menu, configuration migration, Siyuan block mutation, and static singleton |
+| `libs/Universal-PicGo-Core` | PicGo domain core plus current plugin ecosystem runtime | constructor initializes db/request/builtins/plugin loader; npm plugin management and dynamic require are in core |
+| `libs/Universal-PicGo-Store` | Store adapter / runtime probe | `win/hasNodeEnv` exposed as public API through global probing |
+| `scripts/*` | Build/release/link scripts | build/package order depends on artifacts and workspace dist state |
+| `packages/picgo-plugin-app/public/libs/zhi-infra` | Bundled host/npm helper | dynamically required by `PluginHandler` from runtime path |
 
 ## 2026-05-23 product/library conflict evidence
 
-- 深层 import：`packages/picgo-plugin-bootstrap/src/index.ts` 当前从 `zhi-siyuan-picgo/src` import `replaceImageLink`，绕过 package public contract；同一 symbol 已经由 `zhi-siyuan-picgo` 主入口导出。
-- UI 依赖进入 lib：`libs/zhi-siyuan-picgo/src/lib/utils/utils.ts` import `element-plus` 与 `vue`；`picgoHelper.ts` import `readonly` from `vue`。
-- Electron/product helper 进入 lib：`PicgoHelper.buildPluginMenu()` 与 `importPlugin()` 通过 `win.require("@electron/remote")` 调菜单/对话框。
-- Runtime probe 外泄：`universal-picgo-store` 导出 `win/hasNodeEnv`，`universal-picgo` 再转出，`zhi-siyuan-picgo` 再转出 `win`。
-- 静态单例：`SiyuanPicGo.getInstance()` 缓存 `SiyuanPicgoPostApi`。
-- Core 构造副作用：`UniversalPicGo` 构造时初始化 config path、zhi npm path、db、plugin handler、request wrapper、built-in uploaders/transformers、第三方 plugin loader。
-- npm 插件管理进入 core：`PluginHandler` 通过 bundled `zhi-infra` 执行 npm install/uninstall/update。
+- Deep import: `packages/picgo-plugin-bootstrap/src/index.ts` currently imports `replaceImageLink` from `zhi-siyuan-picgo/src`, bypassing the package public contract; the same symbol is already exported by the `zhi-siyuan-picgo` main entrypoint.
+- UI dependencies entering lib: `libs/zhi-siyuan-picgo/src/lib/utils/utils.ts` imports `element-plus` and `vue`; `picgoHelper.ts` imports `readonly` from `vue`.
+- Electron/product helpers entering lib: `PicgoHelper.buildPluginMenu()` and `importPlugin()` call menus/dialogs through `win.require("@electron/remote")`.
+- Runtime probe leakage: `universal-picgo-store` exports `win/hasNodeEnv`, `universal-picgo` then re-exports them, and `zhi-siyuan-picgo` then re-exports `win`.
+- Static singleton: `SiyuanPicGo.getInstance()` caches `SiyuanPicgoPostApi`.
+- Core constructor side effects: `UniversalPicGo` initializes config path, zhi npm path, db, plugin handler, request wrapper, built-in uploaders/transformers, and third-party plugin loader during construction.
+- npm plugin management entering core: `PluginHandler` uses bundled `zhi-infra` to execute npm install/uninstall/update.
 
 ## 2026-05-23 paste upload timing defect evidence
 
-当前 `picturePasteEventListener` 没有调用 `detail.source.preventDefault()` 或等价默认行为阻断能力。自动粘贴主路径是：
+Current `picturePasteEventListener` does not call `detail.source.preventDefault()` or any equivalent default-behavior blocking capability. The automatic paste main path is:
 
-1. 读取 `detail.files` / `detail.siyuanHTML` / `detail.textHTML` / `detail.textPlain`。
-2. 检查 `siyuan.txtImageSwitch`、`siyuan.autoUpload`。
-3. 创建 `ImageItem(generateUniqueName(), file, true, "", "")`。
-4. 调 `uploadSingleImageToBed(pageId, attrs, imageItem, true, true)`，即 PicGo 先上传且 `ignoreReplaceLink=true`。
-5. 进入 `handleAfterUpload()`，按 `siyuan.waitTimeout` / `siyuan.retryTimes` 使用 `JsTimer` 轮询。
-6. 每次补偿调用 `siyuanApi.uploadAsset(formData)`，把同一文件上传到 SiYuan assets。
-7. 根据 `succMap` 写 `custom-picgo-file-map-key`。
-8. 用 `document.querySelector(img[src=...])` 从 DOM 反查 `data-node-id`。
-9. `getBlockByID()` 后检查 markdown 包含本地 asset，再 `updateBlock()` 用图床 URL 替换。
+1. Read `detail.files` / `detail.siyuanHTML` / `detail.textHTML` / `detail.textPlain`.
+2. Check `siyuan.txtImageSwitch` and `siyuan.autoUpload`.
+3. Create `ImageItem(generateUniqueName(), file, true, "", "")`.
+4. Call `uploadSingleImageToBed(pageId, attrs, imageItem, true, true)`, meaning PicGo uploads first and `ignoreReplaceLink=true`.
+5. Enter `handleAfterUpload()`, using `JsTimer` polling according to `siyuan.waitTimeout` / `siyuan.retryTimes`.
+6. Each compensation attempt calls `siyuanApi.uploadAsset(formData)`, uploading the same file to SiYuan assets.
+7. Write `custom-picgo-file-map-key` according to `succMap`.
+8. Use `document.querySelector(img[src=...])` to reverse-query `data-node-id` from the DOM.
+9. `getBlockByID()` then checks whether markdown contains the local asset, and `updateBlock()` replaces it with the image-host URL.
 
-该路径有 PicGo remote URL 和 SiYuan local asset 两个事实源，且文档插入依赖宿主默认行为/DOM 时序，不属于插件拥有的单事务。
+This path has two sources of truth, PicGo remote URL and SiYuan local asset, and document insertion depends on host default behavior/DOM timing, so it is not a single transaction owned by the plugin.
 
 ## Immutable external API list
 
-本次内部重构不得改变：
+This internal refactor must not change:
 
-- 根 `plugin.json` 的 manifest-facing fields。
-- 插件默认入口产物名和 SiYuan 加载形态：`index.js` / default plugin class。
-- 三个 published package 的现有 package names、`main`、`typings` 和已列 public exports。
-- 现有配置 key、默认值语义、存储位置与 legacy migration 兼容性。
-- `custom-picgo-file-map-key` 的 block attrs key 与 JSON value 兼容性。
-- 用户可见的设置入口、上传入口、右键菜单入口、内置/外部 PicGo 切换语义。
+- Manifest-facing fields of root `plugin.json`.
+- Plugin default entry artifact name and SiYuan loading shape: `index.js` / default plugin class.
+- Existing package names, `main`, `typings`, and listed public exports of the three published packages.
+- Existing configuration keys, default value semantics, storage locations, and legacy migration compatibility.
+- `custom-picgo-file-map-key` block attrs key and JSON value compatibility.
+- User-visible settings entrypoint, upload entrypoint, right-click menu entrypoint, and built-in/external PicGo switching semantics.
 
 ## 2026-05-23 architecture boundary decisions
 
@@ -470,7 +470,7 @@ No externally approved breaking API change was introduced. Additive exports from
 Real SiYuan host smoke has now been run against the `test` workspace only:
 
 - host: `http://127.0.0.1:50077/stage/build/desktop/?r=qfp6swh`
-- title: `未命名 - test - 思源笔记 v3.6.5`
+- title: `Untitled - test - SiYuan Notes v3.6.5`
 - workspace: `D:\Users\Administrator\Documents\mydocs\SiyuanWorkspace\test`
 - plugin link target: `artifacts/siyuan-plugin-picgo/dist`
 
@@ -486,7 +486,7 @@ After rebuilding `picgo-plugin-bootstrap` and reloading the `test` host, real `C
 
 Right-click image smoke also passed in the same `test` host:
 
-- menu item: `上传到PicGo图床`;
+- menu item: `Upload to PicGo image host`;
 - console: `Uploading... Current uploader is [awss3]`;
 - network: MinIO `PUT ... [200]`;
 - DOM: image link replaced with `http://127.0.0.1:9000/test/2026/05/ae44fa8b5be668d9235fdfa5d4989cbb.png`.
