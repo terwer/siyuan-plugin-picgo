@@ -45,12 +45,15 @@ Current guard:
 
 ### 5. Reload-required criteria
 
-Manual reload notice is shown for changes that affect PicGo plugin runtime registration rather than ordinary uploader values:
+Manual reload notice is shown for changes that affect PicGo plugin runtime registration or host document/paste event behavior rather than ordinary uploader values:
 
 - installing PicGo plugins
 - importing local PicGo plugins
 - enabling/disabling PicGo plugins
 - uninstalling PicGo plugins
 - updating PicGo plugins
+- changing `siyuan.autoUpload` / 剪切板自动上传
+- changing `siyuan.replaceLink` / 替换本地链接
+- changing `siyuan.txtImageSwitch` / 粘贴图片和文字混合内容上传
 
 No automatic plugin reload is attempted. The UI explains that this is a plugin/SiYuan lifecycle refresh issue, not a failed settings save, and provides manual reload steps.

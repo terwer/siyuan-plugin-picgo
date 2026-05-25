@@ -7,6 +7,7 @@
  *  of this license document, but changing it is not allowed.
  */
 
+import { hasNodeEnv, win } from "universal-picgo"
 import type { SiyuanPicGoPaths } from "./siyuanPicgoPaths"
 
 export type SiyuanPicGoMigrationStatus = "not-started" | "running" | "done" | "failed"
@@ -23,8 +24,90 @@ export interface SharedMigrationState extends SiyuanPicGoMigrationSnapshot {
   promise?: Promise<void>
 }
 
-const MIGRATION_VERSION = "picgo-plugin-shell-ux-init-v1"
+const MIGRATION_VERSION = "v2.0"
 const GLOBAL_MIGRATION_REGISTRY_KEY = "__SIYUAN_PICGO_MIGRATION_STATE_REGISTRY__"
+const CONFIG_MARKER_KEY = "siyuan.picgoMigration"
+
+const readConfigText = (paths: SiyuanPicGoPaths = {}): string | undefined => {
+  if (!paths.configPath) {
+    return undefined
+  }
+
+  if (hasNodeEnv && win?.fs) {
+    try {
+      if (!win.fs.existsSync(paths.configPath)) {
+        return undefined
+      }
+      return win.fs.readFileSync(paths.configPath, "utf-8")
+    } catch {
+      return undefined
+    }
+  }
+
+  if (typeof window === "undefined" || !window.localStorage) {
+    return undefined
+  }
+
+  return window.localStorage.getItem(paths.configPath) ?? undefined
+}
+
+const readConfigMarker = (paths: SiyuanPicGoPaths = {}): any => {
+  try {
+    const raw = readConfigText(paths)
+    if (!raw) {
+      return undefined
+    }
+    return JSON.parse(raw)?.siyuan?.picgoMigration
+  } catch {
+    return undefined
+  }
+}
+
+const writeConfigMarker = (paths: SiyuanPicGoPaths = {}, marker: any) => {
+  if (!paths.configPath) {
+    return
+  }
+
+  try {
+    const raw = readConfigText(paths)
+    const cfg = raw ? JSON.parse(raw) : {}
+    cfg.siyuan = cfg.siyuan || {}
+    cfg.siyuan.picgoMigration = marker
+
+    if (hasNodeEnv && win?.fs) {
+      const path = win.require("path")
+      const dir = path.dirname(paths.configPath)
+      if (!win.fs.existsSync(dir)) {
+        win.fs.mkdirSync(dir, { recursive: true })
+      }
+      win.fs.writeFileSync(paths.configPath, JSON.stringify(cfg, null, 2))
+      return
+    }
+
+    if (typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.setItem(paths.configPath, JSON.stringify(cfg))
+    }
+  } catch {
+    // ignore marker write failures; a later run can retry migration safely.
+  }
+}
+
+export const getSiyuanPicGoMigrationMarkerKey = (): string => CONFIG_MARKER_KEY
+
+export const getSiyuanPicGoMigrationVersion = (): string => MIGRATION_VERSION
+
+export const isSiyuanPicGoMigrationMarkedDone = (paths: SiyuanPicGoPaths = {}): boolean => {
+  const marker = readConfigMarker(paths)
+  return marker?.version === MIGRATION_VERSION && marker?.status === "done"
+}
+
+export const markSiyuanPicGoMigrationDoneInBrowser = (paths: SiyuanPicGoPaths = {}) => {
+  writeConfigMarker(paths, {
+    version: MIGRATION_VERSION,
+    status: "done",
+    updatedAt: Date.now(),
+  })
+}
 
 const getSharedGlobal = (): any => {
   try {
@@ -57,24 +140,36 @@ export const buildSiyuanPicGoMigrationKey = (paths: SiyuanPicGoPaths = {}, apiUr
   })
 }
 
-export const getOrCreateSiyuanPicGoMigrationState = (key: string): SharedMigrationState => {
+export const getOrCreateSiyuanPicGoMigrationState = (
+  key: string,
+  paths: SiyuanPicGoPaths = {}
+): SharedMigrationState => {
   const registry = getMigrationRegistry()
   const existing = registry.get(key)
   if (existing) {
+    if (isSiyuanPicGoMigrationMarkedDone(paths) && existing.status !== "done") {
+      existing.status = "done"
+      existing.error = undefined
+      existing.updatedAt = Date.now()
+      existing.promise = undefined
+    }
     return existing
   }
 
   const state: SharedMigrationState = {
     key,
-    status: "not-started",
+    status: isSiyuanPicGoMigrationMarkedDone(paths) ? "done" : "not-started",
     version: MIGRATION_VERSION,
   }
   registry.set(key, state)
   return state
 }
 
-export const getSiyuanPicGoMigrationSnapshot = (key: string): SiyuanPicGoMigrationSnapshot => {
-  const state = getOrCreateSiyuanPicGoMigrationState(key)
+export const getSiyuanPicGoMigrationSnapshot = (
+  key: string,
+  paths: SiyuanPicGoPaths = {}
+): SiyuanPicGoMigrationSnapshot => {
+  const state = getOrCreateSiyuanPicGoMigrationState(key, paths)
   return {
     key: state.key,
     status: state.status,

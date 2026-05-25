@@ -24,7 +24,11 @@ import { SiyuanPicGoPaths, migrateV2WorkspacePicGoConfig } from "./siyuanPicgoPa
 import {
   buildSiyuanPicGoMigrationKey,
   getOrCreateSiyuanPicGoMigrationState,
+  getSiyuanPicGoMigrationMarkerKey,
   getSiyuanPicGoMigrationSnapshot,
+  getSiyuanPicGoMigrationVersion,
+  isSiyuanPicGoMigrationMarkedDone,
+  markSiyuanPicGoMigrationDoneInBrowser,
   resetSiyuanPicGoMigrationState,
   type SiyuanPicGoMigrationSnapshot,
 } from "./siyuanPicgoMigrationState"
@@ -39,6 +43,7 @@ class SiyuanPicgoPostApi {
   private readonly siyuanConfig: SiyuanConfigLike
   private readonly isSiyuanOrSiyuanNewWin: boolean
   private readonly picgoApi: SiyuanPicGoUploadApi
+  private readonly paths: SiyuanPicGoPaths
   private readonly configMigrationKey: string
   private configInitPromise: Promise<void>
   public cfgUpdating: boolean
@@ -64,15 +69,13 @@ class SiyuanPicgoPostApi {
     // 初始化 PicGO
     this.picgoApi = new SiyuanPicGoUploadApi(isDev, paths)
     const ctx = this.picgoApi.picgo
-    this.configMigrationKey = buildSiyuanPicGoMigrationKey(
-      {
-        configPath: ctx.configPath,
-        baseDir: ctx.baseDir,
-        pluginBaseDir: ctx.pluginBaseDir,
-        zhiNpmPath: (ctx as any).zhiNpmPath,
-      },
-      siyuanConfig.apiUrl
-    )
+    this.paths = {
+      configPath: ctx.configPath,
+      baseDir: ctx.baseDir,
+      pluginBaseDir: ctx.pluginBaseDir,
+      zhiNpmPath: (ctx as any).zhiNpmPath,
+    }
+    this.configMigrationKey = buildSiyuanPicGoMigrationKey(this.paths, siyuanConfig.apiUrl)
     this.cfgUpdating = false
 
     this.configInitPromise = this.ensureConfigInitialized().then(() => {
@@ -88,7 +91,7 @@ class SiyuanPicgoPostApi {
   }
 
   public getConfigMigrationState(): SiyuanPicGoMigrationSnapshot {
-    return getSiyuanPicGoMigrationSnapshot(this.configMigrationKey)
+    return getSiyuanPicGoMigrationSnapshot(this.configMigrationKey, this.paths)
   }
 
   public waitForConfigMigration(): Promise<void> {
@@ -420,9 +423,12 @@ class SiyuanPicgoPostApi {
   private ensureConfigInitialized(force = false): Promise<void> {
     const sharedState = force
       ? resetSiyuanPicGoMigrationState(this.configMigrationKey)
-      : getOrCreateSiyuanPicGoMigrationState(this.configMigrationKey)
+      : getOrCreateSiyuanPicGoMigrationState(this.configMigrationKey, this.paths)
 
-    if (!force && sharedState.status === "done") {
+    if (!force && (sharedState.status === "done" || this.isConfigMigrationMarkedDone())) {
+      sharedState.status = "done"
+      sharedState.error = undefined
+      sharedState.promise = undefined
       this.cfgUpdating = false
       return Promise.resolve()
     }
@@ -447,6 +453,7 @@ class SiyuanPicgoPostApi {
 
     sharedState.promise = this.updateConfig()
       .then(() => {
+        this.markConfigMigrationDone()
         sharedState.status = "done"
         sharedState.error = undefined
       })
@@ -462,6 +469,22 @@ class SiyuanPicgoPostApi {
       })
 
     return sharedState.promise
+  }
+
+  private isConfigMigrationMarkedDone(): boolean {
+    const marker = this.ctx().getConfig<any>("siyuan.picgoMigration")
+    return marker?.version === getSiyuanPicGoMigrationVersion() && marker?.status === "done"
+  }
+
+  private markConfigMigrationDone() {
+    this.ctx().saveConfig({
+      [getSiyuanPicGoMigrationMarkerKey()]: {
+        version: getSiyuanPicGoMigrationVersion(),
+        status: "done",
+        updatedAt: Date.now(),
+      },
+    })
+    markSiyuanPicGoMigrationDoneInBrowser(this.paths)
   }
 
   private async updateConfig() {
@@ -492,6 +515,11 @@ class SiyuanPicgoPostApi {
   }
 
   private migrateV2WorkspaceConfig() {
+    if (this.isConfigMigrationMarkedDone() || isSiyuanPicGoMigrationMarkedDone(this.paths)) {
+      this.logger.info(`PicGo v2 migration ${getSiyuanPicGoMigrationVersion()} already marked done, skip`)
+      return
+    }
+
     const ctx = this.ctx()
 
     this.logger.info("PicGo v2 path contract =>", {
@@ -499,14 +527,7 @@ class SiyuanPicgoPostApi {
       baseDir: ctx.baseDir,
       pluginBaseDir: ctx.pluginBaseDir,
     })
-    migrateV2WorkspacePicGoConfig(
-      {
-        configPath: ctx.configPath,
-        baseDir: ctx.baseDir,
-        pluginBaseDir: ctx.pluginBaseDir,
-      },
-      this.logger
-    )
+    migrateV2WorkspacePicGoConfig(this.paths, this.logger)
   }
 
   private async copyRuntimeFolder(from: string, to: string, overwrite: boolean = false) {

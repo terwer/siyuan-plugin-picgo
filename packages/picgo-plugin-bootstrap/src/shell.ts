@@ -30,6 +30,7 @@ interface ShellRuntimeState {
   onPointerDown: ((event: PointerEvent) => void) | null
   onKeyDown: ((event: KeyboardEvent) => void) | null
   onResize: (() => void) | null
+  onMessage: ((event: MessageEvent) => void) | null
 }
 
 const shellState: ShellRuntimeState = {
@@ -42,6 +43,7 @@ const shellState: ShellRuntimeState = {
   onPointerDown: null,
   onKeyDown: null,
   onResize: null,
+  onMessage: null,
 }
 
 const shellStyles = `
@@ -71,19 +73,8 @@ const shellStyles = `
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.36);
   }
 
-  #${SHELL_ROOT_ID} .picgo-plugin-shell__arrow {
-    position: absolute;
-    top: -6px;
-    right: 20px;
-    width: 12px;
-    height: 12px;
-    transform: rotate(45deg);
-    background: var(--b3-theme-background, #1f1f1f);
-    border-left: 1px solid var(--b3-theme-surface-lighter, rgba(255, 255, 255, 0.12));
-    border-top: 1px solid var(--b3-theme-surface-lighter, rgba(255, 255, 255, 0.12));
-  }
-
   #${SHELL_ROOT_ID} .picgo-plugin-shell__header {
+    position: relative;
     min-height: 38px;
     display: flex;
     align-items: center;
@@ -104,36 +95,47 @@ const shellStyles = `
     font-weight: 600;
   }
 
-  #${SHELL_ROOT_ID} .picgo-plugin-shell__hint {
-    color: var(--b3-theme-on-surface, #9aa0a6);
-    font-size: 12px;
-  }
-
   #${SHELL_ROOT_ID} .picgo-plugin-shell__close {
     width: 28px;
     height: 28px;
+    flex: 0 0 28px;
+    box-sizing: border-box;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    margin: 0;
+    padding: 0;
     border: 0;
     border-radius: 6px;
     color: inherit;
+    appearance: none;
+    -webkit-appearance: none;
     background: transparent;
     cursor: pointer;
     font-size: 18px;
     line-height: 1;
+    transition: background-color 0.12s ease-in-out, color 0.12s ease-in-out;
   }
 
   #${SHELL_ROOT_ID} .picgo-plugin-shell__close:hover,
   #${SHELL_ROOT_ID} .picgo-plugin-shell__close:focus {
-    background: var(--b3-theme-surface-lighter, rgba(255, 255, 255, 0.1));
+    background-color: var(--b3-theme-surface-lighter, rgba(255, 255, 255, 0.1));
+    box-shadow: none;
     outline: none;
   }
 
-  #${SHELL_ROOT_ID} .picgo-plugin-shell__iframe {
+  #${SHELL_ROOT_ID} .picgo-plugin-shell__body {
     flex: 1;
-    width: 100%;
     min-height: 0;
+    overflow: auto;
+    background: var(--b3-theme-background, #1f1f1f);
+  }
+
+  #${SHELL_ROOT_ID} .picgo-plugin-shell__iframe {
+    display: block;
+    width: 100%;
+    min-height: 100%;
+    height: 100%;
     border: 0;
     background: var(--b3-theme-background, #1f1f1f);
   }
@@ -159,10 +161,6 @@ const createShellRoot = (pluginInstance: PicgoPlugin) => {
   panel.setAttribute("aria-modal", "false")
   panel.tabIndex = -1
 
-  const arrow = document.createElement("div")
-  arrow.className = "picgo-plugin-shell__arrow"
-  panel.appendChild(arrow)
-
   const header = document.createElement("div")
   header.className = "picgo-plugin-shell__header"
 
@@ -170,11 +168,6 @@ const createShellRoot = (pluginInstance: PicgoPlugin) => {
   title.className = "picgo-plugin-shell__title"
   title.textContent = pluginInstance.i18n?.picgo ?? "PicGo"
   header.appendChild(title)
-
-  const hint = document.createElement("div")
-  hint.className = "picgo-plugin-shell__hint"
-  hint.textContent = "Esc 隐藏"
-  header.appendChild(hint)
 
   const closeButton = document.createElement("button")
   closeButton.className = "picgo-plugin-shell__close"
@@ -188,11 +181,15 @@ const createShellRoot = (pluginInstance: PicgoPlugin) => {
   header.appendChild(closeButton)
   panel.appendChild(header)
 
+  const body = document.createElement("div")
+  body.className = "picgo-plugin-shell__body"
+
   const iframe = document.createElement("iframe")
   iframe.className = "picgo-plugin-shell__iframe"
   iframe.title = pluginInstance.i18n?.picgo ?? "PicGo"
   iframe.setAttribute("allow", "clipboard-read; clipboard-write")
-  panel.appendChild(iframe)
+  body.appendChild(iframe)
+  panel.appendChild(body)
 
   root.appendChild(panel)
   document.body.appendChild(root)
@@ -202,6 +199,25 @@ const createShellRoot = (pluginInstance: PicgoPlugin) => {
   shellState.iframe = iframe
 
   bindShellListeners()
+}
+
+const scrollPluginShellToTop = () => {
+  const body = shellState.panel?.querySelector(".picgo-plugin-shell__body") as HTMLDivElement | null
+  body?.scrollTo({ top: 0, left: 0, behavior: "auto" })
+  if (body) {
+    body.scrollTop = 0
+  }
+
+  try {
+    const iframeWindow = shellState.iframe?.contentWindow
+    const iframeDocument = iframeWindow?.document
+    iframeWindow?.scrollTo({ top: 0, left: 0, behavior: "auto" })
+    iframeDocument?.scrollingElement?.scrollTo({ top: 0, left: 0, behavior: "auto" })
+    iframeDocument?.documentElement.scrollTo({ top: 0, left: 0, behavior: "auto" })
+    iframeDocument?.body.scrollTo({ top: 0, left: 0, behavior: "auto" })
+  } catch {
+    // Same-origin in normal plugin runtime. Ignore if a fallback/debug frame blocks access.
+  }
 }
 
 const bindShellListeners = () => {
@@ -247,6 +263,21 @@ const bindShellListeners = () => {
     window.addEventListener("resize", shellState.onResize)
     window.addEventListener("scroll", shellState.onResize, true)
   }
+
+  if (!shellState.onMessage) {
+    shellState.onMessage = (event: MessageEvent) => {
+      if (event.source !== shellState.iframe?.contentWindow) {
+        return
+      }
+
+      if (event.data?.type === "siyuan-plugin-picgo:shell-scroll-top") {
+        scrollPluginShellToTop()
+        window.setTimeout(scrollPluginShellToTop, 0)
+        window.setTimeout(scrollPluginShellToTop, 80)
+      }
+    }
+    window.addEventListener("message", shellState.onMessage)
+  }
 }
 
 const unbindShellListeners = () => {
@@ -264,6 +295,11 @@ const unbindShellListeners = () => {
     window.removeEventListener("resize", shellState.onResize)
     window.removeEventListener("scroll", shellState.onResize, true)
     shellState.onResize = null
+  }
+
+  if (shellState.onMessage) {
+    window.removeEventListener("message", shellState.onMessage)
+    shellState.onMessage = null
   }
 }
 

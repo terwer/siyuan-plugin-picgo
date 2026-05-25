@@ -67,7 +67,7 @@ export default {
   "setting.picgo.plugin.update.success": "更新成功",
   "setting.runtime.reload.required.title": "需要手动重载插件",
   "setting.runtime.reload.required.desc":
-    "配置已保存，但菜单、命令、状态栏或插件运行时注册状态可能不会立即更新。这不是设置未保存，而是插件和思源笔记运行周期导致的刷新问题。",
+    "配置已保存，但菜单、命令、状态栏、文档粘贴行为或插件运行时注册状态可能不会立即更新。这不是设置未保存，而是插件和思源笔记运行周期导致的刷新问题。",
   "setting.runtime.reload.required.reason": "触发原因：",
   "setting.runtime.reload.required.step1": "请在思源设置的插件列表中禁用并重新启用 PicGo 插件，或重启思源。",
   "setting.runtime.reload.required.step2": "重载完成后回到这里，点击下方按钮清除提示。",

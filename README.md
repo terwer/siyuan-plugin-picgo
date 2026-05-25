@@ -6,6 +6,14 @@
 
 Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 
+## PicGo 2.0: Uploading Finally Feels Smooth
+
+PicGo 2.0 clears away years of historical debt from the upload path. Paste an image, and PicGo now takes it over from the first moment: no duplicate uploads, no polling waits, no DOM guessing, and no post-processing that first lets SiYuan insert a local image and then rewrites it into an image-hosting link. Fewer stalls, fewer doubts, and no more wondering how many times that image was uploaded.
+
+Under the surface, the foundation is cleaner too. Your main image-bed config can follow the SiYuan workspace, while plugins, cache, logs, and other heavy runtime files stay safely on the current device. Publisher and other plugins can call PicGo's upload core directly, without forcing the full PicGo plugin UI into every scenario.
+
+What you feel every day is lighter and calmer: a lightweight popup, a one-time migration that stays quiet after it finishes, clear reload hints when SiYuan needs a refresh, and an upload flow that finally feels clean. If PicGo ever felt like it could be better, 2.0 is the version worth opening again.
+
 ## Recommended Configuration
 
 Breaking News!Using MinIO with the PicGo plugin is recommended, if you don't know how, I've written a step-by-step guide with screenshots, [click here to view](https://siyuan.wiki/s/20241129133646-lz08gnl).
@@ -14,26 +22,13 @@ Breaking News!Using MinIO with the PicGo plugin is recommended, if you don't kno
 
 > Important Note:
 >
+> PicGo `2.0.0+` uses split configuration paths: the main config syncs with the workspace, while runtime files, plugins, cache, and logs stay on the current device. See `v2.0.0 configuration paths` below for details.
+>
 > Please refrain from updating this plugin for versions of siyuan-note prior to `3.0.3`; the highest permissible version remains `1.5.1`. For siyuan-note versions `3.0.3` and beyond, the PicGO plugin may be upgraded to `1.6.0+`.
 >
 > For versions of siyuan-note before `2.10.8`, it is advised not to upgrade this plugin beyond version `1.4.5`. Subsequent to siyuan-note `2.10.8`, the PicGO plugin can be updated to `1.5.0+`.
 
-## Image Hosting Support
-
-- Github<sup>recommended</sup>
-- Gitlab<sup>recommended</sup>
-- Alibaba Cloud
-- Tencent Cloud
-- Upyun
-- Qiniu Cloud<sup>recommended</sup>
-- SM.MS
-- imgur
-- Amazon S3<sup>recommended</sup>, thanks to [@hzj629206](https://github.com/hzj629206)
-- Lsky pro<sup> v1.11.0+</sup>
-
-## Config paths
-
-### v2.0.0
+### v2.0.0 configuration paths
 
 v2.0.0 is a breaking cleanup release. It includes the internal PicGo refactor and the storage path split.
 
@@ -88,6 +83,20 @@ Migration rule: if the workspace `picgo.cfg.json` is missing and `~/.universal-p
 ~/.universal-picgo/*.script
 ~/.universal-picgo/picgo.log
 ```
+
+
+## Image Hosting Support
+
+- Github<sup>recommended</sup>
+- Gitlab<sup>recommended</sup>
+- Alibaba Cloud
+- Tencent Cloud
+- Upyun
+- Qiniu Cloud<sup>recommended</sup>
+- SM.MS
+- imgur
+- Amazon S3<sup>recommended</sup>, thanks to [@hzj629206](https://github.com/hzj629206)
+- Lsky pro<sup> v1.11.0+</sup>
 
 ## Changelog
 

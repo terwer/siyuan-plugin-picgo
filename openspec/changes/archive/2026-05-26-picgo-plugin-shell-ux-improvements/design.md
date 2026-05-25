@@ -92,4 +92,4 @@ Alternative considered: call a SiYuan/plugin reload API automatically. This chan
 
 - Shell placement: topbar-adjacent popup for the first implementation.
 - Refresh behavior: manual reload/restart instructions only; do not add programmatic plugin reload in this change.
-- Reload-required scope: mark operations that affect PicGo plugin runtime registration, including install/import/enable/disable/uninstall/update of PicGo plugins. Ordinary uploader/image-bed value edits remain normal saved configuration and do not need a runtime reload notice unless they change runtime registration state.
+- Reload-required scope: mark operations that affect PicGo plugin runtime registration, including install/import/enable/disable/uninstall/update of PicGo plugins. Also mark SiYuan host document/paste listener settings such as clipboard auto upload, local-link replacement, and mixed text+image paste upload because already-open documents and host event handlers do not reliably refresh those behaviors live. Ordinary uploader/image-bed value edits remain normal saved configuration and do not need a runtime reload notice unless they change runtime registration state.

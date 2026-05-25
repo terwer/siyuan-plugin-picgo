@@ -70,7 +70,7 @@ export default {
   "setting.picgo.plugin.update.success": "Update success",
   "setting.runtime.reload.required.title": "Manual plugin reload required",
   "setting.runtime.reload.required.desc":
-    "The configuration has been saved, but menus, commands, status bar entries, or plugin runtime registrations may not update immediately. This is a plugin/Siyuan lifecycle refresh issue, not a settings-save issue.",
+    "The configuration has been saved, but menus, commands, status bar entries, document paste behavior, or plugin runtime registrations may not update immediately. This is a plugin/Siyuan lifecycle refresh issue, not a settings-save issue.",
   "setting.runtime.reload.required.reason": "Reason: ",
   "setting.runtime.reload.required.step1":
     "Disable and re-enable the PicGo plugin in Siyuan plugin settings, or restart Siyuan.",

@@ -9,13 +9,9 @@
 
 import { SiyuanPicgoPostApi } from "./siyuanPicgoPostApi"
 import { ILogger, simpleLogger } from "zhi-lib-base"
-import { migrateV2WorkspacePicGoConfig, resolveSiyuanPicGoPaths, type SiyuanPicGoInstanceOptions } from "./siyuanPicgoPaths"
+import { resolveSiyuanPicGoPaths, type SiyuanPicGoInstanceOptions } from "./siyuanPicgoPaths"
 import type { SiyuanConfigLike } from "./siyuanConfigLike"
 import { SiyuanKernelApi } from "zhi-siyuan-api"
-import {
-  buildSiyuanPicGoMigrationKey,
-  getOrCreateSiyuanPicGoMigrationState,
-} from "./siyuanPicgoMigrationState"
 
 /**
  * 思源笔记 PicGo 实例
@@ -61,11 +57,6 @@ class SiyuanPicGo {
     if (!this.picgoInstance) {
       this.logger.debug("初始化 SiyuanPicgoPostApi 实例")
       this.logger.info("resolved PicGo paths =>", paths)
-      const migrationKey = buildSiyuanPicGoMigrationKey(paths, siyuanConfig.apiUrl)
-      const migrationState = getOrCreateSiyuanPicGoMigrationState(migrationKey)
-      if (migrationState.status === "not-started") {
-        migrateV2WorkspacePicGoConfig(paths, this.logger)
-      }
       this.picgoInstance = new SiyuanPicgoPostApi(siyuanConfig, isDev, paths)
       this.instanceKey = instanceKey
 

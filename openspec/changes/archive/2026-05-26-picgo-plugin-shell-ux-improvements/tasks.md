@@ -30,10 +30,10 @@
 
 ## 5. 回归验证
 
-- [ ] 5.1 验证 shell 打开、关闭、重复打开、插件卸载清理均正常。（SiYuan test 工作空间人工验证）
-- [ ] 5.2 验证打开主界面多次不会重复执行已完成的配置迁移。（SiYuan test 工作空间人工验证）
-- [ ] 5.3 验证配置保存后 reload-required 提示出现和清除逻辑符合预期。（SiYuan test 工作空间人工验证）
-- [ ] 5.4 验证 PicGo 设置页仍能打开并保存当前图床配置。（SiYuan test 工作空间人工验证）
-- [ ] 5.5 验证通过既有插件产品界面上传图片成功，Markdown 图片链接替换正常。（SiYuan test 工作空间人工验证）
+- [x] 5.1 验证 shell 打开、关闭、重复打开、插件卸载清理均正常。（SiYuan test 工作空间人工验证）
+- [x] 5.2 验证打开主界面多次不会重复执行已完成的配置迁移。（SiYuan test 工作空间人工验证）
+- [x] 5.3 验证配置保存后 reload-required 提示出现和清除逻辑符合预期。（SiYuan test 工作空间人工验证）
+- [x] 5.4 验证 PicGo 设置页仍能打开并保存当前图床配置。（SiYuan test 工作空间人工验证）
+- [x] 5.5 验证通过既有插件产品界面上传图片成功，Markdown 图片链接替换正常。（SiYuan test 工作空间人工验证）
 - [x] 5.6 成功构建 `picgo-plugin-app` 和 `picgo-plugin-bootstrap`。
-- [ ] 5.7 在 SiYuan `test` 工作空间完成插件 shell UX 冒烟验证。
+- [x] 5.7 在 SiYuan `test` 工作空间完成插件 shell UX 冒烟验证。

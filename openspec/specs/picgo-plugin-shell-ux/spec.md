@@ -1,5 +1,9 @@
-## ADDED Requirements
+# picgo-plugin-shell-ux 规范
 
+## Purpose
+定义 PicGo 插件产品 shell 交互、一次性初始化/迁移行为，以及配置变化后的运行时刷新提示。
+
+## Requirements
 ### Requirement: 插件主界面使用轻量挂载式 shell
 
 `siyuan-plugin-picgo` SHALL provide a lightweight mounted plugin shell for the main PicGo UI instead of requiring the normal entry path to open a SiYuan dialog.
@@ -53,9 +57,9 @@ When a saved configuration change affects SiYuan plugin menus, commands, status 
 
 #### Scenario: 保存需要重载的配置
 
-- **WHEN** 用户保存会影响菜单、命令、状态栏或运行时注册状态的配置
+- **WHEN** 用户保存会影响菜单、命令、状态栏、宿主文档粘贴事件或运行时注册状态的配置
 - **THEN** 设置界面 SHALL 显示明确的重载提示文案
-- **AND** 文案 SHALL 说明当前菜单状态可能不会立即更新
+- **AND** 文案 SHALL 说明当前菜单或文档粘贴行为可能不会立即更新
 - **AND** 文案 SHALL 说明这不是设置保存失败，而是插件和思源笔记运行周期导致的刷新问题
 
 #### Scenario: 不使用自动刷新时显示手动步骤
@@ -63,6 +67,12 @@ When a saved configuration change affects SiYuan plugin menus, commands, status 
 - **WHEN** 插件无法安全地自动重载或刷新菜单状态
 - **THEN** 设置界面 SHALL 显示手动重载插件或重启 SiYuan 的步骤
 - **AND** 插件 SHALL NOT 静默假装菜单已即时更新
+
+#### Scenario: 修改粘贴上传相关设置
+
+- **WHEN** 用户修改剪切板自动上传、替换本地链接或粘贴图片和文字混合内容上传设置
+- **THEN** 设置界面 SHALL 显示 reload-required 提示
+- **AND** 提示 SHALL 说明已经打开的文档或宿主粘贴事件可能需要重载插件或重启 SiYuan 后才按新设置执行
 
 #### Scenario: 手动刷新完成后清除提示
 
