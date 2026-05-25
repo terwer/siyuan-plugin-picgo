@@ -21,6 +21,13 @@ import { ImageParser } from "./parser/ImageParser"
 import { SiyuanPicGoUploadApi } from "./siyuanPicGoUploadApi"
 import { replaceImageLink } from "./utils/utils"
 import { SiyuanPicGoPaths, migrateV2WorkspacePicGoConfig } from "./siyuanPicgoPaths"
+import {
+  buildSiyuanPicGoMigrationKey,
+  getOrCreateSiyuanPicGoMigrationState,
+  getSiyuanPicGoMigrationSnapshot,
+  resetSiyuanPicGoMigrationState,
+  type SiyuanPicGoMigrationSnapshot,
+} from "./siyuanPicgoMigrationState"
 
 /**
  * Picgo与文章交互的通用方法
@@ -32,6 +39,8 @@ class SiyuanPicgoPostApi {
   private readonly siyuanConfig: SiyuanConfigLike
   private readonly isSiyuanOrSiyuanNewWin: boolean
   private readonly picgoApi: SiyuanPicGoUploadApi
+  private readonly configMigrationKey: string
+  private configInitPromise: Promise<void>
   public cfgUpdating: boolean
 
   constructor(siyuanConfig: SiyuanConfigLike, isDev?: boolean, paths?: SiyuanPicGoPaths) {
@@ -54,9 +63,19 @@ class SiyuanPicgoPostApi {
 
     // 初始化 PicGO
     this.picgoApi = new SiyuanPicGoUploadApi(isDev, paths)
+    const ctx = this.picgoApi.picgo
+    this.configMigrationKey = buildSiyuanPicGoMigrationKey(
+      {
+        configPath: ctx.configPath,
+        baseDir: ctx.baseDir,
+        pluginBaseDir: ctx.pluginBaseDir,
+        zhiNpmPath: (ctx as any).zhiNpmPath,
+      },
+      siyuanConfig.apiUrl
+    )
     this.cfgUpdating = false
 
-    this.updateConfig().then(() => {
+    this.configInitPromise = this.ensureConfigInitialized().then(() => {
       this.logger.info("picgo config updated")
     })
   }
@@ -66,6 +85,20 @@ class SiyuanPicgoPostApi {
    */
   public ctx(): IPicGo {
     return this.picgoApi.picgo
+  }
+
+  public getConfigMigrationState(): SiyuanPicGoMigrationSnapshot {
+    return getSiyuanPicGoMigrationSnapshot(this.configMigrationKey)
+  }
+
+  public waitForConfigMigration(): Promise<void> {
+    return this.configInitPromise ?? Promise.resolve()
+  }
+
+  public async retryConfigMigration(): Promise<SiyuanPicGoMigrationSnapshot> {
+    this.configInitPromise = this.ensureConfigInitialized(true)
+    await this.configInitPromise
+    return this.getConfigMigrationState()
   }
 
   /**
@@ -384,6 +417,53 @@ class SiyuanPicgoPostApi {
 
   // ===================================================================================================================
 
+  private ensureConfigInitialized(force = false): Promise<void> {
+    const sharedState = force
+      ? resetSiyuanPicGoMigrationState(this.configMigrationKey)
+      : getOrCreateSiyuanPicGoMigrationState(this.configMigrationKey)
+
+    if (!force && sharedState.status === "done") {
+      this.cfgUpdating = false
+      return Promise.resolve()
+    }
+
+    if (!force && sharedState.status === "failed") {
+      this.cfgUpdating = false
+      this.logger.warn(`PicGo config migration remains failed until explicit retry: ${sharedState.error ?? ""}`)
+      return Promise.resolve()
+    }
+
+    if (!force && sharedState.status === "running" && sharedState.promise) {
+      this.cfgUpdating = true
+      return sharedState.promise.finally(() => {
+        this.cfgUpdating = false
+      })
+    }
+
+    sharedState.status = "running"
+    sharedState.error = undefined
+    sharedState.updatedAt = Date.now()
+    this.cfgUpdating = true
+
+    sharedState.promise = this.updateConfig()
+      .then(() => {
+        sharedState.status = "done"
+        sharedState.error = undefined
+      })
+      .catch((e) => {
+        sharedState.status = "failed"
+        sharedState.error = e instanceof Error ? e.message : String(e)
+        this.logger.error(`PicGo config migration failed: ${sharedState.error}`)
+      })
+      .finally(() => {
+        sharedState.updatedAt = Date.now()
+        sharedState.promise = undefined
+        this.cfgUpdating = false
+      })
+
+    return sharedState.promise
+  }
+
   private async updateConfig() {
     // v2 路径契约：
     // - picgo.cfg.json 使用工作空间路径，适合随 SiYuan 同步
@@ -439,7 +519,6 @@ class SiyuanPicgoPostApi {
     }
 
     // 运行时依赖复制到本机目录，不删除源目录
-    this.cfgUpdating = true
     this.logger.info(`will copy runtime folder ${from} to ${to}`)
     try {
       if (existTo) {
@@ -450,8 +529,7 @@ class SiyuanPicgoPostApi {
       }
     } catch (e) {
       this.logger.error(`copy ${from} to ${to} failed: ${e}`)
-    } finally {
-      this.cfgUpdating = false
+      throw e
     }
   }
 

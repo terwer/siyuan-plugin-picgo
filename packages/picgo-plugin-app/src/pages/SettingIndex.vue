@@ -9,12 +9,14 @@
 
 <script setup lang="ts">
 import { useVueI18n } from "$composables/useVueI18n.ts"
+import RuntimeReloadNotice from "$components/setting/RuntimeReloadNotice.vue"
 
 const { t } = useVueI18n()
 </script>
 
 <template>
   <div>
+    <runtime-reload-notice />
     <el-tabs tab-position="left" class="setting-tab">
       <el-tab-pane :label="t('setting.picgo.picgo')">
         <picgo-setting />

@@ -12,6 +12,10 @@ import { ILogger, simpleLogger } from "zhi-lib-base"
 import { migrateV2WorkspacePicGoConfig, resolveSiyuanPicGoPaths, type SiyuanPicGoInstanceOptions } from "./siyuanPicgoPaths"
 import type { SiyuanConfigLike } from "./siyuanConfigLike"
 import { SiyuanKernelApi } from "zhi-siyuan-api"
+import {
+  buildSiyuanPicGoMigrationKey,
+  getOrCreateSiyuanPicGoMigrationState,
+} from "./siyuanPicgoMigrationState"
 
 /**
  * 思源笔记 PicGo 实例
@@ -57,7 +61,11 @@ class SiyuanPicGo {
     if (!this.picgoInstance) {
       this.logger.debug("初始化 SiyuanPicgoPostApi 实例")
       this.logger.info("resolved PicGo paths =>", paths)
-      migrateV2WorkspacePicGoConfig(paths, this.logger)
+      const migrationKey = buildSiyuanPicGoMigrationKey(paths, siyuanConfig.apiUrl)
+      const migrationState = getOrCreateSiyuanPicGoMigrationState(migrationKey)
+      if (migrationState.status === "not-started") {
+        migrateV2WorkspacePicGoConfig(paths, this.logger)
+      }
       this.picgoInstance = new SiyuanPicgoPostApi(siyuanConfig, isDev, paths)
       this.instanceKey = instanceKey
 
@@ -73,34 +81,36 @@ class SiyuanPicGo {
    * 检查 PicGo 配置迁移的状态
    */
   private static async checkConfigMigration(siyuanApi: SiyuanKernelApi, picgo: SiyuanPicgoPostApi): Promise<void> {
-    const that = this
-    return new Promise<void>((resolve) => {
-      let needUpdate = false
+    const initialState = picgo.getConfigMigrationState()
+    if (initialState.status === "running") {
+      siyuanApi.pushMsg({
+        msg: "检测到 PicGo 配置初始化或迁移任务，正在等待完成，请勿进行任何操作...",
+        timeout: 1000,
+      })
+      this.logger?.warn("检测到 PicGo 配置初始化或迁移任务，正在等待完成...")
+      await picgo.waitForConfigMigration()
+    }
 
-      const checkConfig = () => {
-        if (picgo.cfgUpdating) {
-          needUpdate = true
-          siyuanApi.pushMsg({
-            msg: "检测到旧配置，正在迁移配置，请勿进行任何操作...",
-            timeout: 1000,
-          })
-          that.logger?.warn("检测到旧配置，正在迁移配置，请勿进行任何操作...")
-          setTimeout(checkConfig, 1000) // 递归检查
-        } else {
-          if (needUpdate) {
-            siyuanApi.pushMsg({
-              msg: "PicGO 图床历史配置迁移完成",
-              timeout: 7000,
-            })
-            that.logger?.info("PicGO 图床历史配置迁移完成🎉")
-          }
-          that.logger?.info("PicGO instance is ready😄")
-          resolve()
-        }
-      }
+    const finalState = picgo.getConfigMigrationState()
+    if (finalState.status === "failed") {
+      const errorText = finalState.error ? `，错误信息：${finalState.error}` : ""
+      siyuanApi.pushErrMsg({
+        msg: `PicGo 配置初始化或迁移失败${errorText}。请在 PicGo 设置页点击“重试初始化”。`,
+        timeout: 7000,
+      })
+      this.logger?.error(`PicGo config migration failed${errorText}`)
+      return
+    }
 
-      checkConfig()
-    })
+    if (initialState.status === "running" && finalState.status === "done") {
+      siyuanApi.pushMsg({
+        msg: "PicGO 配置初始化或迁移完成",
+        timeout: 7000,
+      })
+      this.logger?.info("PicGO 配置初始化或迁移完成🎉")
+    }
+
+    this.logger?.info("PicGO instance is ready😄")
   }
 }
 

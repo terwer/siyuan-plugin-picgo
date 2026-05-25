@@ -9,8 +9,8 @@
 
 import { icons } from "./utils/svg"
 import PicgoPlugin from "./index"
-import { showPage } from "./dialog"
 import { PageRoute } from "./pageRoute"
+import { openPluginShell } from "./shell"
 
 /**
  * 顶栏按钮
@@ -29,6 +29,6 @@ export function initTopbar(pluginInstance: PicgoPlugin) {
   })
 
   topBarElement.addEventListener("click", () => {
-    showPage(pluginInstance, PageRoute.Page_Home)
+    openPluginShell(pluginInstance, PageRoute.Page_Home, topBarElement)
   })
 }
