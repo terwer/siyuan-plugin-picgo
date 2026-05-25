@@ -6,7 +6,7 @@
     "clean": "./scripts/clean.sh",
     "serve": "turbo run serve",
     "dev": "turbo run dev",
-    "build": "turbo run build",
+    "build": "pnpm -r --sort --workspace-concurrency=1 run build",
     "lint": "turbo run lint",
     "audit:picgo-refactor": "node scripts/picgo-internal-refactor-audit.cjs",
     "cz": "git-cz",

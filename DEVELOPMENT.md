@@ -218,7 +218,7 @@ pnpm --dir libs/zhi-siyuan-picgo pack
 - `dist/`
 - `README.md`
 
-### 5.5 publisher 外部 lib 集成调试
+### 5.5 Publisher 无界面 PicGo 契约调试
 
 publisher 项目路径：
 
@@ -226,7 +226,12 @@ publisher 项目路径：
 D:\Users\Administrator\Documents\mydocs\siyuan-plugins\siyuan-plugin-publisher
 ```
 
-PicGo 侧先构建新版 lib：
+本仓库 change `picgo-headless-publisher-contract` 是 Publisher change
+`publisher-picgo-headless-ui` 的上游依赖。Publisher 必须等 PicGo 侧库包
+已经发布，或已经通过明确的本地打包/链接流程可用后，再开始接入新版契约。
+不要把 Publisher 旧版 PicGo bridge 行为当作目标契约。
+
+PicGo 侧先按依赖顺序构建新版 lib：
 
 ```powershell
 pnpm build -F universal-picgo-store
@@ -234,10 +239,19 @@ pnpm build -F universal-picgo
 pnpm build -F zhi-siyuan-picgo
 ```
 
-publisher 后续应使用 `zhi-siyuan-picgo` 的 v2 契约，不再硬编码旧路径。默认调用形态：
+外部消费者只依赖 npm 包和自己的界面，不需要安装
+`siyuan-plugin-picgo` 插件产品，也不应该检测
+`/data/plugins/siyuan-plugin-picgo/plugin.json` 作为运行前置条件。
+
+Publisher 后续应使用 `zhi-siyuan-picgo` 的 headless 契约，不再硬编码旧路径。
+推荐调用形态：
 
 ```ts
-const picgo = await SiyuanPicGo.getInstance(siyuanConfig, isDev)
+import { createSiyuanPicGoHeadlessManager } from "zhi-siyuan-picgo"
+
+const picgo = await createSiyuanPicGoHeadlessManager(siyuanConfig, { isDev })
+const uploaders = picgo.listUploaders()
+const schema = picgo.getUploaderSchema("github")
 ```
 
 默认路径解析结果：
@@ -251,7 +265,7 @@ pluginBaseDir = ~/.universal-picgo
 调试时可显式覆盖路径：
 
 ```ts
-const picgo = await SiyuanPicGo.getInstance(siyuanConfig, {
+const picgo = await createSiyuanPicGoHeadlessManager(siyuanConfig, {
   isDev: true,
   paths: {
     configPath: "D:/tmp/picgo-debug/picgo.cfg.json",
@@ -261,13 +275,43 @@ const picgo = await SiyuanPicGo.getInstance(siyuanConfig, {
 })
 ```
 
+PicGo 契约负责：
+
+- 上传核心行为。
+- PicGo 配置持久化语义。
+- 上传器列表与配置 schema。
+- 保存/上传前的结构化校验。
+- SiYuan 工作空间路径与本机 runtime 路径解析。
+
+Publisher 只负责自己的轻量图床设置 UI，以及 per-platform
+`picbedService` 等发布偏好。PicGo 侧不向 Publisher 提供：
+
+- 共享 Vue 设置页。
+- `siyuan-plugin-picgo` 插件产品依赖。
+- 完整第三方 PicGo 插件配置界面或插件市场 UI。
+
 publisher 集成验证要点：
 
 1. publisher 依赖新版 `zhi-siyuan-picgo`。
-2. 发布流程触发 PicGo 上传。
+2. 发布流程通过 `createSiyuanPicGoHeadlessManager` 触发 PicGo 上传。
 3. 控制台能看到 PicGo v2 path contract 日志。
 4. 主配置来自 `test` 工作空间的 `data/storage/syp/picgo/picgo.cfg.json`。
 5. runtime、插件依赖、external PicGo 配置仍在 `~/.universal-picgo`。
+6. 未安装 `siyuan-plugin-picgo` 插件产品时，Publisher 仍可列出上传器、保存配置并上传。
+
+最终 npm 发布前，Publisher 可用本地 tgz 包冒烟：
+
+```powershell
+$packDir = "$env:TEMP\picgo-headless-packs"
+New-Item -ItemType Directory -Force $packDir
+pnpm --dir libs/Universal-PicGo-Store pack --pack-destination $packDir
+pnpm --dir libs/Universal-PicGo-Core pack --pack-destination $packDir
+pnpm --dir libs/zhi-siyuan-picgo pack --pack-destination $packDir
+
+pnpm --dir "D:\Users\Administrator\Documents\mydocs\siyuan-plugins\siyuan-plugin-publisher" add "$packDir\universal-picgo-store-*.tgz"
+pnpm --dir "D:\Users\Administrator\Documents\mydocs\siyuan-plugins\siyuan-plugin-publisher" add "$packDir\universal-picgo-*.tgz"
+pnpm --dir "D:\Users\Administrator\Documents\mydocs\siyuan-plugins\siyuan-plugin-publisher" add "$packDir\zhi-siyuan-picgo-*.tgz"
+```
 
 ## 6. 构建结果判定
 

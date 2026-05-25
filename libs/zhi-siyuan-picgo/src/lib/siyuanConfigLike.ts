@@ -7,5 +7,4 @@ export interface SiyuanConfigLike {
   notebook?: string
   picgoUploadTimeout?: number
   passwordType?: unknown
-  [key: string]: unknown
 }
