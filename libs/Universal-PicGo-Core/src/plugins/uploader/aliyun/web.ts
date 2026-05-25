@@ -8,22 +8,22 @@
  */
 
 import { IAliyunConfig, IPicGo } from "../../../types"
-import crypto from "crypto"
-import mime from "mime-types"
 import { IBuildInEvent } from "../../../utils/enums"
 import { ILocalesKey } from "../../../i18n/zh-CN"
 import { AxiosRequestConfig } from "axios"
 import { base64ToBuffer, safeParse } from "../../../utils/common"
+import { lookupMimeType } from "../../../utils/mimeLookup"
+import { digestHmacSha1 } from "../../../utils/cryptoUtil"
 
 // generate OSS signature
 const generateSignature = (options: IAliyunConfig, fileName: string): string => {
   const date = new Date().toUTCString()
-  const mimeType = mime.lookup(fileName)
+  const mimeType = lookupMimeType(fileName)
   if (!mimeType) throw Error(`No mime type found for file ${fileName}`)
 
   const signString = `PUT\n\n${mimeType}\n${date}\n/${options.bucket}/${options.path}${fileName}`
 
-  const signature = crypto.createHmac("sha1", options.accessKeySecret).update(signString).digest("base64")
+  const signature = digestHmacSha1(options.accessKeySecret, signString, "base64")
   return `OSS ${options.accessKeyId}:${signature}`
 }
 
@@ -43,7 +43,7 @@ const postOptions = (
     url: `https://${options.bucket}.${options.area}.aliyuncs.com/${encodeURI(options.path)}${encodeURI(fileName)}`,
     headers: {
       Authorization: signature,
-      "Content-Type": mime.lookup(fileName),
+      "Content-Type": lookupMimeType(fileName),
       "x-cors-headers": JSON.stringify(xCorsHeaders),
     },
     data: image,

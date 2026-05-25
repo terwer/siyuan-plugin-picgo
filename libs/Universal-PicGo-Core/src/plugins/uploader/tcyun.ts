@@ -7,14 +7,14 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import crypto from "crypto"
 import { ILocalesKey } from "../../i18n/zh-CN"
 import { IPicGo, IPluginConfig, ITcyunConfig } from "../../types"
-import mime from "mime-types"
 import { Buffer } from "../../utils/nodePolyfill"
 import { AxiosRequestConfig } from "axios"
 import { base64ToBuffer, safeParse } from "../../utils/common"
 import { IBuildInEvent } from "../../utils/enums"
+import { lookupMimeType } from "../../utils/mimeLookup"
+import { digestHash, digestHmacSha1 } from "../../utils/cryptoUtil"
 
 // generate COS signature string
 
@@ -39,7 +39,7 @@ const generateSignature = (options: ITcyunConfig, fileName: string): ISignature 
 
     const multiSignature = `a=${appId}&b=${bucket}&k=${secretId}&e=${expired}&t=${current}&r=${random}&f=`
 
-    const signHexKey = crypto.createHmac("sha1", secretKey).update(multiSignature).digest()
+    const signHexKey = digestHmacSha1(secretKey, multiSignature, undefined) as Buffer
     const tempString = Buffer.concat([signHexKey, Buffer.from(multiSignature)])
     signature = Buffer.from(tempString).toString("base64")
   } else {
@@ -47,11 +47,11 @@ const generateSignature = (options: ITcyunConfig, fileName: string): ISignature 
     const today = Math.floor(new Date().getTime() / 1000)
     const tomorrow = today + 86400
     signTime = `${today};${tomorrow}`
-    const signKey = crypto.createHmac("sha1", secretKey).update(signTime).digest("hex")
+    const signKey = digestHmacSha1(secretKey, signTime, "hex") as string
     const httpString = `put\n/${options.path}${fileName}\n\nhost=${options.bucket}.cos.${options.area}.myqcloud.com\n`
-    const sha1edHttpString = crypto.createHash("sha1").update(httpString).digest("hex")
+    const sha1edHttpString = digestHash(httpString, "sha1", "hex")
     const stringToSign = `sha1\n${signTime}\n${sha1edHttpString}\n`
-    signature = crypto.createHmac("sha1", signKey).update(stringToSign).digest("hex")
+    signature = digestHmacSha1(signKey, stringToSign, "hex") as string
   }
   return {
     signature,
@@ -98,7 +98,7 @@ const postOptions = (
       headers: {
         // Host: `${options.bucket}.cos.${options.area}.myqcloud.com`,
         Authorization: `q-sign-algorithm=sha1&q-ak=${options.secretId}&q-sign-time=${signature.signTime}&q-key-time=${signature.signTime}&q-header-list=host&q-url-param-list=&q-signature=${signature.signature}`,
-        contentType: mime.lookup(fileName),
+        contentType: lookupMimeType(fileName),
         userAgent: `PicGo;${version};null;null`,
       },
       data: image,

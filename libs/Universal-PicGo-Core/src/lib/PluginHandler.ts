@@ -60,7 +60,7 @@ export class PluginHandler implements IPluginHandler {
       // install plugins must use fullNameList:
       // 1. install remote pacage
       // 2. install local pacage
-      const result = await this.execCommand("install", fullNameList, this.ctx.baseDir, options, env)
+      const result = await this.execCommand("install", fullNameList, this.ctx.pluginBaseDir, options, env)
       if (result.success) {
         pkgNameList.forEach((pluginName: string) => {
           this.ctx.pluginLoader.registerPlugin(pluginName)
@@ -126,7 +126,7 @@ export class PluginHandler implements IPluginHandler {
     if (pkgNameList.length > 0) {
       // uninstall plugins must use pkgNameList:
       // npm uninstall will use the package.json's name
-      const result = await this.execCommand("uninstall", pkgNameList, this.ctx.baseDir)
+      const result = await this.execCommand("uninstall", pkgNameList, this.ctx.pluginBaseDir)
       if (result.success) {
         pkgNameList.forEach((pluginName: string) => {
           this.ctx.pluginLoader.unregisterPlugin(pluginName)
@@ -184,7 +184,7 @@ export class PluginHandler implements IPluginHandler {
     if (pkgNameList.length > 0) {
       // update plugins must use pkgNameList:
       // npm update will use the package.json's name
-      const result = await this.execCommand("update", pkgNameList, this.ctx.baseDir, options, env)
+      const result = await this.execCommand("update", pkgNameList, this.ctx.pluginBaseDir, options, env)
       if (result.success) {
         this.ctx.log.info(this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UPDATE_SUCCESS"))
         this.ctx.emit("updateSuccess", {

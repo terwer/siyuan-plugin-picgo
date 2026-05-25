@@ -1,7 +1,6 @@
-import crypto from "crypto"
-import FileType from "file-type"
-import mime from "mime"
 import { IImgInfo } from "../../../types"
+import { lookupMimeType } from "../../../utils/mimeLookup"
+import { digestHash } from "../../../utils/cryptoUtil"
 
 class FileNameGenerator {
   date: Date
@@ -53,35 +52,29 @@ class FileNameGenerator {
   }
 
   public md5(): string {
-    return crypto.createHash("md5").update(this.imgBuffer()!).digest("hex")
+    return digestHash(this.imgBuffer()!, "md5", "hex")
   }
 
   public md5B64(): string {
-    return crypto
-      .createHash("md5")
-      .update(this.imgBuffer()!)
-      .digest("base64")
+    return digestHash(this.imgBuffer()!, "md5", "base64")
       .replace(/\+/g, "-")
       .replace(/\//g, "_")
       .replace(/=+$/, "")
   }
 
   public md5B64Short(): string {
-    return crypto
-      .createHash("md5")
-      .update(this.imgBuffer()!)
-      .digest("base64")
+    return digestHash(this.imgBuffer()!, "md5", "base64")
       .replace(/\+/g, "-")
       .replace(/\//g, "_")
       .slice(0, 7)
   }
 
   public sha1(): string {
-    return crypto.createHash("sha1").update(this.imgBuffer()!).digest("hex")
+    return digestHash(this.imgBuffer()!, "sha1", "hex")
   }
 
   public sha256(): string {
-    return crypto.createHash("sha256").update(this.imgBuffer()!).digest("hex")
+    return digestHash(this.imgBuffer()!, "sha256", "hex")
   }
 
   public timestamp(): string {
@@ -128,22 +121,74 @@ export async function extractInfo(info: IImgInfo): Promise<{
   } = {}
 
   if (info.base64Image) {
-    const body = info.base64Image.replace(/^data:[/\w]+;base64,/, "")
-    result.contentType = info.base64Image.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)?.[0]
+    const commaIndex = info.base64Image.indexOf(",")
+    const header = commaIndex >= 0 ? info.base64Image.slice(0, commaIndex) : ""
+    const body = commaIndex >= 0 ? info.base64Image.slice(commaIndex + 1) : info.base64Image
+    result.contentType = header.match(/^data:([\w/+.-]+);base64$/)?.[1]
     result.body = Buffer.from(body, "base64")
     result.contentEncoding = "base64"
   } else {
     if (info.extname) {
-      result.contentType = mime.getType(info.extname)!
+      result.contentType = lookupMimeType(info.extname)
     }
     result.body = info.buffer
   }
 
-  // fallback to detect from buffer
-  if (!result.contentType) {
-    const fileType = await FileType.fromBuffer(result.body!)
-    result.contentType = fileType?.mime
+  // Browser-safe fallback without pulling file-type/strtok3 stream probes into bundles.
+  if (!result.contentType && result.body) {
+    result.contentType = sniffImageMime(result.body)
   }
 
   return result
+}
+
+function sniffImageMime(body: Buffer): string | undefined {
+  if (body.length >= 8) {
+    if (
+      body[0] === 0x89 &&
+      body[1] === 0x50 &&
+      body[2] === 0x4e &&
+      body[3] === 0x47 &&
+      body[4] === 0x0d &&
+      body[5] === 0x0a &&
+      body[6] === 0x1a &&
+      body[7] === 0x0a
+    ) {
+      return "image/png"
+    }
+    if (body.slice(0, 4).toString("ascii") === "RIFF" && body.slice(8, 12).toString("ascii") === "WEBP") {
+      return "image/webp"
+    }
+  }
+
+  if (body.length >= 3 && body[0] === 0xff && body[1] === 0xd8 && body[2] === 0xff) {
+    return "image/jpeg"
+  }
+  if (body.length >= 6) {
+    const gifHeader = body.slice(0, 6).toString("ascii")
+    if (gifHeader === "GIF87a" || gifHeader === "GIF89a") {
+      return "image/gif"
+    }
+  }
+  if (body.length >= 2 && body[0] === 0x42 && body[1] === 0x4d) {
+    return "image/bmp"
+  }
+  if (body.length >= 4) {
+    if (body[0] === 0x00 && body[1] === 0x00 && body[2] === 0x01 && body[3] === 0x00) {
+      return "image/x-icon"
+    }
+    if (
+      (body[0] === 0x49 && body[1] === 0x49 && body[2] === 0x2a && body[3] === 0x00) ||
+      (body[0] === 0x4d && body[1] === 0x4d && body[2] === 0x00 && body[3] === 0x2a)
+    ) {
+      return "image/tiff"
+    }
+  }
+
+  const head = body.slice(0, Math.min(body.length, 512)).toString("utf8").trimStart().toLowerCase()
+  if (head.startsWith("<svg") || (head.startsWith("<?xml") && head.includes("<svg"))) {
+    return "image/svg+xml"
+  }
+
+  return undefined
 }

@@ -9,11 +9,11 @@
 
 import { AxiosRequestConfig } from "axios"
 import { IGithubConfig, IPicGo, IPluginConfig } from "../../types"
-import mime from "mime-types"
 import { ILocalesKey } from "../../i18n/zh-CN"
 import { bufferToBase64 } from "../../utils/common"
 import { IBuildInEvent } from "../../utils/enums"
 import { browserPathJoin } from "../../utils/browserUtils"
+import { lookupMimeType } from "../../utils/mimeLookup"
 
 const postOptions = (fileName: string, options: IGithubConfig, data: any): AxiosRequestConfig => {
   const path = options.path || ""
@@ -24,7 +24,7 @@ const postOptions = (fileName: string, options: IGithubConfig, data: any): Axios
     headers: {
       Authorization: `token ${token}`,
       // "User-Agent": "PicGo",
-      "Content-Type": mime.lookup(fileName),
+      "Content-Type": lookupMimeType(fileName),
     },
     data: data,
     // proxy=false 表示浏览器换无需代理也可以直接使用

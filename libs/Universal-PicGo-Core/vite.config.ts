@@ -61,6 +61,13 @@ export default defineConfig({
     }),
 
     nodePolyfills({
+      include: ["buffer", "events", "process", "stream", "util"],
+      exclude: ["vm"],
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
       // Whether to polyfill `node:` protocol imports.
       protocolImports: true,
     }) as any,

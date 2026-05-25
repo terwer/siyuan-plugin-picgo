@@ -44,7 +44,7 @@ const formData = reactive({
     <el-form-item v-if="!isSiyuanProxyAvailable(formData.cfg.siyuan.proxy)" :label="t('setting.cors.title')">
       <el-input v-model="formData.cfg.picBed.proxy" :placeholder="t('setting.cors.title.tip')" />
       <div>
-        <a href="https://blog.terwer.space/static/20240312140915-rvxrqp2" target="_blank">
+        <a href="https://siyuan.wiki/s/20240312140915-rvxrqp2" target="_blank">
           {{ t("setting.picgo.refer.to.here") }}
         </a>
       </div>

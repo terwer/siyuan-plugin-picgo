@@ -9,6 +9,7 @@
 
 import { ExternalPicgo, IImgInfo, IPicGo, PicgoTypeEnum, UniversalPicGo } from "universal-picgo"
 import { ILogger } from "zhi-lib-base"
+import { SiyuanPicGoPaths, toUniversalPicGoOptions } from "./siyuanPicgoPaths"
 
 /**
  * 思源笔记专属的图片上传 API
@@ -22,9 +23,9 @@ class SiyuanPicGoUploadApi {
   private readonly externalPicGo: ExternalPicgo
   private readonly logger: ILogger
 
-  constructor(isDev?: boolean) {
+  constructor(isDev?: boolean, paths?: SiyuanPicGoPaths) {
     // 初始化 PicGO
-    this.picgo = new UniversalPicGo("", "", "", isDev)
+    this.picgo = new (UniversalPicGo as any)(toUniversalPicGoOptions(paths ?? {}, isDev))
     this.externalPicGo = new ExternalPicgo(this.picgo, isDev)
     this.logger = this.picgo.getLogger("siyuan-picgo-upload-api")
     this.logger.debug("picgo upload api inited")

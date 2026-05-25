@@ -14,7 +14,6 @@ import { useVueI18n } from "$composables/useVueI18n.ts"
 import MaterialSymbolsShoppingBagOutlineSharp from "~icons/material-symbols/shopping-bag-outline-sharp"
 import MaterialSymbolsDownload from "~icons/material-symbols/download"
 import { handleStreamlinePluginName, IPicGoPlugin, PicgoHelper, PicgoHelperEvents } from "zhi-siyuan-picgo"
-import _ from "lodash-es"
 import { createAppLogger } from "@/utils/appLogger.ts"
 import MaterialSymbolsSettings from "~icons/material-symbols/settings"
 import PhBellSimpleSlashFill from "~icons/ph/bell-simple-slash-fill"
@@ -63,6 +62,17 @@ const npmSearchText = computed(() => {
     : formData.searchText
 })
 let getSearchResult: any
+
+const debounce = <T extends (...args: any[]) => void>(fn: T, delay: number): T => {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  return ((...args: Parameters<T>) => {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => fn(...args), delay)
+  }) as T
+}
+
 // PicGo 持久化操作帮助类
 const picgoHelper = new PicgoHelper(props.ctx, formData.cfg)
 
@@ -279,7 +289,7 @@ const initPage = () => {
   loadPluginList()
 
   // show search reault after delay
-  getSearchResult = _.debounce(_getSearchResult, 50)
+  getSearchResult = debounce(_getSearchResult, 50)
   logger.debug("picgo plugin store inited", formData.pluginList)
 }
 
