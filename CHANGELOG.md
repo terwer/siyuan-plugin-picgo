@@ -1,13 +1,9 @@
 # Changelog
 
 ## [2.0.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.0.0...siyuan-plugin-picgo-v2.0.1) (2026-05-26)
-
-
 ### Bug Fixes
-
-* harden packaging and PicGo config stability ([961ef0f](https://github.com/terwer/siyuan-plugin-picgo/commit/961ef0fe844377a61aa7b77ad86207fc97612573))
+* harden packaging and picgo config stability ([961ef0f](https://github.com/terwer/siyuan-plugin-picgo/commit/961ef0fe844377a61aa7b77ad86207fc97612573))
 * **picgo:** resolve package config and runtime upload incidents ([e8fcd04](https://github.com/terwer/siyuan-plugin-picgo/commit/e8fcd0423a250d4ef73b6be015681aa3949b44f7))
-
 ## [2.0.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.12.1...siyuan-plugin-picgo-v2.0.0) (2026-05-26)
 ### ⚠ BREAKING CHANGES
 * **picgo:** picgo 2.0 splits workspace-synced main config from device-local runtime files.
@@ -19,7 +15,6 @@
 * **picgo:** finalize 2.0 upload flow, shell ux, and defaults ([749cfcf](https://github.com/terwer/siyuan-plugin-picgo/commit/749cfcf6b404486cd73c8c4162e87c0620ae1ab3))
 * **shell:** improve picgo plugin shell ux and reload notification ([6f8c8bb](https://github.com/terwer/siyuan-plugin-picgo/commit/6f8c8bb6a887d0251a92c235c55649b2a67c77f5))
 * split picgo v2 config and runtime paths ([2ba9a61](https://github.com/terwer/siyuan-plugin-picgo/commit/2ba9a61c3b119b917cd6c2f9900cd18595fc1acf))
-### Bug Fixes
 * help link ([183c276](https://github.com/terwer/siyuan-plugin-picgo/commit/183c276f8268f51e0522e6aa739c01726a526dc2))
 * **paste:** synchronously prevent default paste to block siyuan local upload ([5364c47](https://github.com/terwer/siyuan-plugin-picgo/commit/5364c470b04b4067d6fa78ded015324523d2d9a8))
 * **setting:** remove legacy paste polling ui controls ([dfea0b0](https://github.com/terwer/siyuan-plugin-picgo/commit/dfea0b0b8127b8e3a1d2d2cacc91e45e715d431a))
