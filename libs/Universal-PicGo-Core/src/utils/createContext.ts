@@ -32,6 +32,7 @@ const createContext = (ctx: IPicGo): IPicGo => {
     i18n: ctx.i18n,
     getLogger: ctx.getLogger.bind(ctx),
     getConfig: ctx.getConfig.bind(ctx),
+    reloadConfig: ctx.reloadConfig.bind(ctx),
     saveConfig: ctx.saveConfig.bind(ctx),
     removeConfig: ctx.removeConfig.bind(ctx),
     setConfig: ctx.setConfig.bind(ctx),

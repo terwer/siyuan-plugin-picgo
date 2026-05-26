@@ -137,6 +137,11 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     }
   }
 
+  reloadConfig(): IConfig {
+    this._config = this.db.read(true) as IConfig
+    return this._config
+  }
+
   saveConfig(config: IStringKeyMap<any>): void {
     if (!isInputConfigValid(config)) {
       this.log.warn("the format of config is invalid, please provide object")
