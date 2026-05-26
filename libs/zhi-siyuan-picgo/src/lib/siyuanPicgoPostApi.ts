@@ -527,7 +527,9 @@ class SiyuanPicgoPostApi {
       baseDir: ctx.baseDir,
       pluginBaseDir: ctx.pluginBaseDir,
     })
-    migrateV2WorkspacePicGoConfig(this.paths, this.logger)
+    if (migrateV2WorkspacePicGoConfig(this.paths, this.logger)) {
+      ctx.reloadConfig()
+    }
   }
 
   private async copyRuntimeFolder(from: string, to: string, overwrite: boolean = false) {

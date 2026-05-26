@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import * as picgo from "universal-picgo"
 import {
   getWorkspacePicGoConfigPath,
+  isDefaultInitializedConfig,
   migrateV2WorkspacePicGoConfig,
   resolveSiyuanPicGoPaths,
   toUniversalPicGoOptions,
@@ -126,6 +127,7 @@ describe("siyuan PicGo v2 path helpers", () => {
     const fs = {
       existsSync: vi.fn((target: string) => files.has(target)),
       mkdirSync: vi.fn(),
+      readFileSync: vi.fn((target: string) => files.get(target) ?? ""),
       copyFileSync: vi.fn(),
     }
     const path = {
@@ -151,5 +153,80 @@ describe("siyuan PicGo v2 path helpers", () => {
     ).toBe(false)
     expect(fs.copyFileSync).not.toHaveBeenCalled()
     expect(files.get("/workspace/data/storage/syp/picgo/picgo.cfg.json")).toBe('{"workspace":true}')
+  })
+
+  it("replaces an auto-created default smms workspace config from legacy home config", () => {
+    const defaultWorkspaceConfig = JSON.stringify({
+      picBed: {
+        uploader: "smms",
+        current: "smms",
+      },
+      picgoPlugins: {},
+      siyuan: {
+        waitTimeout: 2,
+        retryTimes: 5,
+        autoUpload: true,
+        replaceLink: true,
+        txtImageSwitch: false,
+      },
+    })
+    const legacyHomeConfig = JSON.stringify({
+      picBed: {
+        uploader: "awss3",
+        current: "awss3",
+        awss3: {
+          _id: "rustfs",
+          _configName: "rustfs",
+          endpoint: "http://127.0.0.1:9000",
+        },
+      },
+      uploader: {
+        awss3: {
+          defaultId: "rustfs",
+          configList: [
+            {
+              _id: "rustfs",
+              _configName: "rustfs",
+              endpoint: "http://127.0.0.1:9000",
+            },
+          ],
+        },
+      },
+    })
+    const files = new Map<string, string>([
+      ["/home/tester/.universal-picgo/picgo.cfg.json", legacyHomeConfig],
+      ["/workspace/data/storage/syp/picgo/picgo.cfg.json", defaultWorkspaceConfig],
+    ])
+    const fs = {
+      existsSync: vi.fn((target: string) => files.has(target)),
+      mkdirSync: vi.fn(),
+      readFileSync: vi.fn((target: string) => files.get(target) ?? ""),
+      copyFileSync: vi.fn((from: string, to: string) => {
+        files.set(to, files.get(from) ?? "")
+      }),
+    }
+    const path = {
+      join: (...parts: string[]) => parts.join("/").replace(/\/+/g, "/"),
+      dirname: (file: string) => file.replace(/\/[^/]*$/, "") || "/",
+      basename: (file: string) => file.split("/").pop() || file,
+      resolve: (file: string) => file,
+    }
+    vi.spyOn(picgo, "hasNodeEnv", "get").mockReturnValue(true)
+    vi.spyOn(picgo, "win", "get").mockReturnValue({
+      fs,
+      require: vi.fn((name: string) => {
+        if (name === "path") return path
+        throw new Error(`unexpected require ${name}`)
+      }),
+    } as any)
+
+    expect(isDefaultInitializedConfig(defaultWorkspaceConfig)).toBe(true)
+    expect(
+      migrateV2WorkspacePicGoConfig({
+        configPath: "/workspace/data/storage/syp/picgo/picgo.cfg.json",
+        baseDir: "/home/tester/.universal-picgo",
+      })
+    ).toBe(true)
+    expect(files.get("/workspace/data/storage/syp/picgo/picgo.cfg.json")).toBe(legacyHomeConfig)
   })
 })

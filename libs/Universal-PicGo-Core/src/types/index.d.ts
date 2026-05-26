@@ -89,6 +89,10 @@ export interface IPicGo extends EventEmitter {
    */
   getConfig: <T>(name?: string) => T
   /**
+   * reload picgo config from configPath into runtime memory
+   */
+  reloadConfig: () => IConfig
+  /**
    * save picgo config to configPath
    */
   saveConfig: (config: IStringKeyMap<any>) => void

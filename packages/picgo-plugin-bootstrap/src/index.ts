@@ -96,6 +96,7 @@ export default class PicgoPlugin extends Plugin {
     }
     const picgoPostApi = await SiyuanPicGo.getInstance(siyuanConfig as any, isDev)
     const ctx = picgoPostApi.ctx()
+    ctx.reloadConfig()
     const siyuanApi = picgoPostApi.siyuanApi
 
     if (!takeover.taken || !takeover.snapshot) {
@@ -166,6 +167,7 @@ export default class PicgoPlugin extends Plugin {
           password: siyuanApiToken,
         }
         const picgoPostApi = await SiyuanPicGo.getInstance(siyuanConfig as any, isDev)
+        picgoPostApi.ctx().reloadConfig()
         const siyuanApi = picgoPostApi.siyuanApi
 
         const nodeId = this.getDataNodeIdFromImgWithSrc(imageUrl)
@@ -242,6 +244,7 @@ export default class PicgoPlugin extends Plugin {
       // pageId: string
       // attrs: any
       // 每次都要最新
+      picgoPostApi.ctx().reloadConfig()
       const attrs = await siyuanApi.getBlockAttrs(pageId)
       let url = imageUrl
       if (isLocal) {

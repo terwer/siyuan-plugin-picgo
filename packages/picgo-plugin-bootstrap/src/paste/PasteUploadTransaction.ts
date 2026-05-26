@@ -171,6 +171,7 @@ class PasteUploadTransaction {
   }
 
   private async uploadToPicGo(snapshot: PasteInputSnapshot) {
+    this.deps.ctx.reloadConfig()
     const imageItem = new ImageItem(snapshot.generatedName, snapshot.file as any, true, snapshot.file?.name ?? "", "")
     // ignoreReplaceLink=true is used only to reuse the PicGo upload primitive.
     // The transaction owns document mutation and metadata commit itself; no

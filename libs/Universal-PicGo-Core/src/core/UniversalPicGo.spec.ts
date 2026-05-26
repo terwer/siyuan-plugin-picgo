@@ -1,10 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { UniversalPicGo } from "./UniversalPicGo"
 import * as store from "universal-picgo-store"
+import { createContext } from "../utils/createContext"
 
 const createFakeNodeHost = () => {
   const dirs = new Set<string>()
   const files = new Set<string>()
+  const fileContents = new Map<string, string>()
+  const fdToFile = new Map<number, string>()
+  let nextFd = 1
   const fs = {
     constants: { F_OK: 0 },
     accessSync: vi.fn((file: string) => {
@@ -16,29 +20,51 @@ const createFakeNodeHost = () => {
     mkdirSync: vi.fn((dir: string) => {
       dirs.add(dir)
     }),
-    writeFileSync: vi.fn((file: string) => {
+    writeFileSync: vi.fn((file: string, data = "") => {
       files.add(file)
+      fileContents.set(file, String(data))
     }),
     readFileSync: vi.fn((file: string) => {
       if (!files.has(file)) {
         throw Object.assign(new Error("not found"), { code: "ENOENT" })
       }
-      return "{}"
+      return fileContents.get(file) ?? "{}"
     }),
     readdirSync: vi.fn(() => []),
     realpathSync: vi.fn((file: string) => file),
     statSync: vi.fn(() => {
       throw Object.assign(new Error("not found"), { code: "ENOENT" })
     }),
-    openSync: vi.fn(() => 1),
-    writeSync: vi.fn(),
+    openSync: vi.fn((file: string) => {
+      const fd = nextFd++
+      files.add(file)
+      fileContents.set(file, "")
+      fdToFile.set(fd, file)
+      return fd
+    }),
+    writeSync: vi.fn((fd: number, data: string) => {
+      const file = fdToFile.get(fd)
+      if (file) {
+        fileContents.set(file, `${fileContents.get(file) ?? ""}${String(data)}`)
+      }
+    }),
     fsyncSync: vi.fn(),
     closeSync: vi.fn(),
     renameSync: vi.fn((from: string, to: string) => {
       files.delete(from)
       files.add(to)
+      fileContents.set(to, fileContents.get(from) ?? "")
+      fileContents.delete(from)
+      for (const [fd, file] of fdToFile.entries()) {
+        if (file === from) {
+          fdToFile.delete(fd)
+        }
+      }
     }),
-    unlinkSync: vi.fn(),
+    unlinkSync: vi.fn((file: string) => {
+      files.delete(file)
+      fileContents.delete(file)
+    }),
     rm: vi.fn(),
   }
   const path = {
@@ -63,7 +89,7 @@ const createFakeNodeHost = () => {
     }),
   } as any
 
-  return { fakeWin, dirs, files, fs }
+  return { fakeWin, dirs, files, fs, fileContents }
 }
 
 const suppressPicGoPathLogs = () => {
@@ -140,5 +166,71 @@ describe("UniversalPicGo v2 path contract", () => {
 
     expect(picgo.pluginLoader.getFullList()).toEqual([])
     expect(picgo.pluginLoader.getList()).toEqual([])
+  })
+
+  it("keeps reloadConfig bound on upload child context", () => {
+    suppressPicGoPathLogs()
+    const { fakeWin } = createFakeNodeHost()
+    vi.spyOn(store, "hasNodeEnv", "get").mockReturnValue(true)
+    vi.spyOn(store, "win", "get").mockReturnValue(fakeWin)
+    vi.spyOn(UniversalPicGo.prototype as any, "init").mockImplementation(function initStub(this: any) {
+      this.i18n = {} as any
+      this._pluginLoader = { load: vi.fn() } as any
+      this.lifecycle = { start: vi.fn() } as any
+    })
+
+    const picgo = new UniversalPicGo({
+      configPath: "/workspace/data/storage/syp/picgo/picgo.cfg.json",
+      baseDir: "/home/tester/.universal-picgo",
+      pluginBaseDir: "/home/tester/.universal-picgo",
+      isDev: true,
+    })
+
+    const childCtx = createContext(picgo)
+    expect(childCtx.reloadConfig).toBeTypeOf("function")
+    expect(() => childCtx.reloadConfig()).not.toThrow()
+  })
+
+  it("reloads config from configPath to avoid stale uploader runtime", () => {
+    suppressPicGoPathLogs()
+    const { fakeWin, files, fileContents } = createFakeNodeHost()
+    const configPath = "/workspace/data/storage/syp/picgo/picgo.cfg.json"
+    files.add(configPath)
+    fileContents.set(
+      configPath,
+      JSON.stringify({
+        picBed: {
+          uploader: "smms",
+          current: "smms",
+        },
+      })
+    )
+    vi.spyOn(store, "hasNodeEnv", "get").mockReturnValue(true)
+    vi.spyOn(store, "win", "get").mockReturnValue(fakeWin)
+    vi.spyOn(UniversalPicGo.prototype as any, "init").mockImplementation(function initStub(this: any) {
+      this.i18n = {} as any
+      this._pluginLoader = { load: vi.fn() } as any
+      this.lifecycle = { start: vi.fn() } as any
+    })
+
+    const picgo = new UniversalPicGo({
+      configPath,
+      baseDir: "/home/tester/.universal-picgo",
+      pluginBaseDir: "/home/tester/.universal-picgo",
+      isDev: true,
+    })
+    expect(picgo.getConfig("picBed.uploader")).toBe("smms")
+
+    const updatedConfigText = JSON.stringify({
+      picBed: {
+        uploader: "awss3",
+        current: "awss3",
+      },
+    })
+    fileContents.set(configPath, updatedConfigText)
+    window.localStorage.setItem(configPath, updatedConfigText)
+
+    picgo.reloadConfig()
+    expect(picgo.getConfig("picBed.uploader")).toBe("awss3")
   })
 })

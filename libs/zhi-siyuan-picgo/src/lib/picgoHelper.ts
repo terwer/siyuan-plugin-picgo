@@ -266,6 +266,19 @@ class PicgoHelper {
       configList = res.configList
       defaultId = res.defaultId
     }
+    if (!defaultId && configList.length > 0) {
+      const currentPicBedConfig = this.getPicgoConfig(`picBed.${type}`, {})
+      const currentConfigId = currentPicBedConfig?._id
+      const matchedCurrentConfig = currentConfigId
+        ? configList.find((item: IUploaderConfigListItem) => item._id === currentConfigId)
+        : undefined
+      const fallbackConfig = matchedCurrentConfig ?? configList[0]
+      defaultId = fallbackConfig._id
+      this.savePicgoConfig({
+        [`uploader.${type}.defaultId`]: defaultId,
+        [`picBed.${type}`]: fallbackConfig,
+      })
+    }
 
     const configItem = {
       configList,
@@ -363,24 +376,32 @@ class PicgoHelper {
     let configList = uploaderConfig.configList
     // ensure raw for save
     configList = getRawData(configList)
-    const defaultId = uploaderConfig.ddefaultId
+    const defaultId = uploaderConfig.defaultId
     const existConfig = configList.find((item: IUploaderConfigListItem) => item._id === id)
     let updatedConfig
-    let updatedDefaultId = defaultId
+    const saveConfig: Record<string, any> = {
+      [`uploader.${type}.configList`]: configList,
+    }
     if (existConfig) {
       updatedConfig = Object.assign(existConfig, trimValues(config), {
+        _id: id,
         _updatedAt: Date.now(),
       })
+      if (!defaultId) {
+        saveConfig[`uploader.${type}.defaultId`] = id
+        saveConfig[`picBed.${type}`] = updatedConfig
+      } else if (defaultId === id) {
+        saveConfig[`picBed.${type}`] = updatedConfig
+      }
     } else {
       updatedConfig = this.completeUploaderMetaConfig(config)
-      updatedDefaultId = updatedConfig._id
       configList.push(updatedConfig)
+      if (!defaultId) {
+        saveConfig[`uploader.${type}.defaultId`] = updatedConfig._id
+        saveConfig[`picBed.${type}`] = updatedConfig
+      }
     }
-    this.savePicgoConfig({
-      [`uploader.${type}.configList`]: configList,
-      [`uploader.${type}.defaultId`]: updatedDefaultId,
-      [`picBed.${type}`]: updatedConfig,
-    })
+    this.savePicgoConfig(saveConfig)
   }
 
   /**
@@ -395,7 +416,7 @@ class PicgoHelper {
     let configList = uploaderConfig.configList
     // ensure raw for save
     configList = getRawData(configList)
-    const defaultId = uploaderConfig.ddefaultId
+    const defaultId = uploaderConfig.defaultId
     if (configList.length <= 1) {
       return
     }

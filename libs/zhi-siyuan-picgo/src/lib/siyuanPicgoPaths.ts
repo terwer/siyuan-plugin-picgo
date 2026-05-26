@@ -29,6 +29,39 @@ interface SiyuanPicGoPaths {
   zhiNpmPath?: string
 }
 
+const isDefaultInitializedConfig = (raw: string | undefined): boolean => {
+  if (!raw) {
+    return false
+  }
+
+  try {
+    const cfg = JSON.parse(raw)
+    const allowedRootKeys = new Set(["picBed", "picgoPlugins", "siyuan"])
+    const rootKeys = Object.keys(cfg ?? {})
+    if (rootKeys.some((key) => !allowedRootKeys.has(key))) {
+      return false
+    }
+
+    const picBed = cfg?.picBed ?? {}
+    const picgoPlugins = cfg?.picgoPlugins ?? {}
+    const siyuan = cfg?.siyuan ?? {}
+
+    return (
+      picBed.uploader === "smms" &&
+      picBed.current === "smms" &&
+      Object.keys(picBed).length <= 2 &&
+      Object.keys(picgoPlugins).length === 0 &&
+      siyuan.waitTimeout === 2 &&
+      siyuan.retryTimes === 5 &&
+      siyuan.autoUpload === true &&
+      siyuan.replaceLink === true &&
+      siyuan.txtImageSwitch === false
+    )
+  } catch {
+    return false
+  }
+}
+
 const getDefaultLocalPicGoDir = (): string | undefined => {
   if (!hasNodeEnv) {
     return undefined
@@ -118,6 +151,19 @@ const migrateV2WorkspacePicGoConfig = (paths: SiyuanPicGoPaths, logger?: { info?
   }
 
   if (fs.existsSync(workspaceConfigPath)) {
+    const workspaceConfigText = fs.readFileSync(workspaceConfigPath, "utf-8")
+    if (isDefaultInitializedConfig(workspaceConfigText) && fs.existsSync(homeConfigPath)) {
+      logger?.info?.(
+        `PicGo v2 workspace config only contains default initialized config, replace it from ${homeConfigPath}`
+      )
+      try {
+        fs.copyFileSync(homeConfigPath, workspaceConfigPath)
+        return true
+      } catch (e) {
+        logger?.error?.(`copy ${homeConfigPath} to ${workspaceConfigPath} failed: ${e}`)
+        return false
+      }
+    }
     logger?.info?.(`PicGo v2 workspace config exists, keep it as authoritative => ${workspaceConfigPath}`)
     return false
   }
@@ -140,6 +186,7 @@ export {
   getDefaultLocalPicGoDir,
   getSiyuanWorkspaceDir,
   getWorkspacePicGoConfigPath,
+  isDefaultInitializedConfig,
   migrateV2WorkspacePicGoConfig,
   resolveSiyuanPicGoPaths,
   toUniversalPicGoOptions,
