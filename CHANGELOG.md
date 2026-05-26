@@ -1,5 +1,45 @@
 # Changelog
 
+## [2.0.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.12.1...siyuan-plugin-picgo-v2.0.0) (2026-05-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* **picgo:** PicGo 2.0 splits workspace-synced main config from device-local runtime files.
+* v2 changes the default bundled PicGo config path from ~/.universal-picgo/picgo.cfg.json to [workspace]/data/storage/syp/picgo/picgo.cfg.json. Runtime files, third-party PicGo plugins, external-picgo-cfg.json, logs, clipboard cache, and zhi libs remain under ~/.universal-picgo. Integrations such as siyuan-plugin-publisher must use the v2 path contract instead of hardcoded historical PicGo paths.
+
+### Features
+
+* **picgo-headless:** define stable headless contract for external PicGo usage ([30953dc](https://github.com/terwer/siyuan-plugin-picgo/commit/30953dc49ecee1ec8aee73b12aae4952f22395fb))
+* **picgo-headless:** implement universal and siyuan picgo headless manager contracts ([271acf9](https://github.com/terwer/siyuan-plugin-picgo/commit/271acf955a99e39a67d98ff2c5c7a5533d9345f3))
+* **picgo:** define headless publisher contract for external integration ([8a84d2d](https://github.com/terwer/siyuan-plugin-picgo/commit/8a84d2d2e77f357bc0867913c5a711fcb74c8ee3))
+* **picgo:** finalize 2.0 upload flow, shell UX, and defaults ([749cfcf](https://github.com/terwer/siyuan-plugin-picgo/commit/749cfcf6b404486cd73c8c4162e87c0620ae1ab3))
+* **shell:** improve PicGo plugin shell UX and reload notification ([6f8c8bb](https://github.com/terwer/siyuan-plugin-picgo/commit/6f8c8bb6a887d0251a92c235c55649b2a67c77f5))
+* split PicGo v2 config and runtime paths ([2ba9a61](https://github.com/terwer/siyuan-plugin-picgo/commit/2ba9a61c3b119b917cd6c2f9900cd18595fc1acf))
+
+
+### Bug Fixes
+
+* help link ([183c276](https://github.com/terwer/siyuan-plugin-picgo/commit/183c276f8268f51e0522e6aa739c01726a526dc2))
+* **paste:** synchronously prevent default paste to block SiYuan local upload ([5364c47](https://github.com/terwer/siyuan-plugin-picgo/commit/5364c470b04b4067d6fa78ded015324523d2d9a8))
+* **setting:** remove legacy paste polling UI controls ([dfea0b0](https://github.com/terwer/siyuan-plugin-picgo/commit/dfea0b0b8127b8e3a1d2d2cacc91e45e715d431a))
+
+
+### Code Refactoring
+
+* **core:** reorganize internal structure and separate product from publishable lib ([0982afd](https://github.com/terwer/siyuan-plugin-picgo/commit/0982afd41b6133eb41e87ba6966756e07527a915))
+* **docs:** update development and configuration paths for v2.0.0 ([53f35c4](https://github.com/terwer/siyuan-plugin-picgo/commit/53f35c4ce152e438573f85878a13387185b7378f))
+* **paste-upload:** redefine paste upload as single plugin-owned transaction ([23d1d0a](https://github.com/terwer/siyuan-plugin-picgo/commit/23d1d0a7aa60ca530771a4440066d3fd1106b6d4))
+* **paste-upload:** redefine paste upload as single plugin-owned transaction ([d8bcb84](https://github.com/terwer/siyuan-plugin-picgo/commit/d8bcb849e5e1add42afe2bee32fbd8d82be595d4))
+* **picgo:** analyze and document architecture issues of product and lib boundary ([dc56d53](https://github.com/terwer/siyuan-plugin-picgo/commit/dc56d5333b4920e339ae75c6c8565cd362004e6f))
+* **picgo:** restructure internal architecture to reduce cross-package coupling ([f13fe37](https://github.com/terwer/siyuan-plugin-picgo/commit/f13fe374d4e0446809173cbd0dbcc5fb3294a17e))
+* **runtime:** enforce strict runtime capability boundaries and internal structure cleanup ([a60fc32](https://github.com/terwer/siyuan-plugin-picgo/commit/a60fc324a1fce031933ff60087e191f1cf1b4bfa))
+
+
+### Miscellaneous
+
+* **spec:** add OpenSpec config and skill specifications ([e766eee](https://github.com/terwer/siyuan-plugin-picgo/commit/e766eee3a0258002380317647734a375b47aef3c))
+
 ## [1.12.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.12.0...siyuan-plugin-picgo-v1.12.1) (2024-12-11)
 ### Bug Fixes
 * [#639](https://github.com/terwer/siyuan-plugin-picgo/issues/639) duplicate images in pic list ([4b01c7e](https://github.com/terwer/siyuan-plugin-picgo/commit/4b01c7e5ce83aff520440e88853b309f3458a912))
