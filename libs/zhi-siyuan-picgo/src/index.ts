@@ -120,6 +120,11 @@ export {
 }
 
 export type {
+  SharedMigrationState,
+  SiyuanPicGoMigrationSnapshot,
+  SiyuanPicGoMigrationStatus,
+} from "./lib/siyuanPicgoMigrationState"
+export type {
   SiyuanPicGoInstanceOptions,
   SiyuanPicGoPathOverrides,
   SiyuanPicGoPaths,

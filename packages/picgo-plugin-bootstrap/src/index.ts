@@ -18,6 +18,7 @@ import { showPage } from "./dialog"
 import { PageRoute } from "./pageRoute"
 import { initStatusBar, updateStatusBar } from "./statusBar"
 import { initTopbar } from "./topbar"
+import { destroyPluginShell, openPluginShell } from "./shell"
 import { PasteEventAdapter } from "./paste/PasteEventAdapter"
 import { PasteUploadTransaction } from "./paste/PasteUploadTransaction"
 import { icons } from "./utils/svg"
@@ -37,11 +38,21 @@ export default class PicgoPlugin extends Plugin {
   onload() {
     initTopbar(this)
     initStatusBar(this)
+    this.addCommand({
+      langKey: "openPicgoDialogFallback",
+      langText: "PicGo 旧版 Dialog 调试入口",
+      hotkey: "",
+      callback: () => this.openDialogFallback(PageRoute.Page_Home),
+    })
     this.logger.info("PicGo Plugin loaded")
   }
 
   openSetting() {
-    showPage(this, PageRoute.Page_Setting)
+    openPluginShell(this, PageRoute.Page_Setting)
+  }
+
+  openDialogFallback(pageKey: PageRoute = PageRoute.Page_Home) {
+    showPage(this, pageKey)
   }
 
   onLayoutReady() {
@@ -52,6 +63,7 @@ export default class PicgoPlugin extends Plugin {
   onunload() {
     // offEvent
     this.offEvent()
+    destroyPluginShell()
   }
 
   // ================

@@ -152,6 +152,17 @@ function checkContract() {
     }
   }
 
+  const configDb = read(path.join(repoRoot, "libs/Universal-PicGo-Core/src/db/config/index.ts"))
+  for (const expected of [
+    "autoUpload: true",
+    "replaceLink: true",
+    "txtImageSwitch: false",
+    'this.safeSet("siyuan.autoUpload", this.initialValue.siyuan.autoUpload)',
+    'this.safeSet("siyuan.replaceLink", this.initialValue.siyuan.replaceLink)',
+  ]) {
+    if (!configDb.includes(expected)) failures.push(`ConfigDb first-run Siyuan default missing: ${expected}`)
+  }
+
   return failures
 }
 

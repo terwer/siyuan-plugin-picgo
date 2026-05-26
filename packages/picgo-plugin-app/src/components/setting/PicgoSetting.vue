@@ -12,8 +12,11 @@ import { useVueI18n } from "$composables/useVueI18n.ts"
 import { useBundledPicGoSetting } from "@/stores/useBundledPicGoSetting.ts"
 import { useExternalPicGoSetting } from "@/stores/useExternalPicGoSetting.ts"
 import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
-import { onBeforeMount, reactive } from "vue"
-import { PicgoTypeEnum } from "zhi-siyuan-picgo"
+import { onBeforeMount, reactive, ref, watch } from "vue"
+import { PicgoTypeEnum, type SiyuanPicGoMigrationSnapshot } from "zhi-siyuan-picgo"
+import { ElMessage } from "element-plus"
+import { markRuntimeReloadRequired } from "$composables/useRuntimeReloadNotice.ts"
+import RuntimeReloadNotice from "$components/setting/RuntimeReloadNotice.vue"
 
 const { t } = useVueI18n()
 const { getBundledPicGoSetting } = useBundledPicGoSetting()
@@ -23,6 +26,14 @@ const siyuanPicgo = await SiyuanPicGoClient.getInstance()
 const ctx = siyuanPicgo.ctx()
 const bundledPicGoSettingForm = getBundledPicGoSetting(ctx)
 const externalPicGoSettingForm = getExternalPicGoSetting(ctx)
+const migrationState = ref<SiyuanPicGoMigrationSnapshot>(siyuanPicgo.getConfigMigrationState())
+const migrationRetrying = ref(false)
+const runtimeRelevantSiyuanKeys = {
+  autoUpload: "剪切板自动上传",
+  replaceLink: "替换本地链接",
+  txtImageSwitch: "粘贴图片和文字混合内容上传",
+} as const
+const isRuntimeRelevantWatchReady = ref(false)
 
 const formData = reactive({
   picgoTypeList: [
@@ -46,6 +57,37 @@ const handlePicgoTypeChange = (val: any) => {
   externalPicGoSettingForm.value.useBundledPicgo = isBundled
 }
 
+const retryConfigMigration = async () => {
+  migrationRetrying.value = true
+  try {
+    migrationState.value = await siyuanPicgo.retryConfigMigration()
+    if (migrationState.value.status === "done") {
+      ElMessage.success("PicGo 初始化或迁移已完成")
+    } else if (migrationState.value.status === "failed") {
+      ElMessage.error(`PicGo 初始化或迁移仍失败：${migrationState.value.error ?? "未知错误"}`)
+    }
+  } finally {
+    migrationRetrying.value = false
+  }
+}
+
+const getRuntimeRelevantSiyuanConfig = () => ({
+  autoUpload: bundledPicGoSettingForm.value.siyuan?.autoUpload ?? true,
+  replaceLink: bundledPicGoSettingForm.value.siyuan?.replaceLink ?? true,
+  txtImageSwitch: bundledPicGoSettingForm.value.siyuan?.txtImageSwitch ?? false,
+})
+
+const markSiyuanRuntimeReloadRequired = (changedKeys: string[]) => {
+  const changedLabels = changedKeys
+    .map((key) => runtimeRelevantSiyuanKeys[key as keyof typeof runtimeRelevantSiyuanKeys])
+    .filter(Boolean)
+  if (changedLabels.length === 0) {
+    return
+  }
+
+  markRuntimeReloadRequired(`修改思源粘贴/剪切板运行时设置：${changedLabels.join("、")}`)
+}
+
 onBeforeMount(() => {
   // init siyuan related picgo config
   bundledPicGoSettingForm.value.siyuan = bundledPicGoSettingForm.value.siyuan || {}
@@ -57,11 +99,47 @@ onBeforeMount(() => {
   bundledPicGoSettingForm.value.siyuan.autoUpload = bundledPicGoSettingForm.value.siyuan.autoUpload ?? true
   bundledPicGoSettingForm.value.siyuan.replaceLink = bundledPicGoSettingForm.value.siyuan.replaceLink ?? true
   bundledPicGoSettingForm.value.siyuan.txtImageSwitch = bundledPicGoSettingForm.value.siyuan.txtImageSwitch ?? false
+  isRuntimeRelevantWatchReady.value = true
 })
+
+watch(
+  getRuntimeRelevantSiyuanConfig,
+  (nextConfig, previousConfig) => {
+    if (!isRuntimeRelevantWatchReady.value || !previousConfig) {
+      return
+    }
+
+    const changedKeys = Object.keys(runtimeRelevantSiyuanKeys).filter((key) => {
+      const typedKey = key as keyof typeof runtimeRelevantSiyuanKeys
+      return nextConfig[typedKey] !== previousConfig[typedKey]
+    })
+    markSiyuanRuntimeReloadRequired(changedKeys)
+  },
+  {
+    flush: "post",
+  }
+)
 </script>
 
 <template>
   <back-page :title="t('setting.picgo.picgo')">
+    <runtime-reload-notice />
+    <el-alert
+      v-if="migrationState.status === 'failed'"
+      class="picgo-migration-alert"
+      type="error"
+      :closable="false"
+      show-icon
+    >
+      <template #title>PicGo 初始化或配置迁移失败</template>
+      <div>
+        <div>失败后不会在每次打开主界面时自动重试，请检查日志后点击“重试初始化”。</div>
+        <div v-if="migrationState.error">错误信息：{{ migrationState.error }}</div>
+        <el-button size="small" type="primary" :loading="migrationRetrying" @click="retryConfigMigration">
+          重试初始化
+        </el-button>
+      </div>
+    </el-alert>
     <el-form label-width="100px" class="picgo-setting-form">
       <el-form-item :label="t('upload.default.adaptor')" required>
         <el-select
@@ -102,4 +180,13 @@ onBeforeMount(() => {
 <style lang="stylus" scoped>
 .picgo-setting-form
   margin-top 20px
+
+.picgo-migration-alert
+  margin 8px 0 12px
+
+  :deep(.el-alert__content)
+    width 100%
+
+  .el-button
+    margin-top 8px
 </style>

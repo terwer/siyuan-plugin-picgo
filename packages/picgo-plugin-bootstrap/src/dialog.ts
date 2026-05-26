@@ -16,7 +16,7 @@ import PageUtil from "./utils/pageUtil"
 
 const logger = createAppLogger("page-util")
 
-export const showPage = (pluginInstance: PicgoPlugin, pageKey: PageRoute) => {
+export const buildPluginPageIndex = (pageKey: PageRoute) => {
   let pageUrl = String(pageKey)
   // 暗色模式
   // const isDark = document.documentElement.dataset.themeMode === "dark"
@@ -25,9 +25,21 @@ export const showPage = (pluginInstance: PicgoPlugin, pageKey: PageRoute) => {
   const pageId = PageUtil.getPageId()
   pageUrl = BrowserUtil.setUrlParameter(pageUrl, "pageId", pageId)
 
-  logger.info("open page =>", pageUrl)
-  showIframePage(pluginInstance, `/plugins/siyuan-plugin-picgo/#${pageUrl}`)
+  return `/plugins/siyuan-plugin-picgo/#${pageUrl}`
 }
+
+/**
+ * Legacy dialog-first entry kept as a compatibility/debug fallback.
+ *
+ * Normal plugin entry points should use the mounted shell from shell.ts.
+ */
+export const showDialogPage = (pluginInstance: PicgoPlugin, pageKey: PageRoute) => {
+  const pageIndex = buildPluginPageIndex(pageKey)
+  logger.info("open legacy dialog page =>", pageIndex)
+  showIframePage(pluginInstance, pageIndex)
+}
+
+export const showPage = showDialogPage
 
 const showIframePage = (pluginInstance: PicgoPlugin, pageIndex: string) => {
   const contentHtml = `<style>

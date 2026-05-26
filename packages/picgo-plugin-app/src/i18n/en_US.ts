@@ -68,6 +68,14 @@ export default {
   "setting.picgo.plugin.nowork": "Nowork",
   "setting.picgo.plugin.nouse": "Nouse",
   "setting.picgo.plugin.update.success": "Update success",
+  "setting.runtime.reload.required.title": "Manual plugin reload required",
+  "setting.runtime.reload.required.desc":
+    "The configuration has been saved, but menus, commands, status bar entries, document paste behavior, or plugin runtime registrations may not update immediately. This is a plugin/Siyuan lifecycle refresh issue, not a settings-save issue.",
+  "setting.runtime.reload.required.reason": "Reason: ",
+  "setting.runtime.reload.required.step1":
+    "Disable and re-enable the PicGo plugin in Siyuan plugin settings, or restart Siyuan.",
+  "setting.runtime.reload.required.step2": "After reloading, return here and clear this notice.",
+  "setting.runtime.reload.required.clear": "I reloaded manually, clear notice",
   "setting.picgo.manage": "Picture manage",
   "picgo.chrome.tip":
     "If you are using a browser plug -in, you need to download the configuration Picgo client from here: https://github.com/Molunerfinn/PicGo/releases",

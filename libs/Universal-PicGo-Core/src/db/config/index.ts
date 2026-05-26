@@ -20,6 +20,13 @@ class ConfigDb implements IPicgoDb<IConfig> {
       current: "smms",
     },
     picgoPlugins: {},
+    siyuan: {
+      waitTimeout: 2,
+      retryTimes: 5,
+      autoUpload: true,
+      replaceLink: true,
+      txtImageSwitch: false,
+    },
   }
 
   constructor(ctx: IPicGo) {
@@ -29,6 +36,11 @@ class ConfigDb implements IPicgoDb<IConfig> {
 
     this.safeSet("picBed", this.initialValue.picBed)
     this.safeSet("picgoPlugins", this.initialValue.picgoPlugins)
+    this.safeSet("siyuan.waitTimeout", this.initialValue.siyuan.waitTimeout)
+    this.safeSet("siyuan.retryTimes", this.initialValue.siyuan.retryTimes)
+    this.safeSet("siyuan.autoUpload", this.initialValue.siyuan.autoUpload)
+    this.safeSet("siyuan.replaceLink", this.initialValue.siyuan.replaceLink)
+    this.safeSet("siyuan.txtImageSwitch", this.initialValue.siyuan.txtImageSwitch)
   }
 
   read(flush?: boolean): IJSON {
