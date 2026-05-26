@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.0.0...siyuan-plugin-picgo-v2.0.1) (2026-05-26)
+
+
+### Bug Fixes
+
+* harden packaging and PicGo config stability ([961ef0f](https://github.com/terwer/siyuan-plugin-picgo/commit/961ef0fe844377a61aa7b77ad86207fc97612573))
+* **picgo:** resolve package config and runtime upload incidents ([e8fcd04](https://github.com/terwer/siyuan-plugin-picgo/commit/e8fcd0423a250d4ef73b6be015681aa3949b44f7))
+
 ## [2.0.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.12.1...siyuan-plugin-picgo-v2.0.0) (2026-05-26)
 ### ⚠ BREAKING CHANGES
 * **picgo:** picgo 2.0 splits workspace-synced main config from device-local runtime files.
