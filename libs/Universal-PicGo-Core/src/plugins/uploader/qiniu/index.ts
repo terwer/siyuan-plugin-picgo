@@ -80,7 +80,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           delete img.buffer
           const baseUrl = qiniuOptions.url
           const options = qiniuOptions.options || ""
-          img.imgUrl = browserPathJoin(baseUrl, body.key, options)
+          img.imgUrl = browserPathJoin(baseUrl, body.key) + options
         } else {
           ctx.emit(IBuildInEvent.NOTIFICATION, {
             title: ctx.i18n.translate<ILocalesKey>("UPLOAD_FAILED"),
