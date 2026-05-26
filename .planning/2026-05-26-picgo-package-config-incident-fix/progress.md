@@ -18,3 +18,12 @@
 - 修复 createContext 后复跑通过：UniversalPicGo/ConfigDb 7 个测试通过；zhi-siyuan-picgo path/helper 9 个测试通过；app lint 通过；Python py_compile 通过。
 - pnpm package 最终通过：app/bootstrap 两段 turbo build 均 successful，scripts/package.py 打印“插件打包完毕”。
 - zip 检查通过：build/siyuan-plugin-picgo-2.0.0.zip 与 build/package.zip 均存在，包含 index.html、index.js、plugin.json。
+
+## 新增修复：2026-05-26 外联字体请求
+- 用户明确：不是调整外链地址，而是不要外联字体请求。目标为移除远程 @font-face URL。
+- 更正外联字体修复方向：用户要求参考 Zhihu theme 的 `siyuan.wiki/libs/fonts`，不是去掉外联。
+- 已将 picgo-plugin-app/src/assets/webfont.css 中 99 个字体 URL 从 static-rs-terwer OSS 基准替换为 `https://siyuan.wiki/libs/fonts/`。
+- 实测 `https://siyuan.wiki/libs/fonts/opensans/OpenSans-Regular.woff2` 为 200，但 `.woff` 为 404；已移除 OpenSans `.woff` fallback，只保留 woff2，避免继续 404。
+- lint 通过：pnpm --filter picgo-plugin-app run lint。
+- pnpm package 通过，产物 CSS 文件为 assets/index-BIEAal7K.css。
+- 产物和 zip 检查：CSS 已不含 static-rs-terwer 字体基准；包含 siyuan.wiki/libs/fonts；OpenSans 只保留 woff2，不再包含 404 的 .woff fallback。
