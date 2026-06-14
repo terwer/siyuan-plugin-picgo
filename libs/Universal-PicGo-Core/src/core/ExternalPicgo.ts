@@ -94,7 +94,19 @@ class ExternalPicgo {
     })
 
     // 发送请求
-    const apiUrl = browserPathJoin(this.requestUrl, this.endpointUrl)
+    // 如果 URL 已经包含 /upload 路径，则不再添加尾缀
+    let apiUrl: string
+    if (this.requestUrl.endsWith("/upload")) {
+      // URL 以 /upload 结尾，移除后重新拼接（保持原始行为）
+      const baseUrl = this.requestUrl.slice(0, -7)
+      apiUrl = browserPathJoin(baseUrl, this.endpointUrl)
+    } else if (this.requestUrl.includes("/upload?")) {
+      // URL 包含 /upload?（带查询参数），直接使用，不添加尾缀
+      apiUrl = this.requestUrl
+    } else {
+      // URL 不包含 /upload，正常拼接
+      apiUrl = browserPathJoin(this.requestUrl, this.endpointUrl)
+    }
     this.logger.debug("调用HTTP请求上传图片到PicGO，apiUrl=>", apiUrl)
     this.logger.debug("调用HTTP请求上传图片到PicGO，fetchOps=>", fetchOptions)
 
