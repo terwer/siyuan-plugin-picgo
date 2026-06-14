@@ -20,6 +20,8 @@ class ExternalPicgoConfigDb implements IPicgoDb<IExternalPicgoConfig> {
     useBundledPicgo: true,
     picgoType: PicgoTypeEnum.Bundled,
     extPicgoApiUrl: "http://127.0.0.1:36677",
+    picListApiUrl: "https://example.com/upload",
+    picListApiKey: "",
   }
 
   constructor(ctx: IPicGo) {
@@ -37,6 +39,8 @@ class ExternalPicgoConfigDb implements IPicgoDb<IExternalPicgoConfig> {
     this.safeSet("useBundledPicgo", this.initialValue.useBundledPicgo)
     this.safeSet("picgoType", this.initialValue.picgoType)
     this.safeSet("extPicgoApiUrl", this.initialValue.extPicgoApiUrl)
+    this.safeSet("picListApiUrl", this.initialValue.picListApiUrl)
+    this.safeSet("picListApiKey", this.initialValue.picListApiKey)
   }
 
   read(flush?: boolean): IJSON {

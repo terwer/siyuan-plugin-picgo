@@ -7,26 +7,27 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { ExternalPicgo, IImgInfo, IPicGo, PicgoTypeEnum, UniversalPicGo } from "universal-picgo"
+import { ExternalPicgo, IImgInfo, IPicGo, PicgoTypeEnum, PicListUploader, UniversalPicGo } from "universal-picgo"
 import { ILogger } from "zhi-lib-base"
 import { SiyuanPicGoPaths, toUniversalPicGoOptions } from "./siyuanPicgoPaths"
 
 /**
  * 思源笔记专属的图片上传 API
  *
- * @version 1.6.0
  * @since 0.6.0
  * @author terwer
  */
 class SiyuanPicGoUploadApi {
   public readonly picgo: IPicGo
   private readonly externalPicGo: ExternalPicgo
+  private readonly picListUploader: PicListUploader
   private readonly logger: ILogger
 
   constructor(isDev?: boolean, paths?: SiyuanPicGoPaths) {
     // 初始化 PicGO
     this.picgo = new (UniversalPicGo as any)(toUniversalPicGoOptions(paths ?? {}, isDev))
     this.externalPicGo = new ExternalPicgo(this.picgo, isDev)
+    this.picListUploader = new PicListUploader(this.picgo, isDev)
     this.logger = this.picgo.getLogger("siyuan-picgo-upload-api")
     this.logger.debug("picgo upload api inited")
   }
@@ -45,6 +46,15 @@ class SiyuanPicGoUploadApi {
       }
       return this.picgo.upload(input)
     }
+
+    // 检查是否配置了远程 PicList 服务
+    if (this.picListUploader.isPicListConfigured()) {
+      this.logger.info("Using remote PicList uploader")
+      return this.picListUploader.upload(input)
+    }
+
+    // 默认走本地 PicGo App
+    this.logger.info("Using local PicGo App uploader")
     return this.externalPicGo.upload(input)
   }
 }
