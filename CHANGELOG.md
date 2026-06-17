@@ -1,12 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.1.0...siyuan-plugin-picgo-v2.1.1) (2026-06-17)
+### Bug Fixes
+* **docs:** add release summary for 2.1.0 changelog ([#685](https://github.com/terwer/siyuan-plugin-picgo/issues/685)) ([81df207](https://github.com/terwer/siyuan-plugin-picgo/commit/81df207114352934f237cb55ec215f29f31017ce))
 ## [2.1.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.0.1...siyuan-plugin-picgo-v2.1.0) (2026-06-17)
-
-This release adds remote PicList service support and includes several bug fixes.
-
+this release adds remote piclist service support and includes several bug fixes.
 ### Features
 * add remote piclist service upload support ([ccc6375](https://github.com/terwer/siyuan-plugin-picgo/commit/ccc6375774e06482b04578724abb33d92d355b42))
-### Bug Fixes
 * **aliyun:** [#681](https://github.com/terwer/siyuan-plugin-picgo/issues/681) resolve OSS authentication date header issue ([3f8d7d2](https://github.com/terwer/siyuan-plugin-picgo/commit/3f8d7d26512b49666e3872998fe0717c55b78842))
 * **config:** reload config before each upload in floating shell ([8b38500](https://github.com/terwer/siyuan-plugin-picgo/commit/8b385001da65f611cbe5ad897cf5cb4ebf392070))
 * **core:** clear axios headers when using siyuan proxy to prevent unsafe header warnings ([e0bfc8c](https://github.com/terwer/siyuan-plugin-picgo/commit/e0bfc8c3029d81f189d896e24201925acb5ddd67))
