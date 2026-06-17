@@ -337,6 +337,25 @@ const positionShell = () => {
   panel.style.left = `${left}px`
 }
 
+const reloadPluginShellFrame = (pageIndex: string) => {
+  const iframe = shellState.iframe
+  if (!iframe) {
+    return
+  }
+
+  if (shellState.pageIndex === pageIndex && iframe.contentWindow) {
+    try {
+      iframe.contentWindow.location.reload()
+      return
+    } catch (e) {
+      logger.warn("reload mounted shell iframe failed, fallback to src reset", e)
+    }
+  }
+
+  iframe.src = pageIndex
+  shellState.pageIndex = pageIndex
+}
+
 export const openPluginShell = (pluginInstance: PicgoPlugin, pageKey: PageRoute = PageRoute.Page_Home, anchor?: HTMLElement | null) => {
   if (!shellState.root || !shellState.panel || !shellState.iframe) {
     createShellRoot(pluginInstance)
@@ -345,10 +364,7 @@ export const openPluginShell = (pluginInstance: PicgoPlugin, pageKey: PageRoute 
   const pageIndex = buildPluginPageIndex(pageKey)
   shellState.anchor = anchor ?? shellState.anchor
 
-  if (shellState.iframe && shellState.pageIndex !== pageIndex) {
-    shellState.iframe.src = pageIndex
-    shellState.pageIndex = pageIndex
-  }
+  reloadPluginShellFrame(pageIndex)
 
   showPluginShell()
   logger.info("open mounted shell page =>", pageIndex)

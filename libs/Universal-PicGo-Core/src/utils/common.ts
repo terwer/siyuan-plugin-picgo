@@ -550,12 +550,20 @@ export const getNormalPluginName = (nameOrPath: string, logger: ILogger): string
 }
 
 /**
- * 思源笔记代理是否可用
+ * 思源笔记内置代理是否可用。
  *
- * @param siyuanProxy
+ * `siyuan.proxy` 中保存的端口会随思源重启失效，因此这里不再依赖落盘 origin，
+ * 只判断当前运行时 window 是否为思源环境。
  */
-export const isSiyuanProxyAvailable = (siyuanProxy: Undefinable<string>) => {
-  const hasSiyuanProxy = siyuanProxy && siyuanProxy.trim() !== ""
-  const isSameOrigin = hasSiyuanProxy && siyuanProxy === win.location.origin
-  return isSameOrigin
+export const isSiyuanProxyAvailable = () => {
+  const hasSiyuanRuntime = !!win?.siyuan
+  console.info("[isSiyuanProxyAvailable] runtime check", {
+    origin: win?.location?.origin,
+    hasSiyuanRuntime,
+  })
+  return hasSiyuanRuntime
+}
+
+export const getSiyuanProxyUrl = () => {
+  return isSiyuanProxyAvailable() ? win.location.origin : ""
 }
