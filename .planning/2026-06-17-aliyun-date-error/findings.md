@@ -80,3 +80,8 @@
 - 日志中出现的 `index-0q_s3IrL.js` 是旧 UI bundle 文件名，而当前最新 UI bundle 是 `index-Bkhftqr9.js`。
 - 因此“测试仍走旧逻辑”更可能是启动/加载了旧 UI 产物，而不是 `isSiyuanProxyAvailable()` 的 `win.siyuan` 判定本身失效。
 - 现阶段不再修改 `win` 语义；要继续验证，应确保 bootstrap 启动时加载的是当前 `artifacts/siyuan-plugin-picgo/dist/index.html` 所引用的新 UI bundle。
+## 2026-06-17 外层 Date 警告根因
+- 上传成功但浏览器仍报 `Refused to set unsafe header "Date"`，不是 OSS 主链路失败。
+- 代理分支中 `siyuanProxyInterceptor()` 已正确把 `Date/Host` 放进 forwardProxy body，但 `axios.create(this.options)` 的 `this.options.headers = userOptions.headers` 会让外层 XHR 也继承 OSS 请求头。
+- 浏览器禁止 XHR 设置 `Date`，所以外层 XHR 会打印警告；同时由于 forwardProxy body 内仍有 Date，上传仍成功。
+- 修复点应限定在外层 axios 实例 headers 清理，不改变 `win`、`forwardProxy` body 或 OSS 签名逻辑。

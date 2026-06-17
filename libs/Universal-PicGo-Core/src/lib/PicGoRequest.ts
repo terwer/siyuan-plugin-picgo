@@ -224,9 +224,19 @@ class PicGoRequestWrapper {
     this.logger.debug("PicGoRequest before request, userOptions", userOptions)
     const that = this
 
+    // handle proxy
+    //
+    // 浏览器环境未配置代理 或者 配置了必须使用代理
+    // userOptions.proxy = true | undefined
+    const isBrowserUseSiyuanProxy = !hasNodeEnv && userOptions.proxy !== false
+    // Node 环境配置了必须使用代理
+    // userOptions.proxy = true
+    const isNodeUseSiyuanProxy = hasNodeEnv && (userOptions.proxy as boolean)
+    const isUseSiyuanProxy = isBrowserUseSiyuanProxy || isNodeUseSiyuanProxy
+
     // handle options
     this.options.proxy = this.handleProxy()
-    this.options.headers = userOptions.headers || {}
+    this.options.headers = isUseSiyuanProxy ? {} : userOptions.headers || {}
     this.options.maxBodyLength = Infinity
     this.options.maxContentLength = Infinity
 
@@ -257,16 +267,6 @@ class PicGoRequestWrapper {
 
     // compatible with old request options to new options
     let opt = requestInterceptor(userOptions)
-
-    // handle proxy
-    //
-    // 浏览器环境未配置代理 或者 配置了必须使用代理
-    // userOptions.proxy = true | undefined
-    const isBrowserUseSiyuanProxy = !hasNodeEnv && userOptions.proxy !== false
-    // Node 环境配置了必须使用代理
-    // userOptions.proxy = true
-    const isNodeUseSiyuanProxy = hasNodeEnv && (userOptions.proxy as boolean)
-    const isUseSiyuanProxy = isBrowserUseSiyuanProxy || isNodeUseSiyuanProxy
     const siyuanProxyUrl = getSiyuanProxyUrl()
     if (isSiyuanProxyAvailable() && isUseSiyuanProxy) {
       // 处理思源笔记代理

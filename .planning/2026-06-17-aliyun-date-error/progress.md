@@ -36,3 +36,11 @@
 - 用户日志里的 `index-0q_s3IrL.js` 对应旧 UI bundle，因此不能拿它否定 `win.siyuan` 运行时判断方案。
 - 已重新构建 `picgo-plugin-app` 与 `picgo-plugin-bootstrap`，最终落盘产物为 `artifacts/siyuan-plugin-picgo/dist/assets/index-Bkhftqr9.js` 与 `artifacts/siyuan-plugin-picgo/dist/index.js`。
 - 关键验证通过：`universal-picgo` 单测通过，`picgo-plugin-app build`、`picgo-plugin-bootstrap build` 通过。
+
+## 2026-06-17 15:46 外层 XHR Date 警告收敛
+- 用户使用新 bundle `index-Bkhftqr9.js?v=1781681696991` 测试，上传已成功，说明 `/api/network/forwardProxy` 主链路已打通。
+- 仍出现 `Refused to set unsafe header "Date"`，原因是代理分支创建 axios 实例时仍把原始 OSS headers 设为实例默认 headers，导致外层 XHR `/api/network/forwardProxy` 也尝试设置 `Date`。
+- 已最小修改 `PicGoRequestWrapper`：先计算是否会使用思源代理；若会使用，则 axios 实例默认 headers 置 `{}`，OSS 原始 headers 只保留在 forwardProxy body 的 `headers` 字段里。
+- 已补充单测断言 `axios.create` 在代理路径收到 `headers: {}`。
+- 验证通过：`PicGoRequest.spec.ts`、`aliyun/web.spec.ts`、`universal-picgo build`、`zhi-siyuan-picgo build`、`picgo-plugin-app build`、`picgo-plugin-bootstrap build` 均通过。
+- 最新 UI bundle：`artifacts/siyuan-plugin-picgo/dist/assets/index-D_5PZsHV.js?v=1781682396713`。

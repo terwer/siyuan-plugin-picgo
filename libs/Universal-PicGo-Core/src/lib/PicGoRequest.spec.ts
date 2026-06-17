@@ -70,6 +70,11 @@ describe("PicGoRequestWrapper", () => {
       resolveWithFullResponse: true,
     } as any)
 
+    expect(axios.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        headers: {},
+      })
+    )
     expect(request).toHaveBeenCalledTimes(1)
     const forwarded = request.mock.calls[0][0]
     expect(forwarded.url).toBe(`${currentOrigin}/api/network/forwardProxy`)
