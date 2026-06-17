@@ -20,6 +20,7 @@ import {
   PicgoTypeEnum,
   PicGoHeadlessError,
   PICGO_HEADLESS_ERROR_CODES,
+  PicListUploader,
   PluginLoaderDb,
   UniversalPicGoHeadlessManager,
   calculateMD5,
