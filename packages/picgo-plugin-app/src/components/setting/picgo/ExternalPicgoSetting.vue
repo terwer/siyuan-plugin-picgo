@@ -18,6 +18,10 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  mode: {
+    type: String,
+    default: "local",
+  },
 })
 
 const formData = reactive({
@@ -27,9 +31,32 @@ const formData = reactive({
 
 <template>
   <div>
-    <el-form-item :label="t('setting.picgo.external.setting.apiurl')" label-width="170px">
-      <el-input v-model="formData.cfg.extPicgoApiUrl" :placeholder="t('setting.picgo.external.setting.apiurl.tip')" />
-    </el-form-item>
+    <!-- 本地 PicGo App 模式 -->
+    <template v-if="mode === 'local'">
+      <el-form-item :label="t('setting.picgo.external.setting.apiurl')" label-width="170px">
+        <el-input v-model="formData.cfg.extPicgoApiUrl" :placeholder="t('setting.picgo.external.setting.apiurl.tip')" />
+      </el-form-item>
+    </template>
+
+    <!-- 远程 PicList 模式 -->
+    <template v-else>
+      <el-form-item :label="t('setting.picgo.piclist.apiurl')" label-width="170px" required>
+        <el-input v-model="formData.cfg.picListApiUrl" :placeholder="t('setting.picgo.piclist.apiurl.tip')" />
+      </el-form-item>
+      <el-form-item :label="t('setting.picgo.piclist.apikey')" label-width="170px" required>
+        <el-input
+          v-model="formData.cfg.picListApiKey"
+          type="password"
+          show-password
+          :placeholder="t('setting.picgo.piclist.apikey.tip')"
+        />
+      </el-form-item>
+      <el-divider border-style="dashed" />
+      <el-alert :closable="false" type="info" show-icon>
+        <template #title>{{ t("setting.picgo.piclist.notice.title") }}</template>
+        {{ t("setting.picgo.piclist.notice.desc") }}
+      </el-alert>
+    </template>
   </div>
 </template>
 
