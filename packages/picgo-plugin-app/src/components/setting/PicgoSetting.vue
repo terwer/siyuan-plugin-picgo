@@ -45,16 +45,43 @@ const formData = reactive({
       value: PicgoTypeEnum.App,
       label: t("upload.adaptor.app"),
     },
-    // {
-    //   value: PicgoTypeEnum.Core,
-    //   label: t("upload.adaptor.core"),
-    // },
+  ],
+  externalModeList: [
+    {
+      value: "local",
+      label: t("setting.picgo.external.mode.local"),
+    },
+    {
+      value: "remote",
+      label: t("setting.picgo.external.mode.remote"),
+    },
   ],
 })
+
+// 外部 PicGo 模式：local = 本地 PicGo App, remote = 远程 PicList 服务
+const externalMode = ref("local")
+
+const isRemotePicListConfigured = () => {
+  const url = externalPicGoSettingForm.value.picListApiUrl
+  const key = externalPicGoSettingForm.value.picListApiKey
+  return url && url.trim() !== "" && key && key.trim() !== ""
+}
+
+// 初始化：根据已有的配置推断当前模式
+if (isRemotePicListConfigured()) {
+  externalMode.value = "remote"
+}
 
 const handlePicgoTypeChange = (val: any) => {
   const isBundled = val === PicgoTypeEnum.Bundled
   externalPicGoSettingForm.value.useBundledPicgo = isBundled
+}
+
+const handleExternalModeChange = (val: string) => {
+  if (val === "local") {
+    // 切换到本地模式时清除远程配置，确保走 ExternalPicgo 路径
+    externalPicGoSettingForm.value.picListApiKey = ""
+  }
 }
 
 const retryConfigMigration = async () => {
@@ -157,7 +184,27 @@ watch(
         <bundled-picgo-setting :ctx="ctx" :cfg="bundledPicGoSettingForm" />
       </div>
       <div v-else>
-        <external-picgo-setting :cfg="externalPicGoSettingForm" />
+        <el-form-item :label="t('setting.picgo.external.mode.label')" required>
+          <el-radio-group v-model="externalMode" @change="handleExternalModeChange">
+            <el-radio
+              v-for="mode in formData.externalModeList"
+              :key="mode.value"
+              :value="mode.value"
+            >
+              {{ mode.label }}
+            </el-radio>
+          </el-radio-group>
+          <div class="external-mode-desc">
+            <template v-if="externalMode === 'local'">
+              {{ t("setting.picgo.external.mode.local.desc") }}
+            </template>
+            <template v-else>
+              {{ t("setting.picgo.external.mode.remote.desc") }}
+            </template>
+          </div>
+        </el-form-item>
+
+        <external-picgo-setting :cfg="externalPicGoSettingForm" :mode="externalMode" />
       </div>
 
       <el-divider border-style="dashed" />
@@ -189,4 +236,10 @@ watch(
 
   .el-button
     margin-top 8px
+
+.external-mode-desc
+  margin-top 6px
+  font-size 12px
+  color var(--b3-theme-on-surface-light, #999)
+  line-height 1.5
 </style>

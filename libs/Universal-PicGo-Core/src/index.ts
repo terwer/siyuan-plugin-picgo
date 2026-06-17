@@ -1,5 +1,6 @@
 import { UniversalPicGo } from "./core/UniversalPicGo"
 import { ExternalPicgo } from "./core/ExternalPicgo"
+import { PicListUploader } from "./core/PicListUploader"
 import ConfigDb from "./db/config"
 import PluginLoaderDb from "./db/pluginLoder"
 import ExternalPicgoConfigDb from "./db/externalPicGo"
@@ -24,7 +25,7 @@ import { deepMerge, getByPath, setByPath, unsetByPath } from "./utils/pathObject
 import { isElectronRuntime, isPicGoPluginPackageName, isThirdPartyPluginRuntimeAvailable } from "./utils/pluginRuntime"
 import { UniversalPicGoHeadlessManager, createPicGoHeadlessManager } from "./headless"
 
-export { UniversalPicGo, ExternalPicgo, picgoEventBus }
+export { UniversalPicGo, ExternalPicgo, PicListUploader, picgoEventBus }
 export { UniversalPicGoHeadlessManager, createPicGoHeadlessManager }
 export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
 export { PicgoTypeEnum, IBusEvent }

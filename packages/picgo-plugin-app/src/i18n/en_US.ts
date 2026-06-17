@@ -165,4 +165,18 @@ export default {
   "picgo.siyuan.replace.link": "Substitute Local Link",
   "picgo.siyuan.txt.with.img.upload":
     "When there are both text and images on the clipboard, should they be uploaded, e.g., in applications like PPT or Excel?",
+  "setting.picgo.external.mode.label": "External PicGo Mode",
+  "setting.picgo.external.mode.local": "Local PicGo App",
+  "setting.picgo.external.mode.local.desc":
+    "Connect to PicGo desktop app running locally (default port 36677). Suitable when PicGo/PicList desktop client is installed on the same machine as Siyuan.",
+  "setting.picgo.external.mode.remote": "Remote PicList Service",
+  "setting.picgo.external.mode.remote.desc":
+    "Connect to a remotely deployed PicList container service. Suitable for Docker-deployed PicList on a server, accessible via public network without requiring a local client.",
+  "setting.picgo.piclist.apiurl": "PicList API URL",
+  "setting.picgo.piclist.apiurl.tip": "Upload endpoint of the remote PicList service, e.g.: https://piclist.powercess.com/upload",
+  "setting.picgo.piclist.apikey": "API Key",
+  "setting.picgo.piclist.apikey.tip": "API Key for authenticating with the PicList service",
+  "setting.picgo.piclist.notice.title": "About Remote PicList",
+  "setting.picgo.piclist.notice.desc":
+    "Remote PicList mode uploads image file data directly to the remote server via multipart/form-data. Unlike the local PicGo App, this mode sends actual file content over the network, enabling cross-device usage. Note: Clipboard upload is not supported in remote mode.",
 }

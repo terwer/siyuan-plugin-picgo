@@ -646,6 +646,15 @@ interface IExternalPicgoConfig {
    */
   extPicgoApiUrl?: string
 
+  /**
+   * picListApiUrl 是远程 PicList 服务的上传接口地址
+   */
+  picListApiUrl?: string
+
+  /**
+   * picListApiKey 是远程 PicList 服务的 API 认证密钥
+   */
+  picListApiKey?: string
 
   /**
    * 其他配置项，可以是任意类型

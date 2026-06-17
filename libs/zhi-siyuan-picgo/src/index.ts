@@ -73,6 +73,7 @@ export {
   PicgoHelperEvents,
   PicgoTypeEnum,
   PicGoHeadlessError,
+  PicListUploader,
   PluginLoaderDb,
   PICGO_HEADLESS_ERROR_CODES,
   SIYUAN_PICGO_FILE_MAP_KEY,
