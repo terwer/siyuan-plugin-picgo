@@ -33,6 +33,8 @@ jobs:
         with:
           node-version: 18
           registry-url: 'https://registry.npmjs.org'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: ${{ steps.release.outputs.release_created }}
 
       # Install pnpm
