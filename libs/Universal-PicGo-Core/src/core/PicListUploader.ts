@@ -65,6 +65,7 @@ class PicListUploader {
     }
 
     const results: IImgInfo[] = []
+    const errors: { item: any; error: Error }[] = []
 
     // PicList API 每次只支持单文件上传，需要逐个处理
     for (const inputItem of input) {
@@ -118,8 +119,24 @@ class PicListUploader {
         }
       } catch (e: any) {
         this.logger.error(`PicList upload error for item ${inputItem}:`, e)
-        throw e
+        errors.push({ item: inputItem, error: e })
+        // 不 throw，继续处理剩余文件
       }
+    }
+
+    // 如果有部分失败，记录汇总日志
+    if (errors.length > 0) {
+      this.logger.warn(
+        `PicList upload finished with ${errors.length}/${input.length} failures. ` +
+        `${results.length} succeeded.`
+      )
+    }
+
+    // 如果全部失败，才抛出错误
+    if (results.length === 0 && errors.length > 0) {
+      throw new Error(
+        `All ${errors.length} uploads to PicList failed. First error: ${errors[0].error.message}`
+      )
     }
 
     return results
