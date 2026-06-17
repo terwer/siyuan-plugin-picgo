@@ -21,7 +21,8 @@ import { hasNodeEnv, win } from "universal-picgo-store"
  * 与本地 ExternalPicgo 不同，此上传器通过 multipart/form-data 直接携带图片二进制数据。
  *
  * 接口规范：
- * - URL: POST {apiUrl}?key={apiKey}
+ * - URL: POST {apiUrl}
+ * - Headers: Authorization: Bearer {apiKey}
  * - Content-Type: multipart/form-data
  * - Body: file 字段，包含图片文件
  * - 响应: { success: true, result: "https://..." }
@@ -74,15 +75,17 @@ class PicListUploader {
           continue
         }
 
-        const requestUrl = this.buildRequestUrl(apiUrl, apiKey)
-        this.logger.debug("Uploading to PicList, url =>", requestUrl.replace(apiKey, "***"))
+        this.logger.debug("Uploading to PicList, url =>", apiUrl)
         this.logger.debug(`File name => ${fileName}, size => ${fileBlob.size}`)
 
         const formData = new FormData()
         formData.append("file", fileBlob, fileName)
 
-        const response = await fetch(requestUrl, {
+        const response = await fetch(apiUrl, {
           method: "POST",
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+          },
           body: formData,
         })
 
@@ -222,13 +225,6 @@ class PicListUploader {
     }
   }
 
-  /**
-   * 构建带 API Key 的请求 URL
-   */
-  private buildRequestUrl(apiUrl: string, apiKey: string): string {
-    const separator = apiUrl.includes("?") ? "&" : "?"
-    return `${apiUrl}${separator}key=${encodeURIComponent(apiKey)}`
-  }
 }
 
 export { PicListUploader }
