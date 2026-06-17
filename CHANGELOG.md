@@ -8,9 +8,7 @@
 * **config:** reload config before each upload in floating shell ([8b38500](https://github.com/terwer/siyuan-plugin-picgo/commit/8b385001da65f611cbe5ad897cf5cb4ebf392070))
 * **core:** clear axios headers when using siyuan proxy to prevent unsafe header warnings ([e0bfc8c](https://github.com/terwer/siyuan-plugin-picgo/commit/e0bfc8c3029d81f189d896e24201925acb5ddd67))
 * **externalpicgo:** fix upload url concatenation logic ([21dae2a](https://github.com/terwer/siyuan-plugin-picgo/commit/21dae2acfda3ebbf4daa7cb445c3324ed2d5f959))
-* **piclistuploader:** change piclistapiurl default from placeholder to empty string ([834c0e7](https://github.com/terwer/siyuan-plugin-picgo/commit/834c0e78097f838c62e62e52d9140ce48a6009f9))
 * **piclistuploader:** fix logger.debug argument count ts2554 error ([1bf6f98](https://github.com/terwer/siyuan-plugin-picgo/commit/1bf6f985c4faa1723f71e020ce11c8d48bd03bd2))
-* **piclistuploader:** move api key from url query to authorization header ([58c6d71](https://github.com/terwer/siyuan-plugin-picgo/commit/58c6d71fe7a465a3ba577b9454c0f37fe24a660a))
 * **piclistuploader:** preserve partial upload results on batch failure ([00a8be4](https://github.com/terwer/siyuan-plugin-picgo/commit/00a8be497b72f00db3362dbe37d6cd37635d08c3))
 * **qiniu:** fix url suffix concatenation for qiniu uploader ([165a7ef](https://github.com/terwer/siyuan-plugin-picgo/commit/165a7ef5855da9ccbdd101e6d02bd05a9756f7a0))
 ### Miscellaneous
