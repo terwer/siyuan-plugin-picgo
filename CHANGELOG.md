@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.1.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.0.1...siyuan-plugin-picgo-v2.1.0) (2026-06-17)
+
+
+### Features
+
+* add remote PicList service upload support ([ccc6375](https://github.com/terwer/siyuan-plugin-picgo/commit/ccc6375774e06482b04578724abb33d92d355b42))
+
+
+### Bug Fixes
+
+* **aliyun:** [#681](https://github.com/terwer/siyuan-plugin-picgo/issues/681) resolve OSS authentication date header issue ([3f8d7d2](https://github.com/terwer/siyuan-plugin-picgo/commit/3f8d7d26512b49666e3872998fe0717c55b78842))
+* **config:** reload config before each upload in floating shell ([8b38500](https://github.com/terwer/siyuan-plugin-picgo/commit/8b385001da65f611cbe5ad897cf5cb4ebf392070))
+* **core:** clear axios headers when using SiYuan proxy to prevent unsafe header warnings ([e0bfc8c](https://github.com/terwer/siyuan-plugin-picgo/commit/e0bfc8c3029d81f189d896e24201925acb5ddd67))
+* **ExternalPicgo:** fix upload URL concatenation logic ([21dae2a](https://github.com/terwer/siyuan-plugin-picgo/commit/21dae2acfda3ebbf4daa7cb445c3324ed2d5f959))
+* **PicListUploader:** change picListApiUrl default from placeholder to empty string ([834c0e7](https://github.com/terwer/siyuan-plugin-picgo/commit/834c0e78097f838c62e62e52d9140ce48a6009f9))
+* **PicListUploader:** fix logger.debug argument count TS2554 error ([1bf6f98](https://github.com/terwer/siyuan-plugin-picgo/commit/1bf6f985c4faa1723f71e020ce11c8d48bd03bd2))
+* **PicListUploader:** move API key from URL query to Authorization header ([58c6d71](https://github.com/terwer/siyuan-plugin-picgo/commit/58c6d71fe7a465a3ba577b9454c0f37fe24a660a))
+* **PicListUploader:** preserve partial upload results on batch failure ([00a8be4](https://github.com/terwer/siyuan-plugin-picgo/commit/00a8be497b72f00db3362dbe37d6cd37635d08c3))
+* **qiniu:** fix URL suffix concatenation for Qiniu uploader ([165a7ef](https://github.com/terwer/siyuan-plugin-picgo/commit/165a7ef5855da9ccbdd101e6d02bd05a9756f7a0))
+
+
+### Miscellaneous
+
+* **planning:** document detailed findings on PicGo architecture and internal refactor ([a617fbe](https://github.com/terwer/siyuan-plugin-picgo/commit/a617fbed18512c9730d83222f5d02daf3aedd08d))
+
 ## [2.0.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.0.0...siyuan-plugin-picgo-v2.0.1) (2026-05-26)
 ### Bug Fixes
 * harden packaging and picgo config stability ([961ef0f](https://github.com/terwer/siyuan-plugin-picgo/commit/961ef0fe844377a61aa7b77ad86207fc97612573))
