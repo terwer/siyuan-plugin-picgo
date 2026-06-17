@@ -299,6 +299,14 @@ class SiyuanPicgoPostApi {
     forceUpload?: boolean,
     ignoreReplaceLink = false
   ): Promise<void> {
+    // Settings UI persists PicGo config through a reactive storage bridge.
+    // Long-lived plugin runtimes (especially the mounted floating shell) can
+    // otherwise keep using the in-memory config captured when the iframe was
+    // first opened. Refresh immediately before every real upload so drag/drop,
+    // button, clipboard and block-menu uploads all honor the latest workspace
+    // `picgo.cfg.json`.
+    this.ctx().reloadConfig()
+
     const mapInfoStr = attrs[SIYUAN_PICGO_FILE_MAP_KEY] ?? "{}"
     const fileMap = JsonUtil.safeParse<any>(mapInfoStr, {})
     this.logger.debug("fileMap=>", fileMap)
