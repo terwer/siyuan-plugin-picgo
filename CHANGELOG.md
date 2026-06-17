@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.1.0...siyuan-plugin-picgo-v2.1.1) (2026-06-17)
+
+
+### Bug Fixes
+
+* **docs:** add release summary for 2.1.0 changelog ([#685](https://github.com/terwer/siyuan-plugin-picgo/issues/685)) ([81df207](https://github.com/terwer/siyuan-plugin-picgo/commit/81df207114352934f237cb55ec215f29f31017ce))
+
 ## [2.1.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.0.1...siyuan-plugin-picgo-v2.1.0) (2026-06-17)
 
 This release adds remote PicList service support and includes several bug fixes.
