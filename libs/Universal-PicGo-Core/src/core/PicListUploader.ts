@@ -76,7 +76,7 @@ class PicListUploader {
 
         const requestUrl = this.buildRequestUrl(apiUrl, apiKey)
         this.logger.debug("Uploading to PicList, url =>", requestUrl.replace(apiKey, "***"))
-        this.logger.debug("File name =>", fileName, "size =>", fileBlob.size)
+        this.logger.debug(`File name => ${fileName}, size => ${fileBlob.size}`)
 
         const formData = new FormData()
         formData.append("file", fileBlob, fileName)
