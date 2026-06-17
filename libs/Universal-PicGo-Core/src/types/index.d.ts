@@ -647,16 +647,12 @@ interface IExternalPicgoConfig {
   extPicgoApiUrl?: string
 
   /**
-   * picListApiUrl 是远程 PicList 服务的上传接口地址。
-   * 通过 Authorization: Bearer {apiKey} 传递 API Key 进行认证。
-   * 留空时不会启用远程 PicList 模式（需同时配置 picListApiKey）。
+   * picListApiUrl 是远程 PicList 服务的上传接口地址
    */
   picListApiUrl?: string
 
   /**
-   * picListApiKey 是远程 PicList 服务的 API 认证密钥。
-   * 通过 HTTP Authorization: Bearer 头传递（非 URL 参数）。
-   * API Key 在日志输出中自动脱敏。
+   * picListApiKey 是远程 PicList 服务的 API 认证密钥
    */
   picListApiKey?: string
 
