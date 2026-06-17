@@ -20,7 +20,7 @@ class ExternalPicgoConfigDb implements IPicgoDb<IExternalPicgoConfig> {
     useBundledPicgo: true,
     picgoType: PicgoTypeEnum.Bundled,
     extPicgoApiUrl: "http://127.0.0.1:36677",
-    picListApiUrl: "https://example.com/upload",
+    picListApiUrl: "",
     picListApiKey: "",
   }
 
