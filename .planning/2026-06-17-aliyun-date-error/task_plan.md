@@ -16,6 +16,7 @@
 6. [complete] 运行产物追踪：确认当前 SiYuan 插件实际加载的 app bundle 是否包含阿里云 Date 修复。
 7. [complete] 第二轮修复：同步 `siyuan.proxy` 到请求 wrapper，并修复代理路径空 URL Request。
 8. [complete] dev 启动链路修正：确认 `pnpm dev -F picgo-plugin-bootstrap` 不会重建 UI bundle，已补齐验证/说明。
+9. [complete] 用户实测闭环：最新 bundle 上传成功，Date 警告消失。
 
 ## 待确认问题
 - 暂无。若需要改变用户可见配置项、兼容策略或引入依赖，将先暂停并向用户确认。

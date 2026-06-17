@@ -44,3 +44,16 @@
 - 已补充单测断言 `axios.create` 在代理路径收到 `headers: {}`。
 - 验证通过：`PicGoRequest.spec.ts`、`aliyun/web.spec.ts`、`universal-picgo build`、`zhi-siyuan-picgo build`、`picgo-plugin-app build`、`picgo-plugin-bootstrap build` 均通过。
 - 最新 UI bundle：`artifacts/siyuan-plugin-picgo/dist/assets/index-D_5PZsHV.js?v=1781682396713`。
+
+## 2026-06-17 15:52 用户实测通过
+- 用户使用最新 UI bundle `index-D_5PZsHV.js?v=1781682416966` 测试。
+- 日志显示 `hasSiyuanRuntime: true`，进入思源运行时代理判断。
+- 不再出现 `Refused to set unsafe header "Date"`。
+- 阿里云 OSS 上传成功：`https://static-rs-terwer.oss-cn-beijing.aliyuncs.com/test/20260617155244.jpg`。
+- 剩余 `[单个上传] 图床未插入文档，不做链接替换` 是上传后文档插入/替换分支提示，不属于本次阿里云 Date/签名问题。
+
+## 2026-06-17 CORS 代理显示判断核对
+- 用户要求 CORS 代理配置项也以 `win.siyuan` 是否可用为准，优先使用思源 kernel proxy，避免思源可用时仍显示割裂的其他 proxy。
+- 已核对源码：`BundledPicgoSetting.vue` 中 CORS 代理表单为 `v-if="!isSiyuanProxyAvailable()"`。
+- 已核对 `isSiyuanProxyAvailable()` 实现：只判断 `!!win?.siyuan`，不再依赖落盘 `siyuan.proxy` 或 `isSameOrigin`。
+- 已核对最新 UI 产物 `index-D_5PZsHV.js`：包含 `[isSiyuanProxyAvailable] runtime check`、`hasSiyuanRuntime`、`setting.cors.title`、`picBed.proxy`，且无 `before isSameOrigin`。

@@ -85,3 +85,8 @@
 - 代理分支中 `siyuanProxyInterceptor()` 已正确把 `Date/Host` 放进 forwardProxy body，但 `axios.create(this.options)` 的 `this.options.headers = userOptions.headers` 会让外层 XHR 也继承 OSS 请求头。
 - 浏览器禁止 XHR 设置 `Date`，所以外层 XHR 会打印警告；同时由于 forwardProxy body 内仍有 Date，上传仍成功。
 - 修复点应限定在外层 axios 实例 headers 清理，不改变 `win`、`forwardProxy` body 或 OSS 签名逻辑。
+
+## 2026-06-17 最终验证
+- 最新 bundle `index-D_5PZsHV.js?v=1781682416966` 实测上传成功。
+- 阿里云 Date/签名问题闭环：浏览器不能直设 `Date`，必须走思源 `forwardProxy`，并且外层 XHR 不能继承 OSS 原始 headers。
+- 当前剩余提示 `[单个上传] 图床未插入文档，不做链接替换` 属于上传成功后的文档写入/替换流程，不属于 OSS 认证问题。
