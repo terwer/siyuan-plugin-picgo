@@ -16,7 +16,7 @@ import { IBusEvent } from "../utils/enums"
 import { browserPathJoin } from "../utils/browserUtils"
 import { hasNodeEnv } from "universal-picgo-store"
 import { ILocalesKey } from "../i18n/zh-CN"
-import { isSiyuanProxyAvailable, safeParse } from "../utils/common"
+import { getSiyuanProxyUrl, isSiyuanProxyAvailable, safeParse } from "../utils/common"
 import { CodingUtil } from "../utils/CodingUtil"
 
 // legacy request adaptor start
@@ -126,7 +126,7 @@ async function siyuanProxyInterceptor(
   let payloadBuf = new ArrayBuffer(0)
   // GET or HEAD cannot have request body
   if (options.method !== "GET" && options.method !== "HEAD") {
-    const myRequest = new Request("", { method: options.method, body: options.data })
+    const myRequest = new Request(options.url || "http://localhost", { method: options.method, body: options.data })
     console.log("generate temp myRequest =>", myRequest)
     payloadBuf = await myRequest.arrayBuffer()
     // multipart/form-data 需要自动设置
@@ -170,7 +170,6 @@ class PicGoRequestWrapper {
   private readonly ctx: IPicGo
   private readonly logger: ILogger
   private proxy: Undefinable<string> = ""
-  private siyuanProxy: Undefinable<string> = ""
   private options: AxiosRequestConfig<any> = {}
 
   constructor(ctx: IPicGo) {
@@ -194,12 +193,8 @@ class PicGoRequestWrapper {
 
   private init(): void {
     const proxy = this.ctx.getConfig<Undefinable<string>>("picBed.proxy")
-    const siyuanProxy = this.ctx.getConfig<Undefinable<string>>("siyuan.proxy")
     if (proxy) {
       this.proxy = proxy
-    }
-    if (siyuanProxy) {
-      this.siyuanProxy = siyuanProxy
     }
   }
 
@@ -272,17 +267,18 @@ class PicGoRequestWrapper {
     // userOptions.proxy = true
     const isNodeUseSiyuanProxy = hasNodeEnv && (userOptions.proxy as boolean)
     const isUseSiyuanProxy = isBrowserUseSiyuanProxy || isNodeUseSiyuanProxy
-    if (isSiyuanProxyAvailable(this.siyuanProxy) && isUseSiyuanProxy) {
+    const siyuanProxyUrl = getSiyuanProxyUrl()
+    if (isSiyuanProxyAvailable() && isUseSiyuanProxy) {
       // 处理思源笔记代理
       this.logger.debug("opt =>", opt)
-      opt = await siyuanProxyInterceptor(this.siyuanProxy, opt)
+      opt = await siyuanProxyInterceptor(siyuanProxyUrl, opt)
       this.logger.debug("newopt =>", opt)
 
       // 处理返回值
       const siyuanResp = await instance.request(opt)
       this.logger.debug("siyuanResp =>", siyuanResp)
       if (siyuanResp.status !== 200 || siyuanResp.data.code !== 0) {
-        this.logger.error(`siyuanProxy request error with proxy ${this.siyuanProxy}, siyuanResp =>`, siyuanResp)
+        this.logger.error(`siyuanProxy request error with proxy ${siyuanProxyUrl}, siyuanResp =>`, siyuanResp)
         throw new Error(`siyuanProxy request error, msg => ${siyuanResp.data.msg}`)
       }
 
