@@ -6,9 +6,9 @@
 
 Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 
-## PicGo 2.0: Uploading Finally Feels Smooth
+## PicGo 2.0+: Uploading Finally Feels Smooth
 
-PicGo 2.0 clears away years of historical debt from the upload path. Paste an image, and PicGo now takes it over from the first moment: no duplicate uploads, no polling waits, no DOM guessing, and no post-processing that first lets SiYuan insert a local image and then rewrites it into an image-hosting link. Fewer stalls, fewer doubts, and no more wondering how many times that image was uploaded.
+PicGo 2.0+ clears away years of historical debt from the upload path. Paste an image, and PicGo now takes it over from the first moment: no duplicate uploads, no polling waits, no DOM guessing, and no post-processing that first lets SiYuan insert a local image and then rewrites it into an image-hosting link. Fewer stalls, fewer doubts, and no more wondering how many times that image was uploaded.
 
 Under the surface, the foundation is cleaner too. Your main image-bed config can follow the SiYuan workspace, while plugins, cache, logs, and other heavy runtime files stay safely on the current device. Publisher and other plugins can call PicGo's upload core directly, without forcing the full PicGo plugin UI into every scenario.
 
