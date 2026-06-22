@@ -15,7 +15,9 @@ import type { ILogger } from "zhi-lib-base"
  * 思源内核 API 异步存储适配器。
  *
  * 通过 SiyuanKernelApi 封装层读写服务器文件。
- * 仅主配置 `picgo.cfg.json` 走此适配器，其余走 LocalStorageAdapter。
+ * PicGo 3.0: 所有用户配置 owner files 均通过此适配器
+ * (picgo.cfg.json, external-picgo-cfg.json, siyuan-cfg.json)。
+ * 仅 PC-only runtime artifacts 保持本地。
  */
 export class SiYuanKernelStorageAdapter implements IAsyncStorageAdapter {
   readonly mode = "async" as const

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { UniversalPicGo } from "./UniversalPicGo"
 import * as store from "universal-picgo-store"
+import { LocalStorageAdapter } from "universal-picgo-store"
 import { createContext } from "../utils/createContext"
 
 const createFakeNodeHost = () => {
@@ -98,9 +99,17 @@ const suppressPicGoPathLogs = () => {
   vi.spyOn(console, "info").mockImplementation(() => undefined)
 }
 
+/**
+ * Create a storageAdapterFactory that uses LocalStorageAdapter
+ * for ALL db paths. This avoids the JSONAdapter → TextFileSync →
+ * win.require("path") chain which fails in jsdom/vitest.
+ */
+const localStorageAdapterFactory = (dbPath: string) => new LocalStorageAdapter(dbPath)
+
 describe("UniversalPicGo v2 path contract", () => {
   afterEach(() => {
     vi.restoreAllMocks()
+    window.localStorage.clear()
   })
 
   it("keeps runtime baseDir local when options configPath points to workspace", () => {
@@ -119,6 +128,7 @@ describe("UniversalPicGo v2 path contract", () => {
       baseDir: "/home/tester/.universal-picgo",
       pluginBaseDir: "/home/tester/.universal-picgo",
       isDev: true,
+      storageAdapterFactory: localStorageAdapterFactory,
     })
 
     expect(picgo.configPath).toBe("/workspace/data/storage/syp/picgo/picgo.cfg.json")
@@ -138,7 +148,26 @@ describe("UniversalPicGo v2 path contract", () => {
       this.lifecycle = { start: vi.fn() } as any
     })
 
-    const picgo = new UniversalPicGo("/workspace/data/storage/syp/picgo/picgo.cfg.json", "", "", true)
+    // Legacy string constructor bypasses storageAdapterFactory option.
+    // Inject it via prototype override before construction so initConfig()
+    // uses LocalStorageAdapter instead of JSONAdapter (which requires Node path).
+    const Proto = UniversalPicGo.prototype as any
+    const origInitConfig = Proto.initConfig
+    Proto.initConfig = function initConfigPatched(this: any) {
+      this.storageAdapterFactory = localStorageAdapterFactory
+      origInitConfig.call(this)
+    }
+
+    // Legacy string constructor: UniversalPicGo(configPath, baseDir, pluginBaseDir, isDev)
+    const picgo = new UniversalPicGo(
+      "/workspace/data/storage/syp/picgo/picgo.cfg.json",
+      "",
+      "",
+      true
+    ) as any
+
+    // Restore
+    Proto.initConfig = origInitConfig
 
     expect(picgo.configPath).toBe("/workspace/data/storage/syp/picgo/picgo.cfg.json")
     expect(picgo.baseDir).toBe("/workspace/data/storage/syp/picgo")
@@ -162,6 +191,7 @@ describe("UniversalPicGo v2 path contract", () => {
       baseDir: "/home/tester/.universal-picgo",
       pluginBaseDir: "/home/tester/.universal-picgo",
       isDev: true,
+      storageAdapterFactory: localStorageAdapterFactory,
     })
 
     expect(picgo.pluginLoader.getFullList()).toEqual([])
@@ -184,6 +214,7 @@ describe("UniversalPicGo v2 path contract", () => {
       baseDir: "/home/tester/.universal-picgo",
       pluginBaseDir: "/home/tester/.universal-picgo",
       isDev: true,
+      storageAdapterFactory: localStorageAdapterFactory,
     })
 
     const childCtx = createContext(picgo)
@@ -195,16 +226,20 @@ describe("UniversalPicGo v2 path contract", () => {
     suppressPicGoPathLogs()
     const { fakeWin, files, fileContents } = createFakeNodeHost()
     const configPath = "/workspace/data/storage/syp/picgo/picgo.cfg.json"
+
+    // Pre-populate localStorage with initial config (LocalStorageAdapter reads from window.localStorage)
+    const initialConfig = {
+      picBed: {
+        uploader: "smms",
+        current: "smms",
+      },
+    }
+    window.localStorage.setItem(configPath, JSON.stringify(initialConfig))
+
+    // Also set up fake FS for path resolution (pluginBaseDir, etc.)
     files.add(configPath)
-    fileContents.set(
-      configPath,
-      JSON.stringify({
-        picBed: {
-          uploader: "smms",
-          current: "smms",
-        },
-      })
-    )
+    fileContents.set(configPath, JSON.stringify(initialConfig))
+
     vi.spyOn(store, "hasNodeEnv", "get").mockReturnValue(true)
     vi.spyOn(store, "win", "get").mockReturnValue(fakeWin)
     vi.spyOn(UniversalPicGo.prototype as any, "init").mockImplementation(function initStub(this: any) {
@@ -218,17 +253,19 @@ describe("UniversalPicGo v2 path contract", () => {
       baseDir: "/home/tester/.universal-picgo",
       pluginBaseDir: "/home/tester/.universal-picgo",
       isDev: true,
+      storageAdapterFactory: localStorageAdapterFactory,
     })
+
     expect(picgo.getConfig("picBed.uploader")).toBe("smms")
 
-    const updatedConfigText = JSON.stringify({
+    // Update config via localStorage (simulating external change)
+    const updatedConfig = {
       picBed: {
         uploader: "awss3",
         current: "awss3",
       },
-    })
-    fileContents.set(configPath, updatedConfigText)
-    window.localStorage.setItem(configPath, updatedConfigText)
+    }
+    window.localStorage.setItem(configPath, JSON.stringify(updatedConfig))
 
     picgo.reloadConfig()
     expect(picgo.getConfig("picBed.uploader")).toBe("awss3")

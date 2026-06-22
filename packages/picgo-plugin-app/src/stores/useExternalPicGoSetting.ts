@@ -21,11 +21,25 @@ const useExternalPicGoSetting = () => {
   /**
    * 获取外部的 PicGo 的配置
    *
+   * PicGo 3.0: ExternalPicgoConfigDb now supports ensureReady() for async
+   * (Kernel-backed) backends. On sync backends (Node JSON file), ensureReady()
+   * returns immediately. Callers should await ensureReady() before reading
+   * external/PicList config from async backends to avoid reading stale defaults.
+   *
    * @author terwer
    * @since 0.6.0
    */
   const getExternalPicGoSetting = (ctx: IPicGo): RemovableRef<IExternalPicgoConfig> => {
     const externalPicGoConfigDb = new ExternalPicgoConfigDb(ctx)
+    // PicGo 3.0: ensure async backend is ready before Vue composable reads config.
+    // On sync backends, ensureReady() returns immediately (initReady=true).
+    // On async (Kernel) backends, it awaits remote data load to prevent
+    // overwriting real external/PicList user configuration with generated defaults.
+    if ((externalPicGoConfigDb as any).ensureReady) {
+      ;(externalPicGoConfigDb as any).ensureReady().catch((e: any) => {
+        console.error("[useExternalPicGoSetting] ensureReady failed:", e)
+      })
+    }
     return useCommonPicgoStorage<IExternalPicgoConfig>(externalPicGoConfigDb, {
       serializer: StorageSerializers.object,
     })

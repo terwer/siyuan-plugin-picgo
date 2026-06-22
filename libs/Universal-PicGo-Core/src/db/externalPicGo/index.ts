@@ -20,9 +20,10 @@ class ExternalPicgoConfigDb implements IPicgoDb<IExternalPicgoConfig> {
     useBundledPicgo: true,
     picgoType: PicgoTypeEnum.Bundled,
     extPicgoApiUrl: "http://127.0.0.1:36677",
-    picListApiUrl: "https://example.com/upload",
+    picListApiUrl: "",
     picListApiKey: "",
   }
+  private initReady = false
 
   constructor(ctx: IPicGo) {
     this.ctx = ctx
@@ -38,11 +39,13 @@ class ExternalPicgoConfigDb implements IPicgoDb<IExternalPicgoConfig> {
       ?? (hasNodeEnv ? new JSONAdapter(this.key) : new LocalStorageAdapter(this.key))
     this.db = new JSONStore(this.key, adapter)
 
-    this.safeSet("useBundledPicgo", this.initialValue.useBundledPicgo)
-    this.safeSet("picgoType", this.initialValue.picgoType)
-    this.safeSet("extPicgoApiUrl", this.initialValue.extPicgoApiUrl)
-    this.safeSet("picListApiUrl", this.initialValue.picListApiUrl)
-    this.safeSet("picListApiKey", this.initialValue.picListApiKey)
+    // sync adapter: safeSet immediately. async: defer to ensureReady() after remote load.
+    // This fixes the "overwrite real remote data with generated defaults" bug
+    // identified in Decision 5 of the picgo-3-unified-async-config-source design.
+    if (!this.db.isAsync) {
+      this.doSafeSet()
+      this.initReady = true
+    }
   }
 
   read(flush?: boolean): IJSON {
@@ -81,7 +84,38 @@ class ExternalPicgoConfigDb implements IPicgoDb<IExternalPicgoConfig> {
     })
   }
 
+  get isAsync(): boolean { return (this.db as any).isAsync }
+
+  /**
+   * Wait for async backend to load remote data, then merge defaults.
+   *
+   * In v2, the constructor would immediately call safeSet() which wrote
+   * defaults before remote data loaded — this would overwrite real user
+   * configuration on async (Kernel-backed) backends.
+   *
+   * In v3, safeSet is deferred until after ensureReady() guarantees the
+   * remote data is loaded. Defaults are only written if the key is
+   * genuinely absent — never overwriting real user values.
+   */
+  async ensureReady(): Promise<void> {
+    if (this.initReady) return
+    await this.db.waitReady()
+    this.doSafeSet()
+    this.initReady = true
+    if (this.isAsync) await this.db.flush()
+  }
+
+  async flush(): Promise<void> { await (this.db as any).flush?.() }
+
   // ===================================================================================================================
+  private doSafeSet() {
+    this.safeSet("useBundledPicgo", this.initialValue.useBundledPicgo)
+    this.safeSet("picgoType", this.initialValue.picgoType)
+    this.safeSet("extPicgoApiUrl", this.initialValue.extPicgoApiUrl)
+    this.safeSet("picListApiUrl", this.initialValue.picListApiUrl)
+    this.safeSet("picListApiKey", this.initialValue.picListApiKey)
+  }
+
   safeSet(key: string, value: any) {
     if (!this.db.has(key)) {
       try {

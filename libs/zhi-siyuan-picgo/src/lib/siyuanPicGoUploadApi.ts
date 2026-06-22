@@ -40,6 +40,12 @@ class SiyuanPicGoUploadApi {
    * @param input 路径数组，可为空，为空上传剪贴板
    */
   public async upload(input?: any[]): Promise<IImgInfo[] | Error> {
+    // PicGo 3.0: ensure async backend is ready before reading config.
+    // On sync backends (Node JSON file), ensureReady() returns immediately.
+    // On async backends (Kernel storage), it awaits remote data load
+    // to prevent overwriting real user data with generated defaults.
+    await (this.externalPicGo.db as any).ensureReady?.()
+
     const useBundledPicgo = this.externalPicGo.db.get("useBundledPicgo")
     if (useBundledPicgo) {
       const picgoType = this.externalPicGo.db.get("picgoType")

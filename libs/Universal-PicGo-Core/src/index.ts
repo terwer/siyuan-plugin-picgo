@@ -33,6 +33,19 @@ export { isFileOrBlob, calculateMD5, isSiyuanProxyAvailable }
 export { deepMerge, getByPath, setByPath, unsetByPath }
 export { isElectronRuntime, isPicGoPluginPackageName, isThirdPartyPluginRuntimeAvailable }
 export { win, currentWin, parentWin, hasNodeEnv }
+
+// PicGo 3.0 Unified Async Config Facade
+export {
+  createUnifiedPicGoConfigFacade,
+  type ConfigDomain,
+  type ReadyUnifiedPicGoConfigFacade,
+  type UnifiedConfigSnapshot,
+  type UnifiedConfigMigrationState,
+  type UnifiedPicGoConfigFacadeOptions,
+  type UnifiedConfigPaths,
+  type PasteTakeoverSnapshot,
+  type SiyuanConfigLike,
+} from "./config"
 export {
   type IPicGo,
   type IImgInfo,

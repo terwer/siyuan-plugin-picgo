@@ -22,6 +22,12 @@ const useSiyuanSetting = () => {
   /**
    * 获取思源笔记配置
    *
+   * PicGo 3.0: This composable still reads SiYuan connection config from
+   * localStorage. The v3 migration path is to use
+   * ReadyUnifiedPicGoConfigFacade.getSiyuanConnectionConfig()
+   * and updateSiyuanConnectionConfig(), which route to the `siyuan-cfg`
+   * owner file through the appropriate storage adapter (Kernel/JSON/localStorage).
+   *
    * @author terwer
    * @since 0.6.0
    */

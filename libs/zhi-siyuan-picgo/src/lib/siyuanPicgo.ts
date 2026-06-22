@@ -12,7 +12,11 @@ import { ILogger, simpleLogger } from "zhi-lib-base"
 import {
   resolveSiyuanPicGoPaths,
   SIYUAN_PICGO_KERNEL_CONFIG_PATH,
+  SIYUAN_PICGO_KERNEL_EXTERNAL_PATH,
+  SIYUAN_PICGO_KERNEL_SIYUAN_CONNECTION_PATH,
   SIYUAN_PICGO_MAIN_CONFIG_KEY,
+  SIYUAN_PICGO_EXTERNAL_CONFIG_KEY,
+  SIYUAN_PICGO_SIYUAN_CONNECTION_KEY,
   type SiyuanPicGoInstanceOptions,
 } from "./siyuanPicgoPaths"
 import type { SiyuanConfigLike } from "./siyuanConfigLike"
@@ -135,17 +139,32 @@ function resolveStorageAdapterFactory(config: SiyuanConfigLike): {
 
 function createKernelFactory(config: SiyuanConfigLike) {
   const kernelApi = new SiyuanKernelApi(config as any)
+  const kernelLogger = simpleLogger("kernel-storage", "zhi-siyuan-picgo")
+
+  // Map logical keys to their kernel server paths.
+  // PicGo 3.0: ALL user configuration domains go through Kernel adapter
+  // when running in Kernel-backed runtime (supersedes v2 main-config-only).
+  const kernelPathByLogicalKey: Record<string, string> = {
+    [SIYUAN_PICGO_MAIN_CONFIG_KEY]: SIYUAN_PICGO_KERNEL_CONFIG_PATH,
+    [SIYUAN_PICGO_EXTERNAL_CONFIG_KEY]: SIYUAN_PICGO_KERNEL_EXTERNAL_PATH,
+    [SIYUAN_PICGO_SIYUAN_CONNECTION_KEY]: SIYUAN_PICGO_KERNEL_SIYUAN_CONNECTION_PATH,
+  }
+
   return {
     kind: "siyuan-kernel" as const,
-    factory: (dbPath: string) =>
-      dbPath === SIYUAN_PICGO_MAIN_CONFIG_KEY
-        ? new SiYuanKernelStorageAdapter(
-            kernelApi,
-            SIYUAN_PICGO_KERNEL_CONFIG_PATH,
-            dbPath,
-            simpleLogger("kernel-storage", "zhi-siyuan-picgo")
-          )
-        : new LocalStorageAdapter(dbPath),
+    factory: (dbPath: string) => {
+      const kernelPath = kernelPathByLogicalKey[dbPath]
+      if (kernelPath) {
+        return new SiYuanKernelStorageAdapter(
+          kernelApi,
+          kernelPath,
+          dbPath,
+          kernelLogger
+        )
+      }
+      // PC-only runtime artifacts (plugin packages, logs, etc.) stay local
+      return new LocalStorageAdapter(dbPath)
+    },
   }
 }
 

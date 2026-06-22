@@ -14,12 +14,36 @@ import { IBuildInEvent } from "../../../utils/enums"
 import { AxiosRequestConfig } from "axios"
 import { browserPathJoin } from "../../../utils/browserUtils"
 
+/**
+ * Legacy localStorage key for Lsky token.
+ *
+ * Since PicGo 3.0, the canonical path for Lsky token is
+ * `picgo.cfg.json:uploader.lsky.token`. This legacy key is kept ONLY
+ * as a migration source. New tokens are written to the config store.
+ *
+ * @deprecated Use `ctx.getConfig("uploader.lsky.token")` instead.
+ */
 const SIYUAN_PICGO_PLUGIN_LSKY_TOKEN_KEY = "siyuan_picgo_plugin_lsky_token"
 
 const getToken = async (ctx: IPicGo, lskyOptions: ILskyConfig): Promise<string> => {
-  // 先查询配置，存在直接返回
-  let token = window.localStorage.getItem(SIYUAN_PICGO_PLUGIN_LSKY_TOKEN_KEY) ?? ""
-  // token 不存在，则调用接口生成 token 并存储
+  // PicGo 3.0: Read token from unified config first (canonical path)
+  let token: string = (ctx.getConfig("uploader.lsky.token") as string) ?? ""
+
+  // Migration fallback: try legacy localStorage if unified config is empty
+  if (!token || token.trim().length === 0) {
+    try {
+      const legacyToken = window.localStorage.getItem(SIYUAN_PICGO_PLUGIN_LSKY_TOKEN_KEY)
+      if (legacyToken && legacyToken.trim().length > 0) {
+        token = legacyToken
+        // Migrate legacy token to unified config
+        ctx.saveConfig({ uploader: { lsky: { token } } })
+      }
+    } catch {
+      // Ignore localStorage access errors in restricted environments
+    }
+  }
+
+  // Token still not available — generate a new one via API
   if (token.trim().length == 0) {
     const formData = new FormData()
     formData.append("email", lskyOptions.email)
@@ -34,7 +58,9 @@ const getToken = async (ctx: IPicGo, lskyOptions: ILskyConfig): Promise<string> 
       throw new Error("lsky token get error")
     }
     token = res.data.token
-    window.localStorage.setItem(SIYUAN_PICGO_PLUGIN_LSKY_TOKEN_KEY, token)
+
+    // PicGo 3.0: Write token to unified config (canonical path)
+    ctx.saveConfig({ uploader: { lsky: { token } } })
   }
 
   return token

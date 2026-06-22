@@ -88,8 +88,6 @@ export default class PicgoPlugin extends Plugin {
    * 添加图片粘贴事件
    */
   protected readonly picturePasteEventListener = async (e: CustomEvent) => {
-    const takeover = this.pasteEventAdapter.tryTakeoverWithConfig(e, this.pasteEventAdapter.readBrowserConfig())
-
     const siyuanConfig = {
       apiUrl: siyuanApiUrl,
       password: siyuanApiToken,
@@ -98,6 +96,14 @@ export default class PicgoPlugin extends Plugin {
     const ctx = picgoPostApi.ctx()
     ctx.reloadConfig()
     const siyuanApi = picgoPostApi.siyuanApi
+
+    // PicGo 3.0: Use prewarmed config from the ctx snapshot instead of
+    // reading window.localStorage. Legacy reads are only allowed in
+    // migration importers and tests.
+    const takeover = this.pasteEventAdapter.tryTakeoverWithConfig(e, {
+      autoUpload: ctx.getConfig<boolean>("siyuan.autoUpload", true),
+      allowPicAndText: ctx.getConfig<boolean>("siyuan.txtImageSwitch", false),
+    })
 
     if (!takeover.taken || !takeover.snapshot) {
       if (takeover.reason === "multiple-files-unsupported") {

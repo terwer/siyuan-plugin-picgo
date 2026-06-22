@@ -33,7 +33,11 @@ interface SiyuanPicGoPaths {
 
 const SIYUAN_PICGO_BROWSER_BASE_DIR = "universal-picgo"
 const SIYUAN_PICGO_MAIN_CONFIG_KEY = `${SIYUAN_PICGO_BROWSER_BASE_DIR}/picgo.cfg.json`
+const SIYUAN_PICGO_EXTERNAL_CONFIG_KEY = `${SIYUAN_PICGO_BROWSER_BASE_DIR}/external-picgo-cfg.json`
+const SIYUAN_PICGO_SIYUAN_CONNECTION_KEY = "siyuan-cfg"
 const SIYUAN_PICGO_KERNEL_CONFIG_PATH = "/data/storage/syp/picgo/picgo.cfg.json"
+const SIYUAN_PICGO_KERNEL_EXTERNAL_PATH = "/data/storage/syp/picgo/external-picgo-cfg.json"
+const SIYUAN_PICGO_KERNEL_SIYUAN_CONNECTION_PATH = "/data/storage/syp/siyuan-cfg.json"
 
 const isDefaultInitializedConfig = (raw: string | undefined): boolean => {
   if (!raw) {
@@ -198,7 +202,11 @@ export {
   resolveSiyuanPicGoPaths,
   SIYUAN_PICGO_BROWSER_BASE_DIR,
   SIYUAN_PICGO_KERNEL_CONFIG_PATH,
+  SIYUAN_PICGO_KERNEL_EXTERNAL_PATH,
+  SIYUAN_PICGO_KERNEL_SIYUAN_CONNECTION_PATH,
   SIYUAN_PICGO_MAIN_CONFIG_KEY,
+  SIYUAN_PICGO_EXTERNAL_CONFIG_KEY,
+  SIYUAN_PICGO_SIYUAN_CONNECTION_KEY,
   toUniversalPicGoOptions,
   type SiyuanPicGoInstanceOptions,
   type SiyuanPicGoPathOverrides,
