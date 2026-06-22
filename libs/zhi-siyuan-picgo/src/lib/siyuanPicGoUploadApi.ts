@@ -23,9 +23,11 @@ class SiyuanPicGoUploadApi {
   private readonly picListUploader: PicListUploader
   private readonly logger: ILogger
 
-  constructor(isDev?: boolean, paths?: SiyuanPicGoPaths) {
-    // 初始化 PicGO
-    this.picgo = new (UniversalPicGo as any)(toUniversalPicGoOptions(paths ?? {}, isDev))
+  constructor(isDev?: boolean, paths?: SiyuanPicGoPaths, storageAdapterFactory?: (dbPath: string) => import("universal-picgo-store").StorageAdapter) {
+    this.picgo = new (UniversalPicGo as any)({
+      ...toUniversalPicGoOptions(paths ?? {}, isDev),
+      storageAdapterFactory,
+    })
     this.externalPicGo = new ExternalPicgo(this.picgo, isDev)
     this.picListUploader = new PicListUploader(this.picgo, isDev)
     this.logger = this.picgo.getLogger("siyuan-picgo-upload-api")

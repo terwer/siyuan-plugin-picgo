@@ -17,10 +17,20 @@ const { t } = useVueI18n()
   <div>
     <el-tabs tab-position="left" class="setting-tab">
       <el-tab-pane :label="t('setting.picgo.picgo')">
-        <picgo-setting />
+        <Suspense>
+          <picgo-setting />
+          <template #fallback>
+            <div style="padding: 40px; text-align: center; color: #999;">加载中...</div>
+          </template>
+        </Suspense>
       </el-tab-pane>
       <el-tab-pane :label="t('siyuan.config.setting')">
-        <siyuan-setting />
+        <Suspense>
+          <siyuan-setting />
+          <template #fallback>
+            <div style="padding: 40px; text-align: center; color: #999;">加载中...</div>
+          </template>
+        </Suspense>
       </el-tab-pane>
     </el-tabs>
   </div>

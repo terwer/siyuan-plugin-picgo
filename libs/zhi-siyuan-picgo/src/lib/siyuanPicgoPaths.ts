@@ -20,6 +20,8 @@ interface SiyuanPicGoPathOverrides {
 interface SiyuanPicGoInstanceOptions {
   isDev?: boolean
   paths?: SiyuanPicGoPathOverrides
+  /** Optional storage adapter factory. Overrides runtime environment detection. */
+  storageAdapterFactory?: (dbPath: string) => import("universal-picgo-store").StorageAdapter
 }
 
 interface SiyuanPicGoPaths {
@@ -28,6 +30,10 @@ interface SiyuanPicGoPaths {
   pluginBaseDir?: string
   zhiNpmPath?: string
 }
+
+const SIYUAN_PICGO_BROWSER_BASE_DIR = "universal-picgo"
+const SIYUAN_PICGO_MAIN_CONFIG_KEY = `${SIYUAN_PICGO_BROWSER_BASE_DIR}/picgo.cfg.json`
+const SIYUAN_PICGO_KERNEL_CONFIG_PATH = "/data/storage/syp/picgo/picgo.cfg.json"
 
 const isDefaultInitializedConfig = (raw: string | undefined): boolean => {
   if (!raw) {
@@ -87,10 +93,11 @@ const getWorkspacePicGoConfigPath = (workspaceDir: string): string | undefined =
 
 const resolveSiyuanPicGoPaths = (overrides: SiyuanPicGoPathOverrides = {}): SiyuanPicGoPaths => {
   if (!hasNodeEnv) {
+    const runtimeDir = overrides.baseDir ?? overrides.runtimeDir ?? SIYUAN_PICGO_BROWSER_BASE_DIR
     return {
-      configPath: overrides.configPath,
-      baseDir: overrides.baseDir ?? overrides.runtimeDir,
-      pluginBaseDir: overrides.pluginBaseDir,
+      configPath: overrides.configPath ?? SIYUAN_PICGO_MAIN_CONFIG_KEY,
+      baseDir: runtimeDir,
+      pluginBaseDir: overrides.pluginBaseDir ?? runtimeDir,
       zhiNpmPath: overrides.zhiNpmPath,
     }
   }
@@ -189,6 +196,9 @@ export {
   isDefaultInitializedConfig,
   migrateV2WorkspacePicGoConfig,
   resolveSiyuanPicGoPaths,
+  SIYUAN_PICGO_BROWSER_BASE_DIR,
+  SIYUAN_PICGO_KERNEL_CONFIG_PATH,
+  SIYUAN_PICGO_MAIN_CONFIG_KEY,
   toUniversalPicGoOptions,
   type SiyuanPicGoInstanceOptions,
   type SiyuanPicGoPathOverrides,

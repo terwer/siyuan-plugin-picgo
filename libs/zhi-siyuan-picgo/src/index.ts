@@ -51,6 +51,7 @@ import {
   SiyuanPicGoHeadlessManager,
   createSiyuanPicGoHeadlessManager,
 } from "./lib/SiyuanPicGoHeadlessManager"
+import { SiYuanKernelStorageAdapter } from "./lib/SiYuanKernelStorageAdapter"
 import {
   getDefaultLocalPicGoDir,
   getSiyuanWorkspaceDir,
@@ -78,6 +79,7 @@ export {
   PluginLoaderDb,
   PICGO_HEADLESS_ERROR_CODES,
   SIYUAN_PICGO_FILE_MAP_KEY,
+  SiYuanKernelStorageAdapter,
   SiyuanPicGo,
   SiyuanPicGoHeadlessManager,
   SiyuanPicgoConfig,

@@ -9,7 +9,8 @@
 
 import { RemovableRef, StorageSerializers } from "@vueuse/core"
 import { readonly } from "vue"
-import { IExternalPicgoConfig, IPicGo, IConfig, ConfigDb } from "zhi-siyuan-picgo"
+import { ElMessage } from "element-plus"
+import type { IPicGo, IConfig, IPicgoDb } from "zhi-siyuan-picgo"
 import useCommonPicgoStorage from "@/stores/common/useCommonPicgoStorage.ts"
 
 /**
@@ -25,10 +26,20 @@ const useBundledPicGoSetting = () => {
    * @since 0.6.0
    */
   const getBundledPicGoSetting = (ctx: IPicGo): RemovableRef<IConfig> => {
-    const externalPicGoConfigDb = new ConfigDb(ctx)
-    return useCommonPicgoStorage<IConfig>(externalPicGoConfigDb, {
-      serializer: StorageSerializers.object,
-    })
+    const bundledPicGoConfigDb = createBundledPicGoConfigDb(ctx)
+    return useCommonPicgoStorage<IConfig>(
+      bundledPicGoConfigDb,
+      {
+        serializer: StorageSerializers.object,
+      },
+      {
+        afterWrite: () => ctx.flushConfig(),
+        onWriteError: (e) => {
+          ctx.log.error(e)
+          ElMessage.error(`PicGo 配置保存失败：${e instanceof Error ? e.message : String(e)}`)
+        },
+      }
+    )
   }
 
   /**
@@ -44,6 +55,31 @@ const useBundledPicGoSetting = () => {
   }
 
   return { getBundledPicGoSetting, getReadOnlytBundledPicGoSetting }
+}
+
+const createBundledPicGoConfigDb = (ctx: IPicGo): IPicgoDb<IConfig> => {
+  return {
+    key: ctx.configPath,
+    initialValue: ctx.getConfig<IConfig>() ?? {},
+    read: () => (ctx.getConfig<IConfig>() ?? {}) as any,
+    get: (key: string) => ctx.getConfig(key),
+    set: (key: string, value: any) => {
+      ctx.saveConfig({ [key]: value })
+    },
+    has: (key: string) => typeof ctx.getConfig(key) !== "undefined",
+    unset: (key: string, value: any) => {
+      ctx.removeConfig(key, String(value))
+      return true
+    },
+    saveConfig: (config: Partial<IConfig>) => {
+      ctx.saveConfig(config as any)
+    },
+    removeConfig: (config: IConfig) => {
+      Object.keys(config ?? {}).forEach((key) => {
+        ctx.removeConfig(key, String((config as any)[key]))
+      })
+    },
+  }
 }
 
 export { useBundledPicGoSetting }

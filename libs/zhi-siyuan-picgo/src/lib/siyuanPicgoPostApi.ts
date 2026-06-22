@@ -46,9 +46,15 @@ class SiyuanPicgoPostApi {
   private readonly paths: SiyuanPicGoPaths
   private readonly configMigrationKey: string
   private configInitPromise: Promise<void>
+  private initPromise: Promise<void> | null
   public cfgUpdating: boolean
 
-  constructor(siyuanConfig: SiyuanConfigLike, isDev?: boolean, paths?: SiyuanPicGoPaths) {
+  constructor(
+    siyuanConfig: SiyuanConfigLike,
+    isDev?: boolean,
+    paths?: SiyuanPicGoPaths,
+    storageAdapterFactory?: (dbPath: string) => import("universal-picgo-store").StorageAdapter
+  ) {
     this.logger = simpleLogger("picgo-post-api", "zhi-siyuan-picgo", isDev)
 
     this.imageParser = new ImageParser(isDev)
@@ -67,7 +73,7 @@ class SiyuanPicgoPostApi {
     })()
 
     // 初始化 PicGO
-    this.picgoApi = new SiyuanPicGoUploadApi(isDev, paths)
+    this.picgoApi = new SiyuanPicGoUploadApi(isDev, paths, storageAdapterFactory)
     const ctx = this.picgoApi.picgo
     this.paths = {
       configPath: ctx.configPath,
@@ -77,10 +83,8 @@ class SiyuanPicgoPostApi {
     }
     this.configMigrationKey = buildSiyuanPicGoMigrationKey(this.paths, siyuanConfig.apiUrl)
     this.cfgUpdating = false
-
-    this.configInitPromise = this.ensureConfigInitialized().then(() => {
-      this.logger.info("picgo config updated")
-    })
+    this.configInitPromise = Promise.resolve()
+    this.initPromise = null
   }
 
   /**
@@ -88,6 +92,14 @@ class SiyuanPicgoPostApi {
    */
   public ctx(): IPicGo {
     return this.picgoApi.picgo
+  }
+
+  /** Wait for async storage initialization to complete. */
+  public async init(): Promise<void> {
+    if (!this.initPromise) {
+      this.initPromise = this.initInternal()
+    }
+    await this.initPromise
   }
 
   public getConfigMigrationState(): SiyuanPicGoMigrationSnapshot {
@@ -99,8 +111,11 @@ class SiyuanPicgoPostApi {
   }
 
   public async retryConfigMigration(): Promise<SiyuanPicGoMigrationSnapshot> {
+    await (this.picgoApi.picgo as any).init?.()
     this.configInitPromise = this.ensureConfigInitialized(true)
     await this.configInitPromise
+    await this.ctx().flushConfig()
+    await this.ctx().reloadConfigAsync()
     return this.getConfigMigrationState()
   }
 
@@ -305,7 +320,7 @@ class SiyuanPicgoPostApi {
     // first opened. Refresh immediately before every real upload so drag/drop,
     // button, clipboard and block-menu uploads all honor the latest workspace
     // `picgo.cfg.json`.
-    this.ctx().reloadConfig()
+    await this.ctx().reloadConfigAsync()
 
     const mapInfoStr = attrs[SIYUAN_PICGO_FILE_MAP_KEY] ?? "{}"
     const fileMap = JsonUtil.safeParse<any>(mapInfoStr, {})
@@ -427,6 +442,16 @@ class SiyuanPicgoPostApi {
   }
 
   // ===================================================================================================================
+
+  private async initInternal(): Promise<void> {
+    await (this.picgoApi.picgo as any).init?.()
+    this.configInitPromise = this.ensureConfigInitialized().then(async () => {
+      await this.ctx().flushConfig()
+      await this.ctx().reloadConfigAsync()
+      this.logger.info("picgo config updated")
+    })
+    await this.configInitPromise
+  }
 
   private ensureConfigInitialized(force = false): Promise<void> {
     const sharedState = force

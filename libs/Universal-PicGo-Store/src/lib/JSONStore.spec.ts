@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { JSONStore } from "./JSONStore"
+import { LocalStorageAdapter } from "./adapters/LocalStorageAdapter"
 
 describe("JSONStore browser/localStorage adapter", () => {
   afterEach(() => {
@@ -7,7 +8,7 @@ describe("JSONStore browser/localStorage adapter", () => {
   })
 
   it("supports get/set/has/unset with dotted paths", () => {
-    const store = new JSONStore("json-store-spec")
+    const store = new JSONStore("json-store-spec", new LocalStorageAdapter("json-store-spec"))
 
     store.set("picBed.current", "smms")
     store.set("uploader.smms.defaultId", "default")
@@ -26,9 +27,109 @@ describe("JSONStore browser/localStorage adapter", () => {
   it("returns empty object for invalid localStorage JSON", () => {
     window.localStorage.setItem("json-store-invalid", "{invalid")
 
-    const store = new JSONStore("json-store-invalid")
+    const store = new JSONStore("json-store-invalid", new LocalStorageAdapter("json-store-invalid"))
 
     expect(store.get()).toEqual({})
+  })
+})
+
+describe("JSONStore async adapter", () => {
+  it("waitReady loads remote data before safeSet", async () => {
+    const mockAdapter = {
+      mode: "async" as const,
+      read: vi.fn().mockResolvedValue({ existing: "ok" }),
+      write: vi.fn().mockResolvedValue(undefined),
+    }
+
+    const store = new JSONStore("test-key", mockAdapter)
+    await store.waitReady()
+
+    expect(mockAdapter.read).toHaveBeenCalled()
+    expect(store.get("existing")).toBe("ok")
+    expect(store.isAsync).toBe(true)
+  })
+
+  it("debounce write: multiple sets produce one write", async () => {
+    const mockAdapter = {
+      mode: "async" as const,
+      read: vi.fn().mockResolvedValue({}),
+      write: vi.fn().mockResolvedValue(undefined),
+    }
+
+    const store = new JSONStore("test-key", mockAdapter)
+    await store.waitReady()
+
+    store.set("a", 1)
+    store.set("b", 2)
+    store.set("c", 3)
+
+    await store.flush()
+    expect(mockAdapter.write).toHaveBeenCalledTimes(1)
+    expect(mockAdapter.write).toHaveBeenCalledWith({ a: 1, b: 2, c: 3 })
+  })
+
+  it("write failure sets lastWriteError and flush throws", async () => {
+    const mockAdapter = {
+      mode: "async" as const,
+      read: vi.fn().mockResolvedValue({}),
+      write: vi.fn().mockRejectedValue(new Error("network down")),
+    }
+
+    const store = new JSONStore("test-key", mockAdapter)
+    await store.waitReady()
+    store.set("key", "value")
+
+    await expect(store.flush()).rejects.toThrow("network down")
+    expect(store.lastWriteError).toBeNull()
+  })
+
+  it("refreshAsync flushes pending writes before remote read", async () => {
+    let callOrder = ""
+    const mockAdapter = {
+      mode: "async" as const,
+      read: vi.fn().mockImplementation(async () => {
+        callOrder += "R"
+        return { remote: "data" }
+      }),
+      write: vi.fn().mockImplementation(async () => {
+        callOrder += "W"
+      }),
+    }
+
+    const store = new JSONStore("test-key", mockAdapter)
+    await store.waitReady()
+    callOrder = ""
+    store.set("local", "pending")
+    await store.refreshAsync()
+
+    // flush (W) must happen before remote read (R)
+    expect(callOrder).toBe("WR")
+    expect(store.get("remote")).toBe("data")
+  })
+
+  it("refreshAsync skips overwrite if local set happens during remote read", async () => {
+    let store: JSONStore
+    let duringRefresh = false
+    const mockAdapter = {
+      mode: "async" as const,
+      read: vi.fn().mockImplementation(async () => {
+        // Simulate local write happening during read
+        if (duringRefresh) {
+          store.set("local", "fresh")
+        }
+        return { remote: "stale" }
+      }),
+      write: vi.fn().mockResolvedValue(undefined),
+    }
+
+    store = new JSONStore("test-key", mockAdapter)
+    await store.waitReady()
+    store.set("local", "initial")
+    duringRefresh = true
+    await store.refreshAsync()
+
+    // Local write during read takes priority
+    expect(store.get("local")).toBe("fresh")
   })
 })
 
@@ -108,8 +209,10 @@ describe("JSONStore node JSON adapter", () => {
     vi.spyOn(utils, "hasNodeEnv", "get").mockReturnValue(true)
     vi.spyOn(utils, "win", "get").mockReturnValue(fakeWindow)
 
+    // Use JSONAdapter explicitly since adapter is now required
+    const { JSONAdapter } = await import("./adapters/JSONAdapter")
     const { JSONStore: NodeJSONStore } = await import("./JSONStore")
-    const store = new NodeJSONStore(dbPath)
+    const store = new NodeJSONStore(dbPath, new JSONAdapter(dbPath))
 
     expect(store.get("picBed.current")).toBe("github")
     store.set("picBed.current", "smms")

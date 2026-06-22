@@ -8,7 +8,7 @@
  */
 
 import { IExternalPicgoConfig, IPicGo, IPicgoDb } from "../../types"
-import { hasNodeEnv, IJSON, JSONStore, win } from "universal-picgo-store"
+import { hasNodeEnv, IJSON, JSONStore, JSONAdapter, LocalStorageAdapter, win } from "universal-picgo-store"
 import { browserPathJoin } from "../../utils/browserUtils"
 import { PicgoTypeEnum } from "../../utils/enums"
 
@@ -34,7 +34,9 @@ class ExternalPicgoConfigDb implements IPicgoDb<IExternalPicgoConfig> {
       this.key = browserPathJoin(this.ctx.pluginBaseDir, "external-picgo-cfg.json")
     }
 
-    this.db = new JSONStore(this.key)
+    const adapter = ctx.storageAdapterFactory?.(this.key)
+      ?? (hasNodeEnv ? new JSONAdapter(this.key) : new LocalStorageAdapter(this.key))
+    this.db = new JSONStore(this.key, adapter)
 
     this.safeSet("useBundledPicgo", this.initialValue.useBundledPicgo)
     this.safeSet("picgoType", this.initialValue.picgoType)

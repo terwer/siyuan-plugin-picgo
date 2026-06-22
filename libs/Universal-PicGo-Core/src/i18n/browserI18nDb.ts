@@ -8,7 +8,7 @@
  */
 
 import { IBrowserLocal, IPicGo } from "../types"
-import { JSONStore } from "universal-picgo-store"
+import { JSONStore, LocalStorageAdapter } from "universal-picgo-store"
 import { browserPathJoin } from "../utils/browserUtils"
 import { getByPath } from "../utils/pathObject"
 
@@ -21,7 +21,7 @@ class BrowserI18nDb {
   constructor(ctx: IPicGo) {
     this.ctx = ctx
     const browserI18nPath = browserPathJoin(this.ctx.baseDir, "i18n-cli", "i18n.json")
-    this.db = new JSONStore(browserI18nPath)
+    this.db = new JSONStore(browserI18nPath, new LocalStorageAdapter(browserI18nPath))
 
     this.safeSet(this.i18nKey, [])
   }
