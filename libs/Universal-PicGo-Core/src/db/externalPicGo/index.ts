@@ -24,6 +24,8 @@ class ExternalPicgoConfigDb implements IPicgoDb<IExternalPicgoConfig> {
     picListApiKey: "",
   }
   private initReady = false
+  /** Track whether defaults were set locally before remote data loaded. */
+  private defaultsWereLocal = false
 
   constructor(ctx: IPicGo) {
     this.ctx = ctx
@@ -39,11 +41,17 @@ class ExternalPicgoConfigDb implements IPicgoDb<IExternalPicgoConfig> {
       ?? (hasNodeEnv ? new JSONAdapter(this.key) : new LocalStorageAdapter(this.key))
     this.db = new JSONStore(this.key, adapter)
 
-    // sync adapter: safeSet immediately. async: defer to ensureReady() after remote load.
-    // This fixes the "overwrite real remote data with generated defaults" bug
-    // identified in Decision 5 of the picgo-3-unified-async-config-source design.
-    if (!this.db.isAsync) {
-      this.doSafeSet()
+    // PicGo 3.0: Always seed defaults in memory so the settings UI
+    // renders immediately with sensible values. On async backends,
+    // these local defaults are temporary — ensureReady() loads
+    // the real remote data and replaces them if necessary.
+    //
+    // Sync backends can persist immediately. Async backends defer
+    // persistence until ensureReady() confirms the remote state.
+    this.doSafeSet()
+    if (this.db.isAsync) {
+      this.defaultsWereLocal = true
+    } else {
       this.initReady = true
     }
   }
@@ -87,20 +95,28 @@ class ExternalPicgoConfigDb implements IPicgoDb<IExternalPicgoConfig> {
   get isAsync(): boolean { return (this.db as any).isAsync }
 
   /**
-   * Wait for async backend to load remote data, then merge defaults.
+   * Wait for async backend to load remote data.
    *
-   * In v2, the constructor would immediately call safeSet() which wrote
-   * defaults before remote data loaded — this would overwrite real user
-   * configuration on async (Kernel-backed) backends.
+   * PicGo 3.0: Local defaults are seeded immediately in the constructor
+   * for UI display. When ensureReady() resolves:
+   *   - If remote data exists, it replaces the local defaults.
+   *   - If remote data is missing, local defaults are kept and persisted.
    *
-   * In v3, safeSet is deferred until after ensureReady() guarantees the
-   * remote data is loaded. Defaults are only written if the key is
-   * genuinely absent — never overwriting real user values.
+   * This prevents the v2 bug where constructor-time safeSet would
+   * overwrite real remote user configuration with generated defaults.
    */
   async ensureReady(): Promise<void> {
     if (this.initReady) return
     await this.db.waitReady()
+
+    // After remote data is loaded, re-apply safeSet.
+    // On async backends: the remote data has now been loaded into the
+    // JSONStore. safeSet's has(key) check will now see the REAL remote
+    // data. If a key exists remotely, the local default is NOT applied
+    // (it's overridden by the remote value). If a key is missing
+    // remotely, the local default is kept.
     this.doSafeSet()
+    this.defaultsWereLocal = false
     this.initReady = true
     if (this.isAsync) await this.db.flush()
   }

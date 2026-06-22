@@ -159,6 +159,38 @@ describe("4.1 Settings UI — external/PicList config store pattern", () => {
     expect(snap.externalPicgo.picListApiKey).toBe("pk_secret")
   })
 
+  it("external defaults available immediately for UI even on async backend", async () => {
+    // Simulate async backend (Kernel adapter mode="async")
+    // that initially has no data (remote not loaded yet)
+    let remoteData: Record<string, any> | null = null  // null = not loaded
+    const asyncAdpt = {
+      mode: "async" as const,
+      read: async () => {
+        if (remoteData === null) throw new Error("remote not loaded yet")
+        return remoteData
+      },
+      write: async (d: Record<string, any>) => { remoteData = d },
+    }
+
+    // The DB constructor should seed defaults even before remote loads
+    // This is the key behavior for settings UI to render immediately
+    const facade = await createUnifiedPicGoConfigFacade({
+      siyuanConfig: { apiUrl: "http://127.0.0.1:6806", password: "" },
+      paths: { configPath: "test-picgo.cfg.json" },
+      getLogger: silentLogger,
+      storageAdapterFactory: (path: string) => {
+        if (path.includes("external-picgo-cfg")) return asyncAdpt
+        return memAdapter()
+      },
+    })
+
+    // UI reads config immediately — should see defaults
+    const cfg = await facade.getExternalPicGoConfig()
+    expect(cfg.useBundledPicgo).toBe(true)
+    expect(cfg.picgoType).toBe("Bundled")
+    expect(cfg.picListApiUrl).toBe("")
+  })
+
   it("existing external user config NOT overwritten by defaults (ensureReady regression)", async () => {
     // Simulate: external-picgo-cfg.json already has user data
     const extAdpt = memAdapter({
