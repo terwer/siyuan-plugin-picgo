@@ -35,6 +35,10 @@ import {
   ALL_CONFIG_DOMAINS,
   OWNER_FILE_MAP,
   INITIAL_MIGRATION_STATE,
+  MAIN_CONFIG_LOGICAL_KEY,
+  EXTERNAL_CONFIG_LOGICAL_KEY,
+  SIYUAN_CONNECTION_LOGICAL_KEY,
+  UNIFIED_CONFIG_MIGRATION_VERSION,
   ConfigNotReadyError,
   ConfigFlushError,
   ConfigReadError,
@@ -95,16 +99,20 @@ function resolveOwnerAdapter(
   }
 
   // Otherwise resolve by runtime environment (L1-L4 decision tree)
-  return resolveByRuntime(ownerFile, logicalKey)
+  return resolveByRuntime(ownerFile, logicalKey, options)
 }
 
-function resolveByRuntime(_ownerFile: string, logicalKey: string): StorageAdapter {
+function resolveByRuntime(
+  ownerFile: string,
+  logicalKey: string,
+  options: UnifiedPicGoConfigFacadeOptions
+): StorageAdapter {
   // Lazy imports to avoid circular deps and bundling issues
   try {
     // Check for Node
     if (typeof process !== "undefined" && typeof require !== "undefined") {
       const { JSONAdapter } = require("universal-picgo-store") as any
-      return new JSONAdapter(logicalKey)
+      return new JSONAdapter(resolveNodeOwnerPath(ownerFile, logicalKey, options))
     }
 
     // Check for SiYuan window
@@ -123,6 +131,37 @@ function resolveByRuntime(_ownerFile: string, logicalKey: string): StorageAdapte
     const { LocalStorageAdapter } = require("universal-picgo-store") as any
     return new LocalStorageAdapter(logicalKey)
   }
+}
+
+function resolveNodeOwnerPath(
+  ownerFile: string,
+  logicalKey: string,
+  options: UnifiedPicGoConfigFacadeOptions
+): string {
+  const pathApi = getNodePathApi()
+  const workspaceDir = options.paths?.workspaceDir
+  if (ownerFile === "picgo.cfg.json") {
+    return options.paths?.configPath
+      ?? (pathApi && workspaceDir ? pathApi.join(workspaceDir, "data", "storage", "syp", "picgo", "picgo.cfg.json") : logicalKey)
+  }
+  if (ownerFile === "external-picgo-cfg.json") {
+    return options.paths?.externalConfigPath
+      ?? (pathApi && workspaceDir ? pathApi.join(workspaceDir, "data", "storage", "syp", "picgo", "external-picgo-cfg.json") : logicalKey)
+  }
+  if (ownerFile === "siyuan-cfg") {
+    return options.paths?.siyuanConnectionConfigPath
+      ?? (pathApi && workspaceDir ? pathApi.join(workspaceDir, "data", "storage", "syp", "siyuan-cfg.json") : logicalKey)
+  }
+  return logicalKey
+}
+
+function getNodePathApi(): any {
+  try {
+    if (typeof require !== "undefined") return require("path")
+  } catch {
+    return null
+  }
+  return null
 }
 
 // ── Facade Factory ───────────────────────────────────────────────────
@@ -151,16 +190,9 @@ export async function createUnifiedPicGoConfigFacade(
   const logger = options.getLogger?.("unified-config-facade")
     ?? { info: (...args: any[]) => {}, error: (...args: any[]) => {}, warn: (...args: any[]) => {}, debug: (...args: any[]) => {} }
 
-  const instanceKey = JSON.stringify({
-    apiUrl: options.siyuanConfig?.apiUrl ?? "unknown",
-    configPath: options.paths?.configPath ?? "default",
-  })
-
-  logger.info("[UnifiedConfigFacade] initializing, instanceKey:", instanceKey)
-
   // Build internal state
   const state: FacadeInternalState = {
-    instanceKey,
+    instanceKey: "",
     storageMode: "sync",
     ownerFiles: new Map(),
     migrationState: { ...INITIAL_MIGRATION_STATE },
@@ -184,6 +216,9 @@ export async function createUnifiedPicGoConfigFacade(
       domains,
     })
   }
+
+  state.instanceKey = createFacadeInstanceKey(options, state.ownerFiles)
+  logger.info("[UnifiedConfigFacade] initializing, instanceKey:", state.instanceKey)
 
   // Load all owner files
   await loadAllOwnerFiles(state, logger)
@@ -259,7 +294,7 @@ async function ensureMigration(
   const mainOwner = state.ownerFiles.get("picgo.cfg.json")
   if (mainOwner) {
     const existingMigration = mainOwner.data?.siyuan?.picgoMigration
-    if (existingMigration?.version === "v3.0-unified-async-config-source") {
+    if (existingMigration?.version === UNIFIED_CONFIG_MIGRATION_VERSION) {
       state.migrationState = existingMigration as UnifiedConfigMigrationState
       logger.info("[UnifiedConfigFacade] existing v3 migration state found, status:", state.migrationState.status)
       return
@@ -277,9 +312,13 @@ async function ensureMigration(
 
   try {
     await runV3MigrationInternal(state, options, logger)
-    state.migrationState.status = "done"
     state.migrationState.updatedAt = Date.now()
-    logger.info("[UnifiedConfigFacade] migration complete")
+    if (state.migrationState.status === "failed") {
+      logger.error("[UnifiedConfigFacade] migration failed:", state.migrationState.error)
+    } else {
+      state.migrationState.status = "done"
+      logger.info("[UnifiedConfigFacade] migration complete")
+    }
   } catch (e: any) {
     state.migrationState.status = "failed"
     state.migrationState.error = e?.message ?? String(e)
@@ -301,13 +340,31 @@ async function runV3MigrationInternal(
   options: UnifiedPicGoConfigFacadeOptions,
   logger: { info: (...args: any[]) => void; error: (...args: any[]) => void; warn: (...args: any[]) => void; debug: (...args: any[]) => void }
 ): Promise<void> {
+  await runMigrationWithService(state, options, logger, runMigrationService)
+}
+
+async function retryV3MigrationInternal(
+  state: FacadeInternalState,
+  options: UnifiedPicGoConfigFacadeOptions,
+  logger: { info: (...args: any[]) => void; error: (...args: any[]) => void; warn: (...args: any[]) => void; debug: (...args: any[]) => void },
+  domains?: ConfigDomain[]
+): Promise<void> {
+  await runMigrationWithService(state, options, logger, (migrationOptions) => retryMigrationService(migrationOptions, domains))
+}
+
+async function runMigrationWithService(
+  state: FacadeInternalState,
+  options: UnifiedPicGoConfigFacadeOptions,
+  logger: { info: (...args: any[]) => void; error: (...args: any[]) => void; warn: (...args: any[]) => void; debug: (...args: any[]) => void },
+  service: (options: Parameters<typeof runMigrationService>[0]) => Promise<UnifiedConfigMigrationState>
+): Promise<void> {
   // Build owner file data map from current facade state
   const ownerFileData = new Map<string, Record<string, any>>()
   for (const [name, fileState] of state.ownerFiles) {
     ownerFileData.set(name, { ...(fileState.data ?? {}) })
   }
 
-  const migrationResult = await runMigrationService({
+  const migrationResult = await service({
     ownerFileData,
     existingState: state.migrationState,
     hasNodeEnv: typeof process !== "undefined" && typeof require !== "undefined",
@@ -417,15 +474,51 @@ function getLogicalKeyForOwnerFile(
 ): string {
   const configPath = options.paths?.configPath
   if (ownerFileName === "picgo.cfg.json") {
-    return configPath ?? "universal-picgo/picgo.cfg.json"
+    return configPath ?? MAIN_CONFIG_LOGICAL_KEY
   }
   if (ownerFileName === "external-picgo-cfg.json") {
-    return "universal-picgo/external-picgo-cfg.json"
+    return options.paths?.externalConfigPath ?? EXTERNAL_CONFIG_LOGICAL_KEY
   }
   if (ownerFileName === "siyuan-cfg") {
-    return "siyuan-cfg"
+    return options.paths?.siyuanConnectionConfigPath ?? SIYUAN_CONNECTION_LOGICAL_KEY
   }
   return `universal-picgo/${ownerFileName}`
+}
+
+function createFacadeInstanceKey(
+  options: UnifiedPicGoConfigFacadeOptions,
+  ownerFiles: Map<string, OwnerFileState>
+): string {
+  const ownerIdentity: Record<string, unknown> = {}
+  for (const [ownerFile, fileState] of ownerFiles) {
+    ownerIdentity[ownerFile] = {
+      logicalKey: fileState.logicalKey,
+      storageKind: getAdapterStorageKind(fileState.adapter),
+      mode: isAsyncAdapter(fileState.adapter) ? "async" : "sync",
+      domains: fileState.domains,
+    }
+  }
+
+  return JSON.stringify({
+    apiUrl: options.siyuanConfig?.apiUrl ?? "unknown",
+    storage: {
+      factory: options.storageAdapterFactory ? "custom" : "runtime",
+      owners: ownerIdentity,
+    },
+    workspace: {
+      workspaceDir: options.paths?.workspaceDir ?? "",
+      homeDir: options.paths?.homeDir ?? "",
+    },
+    paths: {
+      configPath: options.paths?.configPath ?? "",
+      externalConfigPath: options.paths?.externalConfigPath ?? "",
+      siyuanConnectionConfigPath: options.paths?.siyuanConnectionConfigPath ?? "",
+      baseDir: options.paths?.baseDir ?? "",
+      runtimeDir: options.paths?.runtimeDir ?? "",
+      pluginBaseDir: options.paths?.pluginBaseDir ?? "",
+      zhiNpmPath: options.paths?.zhiNpmPath ?? "",
+    },
+  })
 }
 
 // ── Ready Facade Construction ────────────────────────────────────────
@@ -551,24 +644,19 @@ function buildReadyFacade(
     },
 
     async retryMigration(domains?: ConfigDomain[]): Promise<UnifiedConfigMigrationState> {
-      const targets = domains ?? ALL_CONFIG_DOMAINS
-      for (const domain of targets) {
-        const domainState = state.migrationState.domains[domain]
-        if (domainState && domainState.status === "failed") {
-          domainState.status = "not-started"
-          domainState.error = undefined
-        }
-      }
       state.migrationState.status = "running"
-      state.migrationState.attempts++
       try {
-        await runV3MigrationInternal(state, options, logger)
-        state.migrationState.status = "done"
+        await retryV3MigrationInternal(state, options, logger, domains)
+        const retryStatus = state.migrationState.status as UnifiedConfigMigrationState["status"]
+        if (retryStatus !== "failed") {
+          state.migrationState.status = "done"
+        }
       } catch (e: any) {
         state.migrationState.status = "failed"
         state.migrationState.error = e?.message ?? String(e)
       }
       state.migrationState.updatedAt = Date.now()
+      persistMigrationMarker(state)
       return { ...state.migrationState }
     },
 
@@ -576,6 +664,15 @@ function buildReadyFacade(
       return maskSnapshot(snapshot)
     },
   }
+}
+
+function persistMigrationMarker(state: FacadeInternalState): void {
+  const mainOwner = state.ownerFiles.get("picgo.cfg.json")
+  if (!mainOwner) return
+  mainOwner.data = mainOwner.data ?? {}
+  mainOwner.data.siyuan = mainOwner.data.siyuan ?? {}
+  mainOwner.data.siyuan.picgoMigration = state.migrationState
+  mainOwner.dirty = true
 }
 
 // ── Snapshot Construction ────────────────────────────────────────────

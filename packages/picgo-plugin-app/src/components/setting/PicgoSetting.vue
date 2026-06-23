@@ -12,7 +12,7 @@ import { useVueI18n } from "$composables/useVueI18n.ts"
 import { useBundledPicGoSetting } from "@/stores/useBundledPicGoSetting.ts"
 import { useExternalPicGoSetting } from "@/stores/useExternalPicGoSetting.ts"
 import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
-import { onBeforeMount, reactive, ref, watch } from "vue"
+import { computed, onBeforeMount, reactive, ref, watch } from "vue"
 import { PicgoTypeEnum, type SiyuanPicGoMigrationSnapshot } from "zhi-siyuan-picgo"
 import { ElMessage } from "element-plus"
 import { markRuntimeReloadRequired } from "$composables/useRuntimeReloadNotice.ts"
@@ -28,6 +28,14 @@ const bundledPicGoSettingForm = getBundledPicGoSetting(ctx)
 const externalPicGoSettingForm = getExternalPicGoSetting(ctx)
 const migrationState = ref<SiyuanPicGoMigrationSnapshot>(siyuanPicgo.getConfigMigrationState())
 const migrationRetrying = ref(false)
+const failedMigrationDomains = computed(() =>
+  Object.entries(migrationState.value.domains ?? {})
+    .filter(([, state]) => state.status === "failed")
+    .map(([domain, state]) => ({
+      domain,
+      error: state.error ?? "未知错误",
+    }))
+)
 const runtimeRelevantSiyuanKeys = {
   autoUpload: "剪切板自动上传",
   replaceLink: "替换本地链接",
@@ -162,6 +170,11 @@ watch(
       <div>
         <div>失败后不会在每次打开主界面时自动重试，请检查日志后点击“重试初始化”。</div>
         <div v-if="migrationState.error">错误信息：{{ migrationState.error }}</div>
+        <ul v-if="failedMigrationDomains.length > 0" class="picgo-migration-domains">
+          <li v-for="item in failedMigrationDomains" :key="item.domain">
+            {{ item.domain }}：{{ item.error }}
+          </li>
+        </ul>
         <el-button size="small" type="primary" :loading="migrationRetrying" @click="retryConfigMigration">
           重试初始化
         </el-button>
@@ -236,6 +249,10 @@ watch(
 
   .el-button
     margin-top 8px
+
+.picgo-migration-domains
+  margin 8px 0
+  padding-left 18px
 
 .external-mode-desc
   margin-top 6px

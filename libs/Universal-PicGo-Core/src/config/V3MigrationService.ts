@@ -388,16 +388,12 @@ function applyMigratedData(
     case "siyuanBehavior":
     case "pluginValues":
     case "uploaderConfig": {
-      // All map to picgo.cfg.json — merge legacy into owner
+      // All map to picgo.cfg.json, but migration is per-domain.  Do not
+      // merge the whole legacy owner file here: user data in one shared-owner
+      // domain (for example siyuan.autoUpload=false) must not block or be
+      // overwritten by another domain (for example plugin values).
       const main = ownerFileData.get("picgo.cfg.json") ?? {}
-      // Merge legacy data (shallow merge for simple keys, deep for picBed)
-      for (const [key, value] of Object.entries(legacy.data as Record<string, any>)) {
-        if (key === "picBed" || key === "siyuan" || key === "picgoPlugins") {
-          main[key] = { ...(main[key] ?? {}), ...(value as any) }
-        } else if (!(key in main)) {
-          main[key] = value
-        }
-      }
+      mergePicgoDomainSlice(main, domain, extractPicgoDomainSlice(domain, legacy.data))
       ownerFileData.set("picgo.cfg.json", main)
       logger?.info?.(`[V3Migration] ${domain}: imported from ${legacy.source}`)
       break
@@ -406,9 +402,7 @@ function applyMigratedData(
     case "externalPicList": {
       const ext = ownerFileData.get("external-picgo-cfg.json") ?? {}
       for (const [key, value] of Object.entries(legacy.data as Record<string, any>)) {
-        if (!(key in ext) || ext[key] === undefined || ext[key] === "") {
-          ext[key] = value
-        }
+        ext[key] = value
       }
       ownerFileData.set("external-picgo-cfg.json", ext)
       logger?.info?.(`[V3Migration] externalPicList: imported from ${legacy.source}`)
@@ -418,9 +412,7 @@ function applyMigratedData(
     case "siyuanConnection": {
       const conn = ownerFileData.get("siyuan-cfg") ?? {}
       for (const [key, value] of Object.entries(legacy.data as Record<string, any>)) {
-        if (!(key in conn) || conn[key] === undefined || conn[key] === "") {
-          conn[key] = value
-        }
+        conn[key] = value
       }
       ownerFileData.set("siyuan-cfg", conn)
       logger?.info?.(`[V3Migration] siyuanConnection: imported from ${legacy.source}`)
@@ -437,6 +429,183 @@ function applyMigratedData(
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────
+
+const SIYUAN_BEHAVIOR_KEYS = [
+  "waitTimeout",
+  "retryTimes",
+  "autoUpload",
+  "replaceLink",
+  "txtImageSwitch",
+] as const
+
+const PICGO_MAIN_PICBED_KEYS = [
+  "uploader",
+  "current",
+  "transformer",
+  "proxy",
+  "list",
+] as const
+
+const KNOWN_PICGO_OWNER_ROOT_KEYS = new Set([
+  "picBed",
+  "picgoPlugins",
+  "siyuan",
+  "settings",
+  "uploader",
+  "transformer",
+  "debug",
+  "silent",
+])
+
+function pickDefined(source: Record<string, any> | undefined, keys: readonly string[]): Record<string, any> {
+  const out: Record<string, any> = {}
+  if (!source) return out
+  for (const key of keys) {
+    if (source[key] !== undefined) {
+      out[key] = source[key]
+    }
+  }
+  return out
+}
+
+function extractPicgoDomainSlice(domain: ConfigDomain, data: any): Record<string, any> {
+  const source = (data ?? {}) as Record<string, any>
+  switch (domain) {
+    case "picgoMain": {
+      const picBed = pickDefined(source.picBed, PICGO_MAIN_PICBED_KEYS)
+      const slice: Record<string, any> = {}
+      if (Object.keys(picBed).length > 0) slice.picBed = picBed
+      for (const key of ["debug", "silent"]) {
+        if (source[key] !== undefined) slice[key] = source[key]
+      }
+      return slice
+    }
+
+    case "picgoSettings":
+      return source.settings !== undefined ? { settings: source.settings } : {}
+
+    case "siyuanBehavior": {
+      const siyuan = pickDefined(source.siyuan, SIYUAN_BEHAVIOR_KEYS)
+      return Object.keys(siyuan).length > 0 ? { siyuan } : {}
+    }
+
+    case "pluginValues": {
+      const slice: Record<string, any> = {}
+      if (source.picgoPlugins !== undefined) {
+        slice.picgoPlugins = source.picgoPlugins
+      }
+      for (const [key, value] of Object.entries(source)) {
+        if (KNOWN_PICGO_OWNER_ROOT_KEYS.has(key)) continue
+        slice[key] = value
+      }
+      return slice
+    }
+
+    case "uploaderConfig": {
+      const picBed: Record<string, any> = {}
+      for (const [key, value] of Object.entries((source.picBed ?? {}) as Record<string, any>)) {
+        if (!PICGO_MAIN_PICBED_KEYS.includes(key as any)) {
+          picBed[key] = value
+        }
+      }
+      const slice: Record<string, any> = {}
+      if (Object.keys(picBed).length > 0) slice.picBed = picBed
+      if (source.uploader !== undefined) {
+        slice.uploader = source.uploader
+      }
+      if (source.transformer !== undefined) {
+        slice.transformer = source.transformer
+      }
+      return slice
+    }
+
+    default:
+      return {}
+  }
+}
+
+function mergeObject(target: Record<string, any>, source: Record<string, any>): void {
+  for (const [key, value] of Object.entries(source)) {
+    if (
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      target[key] &&
+      typeof target[key] === "object" &&
+      !Array.isArray(target[key])
+    ) {
+      mergeObject(target[key], value as Record<string, any>)
+      continue
+    }
+    if (target[key] === undefined || target[key] === null || target[key] === "") {
+      target[key] = value
+    }
+  }
+}
+
+function mergePicgoDomainSlice(main: Record<string, any>, domain: ConfigDomain, slice: Record<string, any>): void {
+  switch (domain) {
+    case "picgoMain":
+      if (slice.picBed) {
+        main.picBed = main.picBed ?? {}
+        Object.assign(main.picBed, slice.picBed)
+      }
+      for (const key of ["debug", "silent"]) {
+        if (slice[key] !== undefined) {
+          main[key] = slice[key]
+        }
+      }
+      break
+
+    case "uploaderConfig": {
+      if (slice.picBed) {
+        main.picBed = main.picBed ?? {}
+        mergeObject(main.picBed, slice.picBed)
+      }
+      if (slice.uploader) {
+        main.uploader = main.uploader ?? {}
+        mergeObject(main.uploader, slice.uploader)
+      }
+      if (slice.transformer) {
+        main.transformer = main.transformer ?? {}
+        mergeObject(main.transformer, slice.transformer)
+      }
+      for (const key of ["debug", "silent"]) {
+        if (slice[key] !== undefined && main[key] === undefined) {
+          main[key] = slice[key]
+        }
+      }
+      break
+    }
+
+    case "picgoSettings":
+      if (slice.settings) {
+        main.settings = main.settings ?? {}
+        mergeObject(main.settings, slice.settings)
+      }
+      break
+
+    case "siyuanBehavior":
+      if (slice.siyuan) {
+        main.siyuan = main.siyuan ?? {}
+        Object.assign(main.siyuan, slice.siyuan)
+      }
+      break
+
+    case "pluginValues":
+      if (slice.picgoPlugins) {
+        main.picgoPlugins = main.picgoPlugins ?? {}
+        mergeObject(main.picgoPlugins, slice.picgoPlugins)
+      }
+      for (const [key, value] of Object.entries(slice)) {
+        if (key === "picgoPlugins") continue
+        if (main[key] === undefined) {
+          main[key] = value
+        }
+      }
+      break
+  }
+}
 
 function initMigrationState(
   existing?: Partial<UnifiedConfigMigrationState>

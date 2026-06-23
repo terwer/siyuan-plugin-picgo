@@ -1,11 +1,23 @@
-import { describe, expect, it, vi, beforeEach } from "vitest"
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest"
 import { PicListUploader } from "./PicListUploader"
+import { MASK_VALUE } from "../config"
+
+const mockLogger = vi.hoisted(() => ({
+  debug: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+}))
 
 // Mock universal-picgo-store before imports
 vi.mock("universal-picgo-store", () => ({
   hasNodeEnv: false,
   win: {},
   JSONStore: vi.fn(),
+}))
+
+vi.mock("zhi-lib-base", () => ({
+  simpleLogger: vi.fn(() => mockLogger),
 }))
 
 function createRouteConfig(overrides: Record<string, any> = {}) {
@@ -27,6 +39,10 @@ describe("PicListUploader", () => {
     vi.clearAllMocks()
     routeConfig = createRouteConfig()
     uploader = new PicListUploader(mockCtx, true, () => routeConfig) // isDev=true for debug logging
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
   })
 
   describe("isPicListConfigured", () => {
@@ -85,6 +101,27 @@ describe("PicListUploader", () => {
       })
 
       await expect(uploader.upload(["file.jpg"])).rejects.toThrow("not configured")
+    })
+
+    it("masks PicList API key in debug upload URL logs", async () => {
+      routeConfig = createRouteConfig({
+        picListApiUrl: "https://piclist.example.com/upload",
+        picListApiKey: "super-secret-key",
+      })
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => ({
+          ok: true,
+          json: async () => ({ success: true, result: "https://img.example.com/image.png" }),
+          text: async () => "",
+        }))
+      )
+
+      await uploader.upload([new Blob(["png"], { type: "image/png" })])
+
+      const debugLog = JSON.stringify(mockLogger.debug.mock.calls)
+      expect(debugLog).toContain(MASK_VALUE)
+      expect(debugLog).not.toContain("super-secret-key")
     })
   })
 })

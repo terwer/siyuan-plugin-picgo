@@ -110,6 +110,10 @@ export interface UnifiedPicGoConfigFacadeOptions {
 export interface UnifiedConfigPaths {
   /** Override for PicGo main owner file path. */
   configPath?: string
+  /** Override/diagnostic identity for external/PicList owner file path. */
+  externalConfigPath?: string
+  /** Override/diagnostic identity for SiYuan connection owner file path. */
+  siyuanConnectionConfigPath?: string
   /** Optional SiYuan workspace directory used by host factories/migration readers. */
   workspaceDir?: string
   /** Optional user home/local PicGo directory used by migration readers. */
@@ -297,9 +301,12 @@ export interface UnifiedConfigMigrationState {
   domains: Record<ConfigDomain, MigrationDomainState>
 }
 
+/** Fixed PicGo 3.0 unified async config migration marker version. */
+export const UNIFIED_CONFIG_MIGRATION_VERSION = "v3.0-unified-async-config-source" as const
+
 /** Initial migration state before any migration runs. */
 export const INITIAL_MIGRATION_STATE: UnifiedConfigMigrationState = {
-  version: "v3.0-unified-async-config-source",
+  version: UNIFIED_CONFIG_MIGRATION_VERSION,
   status: "not-started",
   attempts: 0,
   domains: {

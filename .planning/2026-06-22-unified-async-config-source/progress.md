@@ -24,3 +24,29 @@
 - 修复 external 默认 `picgoType` 为枚举值 `bundled`，并兼容识别/规范化旧 generated default `Bundled`，避免 bundled route 被误判失败。
 - 验证通过：store/universal/zhi/app/bootstrap build；store/universal/zhi vitest；OpenSpec change/all strict validate；grep gates 无生产 legacy localStorage main read、Lsky legacy 仅 migration/test、生产无 direct `ExternalPicgoConfigDb` construction。
 - 更新审计文档：`docs/audits/2026-06-22-picgo-3-unified-async-config-source-implementation-audit.md`。
+
+## 2026-06-23
+- 用户要求在多次提交后的最新代码上，对 `picgo-3-unified-async-config-source` 做全量审计；本轮只做审计与偏离修复 prompt 输出，不直接改业务代码。
+- 用户补充要求：审计结果需固化到 `/Volumes/workspace/mydocs/siyuan-plugins/siyuan-plugin-picgo/docs/audits`。
+- 已完成最新代码审计并固化到 `docs/audits/2026-06-23-picgo-3-unified-async-config-source-latest-code-audit.md`。
+- 验证：5 个 build 命令通过；store/universal/zhi 单测通过（9/183/17）；OpenSpec change/all strict 均通过；核心 grep gates 通过。
+- 偏离：v3 migration state/retry 未接入产品 UI/lifecycle；`picgo.cfg.json` 共享 owner 的 migration classification 不是 per-domain；PicList API key log mask 使用 `***` 而非 `******`；`pnpm audit:picgo-refactor` 脚本仍含旧 v2/旧版本断言并失败；版本仍为 `2.1.1` 与 PicGo 3.0 breaking 定位不一致或需明确 out-of-scope。
+
+## 2026-06-23 复审
+- 用户表示已修复并要求继续审计；本轮将基于最新代码重新检查前次偏离项、跑验证命令，并更新 `docs/audits/`。
+
+## 2026-06-23 修复后复审完成
+- 已基于用户修复后的未提交工作区完成复审，并新建 `docs/audits/2026-06-23-picgo-3-unified-async-config-source-post-fix-audit.md`。
+- 前次偏离中 v3 migration UI/retry 接线、per-domain recognition、PicList mask、审计脚本、版本 out-of-scope 说明均已基本修复；`pnpm audit:picgo-refactor` 通过。
+- 验证通过：5 个 build、store/universal/zhi vitest（9/188/19）、`pnpm audit:picgo-refactor`、OpenSpec change/all strict。
+- 复审仍发现偏离：`retryMigration(domains?)` 实际会顺带重试所有 failed domains；SiYuan PC/Node external 与 `siyuan-cfg` owner 未映射到 workspace 文件；v2 兼容 copy 可能覆盖默认 workspace 的 v3 marker；facade `instanceKey` 缺少 storage/workspace identity。
+
+## 2026-06-23 二次偏离修复完成
+- 已按复审剩余偏离继续修复：`retryMigration(domains?)` 改为通过 `retryV3Migration` 的 domain-scoped 语义；指定 domain retry 不再顺带重试其他 failed domain。
+- 已修复 SiYuan PC/Node 三 owner file 映射：main / external-picgo-cfg / siyuan-cfg 均解析到 workspace owner file；Node 工厂使用 `createNodeWorkspaceFactory(paths)` 映射 logical key 到绝对路径。
+- 已修复 v2 legacy copy 覆盖 v3 marker 风险：`hasV3MigrationMarker()` 与 `isDefaultInitializedConfig()` 共同防止默认 workspace + v3 marker 被 home config 覆盖。
+- 已完善 facade `instanceKey`：包含 storage/workspace/owner identity 与 path overrides，不包含 password/cookie/picListApiKey；并导出 `UNIFIED_CONFIG_MIGRATION_VERSION`。
+- 已修复 `SiyuanPicGoUploadApi` 构造时未传递 `storageAdapterFactory` 导致 zhi tsc unused 参数问题。
+- 已更新 `scripts/picgo-internal-refactor-audit.cjs`，新增 domain-scoped retry、Node workspace 三 owner mapping、v3 marker 防覆盖、instanceKey identity/sensitive gate。
+- 已更新 `docs/audits/2026-06-23-picgo-3-unified-async-config-source-post-fix-audit.md`，追加二次修复证据与最终验证记录。
+- 验证通过：5 个 build；store/universal/zhi vitest（9/190/21）；`pnpm audit:picgo-refactor`；OpenSpec change/all strict；额外 `universal-picgo` 与 `zhi-siyuan-picgo` tsc --noEmit。

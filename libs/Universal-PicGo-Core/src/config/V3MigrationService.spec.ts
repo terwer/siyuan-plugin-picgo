@@ -332,6 +332,66 @@ describe("V3MigrationService", () => {
       expect(mainData?.picBed?.uploader).toBe("github") // Real user data preserved
     })
 
+    it("imports pluginValues when only siyuan behavior has v3 user data", async () => {
+      window.localStorage.setItem(
+        "universal-picgo/picgo.cfg.json",
+        JSON.stringify({
+          picgoPlugins: { "plugin-x": true },
+          siyuan: { autoUpload: true },
+        })
+      )
+
+      const ownerFileData = new Map<string, Record<string, any>>()
+      ownerFileData.set("picgo.cfg.json", {
+        picBed: { uploader: "smms", current: "smms" },
+        picgoPlugins: {},
+        siyuan: { autoUpload: false },
+      })
+
+      const result = await runV3Migration({
+        ownerFileData,
+        hasNodeEnv: false,
+        logger: silentLogger(),
+      })
+
+      expect(result.domains.siyuanBehavior.importedSources).toContain("v3-owner-file:picgo.cfg.json")
+      expect(result.domains.pluginValues.status).toBe("imported")
+      expect(result.domains.pluginValues.importedSources).toContain("browser:universal-picgo/picgo.cfg.json")
+
+      const mainData = ownerFileData.get("picgo.cfg.json")
+      expect(mainData?.picgoPlugins?.["plugin-x"]).toBe(true)
+      expect(mainData?.siyuan?.autoUpload).toBe(false)
+    })
+
+    it("imports missing settings without overwriting existing uploader config in the same owner file", async () => {
+      window.localStorage.setItem(
+        "universal-picgo/picgo.cfg.json",
+        JSON.stringify({
+          settings: { npmRegistry: "https://registry.example.com" },
+          picBed: { uploader: "github", current: "github", github: { token: "legacy-token" } },
+        })
+      )
+
+      const ownerFileData = new Map<string, Record<string, any>>()
+      ownerFileData.set("picgo.cfg.json", {
+        picBed: { uploader: "github", current: "github", github: { token: "real-token" } },
+      })
+
+      const result = await runV3Migration({
+        ownerFileData,
+        hasNodeEnv: false,
+        logger: silentLogger(),
+      })
+
+      expect(result.domains.uploaderConfig.importedSources).toContain("v3-owner-file:picgo.cfg.json")
+      expect(result.domains.picgoSettings.status).toBe("imported")
+      expect(result.domains.picgoSettings.importedSources).toContain("browser:universal-picgo/picgo.cfg.json")
+
+      const mainData = ownerFileData.get("picgo.cfg.json")
+      expect(mainData?.settings?.npmRegistry).toBe("https://registry.example.com")
+      expect(mainData?.picBed?.github?.token).toBe("real-token")
+    })
+
     it("prefers workspace legacy over home and browser sources", async () => {
       const tempRoot = mkdtempSync(join(tmpdir(), "picgo-v3-migration-"))
       const workspaceDir = join(tempRoot, "workspace")

@@ -11,6 +11,7 @@ import { SiyuanPicgoPostApi } from "./siyuanPicgoPostApi"
 import { ILogger, simpleLogger } from "zhi-lib-base"
 import {
   resolveSiyuanPicGoPaths,
+  resolveSiyuanPicGoOwnerFilePath,
   SIYUAN_PICGO_KERNEL_CONFIG_PATH,
   SIYUAN_PICGO_KERNEL_EXTERNAL_PATH,
   SIYUAN_PICGO_KERNEL_SIYUAN_CONNECTION_PATH,
@@ -24,6 +25,7 @@ import { SiyuanKernelApi } from "zhi-siyuan-api"
 import { JSONAdapter, LocalStorageAdapter, hasNodeEnv } from "universal-picgo-store"
 import type { StorageAdapter } from "universal-picgo-store"
 import { isSiyuanProxyAvailable } from "universal-picgo"
+import type { UnifiedConfigMigrationState } from "universal-picgo"
 import { SiyuanDevice } from "zhi-device"
 import { SiYuanKernelStorageAdapter } from "./SiYuanKernelStorageAdapter"
 
@@ -44,7 +46,7 @@ class SiyuanPicGo {
 
     const resolved = normalizedOptions.storageAdapterFactory
       ? { kind: "custom" as const, factory: normalizedOptions.storageAdapterFactory }
-      : resolveStorageAdapterFactory(siyuanConfig)
+      : resolveStorageAdapterFactory(siyuanConfig, paths)
 
     const factory = resolved.factory
 
@@ -101,12 +103,12 @@ class SiyuanPicGo {
     }
     const finalState = picgo.getConfigMigrationState()
     if (finalState.status === "failed") {
-      const errorText = finalState.error ? `，错误信息：${finalState.error}` : ""
+      const errorText = formatMigrationError(finalState)
       siyuanApi.pushErrMsg({
-        msg: `PicGo 配置初始化或迁移失败${errorText}。请在 PicGo 设置页点击"重试初始化"。`,
+        msg: `PicGo 配置初始化或迁移失败${errorText ? `，错误信息：${errorText}` : ""}。请在 PicGo 设置页点击"重试初始化"。`,
         timeout: 7000,
       })
-      this.logger?.error(`PicGo config migration failed${errorText}`)
+      this.logger?.error(`PicGo config migration failed${errorText ? `: ${errorText}` : ""}`)
       return
     }
     if (initialState.status === "running" && finalState.status === "done") {
@@ -117,11 +119,24 @@ class SiyuanPicGo {
   }
 }
 
-function resolveStorageAdapterFactory(config: SiyuanConfigLike): {
+function formatMigrationError(state: UnifiedConfigMigrationState): string {
+  const errors: string[] = []
+  if (state.error) {
+    errors.push(state.error)
+  }
+  for (const [domain, domainState] of Object.entries(state.domains ?? {})) {
+    if (domainState.status === "failed") {
+      errors.push(`${domain}: ${domainState.error ?? "unknown error"}`)
+    }
+  }
+  return Array.from(new Set(errors)).join("; ")
+}
+
+function resolveStorageAdapterFactory(config: SiyuanConfigLike, paths: ReturnType<typeof resolveSiyuanPicGoPaths>): {
   kind: "node-json" | "siyuan-kernel" | "local-storage"
   factory: (dbPath: string) => StorageAdapter
 } {
-  if (hasNodeEnv) return { kind: "node-json", factory: (path) => new JSONAdapter(path) }
+  if (hasNodeEnv) return createNodeWorkspaceFactory(paths)
 
   // iframe / window 有 siyuan 对象
   if (getSiyuanRuntimeConfig()?.workspaceDir) {
@@ -135,6 +150,22 @@ function resolveStorageAdapterFactory(config: SiyuanConfigLike): {
   }
 
   return { kind: "local-storage", factory: (path) => new LocalStorageAdapter(path) }
+}
+
+function createNodeWorkspaceFactory(paths: ReturnType<typeof resolveSiyuanPicGoPaths>) {
+  const physicalPathByLogicalKey: Record<string, string | undefined> = {
+    [SIYUAN_PICGO_MAIN_CONFIG_KEY]: paths.configPath,
+    [SIYUAN_PICGO_EXTERNAL_CONFIG_KEY]: paths.externalConfigPath,
+    [SIYUAN_PICGO_SIYUAN_CONNECTION_KEY]: paths.siyuanConnectionConfigPath,
+  }
+
+  return {
+    kind: "node-json" as const,
+    factory: (dbPath: string) => {
+      const physicalPath = physicalPathByLogicalKey[dbPath] ?? resolveSiyuanPicGoOwnerFilePath(dbPath, paths)
+      return new JSONAdapter(physicalPath)
+    },
+  }
 }
 
 function createKernelFactory(config: SiyuanConfigLike) {

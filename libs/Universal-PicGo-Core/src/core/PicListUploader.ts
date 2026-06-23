@@ -12,6 +12,7 @@ import { IExternalPicgoConfig, IImgInfo, IPicGo } from "../types"
 import { PicgoTypeEnum } from "../utils/enums"
 import { isFileOrBlob } from "../utils/common"
 import { hasNodeEnv, win } from "universal-picgo-store"
+import { MASK_VALUE } from "../config"
 
 /**
  * 远程 PicList 上传 API
@@ -76,7 +77,7 @@ class PicListUploader {
         }
 
         const requestUrl = this.buildRequestUrl(apiUrl, apiKey)
-        this.logger.debug("Uploading to PicList, url =>", requestUrl.replace(apiKey, "***"))
+        this.logger.debug("Uploading to PicList, url =>", requestUrl.replace(apiKey, MASK_VALUE))
         this.logger.debug(`File name => ${fileName}, size => ${fileBlob.size}`)
 
         const formData = new FormData()

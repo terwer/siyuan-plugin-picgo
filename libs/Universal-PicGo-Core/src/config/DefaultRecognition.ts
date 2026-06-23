@@ -160,6 +160,119 @@ export function isLskyStateGeneratedDefault(tokenValue: string | null | undefine
   return !tokenValue || tokenValue.length === 0
 }
 
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  !!value && typeof value === "object" && !Array.isArray(value)
+
+const hasMeaningfulValue = (value: unknown): boolean => {
+  if (value === undefined || value === null) return false
+  if (typeof value === "string") return value.trim().length > 0
+  if (Array.isArray(value)) return value.length > 0
+  if (isPlainObject(value)) return Object.keys(value).length > 0
+  // boolean false and numeric 0 are explicit user choices.
+  return true
+}
+
+const SIYUAN_BEHAVIOR_KEYS = [
+  "waitTimeout",
+  "retryTimes",
+  "autoUpload",
+  "replaceLink",
+  "txtImageSwitch",
+] as const
+
+const PICGO_MAIN_PICBED_KEYS = new Set([
+  "uploader",
+  "current",
+  "transformer",
+  "proxy",
+  "list",
+])
+
+const KNOWN_PICGO_OWNER_ROOT_KEYS = new Set([
+  "picBed",
+  "picgoPlugins",
+  "siyuan",
+  "settings",
+  "uploader",
+  "transformer",
+  "debug",
+  "silent",
+])
+
+function isPicgoMainDomainGeneratedDefault(cfg: IConfig | null | undefined): boolean {
+  if (!cfg) return false
+
+  const picBed = (cfg.picBed ?? {}) as Record<string, unknown>
+  if (hasMeaningfulValue(picBed.uploader) && picBed.uploader !== "smms") return false
+  if (hasMeaningfulValue(picBed.current) && picBed.current !== "smms") return false
+  if (hasMeaningfulValue(picBed.transformer) && picBed.transformer !== "path") return false
+  if (hasMeaningfulValue(picBed.proxy)) return false
+  if (hasMeaningfulValue(picBed.list)) return false
+  if (hasMeaningfulValue((cfg as any).debug)) return false
+  if (hasMeaningfulValue((cfg as any).silent)) return false
+
+  return true
+}
+
+function isPicgoSettingsDomainGeneratedDefault(cfg: IConfig | null | undefined): boolean {
+  if (!cfg) return false
+  return !hasMeaningfulValue((cfg as any).settings)
+}
+
+function isSiyuanBehaviorDomainGeneratedDefault(cfg: IConfig | null | undefined): boolean {
+  if (!cfg) return false
+  const siyuan = ((cfg as any).siyuan ?? {}) as Record<string, unknown>
+  const defaults = PICGO_MAIN_DEFAULTS.siyuan as Record<string, unknown>
+
+  for (const key of SIYUAN_BEHAVIOR_KEYS) {
+    const value = siyuan[key]
+    if (value !== undefined && value !== defaults[key]) {
+      return false
+    }
+  }
+
+  // `siyuan.picgoMigration` is migration metadata, not behavior user data.
+  return true
+}
+
+function isPluginValuesDomainGeneratedDefault(cfg: IConfig | null | undefined): boolean {
+  if (!cfg) return false
+  const picgoPlugins = ((cfg as any).picgoPlugins ?? {}) as Record<string, unknown>
+  if (Object.keys(picgoPlugins).length > 0) return false
+
+  // Third-party plugin config forms are persisted under their configName at
+  // the owner-file root. Treat root-level unknown config objects as plugin
+  // values for this domain only; do not let them block uploader/behavior import.
+  for (const [key, value] of Object.entries(cfg as Record<string, unknown>)) {
+    if (KNOWN_PICGO_OWNER_ROOT_KEYS.has(key)) continue
+    if (hasMeaningfulValue(value)) return false
+  }
+
+  return true
+}
+
+function isUploaderConfigDomainGeneratedDefault(cfg: IConfig | null | undefined): boolean {
+  if (!cfg) return false
+  const picBed = ((cfg as any).picBed ?? {}) as Record<string, unknown>
+  for (const [key, value] of Object.entries(picBed)) {
+    if (PICGO_MAIN_PICBED_KEYS.has(key)) continue
+    if (hasMeaningfulValue(value)) return false
+  }
+
+  const uploader = ((cfg as any).uploader ?? {}) as Record<string, unknown>
+  for (const [key, value] of Object.entries(uploader)) {
+    if (key === "lsky") {
+      const lsky = (value ?? {}) as Record<string, unknown>
+      const nonTokenKeys = Object.keys(lsky).filter((k) => k !== "token")
+      if (nonTokenKeys.some((k) => hasMeaningfulValue(lsky[k]))) return false
+      continue
+    }
+    if (hasMeaningfulValue(value)) return false
+  }
+
+  return true
+}
+
 /**
  * Classify a domain's current owner file data as user-data, generated-default, or missing.
  */
@@ -178,11 +291,19 @@ export function classifyDomainDefaults(
 
   switch (domain) {
     case "picgoMain":
+      return isPicgoMainDomainGeneratedDefault(data) ? "generated-default" : "user-data"
+
     case "picgoSettings":
+      return isPicgoSettingsDomainGeneratedDefault(data) ? "generated-default" : "user-data"
+
     case "siyuanBehavior":
+      return isSiyuanBehaviorDomainGeneratedDefault(data) ? "generated-default" : "user-data"
+
     case "pluginValues":
+      return isPluginValuesDomainGeneratedDefault(data) ? "generated-default" : "user-data"
+
     case "uploaderConfig":
-      return isPicgoMainGeneratedDefault(data) ? "generated-default" : "user-data"
+      return isUploaderConfigDomainGeneratedDefault(data) ? "generated-default" : "user-data"
 
     case "externalPicList":
       return isExternalPicgoGeneratedDefault(data) ? "generated-default" : "user-data"

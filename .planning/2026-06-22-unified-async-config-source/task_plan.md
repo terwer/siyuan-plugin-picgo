@@ -15,8 +15,17 @@
 4. [complete] 修复 migration/default recognition/mask 语义并补测试。
 5. [complete] 运行验证命令与 grep/audit，修复回归。
 6. [complete] 更新 OpenSpec tasks 与 docs/audits 验证记录。
+7. [complete] 基于最新提交后的代码、OpenSpec 文档、测试和审计门禁重新做全量审计。
+8. [complete] 汇总偏离点；如存在偏离，输出可直接交给 agent 执行的修复 prompt，并将审计结果固化到 `docs/audits/`。
+9. [complete] 用户修复后复审最新代码、diff、审计脚本和验证门禁。
+10. [complete] 固化复审结果到 `docs/audits/` 并输出是否仍有偏离。
+11. [complete] 根据复审剩余偏离完成二次修复：domain-scoped retry、Node workspace 三 owner mapping、v3 marker 防覆盖、instanceKey identity 与审计 gate。
+12. [complete] 重新运行 build/test/audit/OpenSpec validate，并更新 docs/audits 与规划记录。
 
 ## 错误记录
 | 时间 | 错误 | 尝试次数 | 处理 |
 |------|------|----------|------|
+| 2026-06-23 | `pnpm audit:picgo-refactor` 失败 | 1 | 判定脚本仍含旧 v2/旧版本断言，已作为审计偏离记录到 docs/audits |
+| 2026-06-23 | 修复后复审仍发现偏离 | 1 | 已固化到 `docs/audits/2026-06-23-picgo-3-unified-async-config-source-post-fix-audit.md`，并给出二次修复 prompt |
+| 2026-06-23 | 二次修复过程中 zhi tsc 提示 `storageAdapterFactory` 未使用 / core dist 类型过旧 | 1 | 将 factory 传入 `UniversalPicGo` options，并先构建 `universal-picgo` 刷新 d.ts；最终 zhi tsc 通过 |
 

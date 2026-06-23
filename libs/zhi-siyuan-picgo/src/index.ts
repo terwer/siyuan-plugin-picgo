@@ -57,6 +57,7 @@ import {
   getSiyuanWorkspaceDir,
   getWorkspacePicGoConfigPath,
   resolveSiyuanPicGoPaths,
+  resolveSiyuanPicGoOwnerFilePath,
   SIYUAN_PICGO_KERNEL_CONFIG_PATH,
   SIYUAN_PICGO_KERNEL_EXTERNAL_PATH,
   SIYUAN_PICGO_KERNEL_SIYUAN_CONNECTION_PATH,
@@ -104,6 +105,7 @@ export {
   isSiyuanProxyAvailable,
   replaceImageLink,
   resolveSiyuanPicGoPaths,
+  resolveSiyuanPicGoOwnerFilePath,
   retrieveImageFromClipboardAsBlob,
   SIYUAN_PICGO_KERNEL_CONFIG_PATH,
   SIYUAN_PICGO_KERNEL_EXTERNAL_PATH,
@@ -137,9 +139,13 @@ export {
 
 export type {
   SharedMigrationState,
-  SiyuanPicGoMigrationSnapshot,
   SiyuanPicGoMigrationStatus,
 } from "./lib/siyuanPicgoMigrationState"
+export type {
+  ConfigDomain,
+  UnifiedConfigMigrationState,
+  UnifiedConfigMigrationState as SiyuanPicGoMigrationSnapshot,
+} from "universal-picgo"
 export type {
   SiyuanPicGoInstanceOptions,
   SiyuanPicGoPathOverrides,

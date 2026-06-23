@@ -1,7 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { mkdtempSync, rmSync, writeFileSync } from "fs"
+import { tmpdir } from "os"
+import { join } from "path"
 import { createUnifiedPicGoConfigFacade } from "./UnifiedConfigFacade"
 import { ConfigReadError, MASK_VALUE } from "./UnifiedConfigTypes"
-import type { ReadyUnifiedPicGoConfigFacade } from "./UnifiedConfigTypes"
+import type { ReadyUnifiedPicGoConfigFacade, UnifiedConfigMigrationState } from "./UnifiedConfigTypes"
 
 // ── Test Helpers ──────────────────────────────────────────────────────
 
@@ -52,6 +55,27 @@ const defaultOptions = () => ({
   paths: { configPath: "test-picgo.cfg.json" },
   isDev: true,
   getLogger: () => ({ info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() }),
+})
+
+const makeMigrationState = (
+  overrides: Partial<UnifiedConfigMigrationState> = {}
+): UnifiedConfigMigrationState => ({
+  version: "v3.0-unified-async-config-source",
+  status: "failed",
+  attempts: 1,
+  ...overrides,
+  domains: {
+    picgoMain: { status: "imported", importedSources: ["v3-owner-file:picgo.cfg.json"] },
+    picgoSettings: { status: "not-started", importedSources: [] },
+    siyuanBehavior: { status: "not-started", importedSources: [] },
+    siyuanConnection: { status: "not-started", importedSources: [] },
+    externalPicList: { status: "not-started", importedSources: [] },
+    pluginValues: { status: "not-started", importedSources: [] },
+    uploaderConfig: { status: "not-started", importedSources: [] },
+    lskyState: { status: "not-started", importedSources: [] },
+    pasteBootstrap: { status: "not-started", importedSources: [] },
+    ...(overrides.domains ?? {}),
+  },
 })
 
 // ── Tests ─────────────────────────────────────────────────────────────
@@ -297,6 +321,40 @@ describe("UnifiedConfigFacade", () => {
       const f2 = await createUnifiedPicGoConfigFacade(opts)
       expect(f1.instanceKey).toBe(f2.instanceKey)
     })
+
+    it("includes storage/workspace/owner identity without leaking sensitive values", async () => {
+      const adapter = createMemoryAdapter()
+      const secretPassword = "do-not-log-password"
+      const secretCookie = "do-not-log-cookie"
+      const f = await createUnifiedPicGoConfigFacade({
+        ...defaultOptions(),
+        siyuanConfig: {
+          apiUrl: "http://host-a:6806",
+          password: secretPassword,
+          cookie: secretCookie,
+        },
+        paths: {
+          configPath: "/workspace/data/storage/syp/picgo/picgo.cfg.json",
+          externalConfigPath: "/workspace/data/storage/syp/picgo/external-picgo-cfg.json",
+          siyuanConnectionConfigPath: "/workspace/data/storage/syp/siyuan-cfg.json",
+          workspaceDir: "/workspace",
+          homeDir: "/home/tester/.universal-picgo",
+          baseDir: "/home/tester/.universal-picgo",
+          pluginBaseDir: "/home/tester/.universal-picgo",
+        },
+        storageAdapterFactory: (_path: string) => adapter,
+      })
+
+      const key = JSON.parse(f.instanceKey)
+      expect(key.storage.factory).toBe("custom")
+      expect(key.workspace.workspaceDir).toBe("/workspace")
+      expect(key.storage.owners["picgo.cfg.json"].logicalKey).toBe("/workspace/data/storage/syp/picgo/picgo.cfg.json")
+      expect(key.storage.owners["external-picgo-cfg.json"].logicalKey).toBe("/workspace/data/storage/syp/picgo/external-picgo-cfg.json")
+      expect(key.storage.owners["siyuan-cfg"].logicalKey).toBe("/workspace/data/storage/syp/siyuan-cfg.json")
+      expect(f.instanceKey).not.toContain(secretPassword)
+      expect(f.instanceKey).not.toContain(secretCookie)
+      expect(f.instanceKey).not.toContain("picListApiKey")
+    })
   })
 
   describe("merge defaults (ready-before-default)", () => {
@@ -350,6 +408,74 @@ describe("UnifiedConfigFacade", () => {
       })
       const state = await facade.retryMigration()
       expect(state.version).toBe("v3.0-unified-async-config-source")
+    })
+
+    it("retries only the requested failed domain and leaves other failed domains untouched", async () => {
+      const tempRoot = mkdtempSync(join(tmpdir(), "picgo-facade-retry-"))
+      try {
+        writeFileSync(
+          join(tempRoot, "external-picgo-cfg.json"),
+          JSON.stringify({
+            useBundledPicgo: false,
+            picgoType: "piclist",
+            extPicgoApiUrl: "http://127.0.0.1:36677",
+            picListApiUrl: "https://piclist.example.com/upload",
+            picListApiKey: "secret-key",
+          })
+        )
+        writeFileSync(
+          join(tempRoot, "picgo.cfg.json"),
+          JSON.stringify({
+            settings: { npmProxy: "http://proxy.example.com" },
+          })
+        )
+
+        const migration = makeMigrationState({
+          domains: {
+            picgoSettings: { status: "failed", importedSources: [], error: "settings failed" },
+            externalPicList: { status: "failed", importedSources: [], error: "external failed" },
+          } as any,
+        })
+        const main = createMemoryAdapter({
+          picBed: { uploader: "smms", current: "smms" },
+          picgoPlugins: {},
+          siyuan: {
+            waitTimeout: 2,
+            retryTimes: 5,
+            autoUpload: true,
+            replaceLink: true,
+            txtImageSwitch: false,
+            picgoMigration: migration,
+          },
+        })
+        const external = createMemoryAdapter({})
+        const adapterMap: Record<string, ReturnType<typeof createMemoryAdapter>> = {
+          "test-picgo.cfg.json": main,
+          "universal-picgo/external-picgo-cfg.json": external,
+          "siyuan-cfg": createMemoryAdapter({}),
+        }
+
+        const f = await createUnifiedPicGoConfigFacade({
+          ...defaultOptions(),
+          paths: {
+            ...defaultOptions().paths,
+            homeDir: tempRoot,
+          },
+          storageAdapterFactory: (path: string) => adapterMap[path] ?? createMemoryAdapter({}),
+        })
+        const retried = await f.retryMigration(["externalPicList"])
+
+        expect(retried.status).toBe("failed")
+        expect(retried.domains.externalPicList.status).toBe("imported")
+        expect(retried.domains.externalPicList.importedSources).toEqual(["home:external-picgo-cfg.json"])
+        expect(retried.domains.picgoSettings.status).toBe("failed")
+        expect(retried.domains.picgoSettings.error).toBe("settings failed")
+        expect((await f.getExternalPicGoConfig()).picListApiUrl).toBe("https://piclist.example.com/upload")
+        const picgoConfig = await f.getPicGoConfig() as any
+        expect(picgoConfig.settings).toBeUndefined()
+      } finally {
+        rmSync(tempRoot, { recursive: true, force: true })
+      }
     })
   })
 })

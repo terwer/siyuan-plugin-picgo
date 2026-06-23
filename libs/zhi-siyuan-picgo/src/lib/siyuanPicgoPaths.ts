@@ -11,6 +11,9 @@ import { hasNodeEnv, win } from "universal-picgo"
 
 interface SiyuanPicGoPathOverrides {
   configPath?: string
+  externalConfigPath?: string
+  siyuanConnectionConfigPath?: string
+  workspaceDir?: string
   baseDir?: string
   runtimeDir?: string
   pluginBaseDir?: string
@@ -26,6 +29,9 @@ interface SiyuanPicGoInstanceOptions {
 
 interface SiyuanPicGoPaths {
   configPath?: string
+  externalConfigPath?: string
+  siyuanConnectionConfigPath?: string
+  workspaceDir?: string
   baseDir?: string
   pluginBaseDir?: string
   zhiNpmPath?: string
@@ -46,6 +52,9 @@ const isDefaultInitializedConfig = (raw: string | undefined): boolean => {
 
   try {
     const cfg = JSON.parse(raw)
+    if (cfg?.siyuan?.picgoMigration?.version === "v3.0-unified-async-config-source") {
+      return false
+    }
     const allowedRootKeys = new Set(["picBed", "picgoPlugins", "siyuan"])
     const rootKeys = Object.keys(cfg ?? {})
     if (rootKeys.some((key) => !allowedRootKeys.has(key))) {
@@ -95,11 +104,61 @@ const getWorkspacePicGoConfigPath = (workspaceDir: string): string | undefined =
   return path.join(workspaceDir, "data", "storage", "syp", "picgo", "picgo.cfg.json")
 }
 
+const getWorkspacePicGoExternalConfigPath = (workspaceDir: string): string | undefined => {
+  if (!hasNodeEnv || !workspaceDir) {
+    return undefined
+  }
+
+  const path = win.require("path")
+  return path.join(workspaceDir, "data", "storage", "syp", "picgo", "external-picgo-cfg.json")
+}
+
+const getWorkspaceSiyuanConnectionConfigPath = (workspaceDir: string): string | undefined => {
+  if (!hasNodeEnv || !workspaceDir) {
+    return undefined
+  }
+
+  const path = win.require("path")
+  return path.join(workspaceDir, "data", "storage", "syp", "siyuan-cfg.json")
+}
+
+const hasV3MigrationMarker = (raw: string | undefined): boolean => {
+  if (!raw) {
+    return false
+  }
+
+  try {
+    const cfg = JSON.parse(raw)
+    return cfg?.siyuan?.picgoMigration?.version === "v3.0-unified-async-config-source"
+  } catch {
+    return false
+  }
+}
+
+const resolveSiyuanPicGoOwnerFilePath = (
+  logicalKey: string,
+  paths: SiyuanPicGoPaths
+): string => {
+  if (logicalKey === SIYUAN_PICGO_MAIN_CONFIG_KEY) {
+    return paths.configPath ?? logicalKey
+  }
+  if (logicalKey === SIYUAN_PICGO_EXTERNAL_CONFIG_KEY) {
+    return paths.externalConfigPath ?? logicalKey
+  }
+  if (logicalKey === SIYUAN_PICGO_SIYUAN_CONNECTION_KEY) {
+    return paths.siyuanConnectionConfigPath ?? logicalKey
+  }
+  return logicalKey
+}
+
 const resolveSiyuanPicGoPaths = (overrides: SiyuanPicGoPathOverrides = {}): SiyuanPicGoPaths => {
   if (!hasNodeEnv) {
     const runtimeDir = overrides.baseDir ?? overrides.runtimeDir ?? SIYUAN_PICGO_BROWSER_BASE_DIR
     return {
       configPath: overrides.configPath ?? SIYUAN_PICGO_MAIN_CONFIG_KEY,
+      externalConfigPath: overrides.externalConfigPath ?? SIYUAN_PICGO_EXTERNAL_CONFIG_KEY,
+      siyuanConnectionConfigPath: overrides.siyuanConnectionConfigPath ?? SIYUAN_PICGO_SIYUAN_CONNECTION_KEY,
+      workspaceDir: overrides.workspaceDir,
       baseDir: runtimeDir,
       pluginBaseDir: overrides.pluginBaseDir ?? runtimeDir,
       zhiNpmPath: overrides.zhiNpmPath,
@@ -107,12 +166,18 @@ const resolveSiyuanPicGoPaths = (overrides: SiyuanPicGoPathOverrides = {}): Siyu
   }
 
   const localPicGoDir = getDefaultLocalPicGoDir()
-  const workspaceConfigPath = getWorkspacePicGoConfigPath(getSiyuanWorkspaceDir())
+  const workspaceDir = overrides.workspaceDir ?? getSiyuanWorkspaceDir()
+  const workspaceConfigPath = getWorkspacePicGoConfigPath(workspaceDir)
+  const workspaceExternalConfigPath = getWorkspacePicGoExternalConfigPath(workspaceDir)
+  const workspaceSiyuanConnectionConfigPath = getWorkspaceSiyuanConnectionConfigPath(workspaceDir)
   const runtimeDir = overrides.baseDir ?? overrides.runtimeDir ?? localPicGoDir
   const pluginBaseDir = overrides.pluginBaseDir ?? runtimeDir
 
   return {
     configPath: overrides.configPath ?? workspaceConfigPath,
+    externalConfigPath: overrides.externalConfigPath ?? workspaceExternalConfigPath,
+    siyuanConnectionConfigPath: overrides.siyuanConnectionConfigPath ?? workspaceSiyuanConnectionConfigPath,
+    workspaceDir,
     baseDir: runtimeDir,
     pluginBaseDir,
     zhiNpmPath: overrides.zhiNpmPath,
@@ -124,6 +189,9 @@ const toUniversalPicGoOptions = (
   isDev?: boolean
 ): {
   configPath?: string
+  externalConfigPath?: string
+  siyuanConnectionConfigPath?: string
+  workspaceDir?: string
   baseDir?: string
   pluginBaseDir?: string
   zhiNpmPath?: string
@@ -131,6 +199,9 @@ const toUniversalPicGoOptions = (
 } => {
   return {
     configPath: paths.configPath,
+    externalConfigPath: paths.externalConfigPath,
+    siyuanConnectionConfigPath: paths.siyuanConnectionConfigPath,
+    workspaceDir: paths.workspaceDir,
     baseDir: paths.baseDir,
     pluginBaseDir: paths.pluginBaseDir,
     zhiNpmPath: paths.zhiNpmPath,
@@ -163,6 +234,12 @@ const migrateV2WorkspacePicGoConfig = (paths: SiyuanPicGoPaths, logger?: { info?
 
   if (fs.existsSync(workspaceConfigPath)) {
     const workspaceConfigText = fs.readFileSync(workspaceConfigPath, "utf-8")
+    if (hasV3MigrationMarker(workspaceConfigText)) {
+      logger?.info?.(
+        `PicGo v3 migration marker exists in workspace config, skip legacy v2 copy => ${workspaceConfigPath}`
+      )
+      return false
+    }
     if (isDefaultInitializedConfig(workspaceConfigText) && fs.existsSync(homeConfigPath)) {
       logger?.info?.(
         `PicGo v2 workspace config only contains default initialized config, replace it from ${homeConfigPath}`
@@ -197,8 +274,12 @@ export {
   getDefaultLocalPicGoDir,
   getSiyuanWorkspaceDir,
   getWorkspacePicGoConfigPath,
+  getWorkspacePicGoExternalConfigPath,
+  getWorkspaceSiyuanConnectionConfigPath,
+  hasV3MigrationMarker,
   isDefaultInitializedConfig,
   migrateV2WorkspacePicGoConfig,
+  resolveSiyuanPicGoOwnerFilePath,
   resolveSiyuanPicGoPaths,
   SIYUAN_PICGO_BROWSER_BASE_DIR,
   SIYUAN_PICGO_KERNEL_CONFIG_PATH,

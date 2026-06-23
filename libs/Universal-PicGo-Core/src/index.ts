@@ -45,6 +45,7 @@ export {
   type UnifiedConfigPaths,
   type PasteTakeoverSnapshot,
   type SiyuanConfigLike,
+  UNIFIED_CONFIG_MIGRATION_VERSION,
   ConfigReadError,
   ConfigFlushError,
   ConfigNotReadyError,

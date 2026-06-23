@@ -208,15 +208,35 @@ describe("DefaultRecognition", () => {
       expect(classifyDomainDefaults("picgoMain", data)).toBe("generated-default")
     })
 
-    it("sub-domains (picgoSettings, siyuanBehavior, pluginValues, uploaderConfig) delegate to picgoMain check", () => {
+    it("classifies shared picgo.cfg.json sub-domains independently", () => {
       const defaults = {
         picBed: { uploader: "smms", current: "smms" },
         picgoPlugins: {},
         siyuan: { waitTimeout: 2, retryTimes: 5, autoUpload: true, replaceLink: true, txtImageSwitch: false },
       }
       expect(classifyDomainDefaults("picgoSettings", defaults)).toBe("generated-default")
+      expect(classifyDomainDefaults("siyuanBehavior", defaults)).toBe("generated-default")
       expect(classifyDomainDefaults("pluginValues", defaults)).toBe("generated-default")
       expect(classifyDomainDefaults("uploaderConfig", defaults)).toBe("generated-default")
+    })
+
+    it("does not let siyuan behavior user data block plugin/uploader domains", () => {
+      const data = {
+        picBed: { uploader: "smms", current: "smms" },
+        picgoPlugins: {},
+        siyuan: { autoUpload: false, picgoMigration: { version: "v3.0-unified-async-config-source" } },
+      }
+      expect(classifyDomainDefaults("siyuanBehavior", data)).toBe("user-data")
+      expect(classifyDomainDefaults("pluginValues", data)).toBe("generated-default")
+      expect(classifyDomainDefaults("uploaderConfig", data)).toBe("generated-default")
+    })
+
+    it("does not let uploader credentials block settings migration", () => {
+      const data = {
+        picBed: { uploader: "github", current: "github", github: { token: "ghp_xxx" } },
+      }
+      expect(classifyDomainDefaults("uploaderConfig", data)).toBe("user-data")
+      expect(classifyDomainDefaults("picgoSettings", data)).toBe("generated-default")
     })
 
     it("returns 'user-data' for externalPicList with non-empty PicList URL", () => {
