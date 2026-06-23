@@ -8,8 +8,7 @@
  */
 
 import { ILogger, simpleLogger } from "zhi-lib-base"
-import ExternalPicgoConfigDb from "../db/externalPicGo"
-import { IImgInfo, IPicGo } from "../types"
+import { IExternalPicgoConfig, IImgInfo, IPicGo } from "../types"
 import { PicgoTypeEnum } from "../utils/enums"
 import { isFileOrBlob } from "../utils/common"
 import { hasNodeEnv, win } from "universal-picgo-store"
@@ -30,11 +29,11 @@ import { hasNodeEnv, win } from "universal-picgo-store"
  */
 class PicListUploader {
   private readonly logger: ILogger
-  public readonly db: ExternalPicgoConfigDb
+  private readonly configProvider?: () => IExternalPicgoConfig
 
-  constructor(ctx: IPicGo, isDev?: boolean) {
+  constructor(_ctx: IPicGo, isDev?: boolean, configProvider?: () => IExternalPicgoConfig) {
     this.logger = simpleLogger("piclist-uploader", "piclist-uploader", isDev)
-    this.db = new ExternalPicgoConfigDb(ctx)
+    this.configProvider = configProvider
   }
 
   /**
@@ -44,7 +43,8 @@ class PicListUploader {
    * @returns 上传结果数组
    */
   public async upload(input?: any[]): Promise<IImgInfo[] | Error> {
-    const picgoType = this.db.get("picgoType")
+    const routeConfig = this.getRouteConfig()
+    const picgoType = routeConfig.picgoType
     if (picgoType !== PicgoTypeEnum.App) {
       throw new Error(`picgoType ${picgoType} is not supported via PicList API`)
     }
@@ -53,8 +53,8 @@ class PicListUploader {
       throw new Error("PicList API URL or Key is not configured")
     }
 
-    const apiUrl = this.db.get("picListApiUrl") as string
-    const apiKey = this.db.get("picListApiKey") as string
+    const apiUrl = routeConfig.picListApiUrl as string
+    const apiKey = routeConfig.picListApiKey as string
 
     // 不支持剪贴板上传（没有文件路径/数据）
     if (!input || input.length === 0) {
@@ -143,14 +143,22 @@ class PicListUploader {
    * 检查当前是否配置了 PicList（有远程 URL 和 API Key）
    */
   public isPicListConfigured(): boolean {
-    const apiUrl = this.db.get("picListApiUrl")
-    const apiKey = this.db.get("picListApiKey")
+    const routeConfig = this.getRouteConfig()
+    const apiUrl = routeConfig.picListApiUrl
+    const apiKey = routeConfig.picListApiKey
     return (
       typeof apiUrl === "string" &&
       apiUrl.trim() !== "" &&
       typeof apiKey === "string" &&
       apiKey.trim() !== ""
     )
+  }
+
+  private getRouteConfig(): IExternalPicgoConfig {
+    if (!this.configProvider) {
+      throw new Error("Unified config facade route provider is required for PicList upload")
+    }
+    return this.configProvider()
   }
 
   // ===================================================================================================================

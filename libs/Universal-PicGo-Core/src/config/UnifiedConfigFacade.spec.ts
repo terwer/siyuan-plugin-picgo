@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { createUnifiedPicGoConfigFacade } from "./UnifiedConfigFacade"
-import { ConfigNotReadyError, ConfigFlushError, MASK_VALUE, type ConfigDomain } from "./UnifiedConfigTypes"
+import { ConfigReadError, MASK_VALUE } from "./UnifiedConfigTypes"
 import type { ReadyUnifiedPicGoConfigFacade } from "./UnifiedConfigTypes"
 
 // ── Test Helpers ──────────────────────────────────────────────────────
@@ -22,8 +22,28 @@ function createMemoryAdapter(initialData?: Record<string, any>) {
 function createFailingAdapter(errorMsg = "kernel API unavailable") {
   return {
     mode: "async" as const,
+    storageKind: "siyuan-kernel",
     read: vi.fn(async () => { throw new Error(errorMsg) }),
     write: vi.fn(async () => { throw new Error(errorMsg) }),
+  }
+}
+
+/** Create an async in-memory adapter whose read side can fail on demand. */
+function createAsyncMemoryAdapter(initialData?: Record<string, any>) {
+  let data = initialData ? JSON.parse(JSON.stringify(initialData)) : {}
+  let failRead = false
+  return {
+    mode: "async" as const,
+    storageKind: "siyuan-kernel",
+    read: vi.fn(async () => {
+      if (failRead) throw new Error("kernel read timeout")
+      return data
+    }),
+    write: vi.fn(async (newData: Record<string, any>) => {
+      data = JSON.parse(JSON.stringify(newData))
+    }),
+    failNextReads: () => { failRead = true },
+    _getData: () => data,
   }
 }
 
@@ -84,6 +104,31 @@ describe("UnifiedConfigFacade", () => {
       expect(state.version).toBe("v3.0-unified-async-config-source")
       expect(state.status).toBe("done")
       expect(state.attempts).toBe(1)
+    })
+
+    it("fails async owner-file read with ConfigReadError without retrying or writing defaults", async () => {
+      const failingAdapter = createFailingAdapter("kernel unavailable")
+
+      await expect(createUnifiedPicGoConfigFacade({
+        ...defaultOptions(),
+        storageAdapterFactory: () => failingAdapter,
+      })).rejects.toBeInstanceOf(ConfigReadError)
+
+      expect(failingAdapter.read).toHaveBeenCalledTimes(1)
+      expect(failingAdapter.write).not.toHaveBeenCalled()
+    })
+
+    it("reload fails async owner-file read with ConfigReadError", async () => {
+      const asyncAdapter = createAsyncMemoryAdapter()
+      const testFacade = await createUnifiedPicGoConfigFacade({
+        ...defaultOptions(),
+        storageAdapterFactory: () => asyncAdapter,
+      })
+      asyncAdapter.read.mockClear()
+      asyncAdapter.failNextReads()
+
+      await expect(testFacade.reload()).rejects.toBeInstanceOf(ConfigReadError)
+      expect(asyncAdapter.read).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -282,6 +327,17 @@ describe("UnifiedConfigFacade", () => {
       const cfg = await testFacade.getPicGoConfig()
       expect(cfg.picBed?.uploader).toBe("smms")
       expect(cfg.siyuan?.autoUpload).toBe(true)
+    })
+
+    it("normalizes legacy uppercase external picgoType generated default", async () => {
+      const external = createMemoryAdapter({ useBundledPicgo: true, picgoType: "Bundled" })
+      testFacade = await createUnifiedPicGoConfigFacade({
+        ...defaultOptions(),
+        storageAdapterFactory: (path: string) => path.includes("external-picgo-cfg") ? external : createMemoryAdapter(),
+      })
+      const cfg = await testFacade.getExternalPicGoConfig()
+      expect(cfg.picgoType).toBe("bundled")
+      expect(cfg.picListApiUrl).toBe("")
     })
   })
 

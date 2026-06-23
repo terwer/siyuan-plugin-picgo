@@ -14,34 +14,10 @@ import { IBuildInEvent } from "../../../utils/enums"
 import { AxiosRequestConfig } from "axios"
 import { browserPathJoin } from "../../../utils/browserUtils"
 
-/**
- * Legacy localStorage key for Lsky token.
- *
- * Since PicGo 3.0, the canonical path for Lsky token is
- * `picgo.cfg.json:uploader.lsky.token`. This legacy key is kept ONLY
- * as a migration source. New tokens are written to the config store.
- *
- * @deprecated Use `ctx.getConfig("uploader.lsky.token")` instead.
- */
-const SIYUAN_PICGO_PLUGIN_LSKY_TOKEN_KEY = "siyuan_picgo_plugin_lsky_token"
-
 const getToken = async (ctx: IPicGo, lskyOptions: ILskyConfig): Promise<string> => {
-  // PicGo 3.0: Read token from unified config first (canonical path)
+  // PicGo 3.0: canonical Lsky token path is
+  // picgo.cfg.json:uploader.lsky.token. Legacy localStorage is migration-only.
   let token: string = (ctx.getConfig("uploader.lsky.token") as string) ?? ""
-
-  // Migration fallback: try legacy localStorage if unified config is empty
-  if (!token || token.trim().length === 0) {
-    try {
-      const legacyToken = window.localStorage.getItem(SIYUAN_PICGO_PLUGIN_LSKY_TOKEN_KEY)
-      if (legacyToken && legacyToken.trim().length > 0) {
-        token = legacyToken
-        // Migrate legacy token to unified config
-        ctx.saveConfig({ uploader: { lsky: { token } } })
-      }
-    } catch {
-      // Ignore localStorage access errors in restricted environments
-    }
-  }
 
   // Token still not available — generate a new one via API
   if (token.trim().length == 0) {
@@ -59,8 +35,10 @@ const getToken = async (ctx: IPicGo, lskyOptions: ILskyConfig): Promise<string> 
     }
     token = res.data.token
 
-    // PicGo 3.0: Write token to unified config (canonical path)
-    ctx.saveConfig({ uploader: { lsky: { token } } })
+    // Write only the canonical dotted path; do not replace the whole
+    // uploader object, which may contain other uploader-owned state.
+    ctx.saveConfig({ "uploader.lsky.token": token })
+    await ctx.flushConfig?.()
   }
 
   return token

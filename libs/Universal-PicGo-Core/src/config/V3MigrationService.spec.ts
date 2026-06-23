@@ -1,4 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "fs"
+import { tmpdir } from "os"
+import { join } from "path"
 import { runV3Migration, retryV3Migration } from "./V3MigrationService"
 import { INITIAL_MIGRATION_STATE, ALL_CONFIG_DOMAINS, type UnifiedConfigMigrationState } from "./UnifiedConfigTypes"
 
@@ -327,6 +330,82 @@ describe("V3MigrationService", () => {
       // Owner data should NOT be overwritten
       const mainData = ownerFileData.get("picgo.cfg.json")
       expect(mainData?.picBed?.uploader).toBe("github") // Real user data preserved
+    })
+
+    it("prefers workspace legacy over home and browser sources", async () => {
+      const tempRoot = mkdtempSync(join(tmpdir(), "picgo-v3-migration-"))
+      const workspaceDir = join(tempRoot, "workspace")
+      const homeDir = join(tempRoot, "home")
+      try {
+        mkdirSync(join(workspaceDir, "data", "storage", "syp", "picgo"), { recursive: true })
+        mkdirSync(join(workspaceDir, "data", "storage", "syp"), { recursive: true })
+        mkdirSync(homeDir, { recursive: true })
+
+        writeFileSync(
+          join(workspaceDir, "data", "storage", "syp", "picgo", "external-picgo-cfg.json"),
+          JSON.stringify({
+            useBundledPicgo: false,
+            picgoType: "app",
+            picListApiUrl: "https://workspace.example.com/upload",
+            picListApiKey: "workspace-key",
+          })
+        )
+        writeFileSync(
+          join(homeDir, "external-picgo-cfg.json"),
+          JSON.stringify({
+            useBundledPicgo: false,
+            picgoType: "app",
+            picListApiUrl: "https://home.example.com/upload",
+            picListApiKey: "home-key",
+          })
+        )
+        window.localStorage.setItem(
+          "universal-picgo/external-picgo-cfg.json",
+          JSON.stringify({
+            useBundledPicgo: false,
+            picgoType: "app",
+            picListApiUrl: "https://browser.example.com/upload",
+            picListApiKey: "browser-key",
+          })
+        )
+
+        writeFileSync(
+          join(workspaceDir, "data", "storage", "syp", "siyuan-cfg.json"),
+          JSON.stringify({ apiUrl: "https://workspace-siyuan.example.com", password: "workspace-pass" })
+        )
+        writeFileSync(
+          join(homeDir, "siyuan-cfg.json"),
+          JSON.stringify({ apiUrl: "https://home-siyuan.example.com", password: "home-pass" })
+        )
+        window.localStorage.setItem(
+          "siyuan-cfg",
+          JSON.stringify({ apiUrl: "https://browser-siyuan.example.com", password: "browser-pass" })
+        )
+
+        const ownerFileData = new Map<string, Record<string, any>>()
+        ownerFileData.set("external-picgo-cfg.json", {})
+        ownerFileData.set("siyuan-cfg", {})
+
+        const result = await runV3Migration({
+          ownerFileData,
+          hasNodeEnv: true,
+          workspaceDir,
+          homeDir,
+          logger: silentLogger(),
+        })
+
+        expect(result.domains.externalPicList.importedSources).toContain(
+          "workspace:storage/syp/picgo/external-picgo-cfg.json"
+        )
+        expect(ownerFileData.get("external-picgo-cfg.json")?.picListApiUrl).toBe("https://workspace.example.com/upload")
+        expect(ownerFileData.get("external-picgo-cfg.json")?.picListApiKey).toBe("workspace-key")
+
+        expect(result.domains.siyuanConnection.importedSources).toContain("workspace:storage/syp/siyuan-cfg.json")
+        expect(ownerFileData.get("siyuan-cfg")?.apiUrl).toBe("https://workspace-siyuan.example.com")
+        expect(ownerFileData.get("siyuan-cfg")?.password).toBe("workspace-pass")
+      } finally {
+        rmSync(tempRoot, { recursive: true, force: true })
+      }
     })
   })
 

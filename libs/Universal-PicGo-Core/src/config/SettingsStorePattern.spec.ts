@@ -10,7 +10,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { createUnifiedPicGoConfigFacade } from "./UnifiedConfigFacade"
-import { MASK_VALUE } from "./UnifiedConfigTypes"
+import { ConfigReadError, MASK_VALUE } from "./UnifiedConfigTypes"
 import type { ReadyUnifiedPicGoConfigFacade } from "./UnifiedConfigTypes"
 
 // ── Helpers ──────────────────────────────────────────────────────────
@@ -159,7 +159,7 @@ describe("4.1 Settings UI — external/PicList config store pattern", () => {
     expect(snap.externalPicgo.picListApiKey).toBe("pk_secret")
   })
 
-  it("external defaults available immediately for UI even on async backend", async () => {
+  it("async external backend read failure fails explicitly instead of showing defaults", async () => {
     // Simulate async backend (Kernel adapter mode="async")
     // that initially has no data (remote not loaded yet)
     let remoteData: Record<string, any> | null = null  // null = not loaded
@@ -172,9 +172,7 @@ describe("4.1 Settings UI — external/PicList config store pattern", () => {
       write: async (d: Record<string, any>) => { remoteData = d },
     }
 
-    // The DB constructor should seed defaults even before remote loads
-    // This is the key behavior for settings UI to render immediately
-    const facade = await createUnifiedPicGoConfigFacade({
+    await expect(createUnifiedPicGoConfigFacade({
       siyuanConfig: { apiUrl: "http://127.0.0.1:6806", password: "" },
       paths: { configPath: "test-picgo.cfg.json" },
       getLogger: silentLogger,
@@ -182,13 +180,8 @@ describe("4.1 Settings UI — external/PicList config store pattern", () => {
         if (path.includes("external-picgo-cfg")) return asyncAdpt
         return memAdapter()
       },
-    })
-
-    // UI reads config immediately — should see defaults
-    const cfg = await facade.getExternalPicGoConfig()
-    expect(cfg.useBundledPicgo).toBe(true)
-    expect(cfg.picgoType).toBe("Bundled")
-    expect(cfg.picListApiUrl).toBe("")
+    })).rejects.toBeInstanceOf(ConfigReadError)
+    expect(remoteData).toBeNull()
   })
 
   it("existing external user config NOT overwritten by defaults (ensureReady regression)", async () => {

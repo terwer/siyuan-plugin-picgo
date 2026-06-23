@@ -37,6 +37,7 @@ import {
   INITIAL_MIGRATION_STATE,
   ConfigNotReadyError,
   ConfigFlushError,
+  ConfigReadError,
   type ConfigFlushFailure,
 } from "./UnifiedConfigTypes"
 import { maskSnapshot } from "./MaskUtils"
@@ -208,6 +209,9 @@ async function loadAllOwnerFiles(
   logger: { info: (...args: any[]) => void; error: (...args: any[]) => void; warn: (...args: any[]) => void; debug: (...args: any[]) => void }
 ): Promise<void> {
   for (const [ownerFile, fileState] of state.ownerFiles) {
+    if (isAsyncAdapter(fileState.adapter)) {
+      state.storageMode = "async"
+    }
     try {
       const adapter = fileState.adapter
       if ("read" in adapter && typeof adapter.read === "function") {
@@ -222,14 +226,23 @@ async function loadAllOwnerFiles(
         }
       }
     } catch (e: any) {
-      const isAsync = typeof (fileState.adapter as any).read?.()?.then === "function" || (fileState.adapter as any).mode === "async"
-
-      if (isAsync) {
-        // Async failure: set storageMode to async, let facade surface errors
+      const storageKind = getAdapterStorageKind(fileState.adapter)
+      if (isAsyncAdapter(fileState.adapter)) {
+        // Async owner-file failures are authoritative.  Do NOT call read()
+        // again to inspect the return type, do NOT seed generated defaults,
+        // and do NOT continue migration against an empty object.
         state.storageMode = "async"
         logger.error(`[UnifiedConfigFacade] failed to load ${ownerFile}:`, e?.message ?? e)
+        throw new ConfigReadError({
+          domain: fileState.domains[0],
+          ownerFile,
+          storageKind,
+          error: e,
+        })
       }
-      // On sync, empty data is acceptable —— defaults will be merged
+      // On sync/local backends an empty file or parse error can still be
+      // treated as missing and initialized by defaults.
+      logger.warn(`[UnifiedConfigFacade] sync load failed for ${ownerFile}, treating as missing:`, e?.message ?? e)
       fileState.data = {}
     }
   }
@@ -298,6 +311,8 @@ async function runV3MigrationInternal(
     ownerFileData,
     existingState: state.migrationState,
     hasNodeEnv: typeof process !== "undefined" && typeof require !== "undefined",
+    workspaceDir: options.paths?.workspaceDir,
+    homeDir: options.paths?.homeDir ?? options.paths?.baseDir ?? options.paths?.runtimeDir,
     logger: { info: logger.info, warn: logger.warn, error: logger.error },
   })
 
@@ -306,7 +321,12 @@ async function runV3MigrationInternal(
   for (const [name, data] of ownerFileData) {
     const fileState = state.ownerFiles.get(name)
     if (fileState) {
+      const before = JSON.stringify(fileState.data ?? {})
+      const after = JSON.stringify(data ?? {})
       fileState.data = data
+      if (before !== after) {
+        fileState.dirty = true
+      }
     }
   }
 }
@@ -342,6 +362,7 @@ function mergeDefaults(state: FacadeInternalState): void {
           ...(picgoMain.data?.siyuan?.picgoMigration ? { picgoMigration: picgoMain.data.siyuan.picgoMigration } : {}),
         },
       }
+      picgoMain.dirty = true
     }
   }
 
@@ -349,10 +370,32 @@ function mergeDefaults(state: FacadeInternalState): void {
   if (external && (!external.data || Object.keys(external.data).length === 0)) {
     external.data = {
       useBundledPicgo: true,
-      picgoType: "Bundled",
+      picgoType: "bundled",
       extPicgoApiUrl: "http://127.0.0.1:36677",
       picListApiUrl: "",
       picListApiKey: "",
+    }
+    external.dirty = true
+  } else if (external) {
+    const defaults = {
+      useBundledPicgo: true,
+      picgoType: "bundled",
+      extPicgoApiUrl: "http://127.0.0.1:36677",
+      picListApiUrl: "",
+      picListApiKey: "",
+    }
+    for (const [key, value] of Object.entries(defaults)) {
+      if (typeof external.data[key] === "undefined") {
+        external.data[key] = value
+        external.dirty = true
+      }
+    }
+    // Older generated defaults used an invalid enum display value. Normalize
+    // it after the real owner file has loaded so upload dispatch can compare
+    // against PicgoTypeEnum.Bundled without falling back to another source.
+    if (external.data.picgoType === "Bundled") {
+      external.data.picgoType = "bundled"
+      external.dirty = true
     }
   }
 
@@ -362,6 +405,7 @@ function mergeDefaults(state: FacadeInternalState): void {
       apiUrl: "http://127.0.0.1:6806",
       password: "",
     }
+    siyuanConn.dirty = true
   }
 }
 
@@ -460,6 +504,7 @@ function buildReadyFacade(
           failures.push({
             domain: fileState.domains[0],
             ownerFile,
+            storageKind: getAdapterStorageKind(fileState.adapter),
             error: e?.message ?? String(e),
           })
           logger.error(`[UnifiedConfigFacade] flush failed for ${ownerFile}:`, e?.message ?? e)
@@ -476,7 +521,7 @@ function buildReadyFacade(
       await buildReadyFacade(state, logger, options).flush(domains)
 
       // Re-read owner files
-      const ownersToReload = resolveOwnersToFlush(state, domains)
+      const ownersToReload = resolveOwnersForDomains(state, domains)
       for (const [ownerFile, fileState] of ownersToReload) {
         try {
           const adapter = fileState.adapter
@@ -487,6 +532,14 @@ function buildReadyFacade(
           fileState.dirty = false
         } catch (e: any) {
           logger.error(`[UnifiedConfigFacade] reload failed for ${ownerFile}:`, e?.message ?? e)
+          if (isAsyncAdapter(fileState.adapter)) {
+            throw new ConfigReadError({
+              domain: fileState.domains[0],
+              ownerFile,
+              storageKind: getAdapterStorageKind(fileState.adapter),
+              error: e,
+            })
+          }
         }
       }
 
@@ -627,4 +680,38 @@ function deepClone<T>(obj: T): T {
   } catch {
     return { ...obj } as T
   }
+}
+
+function resolveOwnersForDomains(
+  state: FacadeInternalState,
+  domains?: ConfigDomain[]
+): Map<string, OwnerFileState> {
+  const owners = new Map<string, OwnerFileState>()
+
+  if (!domains || domains.length === 0) {
+    for (const [name, fileState] of state.ownerFiles) {
+      owners.set(name, fileState)
+    }
+    return owners
+  }
+
+  for (const domain of domains) {
+    const ownerFile = OWNER_FILE_MAP[domain]
+    const fileState = state.ownerFiles.get(ownerFile)
+    if (fileState) {
+      owners.set(ownerFile, fileState)
+    }
+  }
+  return owners
+}
+
+function isAsyncAdapter(adapter: StorageAdapter): boolean {
+  return (adapter as any)?.mode === "async"
+}
+
+function getAdapterStorageKind(adapter: StorageAdapter): string {
+  return (adapter as any)?.storageKind
+    ?? (adapter as any)?.kind
+    ?? (adapter as any)?.constructor?.name
+    ?? (isAsyncAdapter(adapter) ? "async" : "sync")
 }

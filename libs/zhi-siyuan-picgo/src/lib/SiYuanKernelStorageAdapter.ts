@@ -21,6 +21,7 @@ import type { ILogger } from "zhi-lib-base"
  */
 export class SiYuanKernelStorageAdapter implements IAsyncStorageAdapter {
   readonly mode = "async" as const
+  readonly storageKind = "siyuan-kernel" as const
 
   constructor(
     private readonly api: SiyuanKernelApi,
@@ -41,11 +42,14 @@ export class SiYuanKernelStorageAdapter implements IAsyncStorageAdapter {
     }
 
     if (remote.status === "unavailable") {
-      const err = new Error(`SiYuan kernel API unavailable: ${remote.reason}`)
+      const err = this.createKernelError("read", remote.reason ?? "unknown")
       this.logger.error("[KernelAdapter]", err.message)
       throw err
     }
 
+    // Only a real missing owner file may consult browser legacy data.
+    // Kernel unavailable/auth/transport failures are not missing files and
+    // must never fall back to localStorage or generated defaults.
     this.logger.info("[KernelAdapter] file missing, trying localStorage migration")
     const migrated = await this.tryMigrateLocalStorage()
     if (migrated) {
@@ -53,6 +57,8 @@ export class SiYuanKernelStorageAdapter implements IAsyncStorageAdapter {
       return migrated
     }
 
+    // No remote data and no localStorage data — return empty.
+    // The facade will seed defaults via mergeDefaults().
     this.logger.info("[KernelAdapter] no data, returning empty")
     return {}
   }
@@ -61,7 +67,7 @@ export class SiYuanKernelStorageAdapter implements IAsyncStorageAdapter {
     this.logger.info("[KernelAdapter] writing to", this.serverPath)
     const result = await this.api.saveTextData(this.serverPath, JSON.stringify(data, null, 2))
     if (result?.code !== 0) {
-      throw new Error(`saveTextData failed: ${result?.msg ?? "unknown error"}`)
+      throw this.createKernelError("write", `saveTextData failed: ${result?.msg ?? "unknown error"}`)
     }
     this.logger.info("[KernelAdapter] write complete")
   }
@@ -114,10 +120,31 @@ export class SiYuanKernelStorageAdapter implements IAsyncStorageAdapter {
       await this.write(JSON.parse(raw))
       this.logger.info("[KernelAdapter] migrated localStorage → kernel:", this.serverPath)
     } catch (e: any) {
-      throw new Error(`Migration write failed: ${String(e?.message || e)}`)
+      throw this.createKernelError("write", `Migration write failed: ${String(e?.message || e)}`)
     }
 
     return JSON.parse(raw)
+  }
+
+  private createKernelError(operation: "read" | "write", reason: string): Error {
+    const err = new Error(
+      `SiYuan Kernel ${operation} failed for owner file ${this.serverPath} ` +
+      `(storage=siyuan-kernel, legacyKey=${this.localStorageKey}): ${reason}`
+    ) as Error & {
+      storageKind?: string
+      ownerFile?: string
+      serverPath?: string
+      localStorageKey?: string
+      operation?: string
+      causeReason?: string
+    }
+    err.storageKind = "siyuan-kernel"
+    err.ownerFile = this.serverPath
+    err.serverPath = this.serverPath
+    err.localStorageKey = this.localStorageKey
+    err.operation = operation
+    err.causeReason = reason
+    return err
   }
 }
 

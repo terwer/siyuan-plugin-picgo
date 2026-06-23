@@ -52,6 +52,7 @@ export {
   // Errors
   ConfigNotReadyError,
   ConfigFlushError,
+  ConfigReadError,
 } from "./UnifiedConfigTypes"
 
 export { maskSnapshot, maskSensitiveFields, maskIfSensitive, isSensitiveField } from "./MaskUtils"

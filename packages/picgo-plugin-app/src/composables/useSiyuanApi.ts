@@ -8,26 +8,21 @@
  */
 
 import { createAppLogger } from "@/utils/appLogger.ts"
-import { useSiyuanSetting } from "@/stores/useSiyuanSetting.ts"
 import { SiyuanPicgoConfig } from "zhi-siyuan-picgo"
 import { useSiyuanDevice } from "$composables/useSiyuanDevice.ts"
 import { SiYuanApiAdaptor, SiyuanKernelApi } from "zhi-siyuan-api"
+import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
 
 /**
  * 通用 Siyuan API 封装
  */
 export const useSiyuanApi = () => {
   const logger = createAppLogger("use-siyuan-api")
-  const { getSiyuanSetting } = useSiyuanSetting()
-
-  const siyuanSetting = getSiyuanSetting()
-  const siyuanApiUrl = siyuanSetting.value.apiUrl
-  const siyuanAuthToken = siyuanSetting.value.password
-  const siyuanConfig = new SiyuanPicgoConfig(siyuanApiUrl, siyuanAuthToken)
-  siyuanConfig.cookie = siyuanSetting.value.cookie
+  const cachedKernelApi = SiyuanPicGoClient.getCachedKernelApi()
+  const siyuanConfig = createRuntimeSiyuanConfig()
 
   const blogApi = new SiYuanApiAdaptor(siyuanConfig)
-  const kernelApi = new SiyuanKernelApi(siyuanConfig)
+  const kernelApi = cachedKernelApi ?? new SiyuanKernelApi(siyuanConfig)
   const { isInChromeExtension } = useSiyuanDevice()
 
   const isStorageViaSiyuanApi = () => {
@@ -60,4 +55,11 @@ export const useSiyuanApi = () => {
     isStorageViaSiyuanApi,
     isUseSiyuanProxy,
   }
+}
+
+const createRuntimeSiyuanConfig = () => {
+  const apiUrl = typeof window !== "undefined" && window.location?.origin
+    ? window.location.origin
+    : "http://127.0.0.1:6806"
+  return new SiyuanPicgoConfig(apiUrl, "")
 }

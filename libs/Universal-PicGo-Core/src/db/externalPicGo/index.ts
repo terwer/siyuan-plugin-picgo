@@ -24,9 +24,6 @@ class ExternalPicgoConfigDb implements IPicgoDb<IExternalPicgoConfig> {
     picListApiKey: "",
   }
   private initReady = false
-  /** Track whether defaults were set locally before remote data loaded. */
-  private defaultsWereLocal = false
-
   constructor(ctx: IPicGo) {
     this.ctx = ctx
 
@@ -41,23 +38,23 @@ class ExternalPicgoConfigDb implements IPicgoDb<IExternalPicgoConfig> {
       ?? (hasNodeEnv ? new JSONAdapter(this.key) : new LocalStorageAdapter(this.key))
     this.db = new JSONStore(this.key, adapter)
 
-    // PicGo 3.0: Always seed defaults in memory so the settings UI
-    // renders immediately with sensible values. On async backends,
-    // these local defaults are temporary — ensureReady() loads
-    // the real remote data and replaces them if necessary.
-    //
-    // Sync backends can persist immediately. Async backends defer
-    // persistence until ensureReady() confirms the remote state.
-    this.doSafeSet()
     if (this.db.isAsync) {
-      this.defaultsWereLocal = true
+      // PicGo 3.0: async/Kernel-backed stores must not schedule
+      // constructor-time writes. Defaults are only merged in-memory by read()
+      // for display and are persisted after waitReady() proves the owner file
+      // is actually missing those keys.
     } else {
+      this.doSafeSet()
       this.initReady = true
     }
   }
 
   read(flush?: boolean): IJSON {
-    return this.db.read(flush)
+    const stored = this.db.read(flush)
+    // PicGo 3.0: Merge initialValue defaults on top of stored data.
+    // Ensures UI always sees sensible defaults even when JSONStore.loadFromRemote()
+    // temporarily wipes this.data before ensureReady() re-applies safeSet.
+    return { ...this.initialValue, ...(stored ?? {}) }
   }
 
   get(key: string): any {
@@ -115,10 +112,20 @@ class ExternalPicgoConfigDb implements IPicgoDb<IExternalPicgoConfig> {
     // data. If a key exists remotely, the local default is NOT applied
     // (it's overridden by the remote value). If a key is missing
     // remotely, the local default is kept.
+    //
+    // Track whether any defaults were actually written (file was missing
+    // keys on remote). Only flush if changes were made to avoid
+    // unnecessary write failures on read-only or already-complete files.
+    const before = JSON.stringify(this.db.read())
     this.doSafeSet()
-    this.defaultsWereLocal = false
+    const after = JSON.stringify(this.db.read())
+    const changed = before !== after
+
     this.initReady = true
-    if (this.isAsync) await this.db.flush()
+
+    if (this.isAsync && changed) {
+      await this.db.flush()
+    }
   }
 
   async flush(): Promise<void> { await (this.db as any).flush?.() }

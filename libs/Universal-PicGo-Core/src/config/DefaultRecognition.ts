@@ -52,7 +52,8 @@ export function isPicgoMainGeneratedDefault(cfg: IConfig | null | undefined): bo
 
   const picBed = (cfg.picBed ?? {}) as Record<string, unknown>
   const picBedKeys = Object.keys(picBed)
-  if (picBed.uploader !== "smms" && picBed.current !== "smms") {
+  // Either selector moving away from the generated default is user intent.
+  if (picBed.uploader !== "smms" || picBed.current !== "smms") {
     return false
   }
   // If picBed has more than uploader/current keys, there's real uploader config
@@ -89,8 +90,19 @@ export function isExternalPicgoGeneratedDefault(cfg: IExternalPicgoConfig | null
   if (!cfg) return false
 
   // Only the keys that make up the default shape
+  const knownKeys = new Set(["useBundledPicgo", "picgoType", "extPicgoApiUrl", "picListApiUrl", "picListApiKey"])
+  for (const key of Object.keys(cfg as Record<string, unknown>)) {
+    if (!knownKeys.has(key)) return false
+  }
+
   const defaults = EXTERNAL_PICGO_DEFAULTS
   if (cfg.useBundledPicgo !== defaults.useBundledPicgo) return false
+  if (
+    (cfg as any).picgoType !== undefined &&
+    (cfg as any).picgoType !== defaults.picgoType &&
+    (cfg as any).picgoType !== "Bundled"
+  ) return false
+  if ((cfg as any).extPicgoApiUrl !== undefined && (cfg as any).extPicgoApiUrl !== defaults.extPicgoApiUrl) return false
 
   // Non-empty PicList URL or API key is user data
   if (cfg.picListApiUrl && cfg.picListApiUrl.length > 0 && cfg.picListApiUrl !== "https://example.com/upload") {
@@ -119,6 +131,15 @@ export function isSiyuanConnectionGeneratedDefault(cfg: SiyuanConfigLike | null 
   if (cfg.apiUrl !== defaults.apiUrl) return false
   if (cfg.password && cfg.password.length > 0) return false
   if (cfg.cookie && cfg.cookie.length > 0) return false
+
+  // Any optional field with a real user value means user data.
+  const optionalKeys = ["home", "previewUrl", "notebook", "picgoUploadTimeout", "passwordType"]
+  for (const key of optionalKeys) {
+    const value = (cfg as Record<string, unknown>)[key]
+    if (value !== undefined && value !== null && value !== "") {
+      return false
+    }
+  }
 
   // Any additional non-default fields?
   const knownKeys = new Set(["apiUrl", "password", "cookie", "home", "previewUrl", "notebook", "picgoUploadTimeout", "passwordType"])
@@ -170,7 +191,7 @@ export function classifyDomainDefaults(
       return isSiyuanConnectionGeneratedDefault(data) ? "generated-default" : "user-data"
 
     case "lskyState":
-      return isLskyStateGeneratedDefault(data?.token) ? "generated-default" : "user-data"
+      return isLskyStateGeneratedDefault(data?.uploader?.lsky?.token ?? data?.token) ? "generated-default" : "user-data"
 
     case "pasteBootstrap":
       // Paste bootstrap is always derived from other domains; never independently "user data"

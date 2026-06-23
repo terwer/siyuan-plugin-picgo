@@ -9,7 +9,8 @@
 
 import { RemovableRef, StorageSerializers } from "@vueuse/core"
 import { readonly } from "vue"
-import { IPicGo, IExternalPicgoConfig, ExternalPicgoConfigDb } from "zhi-siyuan-picgo"
+import { ElMessage } from "element-plus"
+import { IPicGo, IExternalPicgoConfig, IPicgoDb } from "zhi-siyuan-picgo"
 import useCommonPicgoStorage from "@/stores/common/useCommonPicgoStorage.ts"
 
 /**
@@ -21,28 +22,27 @@ const useExternalPicGoSetting = () => {
   /**
    * 获取外部的 PicGo 的配置
    *
-   * PicGo 3.0: ExternalPicgoConfigDb now supports ensureReady() for async
-   * (Kernel-backed) backends. On sync backends (Node JSON file), ensureReady()
-   * returns immediately. Callers should await ensureReady() before reading
-   * external/PicList config from async backends to avoid reading stale defaults.
-   *
    * @author terwer
    * @since 0.6.0
    */
   const getExternalPicGoSetting = (ctx: IPicGo): RemovableRef<IExternalPicgoConfig> => {
-    const externalPicGoConfigDb = new ExternalPicgoConfigDb(ctx)
-    // PicGo 3.0: ensure async backend is ready before Vue composable reads config.
-    // On sync backends, ensureReady() returns immediately (initReady=true).
-    // On async (Kernel) backends, it awaits remote data load to prevent
-    // overwriting real external/PicList user configuration with generated defaults.
-    if ((externalPicGoConfigDb as any).ensureReady) {
-      ;(externalPicGoConfigDb as any).ensureReady().catch((e: any) => {
-        console.error("[useExternalPicGoSetting] ensureReady failed:", e)
-      })
-    }
-    return useCommonPicgoStorage<IExternalPicgoConfig>(externalPicGoConfigDb, {
-      serializer: StorageSerializers.object,
-    })
+    const externalPicGoConfigDb = createExternalPicGoFacadeDb(ctx)
+    return useCommonPicgoStorage<IExternalPicgoConfig>(
+      externalPicGoConfigDb,
+      {
+        serializer: StorageSerializers.object,
+      },
+      {
+        afterWrite: async () => {
+          await (externalPicGoConfigDb as any).waitPendingWrite?.()
+          await ctx.getConfigFacade?.()?.flush(["externalPicList"])
+        },
+        onWriteError: (e) => {
+          ctx.log.error(e)
+          ElMessage.error(`External/PicList 配置保存失败：${e instanceof Error ? e.message : String(e)}`)
+        },
+      }
+    )
   }
 
   /**
@@ -61,3 +61,61 @@ const useExternalPicGoSetting = () => {
 }
 
 export { useExternalPicGoSetting }
+
+const createExternalPicGoFacadeDb = (ctx: IPicGo): IPicgoDb<IExternalPicgoConfig> & {
+  waitPendingWrite: () => Promise<void>
+} => {
+  const facade = ctx.getConfigFacade?.()
+  if (!facade) {
+    throw new Error("Unified config facade is not ready for external/PicList settings")
+  }
+
+  let cache = cloneSerializable(facade.getSnapshot().externalPicgo ?? {}) as IExternalPicgoConfig
+  let pendingWrite = Promise.resolve()
+
+  const writeFullConfig = (config: Partial<IExternalPicgoConfig>) => {
+    cache = {
+      ...cache,
+      ...cloneSerializable(config),
+    }
+    pendingWrite = facade.updateExternalPicGoConfig((draft: any) => {
+      Object.keys(cache).forEach((key) => {
+        ;(draft as any)[key] = (cache as any)[key]
+      })
+    })
+  }
+
+  return {
+    key: "universal-picgo/external-picgo-cfg.json",
+    initialValue: cache,
+    read: () => cloneSerializable(facade.getSnapshot().externalPicgo ?? cache) as any,
+    get: (key: string) => (facade.getSnapshot().externalPicgo as any)?.[key],
+    set: (key: string, value: any) => {
+      writeFullConfig({ [key]: value } as any)
+    },
+    has: (key: string) => typeof (facade.getSnapshot().externalPicgo as any)?.[key] !== "undefined",
+    unset: (key: string) => {
+      delete (cache as any)[key]
+      pendingWrite = facade.updateExternalPicGoConfig((draft: any) => {
+        delete (draft as any)[key]
+      })
+      return true
+    },
+    saveConfig: (config: Partial<IExternalPicgoConfig>) => {
+      writeFullConfig(config)
+    },
+    removeConfig: (keyOrConfig: any, maybeConfig?: IExternalPicgoConfig) => {
+      const config = (maybeConfig ?? keyOrConfig) as IExternalPicgoConfig
+      Object.keys(config ?? {}).forEach((key) => delete (cache as any)[key])
+      pendingWrite = facade.updateExternalPicGoConfig((draft: any) => {
+        Object.keys(config ?? {}).forEach((key) => delete (draft as any)[key])
+      })
+    },
+    waitPendingWrite: () => pendingWrite,
+  }
+}
+
+const cloneSerializable = <T>(value: T): T => {
+  if (typeof value === "undefined") return value
+  return JSON.parse(JSON.stringify(value)) as T
+}

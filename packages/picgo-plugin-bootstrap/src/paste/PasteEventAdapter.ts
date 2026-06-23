@@ -144,39 +144,6 @@ class PasteEventAdapter {
   }
 
   /**
-   * Read paste takeover config from browser localStorage.
-   *
-   * @deprecated Since PicGo 3.0. Use prewarmed config from the unified facade
-   *   snapshot instead. Legacy localStorage reads are only allowed in migration
-   *   importers and test fixtures. Production code must use
-   *   `PasteTakeoverSnapshot` obtained via `ReadyUnifiedPicGoConfigFacade`.
-   */
-  public readBrowserConfig(): PasteTakeoverConfig {
-    const fallback: PasteTakeoverConfig = {
-      autoUpload: true,
-      allowPicAndText: false,
-    }
-
-    if (typeof window === "undefined" || !window.localStorage) {
-      return fallback
-    }
-
-    try {
-      const raw = window.localStorage.getItem("universal-picgo/picgo.cfg.json")
-      if (!raw) {
-        return fallback
-      }
-      const cfg = JSON.parse(raw)
-      return {
-        autoUpload: cfg?.siyuan?.autoUpload ?? fallback.autoUpload,
-        allowPicAndText: cfg?.siyuan?.txtImageSwitch ?? fallback.allowPicAndText,
-      }
-    } catch {
-      return fallback
-    }
-  }
-
-  /**
    * Takeover decision from a prewarmed unified facade snapshot.
    *
    * This is the PicGo 3.0 production path. The snapshot is constructed

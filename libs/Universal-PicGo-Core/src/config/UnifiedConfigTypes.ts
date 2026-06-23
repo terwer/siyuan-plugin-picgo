@@ -110,6 +110,10 @@ export interface UnifiedPicGoConfigFacadeOptions {
 export interface UnifiedConfigPaths {
   /** Override for PicGo main owner file path. */
   configPath?: string
+  /** Optional SiYuan workspace directory used by host factories/migration readers. */
+  workspaceDir?: string
+  /** Optional user home/local PicGo directory used by migration readers. */
+  homeDir?: string
   /** Device-local runtime directory. */
   baseDir?: string
   /** Alias for baseDir. */
@@ -343,7 +347,39 @@ export class ConfigFlushError extends Error {
 export interface ConfigFlushFailure {
   domain: ConfigDomain
   ownerFile: string
+  storageKind?: string
   error: string
+}
+
+/**
+ * Thrown when an owner file cannot be read.
+ *
+ * Async/remote backends (SiYuan Kernel, proxy storage, etc.) MUST fail
+ * explicitly instead of returning generated defaults. The details are
+ * intentionally serializable so UI/headless callers can surface the domain,
+ * owner file and backend kind.
+ */
+export class ConfigReadError extends Error {
+  public readonly domain: ConfigDomain
+  public readonly ownerFile: string
+  public readonly storageKind: string
+  public readonly causeError?: unknown
+
+  constructor(input: {
+    domain: ConfigDomain
+    ownerFile: string
+    storageKind: string
+    error: unknown
+    message?: string
+  }) {
+    const detail = input.error instanceof Error ? input.error.message : String(input.error)
+    super(input.message ?? `Config read failed for ${input.domain} (${input.ownerFile}) via ${input.storageKind}: ${detail}`)
+    this.name = "ConfigReadError"
+    this.domain = input.domain
+    this.ownerFile = input.ownerFile
+    this.storageKind = input.storageKind
+    this.causeError = input.error
+  }
 }
 
 // ── Sensitive Field Detection ────────────────────────────────────────
@@ -438,7 +474,7 @@ export const PICGO_MAIN_DEFAULTS: Partial<IConfig> = {
 /** Default values for external/PicList config. */
 export const EXTERNAL_PICGO_DEFAULTS: IExternalPicgoConfig = {
   useBundledPicgo: true,
-  picgoType: "Bundled" as any,
+  picgoType: "bundled" as any,
   extPicgoApiUrl: "http://127.0.0.1:36677",
   picListApiUrl: "",
   picListApiKey: "",

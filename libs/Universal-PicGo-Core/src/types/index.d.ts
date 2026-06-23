@@ -118,6 +118,9 @@ export interface IPicGo extends EventEmitter {
   flushConfig: () => Promise<void>
   /** Optional storage adapter factory from options. */
   storageAdapterFactory?: (dbPath: string) => import("universal-picgo-store").StorageAdapter
+  /** PicGo 3.0 unified facade attached by product lifecycle. */
+  attachConfigFacade?: (facade: import("../config").ReadyUnifiedPicGoConfigFacade) => void
+  getConfigFacade?: () => import("../config").ReadyUnifiedPicGoConfigFacade | undefined
 }
 
 /**

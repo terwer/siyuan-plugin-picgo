@@ -37,15 +37,15 @@ class SiyuanPicGoHeadlessManager implements ISiyuanPicGoHeadlessManager {
     return this.headlessManager.getContext()
   }
 
-  getConfig(): IConfig {
+  getConfig(): Promise<IConfig> {
     return this.headlessManager.getConfig()
   }
 
-  getCurrentUploader(): string {
+  getCurrentUploader(): Promise<string> {
     return this.headlessManager.getCurrentUploader()
   }
 
-  setCurrentUploader(uploaderId: string): PicGoValidationResult {
+  setCurrentUploader(uploaderId: string): Promise<PicGoValidationResult> {
     return this.headlessManager.setCurrentUploader(uploaderId)
   }
 
@@ -57,7 +57,7 @@ class SiyuanPicGoHeadlessManager implements ISiyuanPicGoHeadlessManager {
     return this.headlessManager.getUploaderSchema(uploaderId)
   }
 
-  getUploaderConfig<T extends Record<string, unknown> = Record<string, unknown>>(uploaderId: string): T {
+  getUploaderConfig<T extends Record<string, unknown> = Record<string, unknown>>(uploaderId: string): Promise<T> {
     return this.headlessManager.getUploaderConfig<T>(uploaderId)
   }
 
@@ -69,7 +69,7 @@ class SiyuanPicGoHeadlessManager implements ISiyuanPicGoHeadlessManager {
     uploaderId: string,
     config: Record<string, unknown>,
     options?: PicGoHeadlessSaveUploaderConfigOptions
-  ): PicGoValidationResult {
+  ): Promise<PicGoValidationResult> {
     return this.headlessManager.saveUploaderConfig(uploaderId, config, options)
   }
 
@@ -82,8 +82,8 @@ class SiyuanPicGoHeadlessManager implements ISiyuanPicGoHeadlessManager {
   }
 
   async uploadMarkdownImages(pageId: string, attrs: any, mdContent: string): Promise<PicgoPostResult> {
-    const uploaderId = this.getCurrentUploader()
-    const validation = this.validateUploaderConfig(uploaderId, this.getUploaderConfig(uploaderId))
+    const uploaderId = await this.getCurrentUploader()
+    const validation = this.validateUploaderConfig(uploaderId, await this.getUploaderConfig(uploaderId))
     if (!validation.ok) {
       throw new PicGoHeadlessError({
         code: PICGO_HEADLESS_ERROR_CODES.VALIDATION_FAILED,

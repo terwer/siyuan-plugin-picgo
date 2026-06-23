@@ -7,7 +7,15 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { IImgInfo, IPicGo, hasNodeEnv, isFileOrBlob, win } from "universal-picgo"
+import {
+  IImgInfo,
+  IPicGo,
+  ReadyUnifiedPicGoConfigFacade,
+  createUnifiedPicGoConfigFacade,
+  hasNodeEnv,
+  isFileOrBlob,
+  win,
+} from "universal-picgo"
 import { JsonUtil, StrUtil } from "zhi-common"
 import { DeviceDetection, DeviceTypeEnum, SiyuanDevice } from "zhi-device"
 import { ILogger, simpleLogger } from "zhi-lib-base"
@@ -47,6 +55,8 @@ class SiyuanPicgoPostApi {
   private readonly configMigrationKey: string
   private configInitPromise: Promise<void>
   private initPromise: Promise<void> | null
+  private readonly configFacadePromise: Promise<ReadyUnifiedPicGoConfigFacade>
+  private configFacade: ReadyUnifiedPicGoConfigFacade | null
   public cfgUpdating: boolean
 
   constructor(
@@ -85,6 +95,22 @@ class SiyuanPicgoPostApi {
     this.cfgUpdating = false
     this.configInitPromise = Promise.resolve()
     this.initPromise = null
+    this.configFacade = null
+    this.configFacadePromise = createUnifiedPicGoConfigFacade({
+      siyuanConfig: siyuanConfig as any,
+      paths: {
+        configPath: this.paths.configPath,
+        baseDir: this.paths.baseDir,
+        runtimeDir: this.paths.baseDir,
+        pluginBaseDir: this.paths.pluginBaseDir,
+        zhiNpmPath: this.paths.zhiNpmPath,
+        workspaceDir: win?.siyuan?.config?.system?.workspaceDir,
+        homeDir: this.paths.baseDir,
+      },
+      storageAdapterFactory,
+      isDev,
+      getLogger: (name: string) => simpleLogger(name, "zhi-siyuan-picgo", isDev),
+    })
   }
 
   /**
@@ -108,6 +134,22 @@ class SiyuanPicgoPostApi {
 
   public waitForConfigMigration(): Promise<void> {
     return this.configInitPromise ?? Promise.resolve()
+  }
+
+  public getConfigFacade(): ReadyUnifiedPicGoConfigFacade {
+    if (!this.configFacade) {
+      throw new Error("Unified config facade is not ready; await SiyuanPicgoPostApi.init() first")
+    }
+    return this.configFacade
+  }
+
+  public async getConfigFacadeAsync(): Promise<ReadyUnifiedPicGoConfigFacade> {
+    await this.init()
+    return this.getConfigFacade()
+  }
+
+  public getPasteTakeoverSnapshot() {
+    return this.getConfigFacade().getSnapshot().pasteTakeover
   }
 
   public async retryConfigMigration(): Promise<SiyuanPicGoMigrationSnapshot> {
@@ -444,12 +486,12 @@ class SiyuanPicgoPostApi {
   // ===================================================================================================================
 
   private async initInternal(): Promise<void> {
+    this.configFacade = await this.configFacadePromise
+    await this.configFacade.flush()
     await (this.picgoApi.picgo as any).init?.()
-    this.configInitPromise = this.ensureConfigInitialized().then(async () => {
-      await this.ctx().flushConfig()
-      await this.ctx().reloadConfigAsync()
-      this.logger.info("picgo config updated")
-    })
+    this.picgoApi.attachConfigFacade(this.configFacade)
+    this.ctx().reloadConfig()
+    this.configInitPromise = Promise.resolve()
     await this.configInitPromise
   }
 

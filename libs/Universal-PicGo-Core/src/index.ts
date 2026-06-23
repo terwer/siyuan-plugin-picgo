@@ -45,6 +45,9 @@ export {
   type UnifiedConfigPaths,
   type PasteTakeoverSnapshot,
   type SiyuanConfigLike,
+  ConfigReadError,
+  ConfigFlushError,
+  ConfigNotReadyError,
 } from "./config"
 export {
   type IPicGo,

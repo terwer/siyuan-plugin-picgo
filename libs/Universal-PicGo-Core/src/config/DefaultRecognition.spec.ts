@@ -81,6 +81,17 @@ describe("DefaultRecognition", () => {
     it("returns true for default config with empty PicList values", () => {
       const defaults = {
         useBundledPicgo: true,
+        picgoType: "bundled",
+        extPicgoApiUrl: "http://127.0.0.1:36677",
+        picListApiUrl: "",
+        picListApiKey: "",
+      }
+      expect(isExternalPicgoGeneratedDefault(defaults as any)).toBe(true)
+    })
+
+    it("treats legacy uppercase Bundled default as generated default", () => {
+      const defaults = {
+        useBundledPicgo: true,
         picgoType: "Bundled",
         extPicgoApiUrl: "http://127.0.0.1:36677",
         picListApiUrl: "",
@@ -112,6 +123,18 @@ describe("DefaultRecognition", () => {
         useBundledPicgo: false,
         picListApiUrl: "",
         picListApiKey: "",
+      }
+      expect(isExternalPicgoGeneratedDefault(cfg as any)).toBe(false)
+    })
+
+    it("returns false when external config has unknown user fields", () => {
+      const cfg = {
+        useBundledPicgo: true,
+        picgoType: "bundled",
+        extPicgoApiUrl: "http://127.0.0.1:36677",
+        picListApiUrl: "",
+        picListApiKey: "",
+        customRouteLabel: "my-route",
       }
       expect(isExternalPicgoGeneratedDefault(cfg as any)).toBe(false)
     })

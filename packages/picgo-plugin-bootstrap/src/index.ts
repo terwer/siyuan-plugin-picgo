@@ -11,7 +11,7 @@
 
 import { App, Dialog, IObject, Plugin, confirm } from "siyuan"
 import { simpleLogger } from "zhi-lib-base"
-import { ImageItem, SiyuanPicGo } from "zhi-siyuan-picgo"
+import { ImageItem, SiyuanPicGo, type SiyuanPicgoPostApi } from "zhi-siyuan-picgo"
 import { isDev, siyuanApiToken, siyuanApiUrl } from "./Constants"
 import { ILogger } from "./appLogger"
 import { showPage } from "./dialog"
@@ -27,6 +27,9 @@ export default class PicgoPlugin extends Plugin {
   private logger: ILogger
   public statusBarElement: any
   private readonly pasteEventAdapter: PasteEventAdapter
+  private picgoPostApi?: SiyuanPicgoPostApi
+  private siyuanApi?: any
+  private pasteTakeoverSnapshot?: { autoUpload: boolean; allowPicAndText: boolean; replaceLink: boolean }
 
   constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
     super(options)
@@ -71,6 +74,7 @@ export default class PicgoPlugin extends Plugin {
   // ================
 
   private async onEvent() {
+    await this.prewarmPicGoRuntimeForPaste()
     this.eventBus.on("paste", this.picturePasteEventListener)
     this.eventBus.on("open-menu-image", this.pictureBlockEventListener)
     this.logger.info("注册粘贴事件完成")
@@ -88,22 +92,20 @@ export default class PicgoPlugin extends Plugin {
    * 添加图片粘贴事件
    */
   protected readonly picturePasteEventListener = async (e: CustomEvent) => {
-    const siyuanConfig = {
-      apiUrl: siyuanApiUrl,
-      password: siyuanApiToken,
+    const picgoPostApi = this.picgoPostApi
+    const siyuanApi = this.siyuanApi
+    const pasteTakeoverSnapshot = this.pasteTakeoverSnapshot
+    if (!picgoPostApi || !siyuanApi || !pasteTakeoverSnapshot) {
+      this.logger.warn("PicGo paste snapshot unavailable; skip takeover for this paste event")
+      return
     }
-    const picgoPostApi = await SiyuanPicGo.getInstance(siyuanConfig as any, isDev)
     const ctx = picgoPostApi.ctx()
-    ctx.reloadConfig()
-    const siyuanApi = picgoPostApi.siyuanApi
 
-    // PicGo 3.0: Use prewarmed config from the ctx snapshot instead of
-    // reading window.localStorage. Legacy reads are only allowed in
-    // migration importers and tests.
-    const takeover = this.pasteEventAdapter.tryTakeoverWithConfig(e, {
-      autoUpload: ctx.getConfig<boolean>("siyuan.autoUpload", true),
-      allowPicAndText: ctx.getConfig<boolean>("siyuan.txtImageSwitch", false),
-    })
+    // PicGo 3.0: use the prewarmed facade snapshot only. Paste event
+    // handling must remain synchronous until the takeover/default-prevention
+    // decision has been made, so no legacy localStorage or async config reads
+    // are allowed here.
+    const takeover = this.pasteEventAdapter.tryTakeoverFromSnapshot(e, pasteTakeoverSnapshot)
 
     if (!takeover.taken || !takeover.snapshot) {
       if (takeover.reason === "multiple-files-unsupported") {
@@ -168,12 +170,7 @@ export default class PicgoPlugin extends Plugin {
       iconHTML: `<span class="iconfont-icon">${icons.iconTopbar}</span>`,
       label: this.i18n.uploadToBed,
       click: async () => {
-        const siyuanConfig = {
-          apiUrl: siyuanApiUrl,
-          password: siyuanApiToken,
-        }
-        const picgoPostApi = await SiyuanPicGo.getInstance(siyuanConfig as any, isDev)
-        picgoPostApi.ctx().reloadConfig()
+        const picgoPostApi = await this.getReadyPicGoPostApi()
         const siyuanApi = picgoPostApi.siyuanApi
 
         const nodeId = this.getDataNodeIdFromImgWithSrc(imageUrl)
@@ -195,6 +192,36 @@ export default class PicgoPlugin extends Plugin {
     })
   }
   // ===================================================================================================================
+
+  private async prewarmPicGoRuntimeForPaste() {
+    try {
+      const picgoPostApi = await this.getReadyPicGoPostApi()
+      this.picgoPostApi = picgoPostApi
+      this.siyuanApi = picgoPostApi.siyuanApi
+      this.pasteTakeoverSnapshot = picgoPostApi.getPasteTakeoverSnapshot()
+      this.logger.info("PicGo paste takeover snapshot ready")
+    } catch (e) {
+      this.picgoPostApi = undefined
+      this.siyuanApi = undefined
+      this.pasteTakeoverSnapshot = undefined
+      this.logger.error("PicGo paste takeover snapshot unavailable; paste takeover disabled", e)
+    }
+  }
+
+  private async getReadyPicGoPostApi(): Promise<SiyuanPicgoPostApi> {
+    if (this.picgoPostApi) {
+      return this.picgoPostApi
+    }
+    const siyuanConfig = {
+      apiUrl: siyuanApiUrl,
+      password: siyuanApiToken,
+    }
+    const picgoPostApi = await SiyuanPicGo.getInstance(siyuanConfig as any, isDev)
+    this.picgoPostApi = picgoPostApi
+    this.siyuanApi = picgoPostApi.siyuanApi
+    this.pasteTakeoverSnapshot = picgoPostApi.getPasteTakeoverSnapshot()
+    return picgoPostApi
+  }
 
   private getDataNodeIdFromImgWithSrc(srcValue: string) {
     const imgElement = document.querySelector(`img[src="${srcValue}"]`)

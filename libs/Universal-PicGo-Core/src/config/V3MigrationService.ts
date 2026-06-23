@@ -36,6 +36,7 @@ import {
 } from "./UnifiedConfigTypes"
 import { classifyDomainDefaults } from "./DefaultRecognition"
 import type { MigrationGlobalStatus } from "./UnifiedConfigTypes"
+import { win } from "universal-picgo-store"
 
 // ── Migration Options ────────────────────────────────────────────────
 
@@ -48,6 +49,8 @@ export interface V3MigrationOptions {
   hasNodeEnv: boolean
   /** SiYuan workspace directory (if available). */
   workspaceDir?: string
+  /** Legacy home/local PicGo directory (if available). */
+  homeDir?: string
   /** Logger. */
   logger?: { info: (...args: any[]) => void; warn: (...args: any[]) => void; error: (...args: any[]) => void }
 }
@@ -119,6 +122,103 @@ function createBrowserLegacyReader(): LegacyReader {
   }
 }
 
+function createNodeLegacyReader(options: V3MigrationOptions): LegacyReader {
+  const pathApi = getNodePathApi()
+  const fsApi = getNodeFsApi()
+
+  async function readJsonFile(filePath?: string): Promise<any> {
+    if (!filePath || !fsApi) return null
+    try {
+      if (!fsApi.existsSync(filePath)) return null
+      const raw = fsApi.readFileSync(filePath, "utf-8")
+      if (!raw) return null
+      return JSON.parse(raw)
+    } catch {
+      return null
+    }
+  }
+
+  function sourceFile(domain: ConfigDomain, rootKind: "workspace" | "home"): { path?: string; source: string } | null {
+    if (!pathApi) return null
+    const root = rootKind === "workspace" ? options.workspaceDir : options.homeDir
+    if (!root) return null
+    switch (domain) {
+      case "picgoMain":
+      case "picgoSettings":
+      case "siyuanBehavior":
+      case "pluginValues":
+      case "uploaderConfig":
+      case "lskyState": {
+        const filePath = rootKind === "workspace"
+          ? pathApi.join(root, "data", "storage", "syp", "picgo", "picgo.cfg.json")
+          : pathApi.join(root, "picgo.cfg.json")
+        return { path: filePath, source: `${rootKind}:${rootKind === "workspace" ? "storage/syp/picgo/picgo.cfg.json" : "picgo.cfg.json"}` }
+      }
+      case "externalPicList": {
+        const filePath = rootKind === "workspace"
+          ? pathApi.join(root, "data", "storage", "syp", "picgo", "external-picgo-cfg.json")
+          : pathApi.join(root, "external-picgo-cfg.json")
+        return { path: filePath, source: `${rootKind}:${rootKind === "workspace" ? "storage/syp/picgo/external-picgo-cfg.json" : "external-picgo-cfg.json"}` }
+      }
+      case "siyuanConnection": {
+        const filePath = rootKind === "workspace"
+          ? pathApi.join(root, "data", "storage", "syp", "siyuan-cfg.json")
+          : pathApi.join(root, "siyuan-cfg.json")
+        return { path: filePath, source: `${rootKind}:${rootKind === "workspace" ? "storage/syp/siyuan-cfg.json" : "siyuan-cfg.json"}` }
+      }
+      case "pasteBootstrap":
+      default:
+        return null
+    }
+  }
+
+  return {
+    async read(domain: ConfigDomain): Promise<LegacySourceResult | null> {
+      if (!options.hasNodeEnv) return null
+
+      for (const rootKind of ["workspace", "home"] as const) {
+        const candidate = sourceFile(domain, rootKind)
+        if (!candidate) continue
+        const data = await readJsonFile(candidate.path)
+        if (!data) continue
+
+        if (domain === "lskyState") {
+          const token = data?.uploader?.lsky?.token
+          if (typeof token !== "string" || token.trim() === "") continue
+          return {
+            source: `${candidate.source}:uploader.lsky.token`,
+            data: { token },
+            priority: rootKind === "workspace" ? 3 : 2,
+          }
+        }
+
+        return {
+          source: candidate.source,
+          data,
+          priority: rootKind === "workspace" ? 3 : 2,
+        }
+      }
+      return null
+    },
+  }
+}
+
+function createCompositeLegacyReader(readers: LegacyReader[]): LegacyReader {
+  return {
+    async read(domain: ConfigDomain): Promise<LegacySourceResult | null> {
+      let best: LegacySourceResult | null = null
+      for (const reader of readers) {
+        const result = await reader.read(domain)
+        if (!result) continue
+        if (!best || result.priority > best.priority) {
+          best = result
+        }
+      }
+      return best
+    },
+  }
+}
+
 // ── Migration Engine ─────────────────────────────────────────────────
 
 /**
@@ -144,7 +244,10 @@ export async function runV3Migration(options: V3MigrationOptions): Promise<Unifi
   state.attempts++
   state.updatedAt = Date.now()
 
-  const browserReader = createBrowserLegacyReader()
+  const legacyReader = createCompositeLegacyReader([
+    createNodeLegacyReader(options),
+    createBrowserLegacyReader(),
+  ])
 
   for (const domain of ALL_CONFIG_DOMAINS) {
     const domainState = state.domains[domain]
@@ -153,7 +256,7 @@ export async function runV3Migration(options: V3MigrationOptions): Promise<Unifi
     }
 
     try {
-      const result = await migrateDomain(domain, options.ownerFileData, browserReader, logger)
+      const result = await migrateDomain(domain, options.ownerFileData, legacyReader, logger)
       state.domains[domain] = result
     } catch (e: any) {
       state.domains[domain] = {
@@ -190,11 +293,14 @@ export async function retryV3Migration(
   state.attempts++
   state.updatedAt = Date.now()
 
-  const browserReader = createBrowserLegacyReader()
+  const legacyReader = createCompositeLegacyReader([
+    createNodeLegacyReader(options),
+    createBrowserLegacyReader(),
+  ])
 
   for (const domain of targets) {
     try {
-      const result = await migrateDomain(domain, options.ownerFileData, browserReader, options.logger)
+      const result = await migrateDomain(domain, options.ownerFileData, legacyReader, options.logger)
       state.domains[domain] = result
     } catch (e: any) {
       state.domains[domain] = {
@@ -353,4 +459,24 @@ function initMigrationState(
 
   // Fresh start
   return JSON.parse(JSON.stringify(INITIAL_MIGRATION_STATE))
+}
+
+function getNodeFsApi(): any {
+  try {
+    if (win?.fs) return win.fs
+    if (typeof require !== "undefined") return require("fs")
+  } catch {
+    return null
+  }
+  return null
+}
+
+function getNodePathApi(): any {
+  try {
+    if (win?.require) return win.require("path")
+    if (typeof require !== "undefined") return require("path")
+  } catch {
+    return null
+  }
+  return null
 }

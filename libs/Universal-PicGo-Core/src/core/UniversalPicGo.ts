@@ -40,6 +40,7 @@ import { getByPath, setByPath, unsetByPath } from "../utils/pathObject"
 import { picgoEventBus } from "../utils/picgoEventBus"
 import { PicGoRequestWrapper } from "../lib/PicGoRequest"
 import { isThirdPartyPluginRuntimeAvailable } from "../utils/pluginRuntime"
+import type { ReadyUnifiedPicGoConfigFacade } from "../config"
 
 class UniversalPicGo extends EventEmitter implements IPicGo {
   private _config!: IConfig
@@ -63,6 +64,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   private readonly isDev: boolean
   private readonly usesOptionsObject: boolean
   private readyPromise: Promise<void>
+  private unifiedConfigFacade?: ReadyUnifiedPicGoConfigFacade
 
   get pluginLoader(): IPluginLoader { return this._pluginLoader }
 
@@ -146,6 +148,15 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   /** Wait for config and plugins to be ready. */
   async init(): Promise<void> { await this.readyPromise }
 
+  attachConfigFacade(facade: ReadyUnifiedPicGoConfigFacade): void {
+    this.unifiedConfigFacade = facade
+    this._config = cloneSerializable(facade.getSnapshot().picgo) as IConfig
+  }
+
+  getConfigFacade(): ReadyUnifiedPicGoConfigFacade | undefined {
+    return this.unifiedConfigFacade
+  }
+
   use(plugin: IPicGoPlugin, name?: string): IPicGoPluginInterface {
     if (name) {
       this.pluginLoader.registerPlugin(name, plugin)
@@ -161,11 +172,20 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   }
 
   reloadConfig(): IConfig {
+    if (this.unifiedConfigFacade) {
+      this._config = cloneSerializable(this.unifiedConfigFacade.getSnapshot().picgo) as IConfig
+      return this._config
+    }
     this._config = this.db.read(true) as IConfig
     return this._config
   }
 
   async reloadConfigAsync(): Promise<IConfig> {
+    if (this.unifiedConfigFacade) {
+      const snapshot = await this.unifiedConfigFacade.reload()
+      this._config = cloneSerializable(snapshot.picgo) as IConfig
+      return this._config
+    }
     if (this.storageMode === "async") {
       await (this.db as any).refreshAsync?.()
     }
@@ -173,6 +193,10 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
   }
 
   async flushConfig(): Promise<void> {
+    if (this.unifiedConfigFacade) {
+      await this.unifiedConfigFacade.flush()
+      return
+    }
     await this.db.flush?.()
   }
 
@@ -182,6 +206,14 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       return
     }
     this.setConfig(config)
+    if (this.unifiedConfigFacade) {
+      this.unifiedConfigFacade.updatePicGoConfig((draft) => {
+        Object.keys(config).forEach((name: string) => {
+          setByPath(draft, name, config[name])
+        })
+      }).catch((e) => this.log.error(e))
+      return
+    }
     this.db.saveConfig(config)
   }
 
@@ -192,6 +224,13 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       return
     }
     this.unsetConfig(key, propName)
+    if (this.unifiedConfigFacade) {
+      this.unifiedConfigFacade.updatePicGoConfig((draft) => {
+        const target = getByPath(draft, key)
+        if (target) unsetByPath(target, propName)
+      }).catch((e) => this.log.error(e))
+      return
+    }
     this.db.unset(key, propName)
   }
 
@@ -300,6 +339,11 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
     this.db = new ConfigDb(this)
     this._config = this.db.read(true) as IConfig
   }
+}
+
+function cloneSerializable<T>(value: T): T {
+  if (typeof value === "undefined") return value
+  return JSON.parse(JSON.stringify(value)) as T
 }
 
 export { UniversalPicGo }

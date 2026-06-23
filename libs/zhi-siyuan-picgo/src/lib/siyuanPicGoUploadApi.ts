@@ -7,7 +7,16 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { ExternalPicgo, IImgInfo, IPicGo, PicgoTypeEnum, PicListUploader, UniversalPicGo } from "universal-picgo"
+import {
+  ExternalPicgo,
+  IExternalPicgoConfig,
+  IImgInfo,
+  IPicGo,
+  PicgoTypeEnum,
+  PicListUploader,
+  ReadyUnifiedPicGoConfigFacade,
+  UniversalPicGo,
+} from "universal-picgo"
 import { ILogger } from "zhi-lib-base"
 import { SiyuanPicGoPaths, toUniversalPicGoOptions } from "./siyuanPicgoPaths"
 
@@ -22,16 +31,22 @@ class SiyuanPicGoUploadApi {
   private readonly externalPicGo: ExternalPicgo
   private readonly picListUploader: PicListUploader
   private readonly logger: ILogger
+  private configFacade?: ReadyUnifiedPicGoConfigFacade
 
   constructor(isDev?: boolean, paths?: SiyuanPicGoPaths, storageAdapterFactory?: (dbPath: string) => import("universal-picgo-store").StorageAdapter) {
     this.picgo = new (UniversalPicGo as any)({
       ...toUniversalPicGoOptions(paths ?? {}, isDev),
-      storageAdapterFactory,
     })
-    this.externalPicGo = new ExternalPicgo(this.picgo, isDev)
-    this.picListUploader = new PicListUploader(this.picgo, isDev)
+    const routeConfigProvider = () => this.getExternalRouteConfig()
+    this.externalPicGo = new ExternalPicgo(this.picgo, isDev, routeConfigProvider)
+    this.picListUploader = new PicListUploader(this.picgo, isDev, routeConfigProvider)
     this.logger = this.picgo.getLogger("siyuan-picgo-upload-api")
     this.logger.debug("picgo upload api inited")
+  }
+
+  public attachConfigFacade(facade: ReadyUnifiedPicGoConfigFacade): void {
+    this.configFacade = facade
+    ;(this.picgo as any).attachConfigFacade?.(facade)
   }
 
   /**
@@ -40,15 +55,13 @@ class SiyuanPicGoUploadApi {
    * @param input 路径数组，可为空，为空上传剪贴板
    */
   public async upload(input?: any[]): Promise<IImgInfo[] | Error> {
-    // PicGo 3.0: ensure async backend is ready before reading config.
-    // On sync backends (Node JSON file), ensureReady() returns immediately.
-    // On async backends (Kernel storage), it awaits remote data load
-    // to prevent overwriting real user data with generated defaults.
-    await (this.externalPicGo.db as any).ensureReady?.()
-
-    const useBundledPicgo = this.externalPicGo.db.get("useBundledPicgo")
+    if (!this.configFacade) {
+      throw new Error("Unified config facade is not ready for upload dispatch")
+    }
+    const routeConfig = this.getExternalRouteConfig()
+    const useBundledPicgo = routeConfig.useBundledPicgo
     if (useBundledPicgo) {
-      const picgoType = this.externalPicGo.db.get("picgoType")
+      const picgoType = routeConfig.picgoType
       if (picgoType !== PicgoTypeEnum.Bundled) {
         throw new Error("当前配置使用内置PicGo，请先在配置页面选择使用内置PicGo")
       }
@@ -64,6 +77,14 @@ class SiyuanPicGoUploadApi {
     // 默认走本地 PicGo App
     this.logger.info("Using local PicGo App uploader")
     return this.externalPicGo.upload(input)
+  }
+
+  private getExternalRouteConfig(): IExternalPicgoConfig {
+    const cfg = this.configFacade?.getSnapshot().externalPicgo
+    if (!cfg) {
+      throw new Error("Unified config facade is not ready for external/PicList route config")
+    }
+    return cfg
   }
 }
 
