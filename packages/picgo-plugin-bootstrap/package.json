@@ -11,7 +11,8 @@
     "dev": "vite build --watch",
     "build": "vite build",
     "start": "vite preview",
-    "test": "vitest --watch"
+    "test": "vitest run",
+    "test:watch": "vitest --watch"
   },
   "devDependencies": {
     "@terwer/eslint-config-custom": "^1.3.6",
