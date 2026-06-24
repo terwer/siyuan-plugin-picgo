@@ -1,11 +1,16 @@
 # Changelog
 
-## [2.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.1.0...siyuan-plugin-picgo-v2.1.1) (2026-06-17)
+## [3.0.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.1.1...siyuan-plugin-picgo-v3.0.0) (2026-06-24)
+### ⚠ BREAKING CHANGES
+* **config:** picgo config access is async-only in 3.0; legacy synchronous config apis and split runtime storage paths are replaced by the unified facade.
+### Features
+* **config:** unify PicGo config persistence strategy ([#689](https://github.com/terwer/siyuan-plugin-picgo/issues/689)) ([41f7490](https://github.com/terwer/siyuan-plugin-picgo/commit/41f749096e0e194de6ab3d0957e54107d46bed34))
 ### Bug Fixes
+* **core:** ensure ExternalPicgoConfigDb defaults survive async load ([#687](https://github.com/terwer/siyuan-plugin-picgo/issues/687)) ([6144292](https://github.com/terwer/siyuan-plugin-picgo/commit/6144292ac210d5911f1fdae623662ecad0106bfb))
+## [2.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.1.0...siyuan-plugin-picgo-v2.1.1) (2026-06-17)
 * **docs:** add release summary for 2.1.0 changelog ([#685](https://github.com/terwer/siyuan-plugin-picgo/issues/685)) ([81df207](https://github.com/terwer/siyuan-plugin-picgo/commit/81df207114352934f237cb55ec215f29f31017ce))
 ## [2.1.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.0.1...siyuan-plugin-picgo-v2.1.0) (2026-06-17)
 this release adds remote piclist service support and includes several bug fixes.
-### Features
 * add remote piclist service upload support ([ccc6375](https://github.com/terwer/siyuan-plugin-picgo/commit/ccc6375774e06482b04578724abb33d92d355b42))
 * **aliyun:** [#681](https://github.com/terwer/siyuan-plugin-picgo/issues/681) resolve OSS authentication date header issue ([3f8d7d2](https://github.com/terwer/siyuan-plugin-picgo/commit/3f8d7d26512b49666e3872998fe0717c55b78842))
 * **config:** reload config before each upload in floating shell ([8b38500](https://github.com/terwer/siyuan-plugin-picgo/commit/8b385001da65f611cbe5ad897cf5cb4ebf392070))
@@ -20,7 +25,6 @@ this release adds remote piclist service support and includes several bug fixes.
 * harden packaging and picgo config stability ([961ef0f](https://github.com/terwer/siyuan-plugin-picgo/commit/961ef0fe844377a61aa7b77ad86207fc97612573))
 * **picgo:** resolve package config and runtime upload incidents ([e8fcd04](https://github.com/terwer/siyuan-plugin-picgo/commit/e8fcd0423a250d4ef73b6be015681aa3949b44f7))
 ## [2.0.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v1.12.1...siyuan-plugin-picgo-v2.0.0) (2026-05-26)
-### ⚠ BREAKING CHANGES
 * **picgo:** picgo 2.0 splits workspace-synced main config from device-local runtime files.
 * v2 changes the default bundled picgo config path from ~/.universal-picgo/picgo.cfg.json to [workspace]/data/storage/syp/picgo/picgo.cfg.json. runtime files, third-party picgo plugins, external-picgo-cfg.json, logs, clipboard cache, and zhi libs remain under ~/.universal-picgo. integrations such as siyuan-plugin-publisher must use the v2 path contract instead of hardcoded historical picgo paths.
 * **picgo-headless:** define stable headless contract for external picgo usage ([30953dc](https://github.com/terwer/siyuan-plugin-picgo/commit/30953dc49ecee1ec8aee73b12aae4952f22395fb))

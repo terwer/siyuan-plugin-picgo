@@ -17,6 +17,7 @@
     "serve": {
       "cache": false,
       "persistent": true
-    }
+    },
+    "test": {}
   }
 }
