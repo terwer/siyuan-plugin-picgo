@@ -51,3 +51,54 @@
 - v2 main-config copy helper 在 v3 facade flush 之后运行时必须识别 v3 marker；默认值 + `siyuan.picgoMigration.version=v3.0-unified-async-config-source` 不应被视作可覆盖的 generated default。
 - `instanceKey` 不应只包含 apiUrl/configPath；需要包含 storage factory、owner logical key、storageKind、mode、domains、workspaceDir/homeDir 和 path overrides，同时不能包含 password/cookie/picListApiKey 等敏感字段。
 - `SiyuanPicGoUploadApi` 的 `storageAdapterFactory` 必须传递给 `UniversalPicGo` options，否则 zhi tsc 报 unused parameter，且 runtime 可能未共享同一 storage adapter factory。
+
+## 2026-06-24 二次修复后最终复审发现
+- 最新提交 `5872136` 已包含二次修复与审计文档，工作区审计前后 clean。
+- 前次 4 项阻断/偏离均已关闭：domain-scoped retry、Node workspace 三 owner mapping、v3 marker 防覆盖、instanceKey identity/sensitive gate。
+- Forbidden grep gates 继续通过：无 production legacy main localStorage read；Lsky legacy key 仅 migration/test；生产路径无 direct `ExternalPicgoConfigDb` route decision；生产 owner file 无 direct `/api/file/`；PicList log 使用 `MASK_VALUE`。
+- 剩余非阻断说明：版本仍为 `2.1.1`，按前次用户确认由发布 GitHub Action 自动 bump 到 3.0；构建警告为既有 `LC_ALL`、Node `DEP0180` 与 chunk size warning。
+
+## 2026-06-24 真机测试发现
+- PC 主进程插件启动阶段使用 Node JSONAdapter 读写 workspace 绝对路径正常，`picgo.cfg.json` auto-flush 成功。
+- 点击 popup 后进入前端/Kernel adapter 路径，main/external/siyuan-cfg 三 owner 均从 Kernel `/data/storage/syp/...` 读成功；`static-rs-terwer` 进一步证明读取的是真实 Kernel 文件。
+- 唯一功能性错误是初始化副作用触发的 `picgo.cfg.json` Kernel auto-flush 报错，堆栈来自 `removeConfig("siyuan", "proxy")`。
+- `zhi-siyuan-api@2.21.0` 的 `saveTextData()` 成功返回值不是完整 `SiyuanData`；当前 adapter 以 `result?.code !== 0` 判断成功，存在返回形态误判。
+
+## 2026-06-24 真机 popup 修复发现
+- 用户确认 `static-rs-terwer` 是此前 PC 保存的真实值；因此“读到真实 Kernel owner file”是正确行为，本轮问题不在读取源选择。
+- 真实 workspace `/Volumes/workspace/mydocs/SiYuanWorkspace/test/data/storage/syp/picgo/picgo.cfg.json` 当前不含 `"proxy"` 字段；点击 popup 后仍写 `/data/storage/syp/picgo/picgo.cfg.json`，说明触发点是 legacy cleanup no-op 写入，而不是用户显式保存。
+- `UniversalPicGo.removeConfig()` 原逻辑无论字段是否存在都会进入 `unifiedConfigFacade.updatePicGoConfig()`，造成 popup 初始化时的无效 auto-flush；修复为实际 `unsetByPath()` 成功才写入。
+- `SiYuanKernelStorageAdapter.write()` 原逻辑把 `saveTextData()` 的运行时返回当完整 `{code}` 判断；但 `zhi-siyuan-api` wrapper 成功返回 `data`，常见 `null`，所以会把成功误报为 `unknown error`。
+- 为兼顾“不要吞掉真实 Kernel 写失败”，新的写入策略是：明确 `{code:number}` 且非 0 立即结构化失败；throw 结构化包装；其余返回形态必须通过写后读回 JSON verification 才算成功。
+
+## 2026-06-24 修复后日志评估发现
+- `PC_init.txt`：0 个 PicGo ERROR/failed，0 次 Kernel write；Node/sync owner mapping 显示 workspace 绝对路径，符合 PC 插件启用阶段预期。
+- `PC_popup.txt`：0 个 PicGo ERROR/failed，0 次 Kernel write，4 条 Kernel read（main owner 有并发/重复读取，随后 siyuan-cfg 与 external 各读一次），无 `auto-flush failed`，符合 popup 只读初始化预期。
+- `网页_init.txt`：0 次 Kernel write，Kernel read 三 owner 成功；grep 到的 error 主要是思源字体 CORS/`net::ERR_FAILED 200 (OK)`，与 PicGo 配置 owner file 无关。
+- `网页_popup.txt` 与 `网页_init.txt` 完全一致，说明当前提供的网页 popup 文件未包含 popup 打开后的新增日志；不能作为 popup 增量行为证据，但至少未出现此前 auto-flush/write 错误。
+- `zhi is not supported in browser` 属于浏览器 runtime 下跳过 zhi npm/plugin runtime 的既有 warning，当前路径同时显示 `third-party PicGo plugins are ignored outside Electron runtime`，不影响 unified config 读取。
+
+## 2026-06-24 真 async / fake flush 专项审计发现
+- 当前代码不是“假读取”：Kernel adapter 的 `read()` 必须 await `getFile()`，`write()` 必须 await `saveTextData()` 且写后 await `getFile()` verify；真实不可用会结构化失败，不会回退 browser mock/localStorage。
+- `JSONStore` 自身的 async flush 语义较完整：`flush()` 会 clear pending timer，并 await write promise；这一层不是 fake flush。
+- `UnifiedConfigFacade` 的 ready factory 和初始 flush 是真实 await：`createUnifiedPicGoConfigFacade()` 完成 owner read/migration/default merge 后 resolve；`SiyuanPicgoPostApi.initInternal()` await facade、await `facade.flush()`、再 attach facade。
+- 重大偏离在 facade 的显式 flush 与 auto-flush 协调：`update*Config()` 调 `scheduleFlush()` 后，`flush()` 不 clear `state.debounceTimers`，也没有 per-owner in-flight write promise；慢 Kernel 写入时 timer 可与 explicit flush 并发写同一 owner，且 auto-flush 错误只 log。
+- 所以当前结论是“底层真 async，但 facade flush 尚未 drain 所有派生写任务”；不能作为“全部真实全异步链路”归档。
+- 修复方向：per-owner 写队列/锁；explicit flush 先取消 debounce timer，再把 dirty 状态纳入本次写并 await 同 owner in-flight；scheduleFlush 复用同一 pipeline；补 fake timer 慢 adapter 用例与审计 gate。
+
+## 2026-06-24 async flush drain 修复发现
+- debounce 防频繁写本身不是问题；问题是 explicit `flush()` 必须能接管/等待该 debounce 派生的同 owner write。修复后 `scheduleFlush()` 与 `flush()` 共用 `flushOwnerFile()`，不再有两个独立写入口竞争同一 owner file。
+- `dirtyVersion` 是判断旧写入能否清 dirty 的关键：如果写入期间发生新 mutation，旧任务完成只更新 `flushedVersion`，不会把 `dirty=false`，从而避免“藏数据”。
+- `currentWriteTask/currentWriteVersion` 让 explicit flush 可以 join 已经 in-flight 且覆盖目标版本的 auto-flush，避免重复写；如果当前 write 版本落后，则通过 `writeQueue` 追加新版 snapshot。
+- `writeQueue` 必须保持 non-rejecting tail；失败时 raw task 仍向 explicit flush 传播错误，但队列尾部 catch 掉拒绝，后续 retry 不会被断链。
+- 当前修复范围是同一 facade 实例内的 durable/drainable barrier；跨窗口/跨进程/跨 facade 强一致 CAS 未在本 change 内实现，也不应在归档文档中夸大。
+
+## 2026-06-24 async flush 收口审计发现
+- 修复后 grep 证明旧 race 入口已消失：`scheduleFlush()` 不再直接 `writeOwnerFile()`，所有自动/显式写入都进入 `flushOwnerFile()`。
+- 允许存在的 `dirty=false` 只在 reload 或目标版本成功 durably written 后发生；允许存在的 `dirty=true` 只在标脏或写失败重试保留状态时发生。
+- 当前剩余边界不是本 change 缺陷：跨 facade/跨进程强一致仍未实现，但已在审计文档中明确不承诺；同一 facade 实例内已具备 drainable flush。
+
+## 2026-06-24 README 3.0 文案收口发现
+- README 3.0 的核心痛点应直达“配置归一化”：同一工作空间内，PC、可访问 SiYuan API 的网页端、Docker 部署读取同一套真实 workspace-backed 配置，而不是继续强调泛泛的“配置也跟上了”。
+- 2.0 路径拆分已从主说明移动到历史路径；3.0 主路径明确 main/external/siyuan-cfg 三类用户可感知配置进入工作空间，runtime 仍留在 `~/.universal-picgo/`。
+- 跨窗口/跨进程/跨 facade CAS 边界不应写成思源“多工作空间”限制；思源多工作空间天然隔离。README 仅轻量说明：同一工作空间内多个入口同时改同一项 PicGo 设置时按最后保存为准，日常基本遇不到。

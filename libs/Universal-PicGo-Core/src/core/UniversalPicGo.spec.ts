@@ -271,3 +271,29 @@ describe("UniversalPicGo v2 path contract", () => {
     expect(picgo.getConfig("picBed.uploader")).toBe("awss3")
   })
 })
+
+describe("UniversalPicGo facade-backed removeConfig", () => {
+  it("does not schedule a facade write for a missing legacy property", () => {
+    const picgo = Object.create(UniversalPicGo.prototype) as any
+    picgo._config = { siyuan: { waitTimeout: 2 } }
+    picgo.log = { warn: vi.fn(), error: vi.fn() }
+    picgo.unifiedConfigFacade = { updatePicGoConfig: vi.fn(async () => undefined) }
+
+    picgo.removeConfig("siyuan", "proxy")
+
+    expect(picgo.unifiedConfigFacade.updatePicGoConfig).not.toHaveBeenCalled()
+    expect(picgo._config).toEqual({ siyuan: { waitTimeout: 2 } })
+  })
+
+  it("schedules exactly one facade update when the property exists", () => {
+    const picgo = Object.create(UniversalPicGo.prototype) as any
+    picgo._config = { siyuan: { proxy: "http://127.0.0.1:12345", waitTimeout: 2 } }
+    picgo.log = { warn: vi.fn(), error: vi.fn() }
+    picgo.unifiedConfigFacade = { updatePicGoConfig: vi.fn(async () => undefined) }
+
+    picgo.removeConfig("siyuan", "proxy")
+
+    expect(picgo._config).toEqual({ siyuan: { waitTimeout: 2 } })
+    expect(picgo.unifiedConfigFacade.updatePicGoConfig).toHaveBeenCalledTimes(1)
+  })
+})

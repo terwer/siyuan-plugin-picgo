@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "fs"
 import { tmpdir } from "os"
 import { join } from "path"
 import { createUnifiedPicGoConfigFacade } from "./UnifiedConfigFacade"
-import { ConfigReadError, MASK_VALUE } from "./UnifiedConfigTypes"
+import { ConfigFlushError, ConfigReadError, MASK_VALUE } from "./UnifiedConfigTypes"
 import type { ReadyUnifiedPicGoConfigFacade, UnifiedConfigMigrationState } from "./UnifiedConfigTypes"
 
 // ── Test Helpers ──────────────────────────────────────────────────────
@@ -50,6 +50,38 @@ function createAsyncMemoryAdapter(initialData?: Record<string, any>) {
   }
 }
 
+function createDeferredAsyncAdapter(initialData?: Record<string, any>) {
+  let data = initialData ? JSON.parse(JSON.stringify(initialData)) : {}
+  const writes: Array<{
+    payload: Record<string, any>
+    resolve: () => void
+    reject: (reason?: unknown) => void
+    promise: Promise<void>
+  }> = []
+
+  return {
+    mode: "async" as const,
+    storageKind: "test-async",
+    read: vi.fn(async () => JSON.parse(JSON.stringify(data))),
+    write: vi.fn((newData: Record<string, any>) => {
+      const payload = JSON.parse(JSON.stringify(newData))
+      let resolve!: () => void
+      let reject!: (reason?: unknown) => void
+      const promise = new Promise<void>((res, rej) => {
+        resolve = () => {
+          data = JSON.parse(JSON.stringify(payload))
+          res()
+        }
+        reject = rej
+      })
+      writes.push({ payload, resolve, reject, promise })
+      return promise
+    }),
+    _writes: writes,
+    _getData: () => data,
+  }
+}
+
 const defaultOptions = () => ({
   siyuanConfig: { apiUrl: "http://127.0.0.1:6806", password: "" },
   paths: { configPath: "test-picgo.cfg.json" },
@@ -77,6 +109,56 @@ const makeMigrationState = (
     ...(overrides.domains ?? {}),
   },
 })
+
+function createInitializedOwnerData() {
+  return {
+    main: {
+      picBed: { uploader: "smms", current: "smms" },
+      picgoPlugins: {},
+      siyuan: {
+        waitTimeout: 2,
+        retryTimes: 5,
+        autoUpload: true,
+        replaceLink: true,
+        txtImageSwitch: false,
+        picgoMigration: makeMigrationState({ status: "done", attempts: 1 }),
+      },
+    },
+    external: {
+      useBundledPicgo: true,
+      picgoType: "bundled",
+      extPicgoApiUrl: "http://127.0.0.1:36677",
+      picListApiUrl: "",
+      picListApiKey: "",
+    },
+    siyuan: {
+      apiUrl: "http://127.0.0.1:6806",
+      password: "",
+    },
+  }
+}
+
+async function createDeferredFacade() {
+  const initialized = createInitializedOwnerData()
+  const mainAdapter = createDeferredAsyncAdapter(initialized.main)
+  const externalAdapter = createDeferredAsyncAdapter(initialized.external)
+  const siyuanAdapter = createDeferredAsyncAdapter(initialized.siyuan)
+  const adapterMap: Record<string, ReturnType<typeof createDeferredAsyncAdapter>> = {
+    "test-picgo.cfg.json": mainAdapter,
+    "universal-picgo/external-picgo-cfg.json": externalAdapter,
+    "siyuan-cfg": siyuanAdapter,
+  }
+  const facade = await createUnifiedPicGoConfigFacade({
+    ...defaultOptions(),
+    storageAdapterFactory: (path: string) => adapterMap[path] ?? createDeferredAsyncAdapter({}),
+  })
+  return { facade, mainAdapter, externalAdapter, siyuanAdapter }
+}
+
+async function waitMicrotasks(): Promise<void> {
+  await Promise.resolve()
+  await Promise.resolve()
+}
 
 // ── Tests ─────────────────────────────────────────────────────────────
 
@@ -476,6 +558,118 @@ describe("UnifiedConfigFacade", () => {
       } finally {
         rmSync(tempRoot, { recursive: true, force: true })
       }
+    })
+  })
+
+  describe("flush drains scheduled async writes", () => {
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it("immediate explicit flush cancels debounce and writes the owner once", async () => {
+      vi.useFakeTimers()
+      const { facade: testFacade, mainAdapter: adapter } = await createDeferredFacade()
+
+      await testFacade.updatePicGoConfig((draft) => {
+        ;(draft as any).flushMarker = "immediate"
+      })
+
+      const flushPromise = testFacade.flush(["picgoMain"])
+      await waitMicrotasks()
+      expect(adapter.write).toHaveBeenCalledTimes(1)
+
+      await vi.advanceTimersByTimeAsync(300)
+      expect(adapter.write).toHaveBeenCalledTimes(1)
+
+      adapter._writes[0].resolve()
+      await flushPromise
+      await vi.advanceTimersByTimeAsync(300)
+
+      expect(adapter.write).toHaveBeenCalledTimes(1)
+      expect(adapter._getData().flushMarker).toBe("immediate")
+    })
+
+    it("explicit flush joins an in-flight auto-flush without duplicating writes", async () => {
+      vi.useFakeTimers()
+      const { facade: testFacade, mainAdapter: adapter } = await createDeferredFacade()
+
+      await testFacade.updatePicGoConfig((draft) => {
+        ;(draft as any).flushMarker = "auto"
+      })
+      await vi.advanceTimersByTimeAsync(300)
+      await waitMicrotasks()
+
+      expect(adapter.write).toHaveBeenCalledTimes(1)
+
+      const flushPromise = testFacade.flush(["picgoMain"])
+      await waitMicrotasks()
+      expect(adapter.write).toHaveBeenCalledTimes(1)
+
+      adapter._writes[0].resolve()
+      await flushPromise
+      expect(adapter.write).toHaveBeenCalledTimes(1)
+      expect(adapter._getData().flushMarker).toBe("auto")
+    })
+
+    it("does not clear a newer dirty mutation when an older flush completes", async () => {
+      vi.useFakeTimers()
+      const { facade: testFacade, mainAdapter: adapter } = await createDeferredFacade()
+
+      await testFacade.updatePicGoConfig((draft) => {
+        ;(draft as any).flushMarker = "first"
+      })
+      const firstFlush = testFacade.flush(["picgoMain"])
+      await waitMicrotasks()
+      expect(adapter.write).toHaveBeenCalledTimes(1)
+      expect(adapter._writes[0].payload.flushMarker).toBe("first")
+
+      await testFacade.updatePicGoConfig((draft) => {
+        ;(draft as any).flushMarker = "second"
+      })
+      adapter._writes[0].resolve()
+      await firstFlush
+
+      expect(adapter.write).toHaveBeenCalledTimes(1)
+      expect(adapter._getData().flushMarker).toBe("first")
+
+      const secondFlush = testFacade.flush(["picgoMain"])
+      await waitMicrotasks()
+      expect(adapter.write).toHaveBeenCalledTimes(2)
+      expect(adapter._writes[1].payload.flushMarker).toBe("second")
+
+      adapter._writes[1].resolve()
+      await secondFlush
+      await vi.advanceTimersByTimeAsync(300)
+
+      expect(adapter.write).toHaveBeenCalledTimes(2)
+      expect(adapter._getData().flushMarker).toBe("second")
+    })
+
+    it("keeps dirty state after write failure so the next flush can retry", async () => {
+      vi.useFakeTimers()
+      const { facade: testFacade, mainAdapter: adapter } = await createDeferredFacade()
+
+      await testFacade.updatePicGoConfig((draft) => {
+        ;(draft as any).flushMarker = "retry"
+      })
+
+      const failedFlush = testFacade.flush(["picgoMain"])
+      await waitMicrotasks()
+      expect(adapter.write).toHaveBeenCalledTimes(1)
+
+      const failedExpectation = expect(failedFlush).rejects.toBeInstanceOf(ConfigFlushError)
+      adapter._writes[0].reject(new Error("kernel write boom"))
+      await failedExpectation
+
+      const retryFlush = testFacade.flush(["picgoMain"])
+      await waitMicrotasks()
+      expect(adapter.write).toHaveBeenCalledTimes(2)
+      expect(adapter._writes[1].payload.flushMarker).toBe("retry")
+
+      adapter._writes[1].resolve()
+      await retryFlush
+
+      expect(adapter._getData().flushMarker).toBe("retry")
     })
   })
 })

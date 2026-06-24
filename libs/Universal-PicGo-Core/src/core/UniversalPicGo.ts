@@ -223,7 +223,8 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       this.log.warn(`the config.${key} can't be removed`)
       return
     }
-    this.unsetConfig(key, propName)
+    const removed = unsetByPath(this.getConfig(key), propName)
+    if (!removed) return
     if (this.unifiedConfigFacade) {
       this.unifiedConfigFacade.updatePicGoConfig((draft) => {
         const target = getByPath(draft, key)

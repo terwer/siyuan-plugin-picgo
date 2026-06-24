@@ -60,6 +60,16 @@ interface OwnerFileState {
   data: Record<string, any>
   /** Whether this owner file has pending (dirty) writes. */
   dirty: boolean
+  /** Monotonic version of the latest local mutation for this owner file. */
+  dirtyVersion: number
+  /** Last mutation version that was durably written for this owner file. */
+  flushedVersion: number
+  /** Per-owner write queue. Always normalized to a non-rejecting tail. */
+  writeQueue: Promise<void>
+  /** Raw in-flight write task, kept so explicit flush can join and observe errors. */
+  currentWriteTask?: Promise<void>
+  /** Mutation version covered by currentWriteTask. */
+  currentWriteVersion: number
   /** Domains that map to this owner file. */
   domains: ConfigDomain[]
 }
@@ -213,6 +223,10 @@ export async function createUnifiedPicGoConfigFacade(
       adapter,
       data: {},
       dirty: false,
+      dirtyVersion: 0,
+      flushedVersion: 0,
+      writeQueue: Promise.resolve(),
+      currentWriteVersion: 0,
       domains,
     })
   }
@@ -331,7 +345,7 @@ async function ensureMigration(
     mainOwner.data = mainOwner.data ?? {}
     mainOwner.data.siyuan = mainOwner.data.siyuan ?? {}
     mainOwner.data.siyuan.picgoMigration = state.migrationState
-    mainOwner.dirty = true
+    markOwnerDirty(state, mainOwner)
   }
 }
 
@@ -382,7 +396,7 @@ async function runMigrationWithService(
       const after = JSON.stringify(data ?? {})
       fileState.data = data
       if (before !== after) {
-        fileState.dirty = true
+        markOwnerDirty(state, fileState)
       }
     }
   }
@@ -419,7 +433,7 @@ function mergeDefaults(state: FacadeInternalState): void {
           ...(picgoMain.data?.siyuan?.picgoMigration ? { picgoMigration: picgoMain.data.siyuan.picgoMigration } : {}),
         },
       }
-      picgoMain.dirty = true
+      markOwnerDirty(state, picgoMain)
     }
   }
 
@@ -432,7 +446,7 @@ function mergeDefaults(state: FacadeInternalState): void {
       picListApiUrl: "",
       picListApiKey: "",
     }
-    external.dirty = true
+    markOwnerDirty(state, external)
   } else if (external) {
     const defaults = {
       useBundledPicgo: true,
@@ -444,7 +458,7 @@ function mergeDefaults(state: FacadeInternalState): void {
     for (const [key, value] of Object.entries(defaults)) {
       if (typeof external.data[key] === "undefined") {
         external.data[key] = value
-        external.dirty = true
+        markOwnerDirty(state, external)
       }
     }
     // Older generated defaults used an invalid enum display value. Normalize
@@ -452,7 +466,7 @@ function mergeDefaults(state: FacadeInternalState): void {
     // against PicgoTypeEnum.Bundled without falling back to another source.
     if (external.data.picgoType === "Bundled") {
       external.data.picgoType = "bundled"
-      external.dirty = true
+      markOwnerDirty(state, external)
     }
   }
 
@@ -462,7 +476,7 @@ function mergeDefaults(state: FacadeInternalState): void {
       apiUrl: "http://127.0.0.1:6806",
       password: "",
     }
-    siyuanConn.dirty = true
+    markOwnerDirty(state, siyuanConn)
   }
 }
 
@@ -560,8 +574,7 @@ function buildReadyFacade(
       const owner = state.ownerFiles.get("picgo.cfg.json")
       if (!owner) throw new Error("picgo.cfg.json owner not found")
       mutator(owner.data as IConfig)
-      owner.dirty = true
-      state.writeVersion++
+      markOwnerDirty(state, owner)
       scheduleFlush(state, "picgo.cfg.json", logger)
     },
 
@@ -569,8 +582,7 @@ function buildReadyFacade(
       const owner = state.ownerFiles.get("external-picgo-cfg.json")
       if (!owner) throw new Error("external-picgo-cfg.json owner not found")
       mutator(owner.data as IExternalPicgoConfig)
-      owner.dirty = true
-      state.writeVersion++
+      markOwnerDirty(state, owner)
       scheduleFlush(state, "external-picgo-cfg.json", logger)
     },
 
@@ -578,8 +590,7 @@ function buildReadyFacade(
       const owner = state.ownerFiles.get("siyuan-cfg")
       if (!owner) throw new Error("siyuan-cfg owner not found")
       mutator(owner.data as SiyuanConfigLike)
-      owner.dirty = true
-      state.writeVersion++
+      markOwnerDirty(state, owner)
       scheduleFlush(state, "siyuan-cfg", logger)
     },
 
@@ -588,10 +599,10 @@ function buildReadyFacade(
       const failures: ConfigFlushFailure[] = []
 
       for (const [ownerFile, fileState] of ownersToFlush) {
-        if (!fileState.dirty) continue
+        cancelScheduledFlush(state, ownerFile)
+        if (!fileState.dirty && !fileState.currentWriteTask) continue
         try {
-          await writeOwnerFile(fileState)
-          fileState.dirty = false
+          await flushOwnerFile(state, ownerFile, fileState)
           logger.debug(`[UnifiedConfigFacade] flushed ${ownerFile}`)
         } catch (e: any) {
           failures.push({
@@ -623,6 +634,7 @@ function buildReadyFacade(
             fileState.data = newData
           }
           fileState.dirty = false
+          fileState.flushedVersion = fileState.dirtyVersion
         } catch (e: any) {
           logger.error(`[UnifiedConfigFacade] reload failed for ${ownerFile}:`, e?.message ?? e)
           if (isAsyncAdapter(fileState.adapter)) {
@@ -672,7 +684,7 @@ function persistMigrationMarker(state: FacadeInternalState): void {
   mainOwner.data = mainOwner.data ?? {}
   mainOwner.data.siyuan = mainOwner.data.siyuan ?? {}
   mainOwner.data.siyuan.picgoMigration = state.migrationState
-  mainOwner.dirty = true
+  markOwnerDirty(state, mainOwner)
 }
 
 // ── Snapshot Construction ────────────────────────────────────────────
@@ -717,8 +729,7 @@ function scheduleFlush(
     if (!fileState || !fileState.dirty) return
 
     try {
-      await writeOwnerFile(fileState)
-      fileState.dirty = false
+      await flushOwnerFile(state, ownerFile, fileState)
       logger.debug(`[UnifiedConfigFacade] auto-flushed ${ownerFile}`)
     } catch (e: any) {
       logger.error(`[UnifiedConfigFacade] auto-flush failed for ${ownerFile}:`, e?.message ?? e)
@@ -728,14 +739,82 @@ function scheduleFlush(
   state.debounceTimers.set(ownerFile, timer)
 }
 
-async function writeOwnerFile(fileState: OwnerFileState): Promise<void> {
+function markOwnerDirty(state: FacadeInternalState, fileState: OwnerFileState): void {
+  state.writeVersion++
+  fileState.dirty = true
+  fileState.dirtyVersion = state.writeVersion
+}
+
+function cancelScheduledFlush(state: FacadeInternalState, ownerFile: string): void {
+  const timer = state.debounceTimers.get(ownerFile)
+  if (!timer) return
+  clearTimeout(timer)
+  state.debounceTimers.delete(ownerFile)
+}
+
+async function flushOwnerFile(
+  state: FacadeInternalState,
+  ownerFile: string,
+  fileState: OwnerFileState
+): Promise<void> {
+  if (!fileState.dirty) {
+    if (fileState.currentWriteTask) {
+      await fileState.currentWriteTask
+    }
+    return
+  }
+
+  const targetVersion = fileState.dirtyVersion
+
+  // A scheduled/ongoing write already covers every mutation this flush is
+  // responsible for. Join it instead of issuing a duplicate owner-file write.
+  if (fileState.currentWriteTask && fileState.currentWriteVersion >= targetVersion) {
+    await fileState.currentWriteTask
+    return
+  }
+
+  // Capture a stable snapshot before entering the async write queue so later
+  // in-memory mutations cannot leak into this write or be accidentally marked
+  // durable by this task.
+  const snapshot = deepClone(fileState.data ?? {})
+  const previousTail = fileState.writeQueue.catch(() => undefined)
+  const task = previousTail.then(async () => {
+    await writeOwnerFile(fileState, snapshot)
+  })
+
+  fileState.currentWriteTask = task
+  fileState.currentWriteVersion = targetVersion
+  // Keep the queue tail non-rejecting so a failed write never breaks future
+  // explicit flush retries or later debounced writes.
+  fileState.writeQueue = task.catch(() => undefined)
+
+  try {
+    await task
+    fileState.flushedVersion = Math.max(fileState.flushedVersion, targetVersion)
+    if (fileState.dirtyVersion <= targetVersion) {
+      fileState.dirty = false
+    }
+  } catch (e) {
+    fileState.dirty = true
+    throw e
+  } finally {
+    if (fileState.currentWriteTask === task) {
+      fileState.currentWriteTask = undefined
+    }
+  }
+}
+
+async function writeOwnerFile(fileState: OwnerFileState, data: Record<string, any>): Promise<void> {
   const adapter = fileState.adapter as any
   if (typeof adapter.write === "function") {
-    await adapter.write(fileState.data)
+    await adapter.write(data)
   } else if (typeof adapter.set === "function") {
     // Sync JSONStore adapter
-    for (const [key, value] of Object.entries(fileState.data)) {
-      adapter.set(key, value)
+    for (const [key, value] of Object.entries(data)) {
+      await adapter.set(key, value)
+    }
+    if (typeof adapter.flush === "function") {
+      await adapter.flush()
     }
   } else {
     throw new Error(`Adapter for ${fileState.logicalKey} does not support write`)
@@ -751,9 +830,11 @@ function resolveOwnersToFlush(
   const owners = new Map<string, OwnerFileState>()
 
   if (!domains || domains.length === 0) {
-    // Flush all dirty owners
+    // Flush all dirty owners and join in-flight owner writes started by
+    // debounce auto-flush. This makes await flush() a drain barrier for this
+    // facade instance, not just a best-effort dirty check.
     for (const [name, fileState] of state.ownerFiles) {
-      if (fileState.dirty) {
+      if (fileState.dirty || fileState.currentWriteTask) {
         owners.set(name, fileState)
       }
     }
@@ -764,7 +845,7 @@ function resolveOwnersToFlush(
   for (const domain of domains) {
     const ownerFile = OWNER_FILE_MAP[domain]
     const fileState = state.ownerFiles.get(ownerFile)
-    if (fileState && fileState.dirty) {
+    if (fileState && (fileState.dirty || fileState.currentWriteTask)) {
       owners.set(ownerFile, fileState)
     }
   }

@@ -65,10 +65,24 @@ export class SiYuanKernelStorageAdapter implements IAsyncStorageAdapter {
 
   async write(data: IJSON): Promise<void> {
     this.logger.info("[KernelAdapter] writing to", this.serverPath)
-    const result = await this.api.saveTextData(this.serverPath, JSON.stringify(data, null, 2))
-    if (result?.code !== 0) {
-      throw this.createKernelError("write", `saveTextData failed: ${result?.msg ?? "unknown error"}`)
+    const serialized = JSON.stringify(data, null, 2)
+
+    let result: unknown
+    try {
+      result = await this.api.saveTextData(this.serverPath, serialized)
+    } catch (e: any) {
+      throw this.createKernelError("write", `saveTextData threw: ${String(e?.message || e)}`)
     }
+
+    // zhi-siyuan-api@2.21.0 saveTextData() is typed as returning SiyuanData,
+    // but its implementation delegates to putFile()/siyuanRequestForm(), which
+    // returns response.data on code=0. For the Kernel file put endpoint that is commonly
+    // null, so absence of a top-level `code` must not be treated as failure.
+    if (this.isExplicitFailedSiyuanResult(result)) {
+      throw this.createKernelError("write", `saveTextData failed: ${result.msg ?? "unknown error"}`)
+    }
+
+    await this.verifyWrite(serialized)
     this.logger.info("[KernelAdapter] write complete")
   }
 
@@ -124,6 +138,36 @@ export class SiYuanKernelStorageAdapter implements IAsyncStorageAdapter {
     }
 
     return JSON.parse(raw)
+  }
+
+  private isExplicitFailedSiyuanResult(result: unknown): result is { code: number; msg?: string } {
+    return Boolean(
+      result &&
+      typeof result === "object" &&
+      "code" in result &&
+      typeof (result as { code?: unknown }).code === "number" &&
+      (result as { code: number }).code !== 0
+    )
+  }
+
+  private async verifyWrite(expectedSerialized: string): Promise<void> {
+    const remote = await this.readKernelFile()
+    if (remote.status !== "exists" || !remote.text || remote.text.trim() === "") {
+      throw this.createKernelError(
+        "write",
+        `write verification failed: ${remote.status}${remote.reason ? `: ${remote.reason}` : ""}`
+      )
+    }
+
+    try {
+      const expected = JSON.parse(expectedSerialized)
+      const actual = JSON.parse(remote.text)
+      if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+        throw new Error("remote content mismatch after saveTextData")
+      }
+    } catch (e: any) {
+      throw this.createKernelError("write", `write verification failed: ${String(e?.message || e)}`)
+    }
   }
 
   private createKernelError(operation: "read" | "write", reason: string): Error {
