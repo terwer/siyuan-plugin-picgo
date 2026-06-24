@@ -20,6 +20,7 @@ import {
   PicgoTypeEnum,
   PicGoHeadlessError,
   PICGO_HEADLESS_ERROR_CODES,
+  PicListUploader,
   PluginLoaderDb,
   UniversalPicGoHeadlessManager,
   calculateMD5,
@@ -50,11 +51,19 @@ import {
   SiyuanPicGoHeadlessManager,
   createSiyuanPicGoHeadlessManager,
 } from "./lib/SiyuanPicGoHeadlessManager"
+import { SiYuanKernelStorageAdapter } from "./lib/SiYuanKernelStorageAdapter"
 import {
   getDefaultLocalPicGoDir,
   getSiyuanWorkspaceDir,
   getWorkspacePicGoConfigPath,
   resolveSiyuanPicGoPaths,
+  resolveSiyuanPicGoOwnerFilePath,
+  SIYUAN_PICGO_KERNEL_CONFIG_PATH,
+  SIYUAN_PICGO_KERNEL_EXTERNAL_PATH,
+  SIYUAN_PICGO_KERNEL_SIYUAN_CONNECTION_PATH,
+  SIYUAN_PICGO_MAIN_CONFIG_KEY,
+  SIYUAN_PICGO_EXTERNAL_CONFIG_KEY,
+  SIYUAN_PICGO_SIYUAN_CONNECTION_KEY,
   toUniversalPicGoOptions,
 } from "./lib/siyuanPicgoPaths"
 import { SiyuanPicGo } from "./lib/siyuanPicgo"
@@ -77,6 +86,7 @@ export {
   PluginLoaderDb,
   PICGO_HEADLESS_ERROR_CODES,
   SIYUAN_PICGO_FILE_MAP_KEY,
+  SiYuanKernelStorageAdapter,
   SiyuanPicGo,
   SiyuanPicGoHeadlessManager,
   SiyuanPicgoConfig,
@@ -95,7 +105,14 @@ export {
   isSiyuanProxyAvailable,
   replaceImageLink,
   resolveSiyuanPicGoPaths,
+  resolveSiyuanPicGoOwnerFilePath,
   retrieveImageFromClipboardAsBlob,
+  SIYUAN_PICGO_KERNEL_CONFIG_PATH,
+  SIYUAN_PICGO_KERNEL_EXTERNAL_PATH,
+  SIYUAN_PICGO_KERNEL_SIYUAN_CONNECTION_PATH,
+  SIYUAN_PICGO_MAIN_CONFIG_KEY,
+  SIYUAN_PICGO_EXTERNAL_CONFIG_KEY,
+  SIYUAN_PICGO_SIYUAN_CONNECTION_KEY,
   toUniversalPicGoOptions,
   win,
   type IConfig,
@@ -122,9 +139,13 @@ export {
 
 export type {
   SharedMigrationState,
-  SiyuanPicGoMigrationSnapshot,
   SiyuanPicGoMigrationStatus,
 } from "./lib/siyuanPicgoMigrationState"
+export type {
+  ConfigDomain,
+  UnifiedConfigMigrationState,
+  UnifiedConfigMigrationState as SiyuanPicGoMigrationSnapshot,
+} from "universal-picgo"
 export type {
   SiyuanPicGoInstanceOptions,
   SiyuanPicGoPathOverrides,

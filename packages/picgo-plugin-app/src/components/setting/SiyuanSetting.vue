@@ -10,11 +10,13 @@
 <script setup lang="ts">
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { useSiyuanSetting } from "@/stores/useSiyuanSetting.ts"
+import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
 
 const { t } = useVueI18n()
 const { getSiyuanSetting } = useSiyuanSetting()
 
-const siyuanSettingForm = getSiyuanSetting()
+const siyuanPicgo = await SiyuanPicGoClient.getInstance()
+const siyuanSettingForm = getSiyuanSetting(siyuanPicgo.ctx())
 </script>
 
 <template>

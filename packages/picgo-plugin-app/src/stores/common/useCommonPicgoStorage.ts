@@ -25,8 +25,8 @@
 
 import type { RemovableRef, StorageLike, UseStorageOptions } from "@vueuse/core"
 import { useStorage } from "@vueuse/core"
-import { PicgoStorage } from "@/stores/common/picgoStorage.ts"
-import { IPicgoDb } from "zhi-siyuan-picgo"
+import { PicgoStorage, type PicgoStorageHooks } from "@/stores/common/picgoStorage.ts"
+import type { IPicgoDb } from "zhi-siyuan-picgo"
 
 /**
  * 通用响应式的 PicgoStorage
@@ -36,9 +36,10 @@ import { IPicgoDb } from "zhi-siyuan-picgo"
  */
 const useCommonPicgoStorage = <T extends string | number | boolean | object | null>(
   picgoDb: IPicgoDb<T>,
-  options: UseStorageOptions<T> = {}
+  options: UseStorageOptions<T> = {},
+  hooks: PicgoStorageHooks = {}
 ): RemovableRef<any> => {
-  const storageAdaptor: StorageLike = new PicgoStorage(picgoDb)
+  const storageAdaptor: StorageLike = new PicgoStorage(picgoDb, hooks)
   return useStorage(picgoDb.key, picgoDb.initialValue, storageAdaptor, options)
 }
 

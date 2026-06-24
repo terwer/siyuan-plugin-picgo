@@ -7,7 +7,17 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { IImgInfo, IPicGo, hasNodeEnv, isFileOrBlob, win } from "universal-picgo"
+import {
+  IImgInfo,
+  IPicGo,
+  ReadyUnifiedPicGoConfigFacade,
+  type ConfigDomain,
+  type UnifiedConfigMigrationState,
+  createUnifiedPicGoConfigFacade,
+  hasNodeEnv,
+  isFileOrBlob,
+  win,
+} from "universal-picgo"
 import { JsonUtil, StrUtil } from "zhi-common"
 import { DeviceDetection, DeviceTypeEnum, SiyuanDevice } from "zhi-device"
 import { ILogger, simpleLogger } from "zhi-lib-base"
@@ -22,15 +32,8 @@ import { SiyuanPicGoUploadApi } from "./siyuanPicGoUploadApi"
 import { replaceImageLink } from "./utils/utils"
 import { SiyuanPicGoPaths, migrateV2WorkspacePicGoConfig } from "./siyuanPicgoPaths"
 import {
-  buildSiyuanPicGoMigrationKey,
-  getOrCreateSiyuanPicGoMigrationState,
-  getSiyuanPicGoMigrationMarkerKey,
-  getSiyuanPicGoMigrationSnapshot,
   getSiyuanPicGoMigrationVersion,
   isSiyuanPicGoMigrationMarkedDone,
-  markSiyuanPicGoMigrationDoneInBrowser,
-  resetSiyuanPicGoMigrationState,
-  type SiyuanPicGoMigrationSnapshot,
 } from "./siyuanPicgoMigrationState"
 
 /**
@@ -44,11 +47,17 @@ class SiyuanPicgoPostApi {
   private readonly isSiyuanOrSiyuanNewWin: boolean
   private readonly picgoApi: SiyuanPicGoUploadApi
   private readonly paths: SiyuanPicGoPaths
-  private readonly configMigrationKey: string
-  private configInitPromise: Promise<void>
+  private initPromise: Promise<void> | null
+  private readonly configFacadePromise: Promise<ReadyUnifiedPicGoConfigFacade>
+  private configFacade: ReadyUnifiedPicGoConfigFacade | null
   public cfgUpdating: boolean
 
-  constructor(siyuanConfig: SiyuanConfigLike, isDev?: boolean, paths?: SiyuanPicGoPaths) {
+  constructor(
+    siyuanConfig: SiyuanConfigLike,
+    isDev?: boolean,
+    paths?: SiyuanPicGoPaths,
+    storageAdapterFactory?: (dbPath: string) => import("universal-picgo-store").StorageAdapter
+  ) {
     this.logger = simpleLogger("picgo-post-api", "zhi-siyuan-picgo", isDev)
 
     this.imageParser = new ImageParser(isDev)
@@ -67,19 +76,36 @@ class SiyuanPicgoPostApi {
     })()
 
     // 初始化 PicGO
-    this.picgoApi = new SiyuanPicGoUploadApi(isDev, paths)
+    this.picgoApi = new SiyuanPicGoUploadApi(isDev, paths, storageAdapterFactory)
     const ctx = this.picgoApi.picgo
     this.paths = {
       configPath: ctx.configPath,
+      externalConfigPath: paths?.externalConfigPath,
+      siyuanConnectionConfigPath: paths?.siyuanConnectionConfigPath,
+      workspaceDir: paths?.workspaceDir ?? win?.siyuan?.config?.system?.workspaceDir,
       baseDir: ctx.baseDir,
       pluginBaseDir: ctx.pluginBaseDir,
       zhiNpmPath: (ctx as any).zhiNpmPath,
     }
-    this.configMigrationKey = buildSiyuanPicGoMigrationKey(this.paths, siyuanConfig.apiUrl)
     this.cfgUpdating = false
-
-    this.configInitPromise = this.ensureConfigInitialized().then(() => {
-      this.logger.info("picgo config updated")
+    this.initPromise = null
+    this.configFacade = null
+    this.configFacadePromise = createUnifiedPicGoConfigFacade({
+      siyuanConfig: siyuanConfig as any,
+      paths: {
+        configPath: this.paths.configPath,
+        externalConfigPath: this.paths.externalConfigPath,
+        siyuanConnectionConfigPath: this.paths.siyuanConnectionConfigPath,
+        baseDir: this.paths.baseDir,
+        runtimeDir: this.paths.baseDir,
+        pluginBaseDir: this.paths.pluginBaseDir,
+        zhiNpmPath: this.paths.zhiNpmPath,
+        workspaceDir: this.paths.workspaceDir ?? win?.siyuan?.config?.system?.workspaceDir,
+        homeDir: this.paths.baseDir,
+      },
+      storageAdapterFactory,
+      isDev,
+      getLogger: (name: string) => simpleLogger(name, "zhi-siyuan-picgo", isDev),
     })
   }
 
@@ -90,18 +116,50 @@ class SiyuanPicgoPostApi {
     return this.picgoApi.picgo
   }
 
-  public getConfigMigrationState(): SiyuanPicGoMigrationSnapshot {
-    return getSiyuanPicGoMigrationSnapshot(this.configMigrationKey, this.paths)
+  /** Wait for async storage initialization to complete. */
+  public async init(): Promise<void> {
+    if (!this.initPromise) {
+      this.initPromise = this.initInternal()
+    }
+    await this.initPromise
+  }
+
+  public getConfigMigrationState(): UnifiedConfigMigrationState {
+    return this.getConfigFacade().getSnapshot().migration
+  }
+
+  public async getConfigMigrationStateAsync(): Promise<UnifiedConfigMigrationState> {
+    const facade = await this.getConfigFacadeAsync()
+    return facade.getMigrationState()
   }
 
   public waitForConfigMigration(): Promise<void> {
-    return this.configInitPromise ?? Promise.resolve()
+    return this.configFacadePromise.then(() => undefined)
   }
 
-  public async retryConfigMigration(): Promise<SiyuanPicGoMigrationSnapshot> {
-    this.configInitPromise = this.ensureConfigInitialized(true)
-    await this.configInitPromise
-    return this.getConfigMigrationState()
+  public getConfigFacade(): ReadyUnifiedPicGoConfigFacade {
+    if (!this.configFacade) {
+      throw new Error("Unified config facade is not ready; await SiyuanPicgoPostApi.init() first")
+    }
+    return this.configFacade
+  }
+
+  public async getConfigFacadeAsync(): Promise<ReadyUnifiedPicGoConfigFacade> {
+    await this.init()
+    return this.getConfigFacade()
+  }
+
+  public getPasteTakeoverSnapshot() {
+    return this.getConfigFacade().getSnapshot().pasteTakeover
+  }
+
+  public async retryConfigMigration(domains?: ConfigDomain[]): Promise<UnifiedConfigMigrationState> {
+    const facade = await this.getConfigFacadeAsync()
+    await facade.retryMigration(domains)
+    await facade.flush()
+    const snapshot = await facade.reload()
+    await this.ctx().reloadConfigAsync()
+    return snapshot.migration
   }
 
   /**
@@ -305,7 +363,7 @@ class SiyuanPicgoPostApi {
     // first opened. Refresh immediately before every real upload so drag/drop,
     // button, clipboard and block-menu uploads all honor the latest workspace
     // `picgo.cfg.json`.
-    this.ctx().reloadConfig()
+    await this.ctx().reloadConfigAsync()
 
     const mapInfoStr = attrs[SIYUAN_PICGO_FILE_MAP_KEY] ?? "{}"
     const fileMap = JsonUtil.safeParse<any>(mapInfoStr, {})
@@ -428,55 +486,24 @@ class SiyuanPicgoPostApi {
 
   // ===================================================================================================================
 
-  private ensureConfigInitialized(force = false): Promise<void> {
-    const sharedState = force
-      ? resetSiyuanPicGoMigrationState(this.configMigrationKey)
-      : getOrCreateSiyuanPicGoMigrationState(this.configMigrationKey, this.paths)
+  private async initInternal(): Promise<void> {
+    this.configFacade = await this.configFacadePromise
+    await this.configFacade.flush()
+    await (this.picgoApi.picgo as any).init?.()
+    this.picgoApi.attachConfigFacade(this.configFacade)
+    this.ctx().reloadConfig()
+    await this.runLegacyRuntimeCompatibilityStep()
+  }
 
-    if (!force && (sharedState.status === "done" || this.isConfigMigrationMarkedDone())) {
-      sharedState.status = "done"
-      sharedState.error = undefined
-      sharedState.promise = undefined
-      this.cfgUpdating = false
-      return Promise.resolve()
-    }
-
-    if (!force && sharedState.status === "failed") {
-      this.cfgUpdating = false
-      this.logger.warn(`PicGo config migration remains failed until explicit retry: ${sharedState.error ?? ""}`)
-      return Promise.resolve()
-    }
-
-    if (!force && sharedState.status === "running" && sharedState.promise) {
-      this.cfgUpdating = true
-      return sharedState.promise.finally(() => {
-        this.cfgUpdating = false
-      })
-    }
-
-    sharedState.status = "running"
-    sharedState.error = undefined
-    sharedState.updatedAt = Date.now()
+  private async runLegacyRuntimeCompatibilityStep(): Promise<void> {
     this.cfgUpdating = true
-
-    sharedState.promise = this.updateConfig()
-      .then(() => {
-        this.markConfigMigrationDone()
-        sharedState.status = "done"
-        sharedState.error = undefined
-      })
-      .catch((e) => {
-        sharedState.status = "failed"
-        sharedState.error = e instanceof Error ? e.message : String(e)
-        this.logger.error(`PicGo config migration failed: ${sharedState.error}`)
-      })
-      .finally(() => {
-        sharedState.updatedAt = Date.now()
-        sharedState.promise = undefined
-        this.cfgUpdating = false
-      })
-
-    return sharedState.promise
+    try {
+      await this.updateConfig()
+    } catch (e) {
+      this.logger.warn("PicGo legacy runtime compatibility step failed", e)
+    } finally {
+      this.cfgUpdating = false
+    }
   }
 
   private isConfigMigrationMarkedDone(): boolean {
@@ -484,21 +511,12 @@ class SiyuanPicgoPostApi {
     return marker?.version === getSiyuanPicGoMigrationVersion() && marker?.status === "done"
   }
 
-  private markConfigMigrationDone() {
-    this.ctx().saveConfig({
-      [getSiyuanPicGoMigrationMarkerKey()]: {
-        version: getSiyuanPicGoMigrationVersion(),
-        status: "done",
-        updatedAt: Date.now(),
-      },
-    })
-    markSiyuanPicGoMigrationDoneInBrowser(this.paths)
-  }
-
   private async updateConfig() {
-    // v2 路径契约：
-    // - picgo.cfg.json 使用工作空间路径，适合随 SiYuan 同步
-    // - runtime、插件依赖、external-picgo-cfg.json 继续使用本机 ~/.universal-picgo
+    // v3 路径契约：
+    // - 用户配置 owner files（picgo.cfg.json、external-picgo-cfg.json、siyuan-cfg）
+    //   已由 unified facade 映射到 workspace。
+    // - 这里仅保留 v2 main-config copy 作为 legacy source/runtime 兼容步骤；
+    //   runtime、插件依赖等 PC-only artifacts 继续使用本机 ~/.universal-picgo。
     this.migrateV2WorkspaceConfig()
 
     // 初始化 zhi 运行时依赖到本机 runtime。这里仍然从插件安装目录复制到 ~/.universal-picgo/libs，
@@ -529,7 +547,7 @@ class SiyuanPicgoPostApi {
 
     const ctx = this.ctx()
 
-    this.logger.info("PicGo v2 path contract =>", {
+    this.logger.info("PicGo v2 legacy main-config copy context =>", {
       configPath: ctx.configPath,
       baseDir: ctx.baseDir,
       pluginBaseDir: ctx.pluginBaseDir,

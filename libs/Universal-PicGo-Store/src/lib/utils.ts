@@ -7,7 +7,21 @@
  *  of this license document, but changing it is not allowed.
  */
 
-export const currentWin = (window || globalThis || undefined) as any
-export const parentWin = (window?.parent || window?.top || window?.self || undefined) as any
-export const win = currentWin?.fs?.rm ? currentWin : parentWin?.fs?.rm ? parentWin : currentWin
-export const hasNodeEnv = typeof parentWin?.fs?.rm !== "undefined"
+const safeGet = (target: any, key: string): any => {
+  try {
+    return target?.[key]
+  } catch {
+    return undefined
+  }
+}
+
+const browserWindow = typeof window !== "undefined" ? window : undefined
+
+export const currentWin = (browserWindow || globalThis || undefined) as any
+export const parentWin = (browserWindow?.parent || browserWindow?.top || browserWindow?.self || undefined) as any
+
+const hasFsRm = (target: any): boolean => typeof safeGet(safeGet(target, "fs"), "rm") !== "undefined"
+const hasRequire = (target: any): boolean => typeof safeGet(target, "require") === "function"
+
+export const win = hasFsRm(currentWin) ? currentWin : hasFsRm(parentWin) ? parentWin : currentWin
+export const hasNodeEnv = hasFsRm(currentWin) && hasRequire(currentWin)

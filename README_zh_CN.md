@@ -6,13 +6,15 @@
 
 您喜爱的 PicGo 图床在思源笔记依然可用，没想到吧~
 
-## PicGo 2.0+：这一次，上传终于顺了
+## PicGo 3.0+：配置归一化，同一工作空间内不再割裂
 
-PicGo 2.0+ 是一次把历史债真正清掉的版本。现在粘贴一张图片，PicGo 会从第一秒接手到底：不再双上传，不再轮询苦等，不再猜 DOM，也不再让思源默认流程先插入本地图片、再由插件事后改成图床链接。少一次卡顿，少一次疑惑，也少一次“它到底传了几遍”的不安。
+PicGo 3.0 在 2.0 把上传链路理顺了的基础上，继续往前走，把配置链路也补齐。现在，内置图床配置、外部 PicGo/PicList 选择、思源连接配置都有各自清楚的配置文件；无论你在 PC 端打开、在能访问思源 API 的网页端打开，还是用 Docker 方式部署思源，PicGo 都会读取同一套真实的工作空间配置，而不是悄悄掉回浏览器本地默认值。
 
-更重要的是，底层也重新理顺了：主图床配置可以跟着思源工作空间走，插件依赖、缓存、日志这些重文件安心留在本机；Publisher 和更多插件也能直接借用 PicGo 的上传核心，不必把完整 PicGo 界面塞进每一个场景。老用户一打开就会觉得轻了、顺了；新用户第一次上手，也不用先理解一堆历史包袱。
+日常能感受到的变化很直接：换一个入口打开 popup，也能看到之前保存过的图床；外部 PicGo 和 PicList 设置不再散落在另一个本地角落；连接配置也会沿着同一条“先加载、再使用”的链路进入插件。运行时文件仍然安心留在本机，第三方插件依赖、缓存、日志、脚本这些重文件不会被拖进工作空间同步。
 
-你每天真正摸得到的，是更轻快的 popup、安静完成的一次性迁移、说得明白的重载提示，以及一条终于干净下来的上传链路。如果你曾经觉得 PicGo 还能更好，2.0 就是那个值得马上重新打开的版本。
+底层也更稳了一点：真实配置读取完成后才会进入可用状态；需要保存落盘的界面会等保存完成；迁移按配置域拆开处理，不会因为某一块还需要默认值，就覆盖另一块已有的用户数据。如果说 2.0 让上传变干净，3.0 就是让上传背后的配置也变得踏实。
+
+另外，在网页端或 Docker 这类容易遇到跨域限制的场景，只要思源 API 可用，PicGo 会走思源内置的正向代理，把这些细节尽量藏在底层。看不到的地方，也会好好守住。
 
 ## 推荐配置
 
@@ -22,28 +24,33 @@ PicGo 2.0+ 是一次把历史债真正清掉的版本。现在粘贴一张图片
 
 > 重要提示：
 >
-> PicGo `2.0.0+` 调整了配置路径：主配置随工作空间同步，运行时、插件依赖、缓存和日志留在本机。完整路径见下方 `v2.0.0 配置路径变更`。
+> PicGo `3.0.0+` 使用统一配置来源。内置 PicGo 配置、外部 PicGo/PicList 配置、思源连接配置，在思源 API 可用时都会从工作空间配置文件读取；运行时文件、第三方插件依赖、缓存、脚本和日志仍留在当前设备。
 >
-> 思源笔记 `3.0.3` 之前的版本请不要升级本插件，最高只能使用使用 `1.5.1` 版本。 思源笔记 `3.0.3` 之后的版本可升级 PicGO 插件到 `1.6.0+` 。
+> `2.0.0` 的路径拆分说明已经并入下方 `历史路径`，作为老版本迁移参考。
 >
-> 思源笔记 `2.10.8` 之前的版本请不要升级本插件，最高只能使用使用 `1.4.5` 版本。 思源笔记 `2.10.8` 之后的版本可升级 PicGO 插件到 `1.5.0+` 。
+> 思源笔记 `3.0.3` 之前的版本请不要升级本插件，最高只能使用 `1.5.1` 版本。 思源笔记 `3.0.3` 之后的版本可升级 PicGO 插件到 `1.6.0+` 。
+>
+> 思源笔记 `2.10.8` 之前的版本请不要升级本插件，最高只能使用 `1.4.5` 版本。 思源笔记 `2.10.8` 之后的版本可升级 PicGO 插件到 `1.5.0+` 。
 
-### v2.0.0 配置路径变更
+### v3.0.0 配置路径变更
 
-v2.0.0 是破坏性整理版本，包含前一轮 PicGo 内部重构，也包含本次存储路径拆分。
+v3.0.0 是一次配置链路整理版本。它保留 v2 的运行时拆分，同时把用户可感知的 PicGo 配置都放到明确的工作空间配置文件中。
 
-内置 PicGo 主配置回到工作空间，适合随思源工作空间同步：
+随工作空间保存的配置：
 
 ```text
 [工作空间]/data/storage/syp/picgo/
-  picgo.cfg.json
+  picgo.cfg.json                  # 内置 PicGo 主配置、上传器设置、插件值、粘贴行为等
+  external-picgo-cfg.json         # 外部 PicGo App / PicList API 选择和地址
+
+[工作空间]/data/storage/syp/
+  siyuan-cfg.json                 # 思源 API 连接配置
 ```
 
 设备本地运行时仍留在本机目录，不随工作空间同步：
 
 ```text
 ~/.universal-picgo/
-  external-picgo-cfg.json
   package.json
   package-lock.json
   node_modules/
@@ -54,22 +61,26 @@ v2.0.0 是破坏性整理版本，包含前一轮 PicGo 内部重构，也包含
   picgo.log
 ```
 
-迁移规则：如果工作空间缺少 `picgo.cfg.json`，并且 `~/.universal-picgo/picgo.cfg.json` 存在，v2 只复制这一个文件到工作空间；不删除 home 旧文件，不覆盖已有工作空间配置，也不迁移整个目录。
+迁移规则：v3 会按配置域导入可迁移的旧数据，写入新的配置文件；已有真实用户配置不会被默认值覆盖。迁移完成后会留下标记，后续启动保持安静。
+
+关于极端同时编辑：如果同一个思源工作空间里的多个 PicGo 入口，几乎同时修改同一项 PicGo 设置，会以最后保存的内容为准。
+
+注意：这不涉及思源多工作空间，多工作空间天然各自隔离。日常正常使用基本遇不到。
 
 ### 历史路径
 
 ```text
-<= 1.5.6
+2.0.0 - 2.x
 [工作空间]/data/storage/syp/picgo/picgo.cfg.json
-[工作空间]/data/storage/syp/picgo/external-picgo-cfg.json
-[工作空间]/data/storage/syp/picgo/package.json
-[工作空间]/data/storage/syp/picgo/package-lock.json
-[工作空间]/data/storage/syp/picgo/node_modules/
-[工作空间]/data/storage/syp/picgo/libs/
-[工作空间]/data/storage/syp/picgo/i18n-cli/
-[工作空间]/data/storage/syp/picgo/picgo-clipboard-images/
-[工作空间]/data/storage/syp/picgo/*.script
-[工作空间]/data/storage/syp/picgo/picgo.log
+~/.universal-picgo/external-picgo-cfg.json
+~/.universal-picgo/package.json
+~/.universal-picgo/package-lock.json
+~/.universal-picgo/node_modules/
+~/.universal-picgo/libs/
+~/.universal-picgo/i18n-cli/
+~/.universal-picgo/picgo-clipboard-images/
+~/.universal-picgo/*.script
+~/.universal-picgo/picgo.log
 
 1.6.0+
 ~/.universal-picgo/picgo.cfg.json
@@ -82,6 +93,18 @@ v2.0.0 是破坏性整理版本，包含前一轮 PicGo 内部重构，也包含
 ~/.universal-picgo/picgo-clipboard-images/
 ~/.universal-picgo/*.script
 ~/.universal-picgo/picgo.log
+
+<= 1.5.6
+[工作空间]/data/storage/syp/picgo/picgo.cfg.json
+[工作空间]/data/storage/syp/picgo/external-picgo-cfg.json
+[工作空间]/data/storage/syp/picgo/package.json
+[工作空间]/data/storage/syp/picgo/package-lock.json
+[工作空间]/data/storage/syp/picgo/node_modules/
+[工作空间]/data/storage/syp/picgo/libs/
+[工作空间]/data/storage/syp/picgo/i18n-cli/
+[工作空间]/data/storage/syp/picgo/picgo-clipboard-images/
+[工作空间]/data/storage/syp/picgo/*.script
+[工作空间]/data/storage/syp/picgo/picgo.log
 ```
 
 

@@ -1,5 +1,13 @@
-import { describe, expect, it, vi, beforeEach } from "vitest"
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest"
 import { PicListUploader } from "./PicListUploader"
+import { MASK_VALUE } from "../config"
+
+const mockLogger = vi.hoisted(() => ({
+  debug: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+}))
 
 // Mock universal-picgo-store before imports
 vi.mock("universal-picgo-store", () => ({
@@ -8,91 +16,76 @@ vi.mock("universal-picgo-store", () => ({
   JSONStore: vi.fn(),
 }))
 
-// Mock ExternalPicgoConfigDb
-vi.mock("../db/externalPicGo", () => ({
-  default: vi.fn(),
+vi.mock("zhi-lib-base", () => ({
+  simpleLogger: vi.fn(() => mockLogger),
 }))
 
-import ExternalPicgoConfigDb from "../db/externalPicGo"
-
-function createMockDb(overrides: Record<string, any> = {}) {
+function createRouteConfig(overrides: Record<string, any> = {}) {
   const defaults: Record<string, any> = {
     picgoType: "app",
     picListApiUrl: "https://piclist.example.com/upload",
     picListApiKey: "test-api-key-123",
   }
-  const values = { ...defaults, ...overrides }
-  return {
-    get: vi.fn((key: string) => values[key]),
-    set: vi.fn(),
-    has: vi.fn(),
-  }
+  return { ...defaults, ...overrides }
 }
 
 const mockCtx = { pluginBaseDir: "/tmp/picgo", log: { error: vi.fn() } } as any
 
 describe("PicListUploader", () => {
   let uploader: PicListUploader
-  let mockDb: ReturnType<typeof createMockDb>
+  let routeConfig: Record<string, any>
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockDb = createMockDb()
-    ;(ExternalPicgoConfigDb as any).mockImplementation(() => mockDb)
-    uploader = new PicListUploader(mockCtx, true) // isDev=true for debug logging
+    routeConfig = createRouteConfig()
+    uploader = new PicListUploader(mockCtx, true, () => routeConfig) // isDev=true for debug logging
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
   })
 
   describe("isPicListConfigured", () => {
     it("returns true when both URL and key are set", () => {
-      mockDb = createMockDb({
+      routeConfig = createRouteConfig({
         picListApiUrl: "https://api.example.com/upload",
         picListApiKey: "secret-key",
       })
-      ;(ExternalPicgoConfigDb as any).mockImplementation(() => mockDb)
-      uploader = new PicListUploader(mockCtx, true)
       expect(uploader.isPicListConfigured()).toBe(true)
     })
 
     it("returns false when URL is empty", () => {
-      mockDb = createMockDb({
+      routeConfig = createRouteConfig({
         picListApiUrl: "",
         picListApiKey: "secret-key",
       })
-      ;(ExternalPicgoConfigDb as any).mockImplementation(() => mockDb)
-      uploader = new PicListUploader(mockCtx, true)
       expect(uploader.isPicListConfigured()).toBe(false)
     })
 
     it("returns false when key is empty", () => {
-      mockDb = createMockDb({
+      routeConfig = createRouteConfig({
         picListApiUrl: "https://api.example.com",
         picListApiKey: "",
       })
-      ;(ExternalPicgoConfigDb as any).mockImplementation(() => mockDb)
-      uploader = new PicListUploader(mockCtx, true)
       expect(uploader.isPicListConfigured()).toBe(false)
     })
 
     it("returns false when both URL and key are empty", () => {
-      mockDb = createMockDb({
+      routeConfig = createRouteConfig({
         picListApiUrl: "",
         picListApiKey: "",
       })
-      ;(ExternalPicgoConfigDb as any).mockImplementation(() => mockDb)
-      uploader = new PicListUploader(mockCtx, true)
       expect(uploader.isPicListConfigured()).toBe(false)
     })
   })
 
   describe("upload validation", () => {
     it("throws when picgoType is not App", async () => {
-      mockDb = createMockDb({
+      routeConfig = createRouteConfig({
         picgoType: "bundled",
         picListApiUrl: "https://example.com",
         picListApiKey: "test-key",
       })
-      ;(ExternalPicgoConfigDb as any).mockImplementation(() => mockDb)
-      uploader = new PicListUploader(mockCtx, true)
 
       await expect(uploader.upload(["file.jpg"])).rejects.toThrow("not supported via PicList API")
     })
@@ -102,14 +95,33 @@ describe("PicListUploader", () => {
     })
 
     it("throws when PicList is not configured", async () => {
-      mockDb = createMockDb({
+      routeConfig = createRouteConfig({
         picListApiUrl: "",
         picListApiKey: "",
       })
-      ;(ExternalPicgoConfigDb as any).mockImplementation(() => mockDb)
-      uploader = new PicListUploader(mockCtx, true)
 
       await expect(uploader.upload(["file.jpg"])).rejects.toThrow("not configured")
+    })
+
+    it("masks PicList API key in debug upload URL logs", async () => {
+      routeConfig = createRouteConfig({
+        picListApiUrl: "https://piclist.example.com/upload",
+        picListApiKey: "super-secret-key",
+      })
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => ({
+          ok: true,
+          json: async () => ({ success: true, result: "https://img.example.com/image.png" }),
+          text: async () => "",
+        }))
+      )
+
+      await uploader.upload([new Blob(["png"], { type: "image/png" })])
+
+      const debugLog = JSON.stringify(mockLogger.debug.mock.calls)
+      expect(debugLog).toContain(MASK_VALUE)
+      expect(debugLog).not.toContain("super-secret-key")
     })
   })
 })

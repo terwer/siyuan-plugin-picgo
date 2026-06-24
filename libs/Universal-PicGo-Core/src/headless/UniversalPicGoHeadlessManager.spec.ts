@@ -27,7 +27,7 @@ describe("UniversalPicGoHeadlessManager", () => {
     window.localStorage.clear()
   })
 
-  it("reads initialized config and preserves unknown fields while saving one uploader", () => {
+  it("reads initialized config and preserves unknown fields while saving one uploader", async () => {
     const manager = createManager()
     const ctx = manager.getContext()
     ctx.saveConfig({
@@ -43,7 +43,7 @@ describe("UniversalPicGoHeadlessManager", () => {
       },
     })
 
-    const result = manager.saveUploaderConfig(
+    const result = await manager.saveUploaderConfig(
       "github",
       {
         repo: "new/repo",
@@ -104,7 +104,7 @@ describe("UniversalPicGoHeadlessManager", () => {
     })
   })
 
-  it("returns structured validation errors for missing fields and unknown uploaders", () => {
+  it("returns structured validation errors for missing fields and unknown uploaders", async () => {
     const manager = createManager()
 
     expect(manager.validateUploaderConfig("github", { repo: "terwer/repo" })).toMatchObject({
@@ -118,8 +118,8 @@ describe("UniversalPicGoHeadlessManager", () => {
       ]),
     })
 
-    const currentBefore = manager.getCurrentUploader()
-    expect(manager.setCurrentUploader("not-exists")).toMatchObject({
+    const currentBefore = await manager.getCurrentUploader()
+    expect(await manager.setCurrentUploader("not-exists")).toMatchObject({
       ok: false,
       errors: [
         expect.objectContaining({
@@ -127,12 +127,12 @@ describe("UniversalPicGoHeadlessManager", () => {
         }),
       ],
     })
-    expect(manager.getCurrentUploader()).toBe(currentBefore)
+    expect(await manager.getCurrentUploader()).toBe(currentBefore)
   })
 
   it("uses the same validation before upload", async () => {
     const manager = createManager()
-    manager.setCurrentUploader("smms")
+    await manager.setCurrentUploader("smms")
 
     await expect(manager.upload(["/tmp/image.png"])).rejects.toMatchObject({
       code: PICGO_HEADLESS_ERROR_CODES.VALIDATION_FAILED,
@@ -144,7 +144,7 @@ describe("UniversalPicGoHeadlessManager", () => {
       ],
     })
 
-    manager.saveUploaderConfig("smms", { token: "token" }, { setCurrent: true })
+    await manager.saveUploaderConfig("smms", { token: "token" }, { setCurrent: true })
     manager.getContext().upload = vi.fn(async () => [{ fileName: "image.png", imgUrl: "https://example.invalid/image.png" }])
 
     await expect(manager.upload(["/tmp/image.png"])).resolves.toEqual([
