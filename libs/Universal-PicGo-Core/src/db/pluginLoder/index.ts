@@ -8,7 +8,7 @@
  */
 
 import { IPicGo, IPicgoDb } from "../../types"
-import { hasNodeEnv, IJSON, JSONStore, win } from "universal-picgo-store"
+import { hasNodeEnv, IJSON, JSONStore, JSONAdapter, LocalStorageAdapter, win } from "universal-picgo-store"
 import { browserPathJoin } from "../../utils/browserUtils"
 
 class PluginLoaderDb implements IPicgoDb<any> {
@@ -32,7 +32,9 @@ class PluginLoaderDb implements IPicgoDb<any> {
       this.key = browserPathJoin(this.ctx.pluginBaseDir, "package.json")
     }
 
-    this.db = new JSONStore(this.key)
+    const adapter = ctx.storageAdapterFactory?.(this.key)
+      ?? (hasNodeEnv ? new JSONAdapter(this.key) : new LocalStorageAdapter(this.key))
+    this.db = new JSONStore(this.key, adapter)
 
     // 初始化
     this.saveConfig(this.initialValue)

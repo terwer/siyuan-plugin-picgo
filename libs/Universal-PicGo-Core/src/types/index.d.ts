@@ -112,6 +112,15 @@ export interface IPicGo extends EventEmitter {
    * upload gogogo
    */
   upload: (input?: any[]) => Promise<IImgInfo[] | Error>
+
+  readonly storageMode: "sync" | "async"
+  reloadConfigAsync: () => Promise<IConfig>
+  flushConfig: () => Promise<void>
+  /** Optional storage adapter factory from options. */
+  storageAdapterFactory?: (dbPath: string) => import("universal-picgo-store").StorageAdapter
+  /** PicGo 3.0 unified facade attached by product lifecycle. */
+  attachConfigFacade?: (facade: import("../config").ReadyUnifiedPicGoConfigFacade) => void
+  getConfigFacade?: () => import("../config").ReadyUnifiedPicGoConfigFacade | undefined
 }
 
 /**
@@ -146,6 +155,8 @@ export interface IUniversalPicGoOptions {
    * Enable development logging.
    */
   isDev?: boolean
+  /** Storage adapter factory. Optional. Receives logical dbPath, returns adapter. */
+  storageAdapterFactory?: (dbPath: string) => import("universal-picgo-store").StorageAdapter
 }
 
 export type Nullable<T> = T | null

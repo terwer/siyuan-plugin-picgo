@@ -143,29 +143,15 @@ class PasteEventAdapter {
     }
   }
 
-  public readBrowserConfig(): PasteTakeoverConfig {
-    const fallback: PasteTakeoverConfig = {
-      autoUpload: true,
-      allowPicAndText: false,
-    }
-
-    if (typeof window === "undefined" || !window.localStorage) {
-      return fallback
-    }
-
-    try {
-      const raw = window.localStorage.getItem("universal-picgo/picgo.cfg.json")
-      if (!raw) {
-        return fallback
-      }
-      const cfg = JSON.parse(raw)
-      return {
-        autoUpload: cfg?.siyuan?.autoUpload ?? fallback.autoUpload,
-        allowPicAndText: cfg?.siyuan?.txtImageSwitch ?? fallback.allowPicAndText,
-      }
-    } catch {
-      return fallback
-    }
+  /**
+   * Takeover decision from a prewarmed unified facade snapshot.
+   *
+   * This is the PicGo 3.0 production path. The snapshot is constructed
+   * during facade initialization so paste events can decide synchronously
+   * without crossing the async boundary.
+   */
+  public tryTakeoverFromSnapshot(event: CustomEvent, snapshot: { autoUpload: boolean; allowPicAndText: boolean }): PasteTakeoverResult {
+    return this.tryTakeoverWithConfig(event, snapshot)
   }
 
   /**

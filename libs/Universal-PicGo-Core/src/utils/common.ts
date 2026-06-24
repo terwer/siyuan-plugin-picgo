@@ -552,16 +552,33 @@ export const getNormalPluginName = (nameOrPath: string, logger: ILogger): string
 /**
  * 思源笔记内置代理是否可用。
  *
- * `siyuan.proxy` 中保存的端口会随思源重启失效，因此这里不再依赖落盘 origin，
- * 只判断当前运行时 window 是否为思源环境。
+ * 快速路径：`win.siyuan` 全局对象存在（iframe / Electron）→ 直接 true。
+ * 回退路径：同域浏览器直开时通过同步 HEAD 请求验证 API 可达性。
  */
 export const isSiyuanProxyAvailable = () => {
-  const hasSiyuanRuntime = !!win?.siyuan
-  console.info("[isSiyuanProxyAvailable] runtime check", {
-    origin: win?.location?.origin,
-    hasSiyuanRuntime,
-  })
-  return hasSiyuanRuntime
+  // 快速路径：iframe/Electron 内有 siyuan 全局对象
+  if (win?.siyuan) {
+    return true
+  }
+
+  // 回退路径：同域直开，通过同步探测验证
+  const origin = win?.location?.origin
+  if (!origin) {
+    console.info("[isSiyuanProxyAvailable] no origin, proxy unavailable")
+    return false
+  }
+
+  try {
+    const req = new XMLHttpRequest()
+    req.open("HEAD", `${origin}/api/system/version`, false)
+    req.send()
+    const available = req.status >= 200 && req.status < 500
+    console.info("[isSiyuanProxyAvailable] check API available", { origin, status: req.status, available })
+    return available
+  } catch (e) {
+    console.info("[isSiyuanProxyAvailable] check API available failed", e)
+    return false
+  }
 }
 
 export const getSiyuanProxyUrl = () => {

@@ -92,18 +92,18 @@ export interface PicGoHeadlessSaveUploaderConfigOptions {
 
 export interface IPicGoHeadlessManager {
   getContext(): IPicGo
-  getConfig(): IConfig
-  getCurrentUploader(): string
-  setCurrentUploader(uploaderId: string): PicGoValidationResult
+  getConfig(): Promise<IConfig>
+  getCurrentUploader(): Promise<string>
+  setCurrentUploader(uploaderId: string): Promise<PicGoValidationResult>
   listUploaders(): PicGoUploaderListItem[]
   getUploaderSchema(uploaderId: string): PicGoUploaderConfigSchema
-  getUploaderConfig<T extends Record<string, unknown> = Record<string, unknown>>(uploaderId: string): T
+  getUploaderConfig<T extends Record<string, unknown> = Record<string, unknown>>(uploaderId: string): Promise<T>
   validateUploaderConfig(uploaderId: string, config: Record<string, unknown>): PicGoValidationResult
   saveUploaderConfig(
     uploaderId: string,
     config: Record<string, unknown>,
     options?: PicGoHeadlessSaveUploaderConfigOptions
-  ): PicGoValidationResult
+  ): Promise<PicGoValidationResult>
   auditUploaderSchemas(): PicGoUploaderSchemaAuditResult
   upload(input?: any[]): Promise<IImgInfo[]>
 }

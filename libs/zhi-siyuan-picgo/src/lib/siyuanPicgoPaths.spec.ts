@@ -1,10 +1,17 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 import * as picgo from "universal-picgo"
 import {
+  getWorkspacePicGoExternalConfigPath,
   getWorkspacePicGoConfigPath,
+  getWorkspaceSiyuanConnectionConfigPath,
+  hasV3MigrationMarker,
   isDefaultInitializedConfig,
   migrateV2WorkspacePicGoConfig,
+  resolveSiyuanPicGoOwnerFilePath,
   resolveSiyuanPicGoPaths,
+  SIYUAN_PICGO_EXTERNAL_CONFIG_KEY,
+  SIYUAN_PICGO_MAIN_CONFIG_KEY,
+  SIYUAN_PICGO_SIYUAN_CONNECTION_KEY,
   toUniversalPicGoOptions,
 } from "./siyuanPicgoPaths"
 
@@ -44,12 +51,18 @@ describe("siyuan PicGo v2 path helpers", () => {
 
     expect(paths).toEqual({
       configPath: "/workspace/data/storage/syp/picgo/picgo.cfg.json",
+      externalConfigPath: "/workspace/data/storage/syp/picgo/external-picgo-cfg.json",
+      siyuanConnectionConfigPath: "/workspace/data/storage/syp/siyuan-cfg.json",
+      workspaceDir: "/workspace",
       baseDir: "/home/tester/.universal-picgo",
       pluginBaseDir: "/home/tester/.universal-picgo",
       zhiNpmPath: undefined,
     })
     expect(toUniversalPicGoOptions(paths, true)).toMatchObject({
       configPath: "/workspace/data/storage/syp/picgo/picgo.cfg.json",
+      externalConfigPath: "/workspace/data/storage/syp/picgo/external-picgo-cfg.json",
+      siyuanConnectionConfigPath: "/workspace/data/storage/syp/siyuan-cfg.json",
+      workspaceDir: "/workspace",
       baseDir: "/home/tester/.universal-picgo",
       pluginBaseDir: "/home/tester/.universal-picgo",
       isDev: true,
@@ -62,6 +75,9 @@ describe("siyuan PicGo v2 path helpers", () => {
 
     const paths = resolveSiyuanPicGoPaths({
       configPath: "/debug/picgo.cfg.json",
+      externalConfigPath: "/debug/external-picgo-cfg.json",
+      siyuanConnectionConfigPath: "/debug/siyuan-cfg.json",
+      workspaceDir: "/debug/workspace",
       runtimeDir: "/debug/runtime",
       pluginBaseDir: "/debug/plugins",
       zhiNpmPath: "/debug/zhi",
@@ -69,6 +85,9 @@ describe("siyuan PicGo v2 path helpers", () => {
 
     expect(paths).toEqual({
       configPath: "/debug/picgo.cfg.json",
+      externalConfigPath: "/debug/external-picgo-cfg.json",
+      siyuanConnectionConfigPath: "/debug/siyuan-cfg.json",
+      workspaceDir: "/debug/workspace",
       baseDir: "/debug/runtime",
       pluginBaseDir: "/debug/plugins",
       zhiNpmPath: "/debug/zhi",
@@ -80,6 +99,22 @@ describe("siyuan PicGo v2 path helpers", () => {
     vi.spyOn(picgo, "win", "get").mockReturnValue(fakeWin as any)
 
     expect(getWorkspacePicGoConfigPath("/workspace")).toBe("/workspace/data/storage/syp/picgo/picgo.cfg.json")
+    expect(getWorkspacePicGoExternalConfigPath("/workspace")).toBe("/workspace/data/storage/syp/picgo/external-picgo-cfg.json")
+    expect(getWorkspaceSiyuanConnectionConfigPath("/workspace")).toBe("/workspace/data/storage/syp/siyuan-cfg.json")
+  })
+
+  it("maps all three v3 owner logical keys to SiYuan workspace physical files under Node", () => {
+    const paths = {
+      configPath: "/workspace/data/storage/syp/picgo/picgo.cfg.json",
+      externalConfigPath: "/workspace/data/storage/syp/picgo/external-picgo-cfg.json",
+      siyuanConnectionConfigPath: "/workspace/data/storage/syp/siyuan-cfg.json",
+      baseDir: "/home/tester/.universal-picgo",
+    }
+
+    expect(resolveSiyuanPicGoOwnerFilePath(SIYUAN_PICGO_MAIN_CONFIG_KEY, paths)).toBe("/workspace/data/storage/syp/picgo/picgo.cfg.json")
+    expect(resolveSiyuanPicGoOwnerFilePath(SIYUAN_PICGO_EXTERNAL_CONFIG_KEY, paths)).toBe("/workspace/data/storage/syp/picgo/external-picgo-cfg.json")
+    expect(resolveSiyuanPicGoOwnerFilePath(SIYUAN_PICGO_SIYUAN_CONNECTION_KEY, paths)).toBe("/workspace/data/storage/syp/siyuan-cfg.json")
+    expect(resolveSiyuanPicGoOwnerFilePath("runtime-cache.json", paths)).toBe("runtime-cache.json")
   })
 
   it("copies only home picgo.cfg.json when workspace config is missing", () => {
@@ -228,5 +263,71 @@ describe("siyuan PicGo v2 path helpers", () => {
       })
     ).toBe(true)
     expect(files.get("/workspace/data/storage/syp/picgo/picgo.cfg.json")).toBe(legacyHomeConfig)
+  })
+
+  it("does not replace generated defaults when workspace config already has v3 marker", () => {
+    const v3WorkspaceConfig = JSON.stringify({
+      picBed: {
+        uploader: "smms",
+        current: "smms",
+      },
+      picgoPlugins: {},
+      siyuan: {
+        waitTimeout: 2,
+        retryTimes: 5,
+        autoUpload: true,
+        replaceLink: true,
+        txtImageSwitch: false,
+        picgoMigration: {
+          version: "v3.0-unified-async-config-source",
+          status: "done",
+          attempts: 1,
+          domains: {},
+        },
+      },
+    })
+    const legacyHomeConfig = JSON.stringify({
+      picBed: {
+        uploader: "awss3",
+        current: "awss3",
+      },
+    })
+    const files = new Map<string, string>([
+      ["/home/tester/.universal-picgo/picgo.cfg.json", legacyHomeConfig],
+      ["/workspace/data/storage/syp/picgo/picgo.cfg.json", v3WorkspaceConfig],
+    ])
+    const fs = {
+      existsSync: vi.fn((target: string) => files.has(target)),
+      mkdirSync: vi.fn(),
+      readFileSync: vi.fn((target: string) => files.get(target) ?? ""),
+      copyFileSync: vi.fn((from: string, to: string) => {
+        files.set(to, files.get(from) ?? "")
+      }),
+    }
+    const path = {
+      join: (...parts: string[]) => parts.join("/").replace(/\/+/g, "/"),
+      dirname: (file: string) => file.replace(/\/[^/]*$/, "") || "/",
+      basename: (file: string) => file.split("/").pop() || file,
+      resolve: (file: string) => file,
+    }
+    vi.spyOn(picgo, "hasNodeEnv", "get").mockReturnValue(true)
+    vi.spyOn(picgo, "win", "get").mockReturnValue({
+      fs,
+      require: vi.fn((name: string) => {
+        if (name === "path") return path
+        throw new Error(`unexpected require ${name}`)
+      }),
+    } as any)
+
+    expect(hasV3MigrationMarker(v3WorkspaceConfig)).toBe(true)
+    expect(isDefaultInitializedConfig(v3WorkspaceConfig)).toBe(false)
+    expect(
+      migrateV2WorkspacePicGoConfig({
+        configPath: "/workspace/data/storage/syp/picgo/picgo.cfg.json",
+        baseDir: "/home/tester/.universal-picgo",
+      })
+    ).toBe(false)
+    expect(fs.copyFileSync).not.toHaveBeenCalled()
+    expect(files.get("/workspace/data/storage/syp/picgo/picgo.cfg.json")).toBe(v3WorkspaceConfig)
   })
 })

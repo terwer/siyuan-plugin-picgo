@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.0.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.1.1...siyuan-plugin-picgo-v3.0.0) (2026-06-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **config:** PicGo config access is async-only in 3.0; legacy synchronous config APIs and split runtime storage paths are replaced by the unified facade.
+
+### Features
+
+* **config:** unify PicGo config persistence strategy ([#689](https://github.com/terwer/siyuan-plugin-picgo/issues/689)) ([41f7490](https://github.com/terwer/siyuan-plugin-picgo/commit/41f749096e0e194de6ab3d0957e54107d46bed34))
+
+
+### Bug Fixes
+
+* **core:** ensure ExternalPicgoConfigDb defaults survive async load ([#687](https://github.com/terwer/siyuan-plugin-picgo/issues/687)) ([6144292](https://github.com/terwer/siyuan-plugin-picgo/commit/6144292ac210d5911f1fdae623662ecad0106bfb))
+
 ## [2.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.1.0...siyuan-plugin-picgo-v2.1.1) (2026-06-17)
 ### Bug Fixes
 * **docs:** add release summary for 2.1.0 changelog ([#685](https://github.com/terwer/siyuan-plugin-picgo/issues/685)) ([81df207](https://github.com/terwer/siyuan-plugin-picgo/commit/81df207114352934f237cb55ec215f29f31017ce))

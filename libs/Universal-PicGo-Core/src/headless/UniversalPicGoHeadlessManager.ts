@@ -33,20 +33,27 @@ class UniversalPicGoHeadlessManager implements IPicGoHeadlessManager {
     return this.ctx
   }
 
-  getConfig(): IConfig {
+  async getConfig(): Promise<IConfig> {
+    await this.ensureReady()
+    const facade = this.ctx.getConfigFacade?.()
+    if (facade) {
+      return cloneSerializable(await facade.getPicGoConfig())
+    }
     return cloneSerializable(this.ctx.getConfig<IConfig>())
   }
 
-  getCurrentUploader(): string {
+  async getCurrentUploader(): Promise<string> {
+    const config = await this.getConfig()
     const configuredUploader =
-      this.ctx.getConfig<string>("picBed.uploader") || this.ctx.getConfig<string>("picBed.current")
+      config?.picBed?.uploader || config?.picBed?.current
     if (configuredUploader && this.hasUploader(configuredUploader)) {
       return configuredUploader
     }
     return DEFAULT_UPLOADER_ID
   }
 
-  setCurrentUploader(uploaderId: string): PicGoValidationResult {
+  async setCurrentUploader(uploaderId: string): Promise<PicGoValidationResult> {
+    await this.ensureReady()
     if (!this.hasUploader(uploaderId)) {
       return this.unknownUploaderResult(uploaderId)
     }
@@ -55,6 +62,7 @@ class UniversalPicGoHeadlessManager implements IPicGoHeadlessManager {
       "picBed.current": uploaderId,
       "picBed.uploader": uploaderId,
     })
+    await this.ctx.flushConfig?.()
     return okResult(uploaderId)
   }
 
@@ -78,11 +86,13 @@ class UniversalPicGoHeadlessManager implements IPicGoHeadlessManager {
     return schema
   }
 
-  getUploaderConfig<T extends Record<string, unknown> = Record<string, unknown>>(uploaderId: string): T {
+  async getUploaderConfig<T extends Record<string, unknown> = Record<string, unknown>>(uploaderId: string): Promise<T> {
+    await this.ensureReady()
     if (!this.hasUploader(uploaderId)) {
       throw this.unknownUploaderError(uploaderId)
     }
-    return cloneSerializable((this.ctx.getConfig<T>(`picBed.${uploaderId}`) ?? {}) as T)
+    const config = await this.getConfig()
+    return cloneSerializable(((config.picBed as any)?.[uploaderId] ?? {}) as T)
   }
 
   validateUploaderConfig(uploaderId: string, config: Record<string, unknown>): PicGoValidationResult {
@@ -127,17 +137,18 @@ class UniversalPicGoHeadlessManager implements IPicGoHeadlessManager {
     }
   }
 
-  saveUploaderConfig(
+  async saveUploaderConfig(
     uploaderId: string,
     config: Record<string, unknown>,
     options: PicGoHeadlessSaveUploaderConfigOptions = {}
-  ): PicGoValidationResult {
+  ): Promise<PicGoValidationResult> {
+    await this.ensureReady()
     if (!this.hasUploader(uploaderId)) {
       return this.unknownUploaderResult(uploaderId)
     }
 
     const schema = this.getUploaderSchema(uploaderId)
-    const currentConfig = this.getUploaderConfig(uploaderId)
+    const currentConfig = await this.getUploaderConfig(uploaderId)
     const normalizedConfig = options.unsafeRaw
       ? { ...currentConfig, ...cloneSerializable(config) }
       : this.withSchemaDefaults(schema, { ...currentConfig, ...config })
@@ -160,6 +171,7 @@ class UniversalPicGoHeadlessManager implements IPicGoHeadlessManager {
       })
     }
 
+    await this.ctx.flushConfig?.()
     return okResult(uploaderId)
   }
 
@@ -168,8 +180,9 @@ class UniversalPicGoHeadlessManager implements IPicGoHeadlessManager {
   }
 
   async upload(input?: any[]): Promise<IImgInfo[]> {
-    const uploaderId = this.getCurrentUploader()
-    const validation = this.validateUploaderConfig(uploaderId, this.getUploaderConfig(uploaderId))
+    await this.ensureReady()
+    const uploaderId = await this.getCurrentUploader()
+    const validation = this.validateUploaderConfig(uploaderId, await this.getUploaderConfig(uploaderId))
     if (!validation.ok) {
       throw new PicGoHeadlessError({
         code: PICGO_HEADLESS_ERROR_CODES.VALIDATION_FAILED,
@@ -197,6 +210,10 @@ class UniversalPicGoHeadlessManager implements IPicGoHeadlessManager {
 
   private hasUploader(uploaderId: string): boolean {
     return Boolean(uploaderId && this.ctx.helper.uploader.get(uploaderId))
+  }
+
+  private async ensureReady(): Promise<void> {
+    await (this.ctx as any).init?.()
   }
 
   private withSchemaDefaults(
