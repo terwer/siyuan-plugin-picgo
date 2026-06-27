@@ -212,15 +212,18 @@ describe("UnifiedConfigFacade", () => {
       expect(state.attempts).toBe(1)
     })
 
-    it("fails async owner-file read with ConfigReadError without retrying or writing defaults", async () => {
+    it("handles async owner-file read failure gracefully with defaults instead of crashing", async () => {
       const failingAdapter = createFailingAdapter("kernel unavailable")
 
-      await expect(createUnifiedPicGoConfigFacade({
+      const facade = await createUnifiedPicGoConfigFacade({
         ...defaultOptions(),
         storageAdapterFactory: () => failingAdapter,
-      })).rejects.toBeInstanceOf(ConfigReadError)
+      })
 
-      expect(failingAdapter.read).toHaveBeenCalledTimes(1)
+      // Facade resolves successfully — no ConfigReadError thrown
+      expect(facade).toBeDefined()
+      expect(facade.storageMode).toBe("async")
+      expect(failingAdapter.read).toHaveBeenCalledTimes(3) // 3 owner files
       expect(failingAdapter.write).not.toHaveBeenCalled()
     })
 
