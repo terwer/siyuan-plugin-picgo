@@ -36,9 +36,16 @@ export class SiYuanKernelStorageAdapter implements IAsyncStorageAdapter {
     this.logger.info("[KernelAdapter] readKernelFile result =>", remote.status)
 
     if (remote.status === "exists" && remote.text && remote.text.trim() !== "") {
-      const parsed = JSON.parse(remote.text) as IJSON
-      this.logger.info("[KernelAdapter] parsed remote data, keys:", Object.keys(parsed))
-      return parsed
+      try {
+        const parsed = JSON.parse(remote.text) as IJSON
+        this.logger.info("[KernelAdapter] parsed remote data, keys:", Object.keys(parsed))
+        return parsed
+      } catch (parseError: any) {
+        this.logger.error(`[KernelAdapter] JSON parse failed for ${this.serverPath}: ${parseError?.message ?? parseError}`)
+        // Treat corrupted JSON same as missing — return empty,
+        // mergeDefaults() will seed generated defaults.
+        return {}
+      }
     }
 
     if (remote.status === "unavailable") {
