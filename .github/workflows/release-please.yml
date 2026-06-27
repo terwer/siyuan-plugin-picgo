@@ -24,7 +24,7 @@ jobs:
 
       # Checkout
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         if: ${{ steps.release.outputs.release_created }}
 
       # Install Node.js
@@ -40,7 +40,6 @@ jobs:
         uses: pnpm/action-setup@v4.0.0
         id: pnpm-install
         with:
-          version: 9.13.2
           run_install: false
         if: ${{ steps.release.outputs.release_created }}
 
