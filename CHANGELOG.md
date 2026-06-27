@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.0...siyuan-plugin-picgo-v3.0.1) (2026-06-27)
+
+
+### Bug Fixes
+
+* **core:** prevent config facade crash on async storage read failures ([#690](https://github.com/terwer/siyuan-plugin-picgo/issues/690)) ([#693](https://github.com/terwer/siyuan-plugin-picgo/issues/693)) ([a83e0d9](https://github.com/terwer/siyuan-plugin-picgo/commit/a83e0d9176cb81f8c4edcb1d93319383b22dfbc5))
+* **core:** prevent config facade crash on async storage read failures ([#691](https://github.com/terwer/siyuan-plugin-picgo/issues/691)) ([33c6e98](https://github.com/terwer/siyuan-plugin-picgo/commit/33c6e98f8f587e75078df3fc9eb7eefcd0dfd47e))
+
 ## [3.0.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.1.1...siyuan-plugin-picgo-v3.0.0) (2026-06-24)
 ### ⚠ BREAKING CHANGES
 * **config:** picgo config access is async-only in 3.0; legacy synchronous config apis and split runtime storage paths are replaced by the unified facade.
