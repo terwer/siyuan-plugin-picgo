@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.1...siyuan-plugin-picgo-v3.0.2) (2026-06-27)
+
+
+### Bug Fixes
+
+* **config:** replace require fallback with window object checks ([#696](https://github.com/terwer/siyuan-plugin-picgo/issues/696)) ([fda0eb8](https://github.com/terwer/siyuan-plugin-picgo/commit/fda0eb8020d62a152f47aa511ce53d9170d30231))
+
 ## [3.0.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.0...siyuan-plugin-picgo-v3.0.1) (2026-06-27)
 
 
