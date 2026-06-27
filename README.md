@@ -6,6 +6,10 @@
 
 Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 
+## v3.0.1 — Fix Settings Page Crash on Browser/Docker
+
+v3.0.1 fixes a crash where the settings page would go completely blank in browser or Docker environments when kernel storage files were missing or unavailable. The config facade now continues gracefully with defaults instead of crashing on async read failures, and the kernel storage adapter catches corrupted JSON instead of throwing.
+
 ## PicGo 3.0+: Unified Workspace Configuration Across Desktop, Browser, and Docker
 
 PicGo 3.0 builds on the smoother upload path from 2.0 and moves the same cleanup into configuration. Your image-bed settings, external PicGo/PicList choice, and SiYuan connection settings now each have their own clear configuration file. Whether you open PicGo from the desktop app, from a browser page that can reach the SiYuan API, or from a Docker-style SiYuan deployment, PicGo reads the same real workspace-backed configuration instead of quietly falling back to a browser-only default.

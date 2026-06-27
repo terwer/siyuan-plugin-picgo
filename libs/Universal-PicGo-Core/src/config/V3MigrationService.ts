@@ -633,7 +633,6 @@ function initMigrationState(
 function getNodeFsApi(): any {
   try {
     if (win?.fs) return win.fs
-    if (typeof require !== "undefined") return require("fs")
   } catch {
     return null
   }
@@ -643,7 +642,6 @@ function getNodeFsApi(): any {
 function getNodePathApi(): any {
   try {
     if (win?.require) return win.require("path")
-    if (typeof require !== "undefined") return require("path")
   } catch {
     return null
   }

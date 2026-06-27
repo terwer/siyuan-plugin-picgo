@@ -48,6 +48,7 @@ import { maskSnapshot } from "./MaskUtils"
 import type { IConfig, IExternalPicgoConfig } from "../types"
 import type { StorageAdapter } from "universal-picgo-store"
 import { runV3Migration as runMigrationService, retryV3Migration as retryMigrationService } from "./V3MigrationService"
+import { win } from "universal-picgo-store"
 
 // ── Internal State ───────────────────────────────────────────────────
 
@@ -167,7 +168,7 @@ function resolveNodeOwnerPath(
 
 function getNodePathApi(): any {
   try {
-    if (typeof require !== "undefined") return require("path")
+    if (win?.path) return win.path
   } catch {
     return null
   }
