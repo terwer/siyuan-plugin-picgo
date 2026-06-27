@@ -12,9 +12,9 @@ import { hasNodeEnv, win } from "universal-picgo-store"
 import imageSize from "./image-size"
 import { calculateHash } from "./hashUtil"
 import { Buffer } from "./nodePolyfill"
-import crypto from "crypto"
 import { ILogger } from "zhi-lib-base"
 import { readJSONSync } from "./nodeUtils"
+import { digestHash } from "./cryptoUtil"
 
 export const isUrl = (url: string): boolean => url.startsWith("http://") || url.startsWith("https://")
 
@@ -447,7 +447,7 @@ export const getImageSize = (file: Buffer | typeof win.Buffer): IImgSize => {
 }
 
 // 封装计算MD5哈希的方法
-export const calculateMD5 = (input: string) => crypto.createHash("md5").update(input).digest("hex")
+export const calculateMD5 = (input: string) => digestHash(input, "md5", "hex")
 
 /**
  * handle install/uninstall/update plugin name or path
@@ -550,12 +550,37 @@ export const getNormalPluginName = (nameOrPath: string, logger: ILogger): string
 }
 
 /**
- * 思源笔记代理是否可用
+ * 思源笔记内置代理是否可用。
  *
- * @param siyuanProxy
+ * 快速路径：`win.siyuan` 全局对象存在（iframe / Electron）→ 直接 true。
+ * 回退路径：同域浏览器直开时通过同步 HEAD 请求验证 API 可达性。
  */
-export const isSiyuanProxyAvailable = (siyuanProxy: Undefinable<string>) => {
-  const hasSiyuanProxy = siyuanProxy && siyuanProxy.trim() !== ""
-  const isSameOrigin = hasSiyuanProxy && siyuanProxy === win.location.origin
-  return isSameOrigin
+export const isSiyuanProxyAvailable = () => {
+  // 快速路径：iframe/Electron 内有 siyuan 全局对象
+  if (win?.siyuan) {
+    return true
+  }
+
+  // 回退路径：同域直开，通过同步探测验证
+  const origin = win?.location?.origin
+  if (!origin) {
+    console.info("[isSiyuanProxyAvailable] no origin, proxy unavailable")
+    return false
+  }
+
+  try {
+    const req = new XMLHttpRequest()
+    req.open("HEAD", `${origin}/api/system/version`, false)
+    req.send()
+    const available = req.status >= 200 && req.status < 500
+    console.info("[isSiyuanProxyAvailable] check API available", { origin, status: req.status, available })
+    return available
+  } catch (e) {
+    console.info("[isSiyuanProxyAvailable] check API available failed", e)
+    return false
+  }
+}
+
+export const getSiyuanProxyUrl = () => {
+  return isSiyuanProxyAvailable() ? win.location.origin : ""
 }

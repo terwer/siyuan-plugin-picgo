@@ -65,6 +65,13 @@ export default {
   "setting.picgo.plugin.nowork": "不兼容",
   "setting.picgo.plugin.nouse": "不可用",
   "setting.picgo.plugin.update.success": "更新成功",
+  "setting.runtime.reload.required.title": "需要手动重载插件",
+  "setting.runtime.reload.required.desc":
+    "配置已保存，但菜单、命令、状态栏、文档粘贴行为或插件运行时注册状态可能不会立即更新。这不是设置未保存，而是插件和思源笔记运行周期导致的刷新问题。",
+  "setting.runtime.reload.required.reason": "触发原因：",
+  "setting.runtime.reload.required.step1": "请在思源设置的插件列表中禁用并重新启用 PicGo 插件，或重启思源。",
+  "setting.runtime.reload.required.step2": "重载完成后回到这里，点击下方按钮清除提示。",
+  "setting.runtime.reload.required.clear": "我已手动重载，清除提示",
   "setting.picgo.manage": "图床管理",
   "picgo.chrome.tip":
     "您当前使用的是浏览器插件，需要从这里下载配置 PicGO 客户端：https://github.com/Molunerfinn/PicGo/releases",
@@ -73,6 +80,9 @@ export default {
   "picgo.upload.select.pic": "选择图片",
   "picgo.upload.clipboard": "剪切板上传",
   "picgo.upload.onclick": "一键上传",
+  "picgo.upload.onclick.force": "一键强制上传",
+  "picgo.upload.onclick.force.tips":
+    "此操作会全部重新上传「当前文档」内的「所有图片」（包括已经上传过图床的图片，一般用于图床切换的数据迁移，其他情况请谨慎操作），是否继续？",
   "picgo.download.onclick": "一键下载",
   "picgo.download.local.to.bed": "上传本地图片到图床",
   "picgo.download.bed.to.local": "下载远程图片到本地",
@@ -147,4 +157,18 @@ export default {
   "picgo.siyuan.clipboard.auto": "剪切板自动上传",
   "picgo.siyuan.replace.link": "替换本地连接",
   "picgo.siyuan.txt.with.img.upload": "当剪切板同时有文字和图片时，是否上传，例如：PPT、Excel 等",
+  "setting.picgo.external.mode.label": "外部 PicGo 模式",
+  "setting.picgo.external.mode.local": "本地 PicGo App",
+  "setting.picgo.external.mode.local.desc":
+    "连接本地运行的 PicGo 桌面应用（默认端口 36677）。适用于安装了 PicGo/PicList 桌面客户端的场景，需要客户端与思源运行在同一台电脑上。",
+  "setting.picgo.external.mode.remote": "远程 PicList 服务",
+  "setting.picgo.external.mode.remote.desc":
+    "连接远程部署的 PicList 容器服务。适用于通过 Docker 等方式在服务器上部署 PicList 的场景，可通过公网访问，无需本地运行客户端。",
+  "setting.picgo.piclist.apiurl": "PicList 接口地址",
+  "setting.picgo.piclist.apiurl.tip": "远程 PicList 的上传接口地址，例如：https://piclist.powercess.com/upload",
+  "setting.picgo.piclist.apikey": "API 密钥",
+  "setting.picgo.piclist.apikey.tip": "PicList 服务的 API Key，用于接口认证",
+  "setting.picgo.piclist.notice.title": "关于远程 PicList",
+  "setting.picgo.piclist.notice.desc":
+    "远程 PicList 模式通过 multipart/form-data 直接上传图片文件数据到远程服务器。与本地 PicGo App 不同，远程模式会将图片文件数据直接发送到服务器，因此支持跨设备使用。注意：剪贴板上传功能在远程模式下不可用。",
 }

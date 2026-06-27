@@ -9,7 +9,6 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import _ from "lodash-es"
 import {
   IBusEvent,
   IConfig,
@@ -20,9 +19,11 @@ import {
   IUploaderConfigListItem,
   picgoEventBus,
   win,
+  getByPath,
+  setByPath,
+  isThirdPartyPluginRuntimeAvailable,
 } from "universal-picgo"
 import { getRawData, trimValues } from "./utils/utils"
-import { readonly } from "vue"
 import IdUtil from "./utils/idUtil"
 import { IGuiMenuItem } from "./types"
 import { handleConfigWithFunction, handleStreamlinePluginName } from "./utils/common"
@@ -75,7 +76,7 @@ class PicgoHelper {
     }
     this.ctx = ctx
     this.reactiveCfg = reactiveCfg
-    this.readonlyCfg = readonly(this.reactiveCfg)
+    this.readonlyCfg = this.reactiveCfg
   }
 
   /**
@@ -88,7 +89,7 @@ class PicgoHelper {
     if (!key) {
       return this.readonlyCfg as unknown
     }
-    return _.get(this.readonlyCfg, key, defaultValue)
+    return getByPath(this.readonlyCfg, key, defaultValue)
   }
 
   /**
@@ -104,7 +105,7 @@ class PicgoHelper {
     // 刷新
     Object.keys(cfg).forEach((name: string) => {
       const rawCfg = getRawData(cfg)
-      _.set(this.reactiveCfg, name, rawCfg[name])
+      setByPath(this.reactiveCfg, name, rawCfg[name])
       picgoEventBus.emit(IBusEvent.CONFIG_CHANGE, {
         configName: name,
         value: rawCfg[name],
@@ -242,11 +243,16 @@ class PicgoHelper {
    * 获取当前图床
    */
   public getCurrentUploader() {
-    return this.getPicgoConfig("picBed.uploader") || this.getPicgoConfig("picBed.current") || "smms"
+    const configuredUploader = this.getPicgoConfig("picBed.uploader") || this.getPicgoConfig("picBed.current")
+    if (configuredUploader && this.ctx.helper.uploader.get(configuredUploader)) {
+      return configuredUploader
+    }
+
+    return "smms"
   }
 
   public getUploaderConfigList(type: string): IUploaderConfigItem {
-    if (!type) {
+    if (!type || !this.ctx.helper.uploader.get(type)) {
       return {
         configList: [] as IUploaderConfigListItem[],
         defaultId: "",
@@ -259,6 +265,19 @@ class PicgoHelper {
       const res = this.upgradeUploaderConfig(type)
       configList = res.configList
       defaultId = res.defaultId
+    }
+    if (!defaultId && configList.length > 0) {
+      const currentPicBedConfig = this.getPicgoConfig(`picBed.${type}`, {})
+      const currentConfigId = currentPicBedConfig?._id
+      const matchedCurrentConfig = currentConfigId
+        ? configList.find((item: IUploaderConfigListItem) => item._id === currentConfigId)
+        : undefined
+      const fallbackConfig = matchedCurrentConfig ?? configList[0]
+      defaultId = fallbackConfig._id
+      this.savePicgoConfig({
+        [`uploader.${type}.defaultId`]: defaultId,
+        [`picBed.${type}`]: fallbackConfig,
+      })
     }
 
     const configItem = {
@@ -278,6 +297,10 @@ class PicgoHelper {
    * @since 0.7.0
    */
   public selectUploaderConfig = (type: string, id: string) => {
+    if (!this.ctx.helper.uploader.get(type)) {
+      return undefined
+    }
+
     const { configList } = this.getUploaderConfigList(type)
     const config = configList.find((item: any) => item._id === id)
     if (config) {
@@ -296,6 +319,10 @@ class PicgoHelper {
    * @param type
    */
   public setDefaultPicBed(type: string) {
+    if (!this.ctx.helper.uploader.get(type)) {
+      return
+    }
+
     this.savePicgoConfig({
       "picBed.current": type,
       "picBed.uploader": type,
@@ -339,41 +366,57 @@ class PicgoHelper {
    * @since 0.7.0
    */
   public updateUploaderConfig(type: string, id: string, config: IUploaderConfigListItem) {
+    if (!this.ctx.helper.uploader.get(type)) {
+      return
+    }
+
     // ensure raw for save
     config = getRawData(config)
     const uploaderConfig = this.getUploaderConfigList(type)
     let configList = uploaderConfig.configList
     // ensure raw for save
     configList = getRawData(configList)
-    const defaultId = uploaderConfig.ddefaultId
+    const defaultId = uploaderConfig.defaultId
     const existConfig = configList.find((item: IUploaderConfigListItem) => item._id === id)
     let updatedConfig
-    let updatedDefaultId = defaultId
+    const saveConfig: Record<string, any> = {
+      [`uploader.${type}.configList`]: configList,
+    }
     if (existConfig) {
       updatedConfig = Object.assign(existConfig, trimValues(config), {
+        _id: id,
         _updatedAt: Date.now(),
       })
+      if (!defaultId) {
+        saveConfig[`uploader.${type}.defaultId`] = id
+        saveConfig[`picBed.${type}`] = updatedConfig
+      } else if (defaultId === id) {
+        saveConfig[`picBed.${type}`] = updatedConfig
+      }
     } else {
       updatedConfig = this.completeUploaderMetaConfig(config)
-      updatedDefaultId = updatedConfig._id
       configList.push(updatedConfig)
+      if (!defaultId) {
+        saveConfig[`uploader.${type}.defaultId`] = updatedConfig._id
+        saveConfig[`picBed.${type}`] = updatedConfig
+      }
     }
-    this.savePicgoConfig({
-      [`uploader.${type}.configList`]: configList,
-      [`uploader.${type}.defaultId`]: updatedDefaultId,
-      [`picBed.${type}`]: updatedConfig,
-    })
+    this.savePicgoConfig(saveConfig)
   }
 
   /**
    * delete uploader config by type & id
    */
   public deleteUploaderConfig(type: string, id: string) {
+    if (!this.ctx.helper.uploader.get(type)) {
+      return
+    }
+
     const uploaderConfig = this.getUploaderConfigList(type)
     let configList = uploaderConfig.configList
     // ensure raw for save
     configList = getRawData(configList)
-    const defaultId = uploaderConfig.ddefaultId
+    const defaultId = uploaderConfig.defaultId
     if (configList.length <= 1) {
       return
     }
@@ -452,9 +495,13 @@ class PicgoHelper {
    * 获取插件列表（PC only）
    */
   public getPluginList(): IPicGoPlugin[] {
+    if (!isThirdPartyPluginRuntimeAvailable()) {
+      return []
+    }
+
     const path = win.require("path")
 
-    const STORE_PATH = this.ctx.baseDir
+    const STORE_PATH = this.ctx.pluginBaseDir
     const pluginList = this.ctx.pluginLoader.getFullList()
     const list = [] as IPicGoPlugin[]
     for (const i in pluginList) {
@@ -519,6 +566,10 @@ class PicgoHelper {
    * @since 0.7.0
    */
   public buildPluginMenu(plugin: IPicGoPlugin) {
+    if (!isThirdPartyPluginRuntimeAvailable()) {
+      throw new Error("PicGo 插件仅支持 Electron 环境")
+    }
+
     const that = this
     // 根据插件构造菜单
     const template = [] as any
@@ -679,6 +730,10 @@ class PicgoHelper {
    * @param fullName
    */
   public async installPlugin(fullName: string) {
+    if (!isThirdPartyPluginRuntimeAvailable()) {
+      throw new Error("PicGo 插件仅支持 Electron 环境")
+    }
+
     const res = await this.ctx.pluginHandler.install([fullName], {}, {})
     return {
       success: res.success,
@@ -693,6 +748,10 @@ class PicgoHelper {
    * @param fullName
    */
   public async uninstallPlugin(fullName: string) {
+    if (!isThirdPartyPluginRuntimeAvailable()) {
+      throw new Error("PicGo 插件仅支持 Electron 环境")
+    }
+
     const res = await this.ctx.pluginHandler.uninstall([fullName])
     return {
       success: res.success,
@@ -707,6 +766,10 @@ class PicgoHelper {
    * @param fullName
    */
   public async updatelugin(fullName: string) {
+    if (!isThirdPartyPluginRuntimeAvailable()) {
+      throw new Error("PicGo 插件仅支持 Electron 环境")
+    }
+
     const res = await this.ctx.pluginHandler.update([fullName], {}, {})
     return {
       success: res.success,
@@ -742,6 +805,10 @@ class PicgoHelper {
   }
 
   public async importPlugin() {
+    if (!isThirdPartyPluginRuntimeAvailable()) {
+      throw new Error("PicGo 插件仅支持 Electron 环境")
+    }
+
     const { dialog, getCurrentWindow } = win.require("@electron/remote")
     const res = await dialog.showOpenDialog(getCurrentWindow(), {
       properties: ["openDirectory"],

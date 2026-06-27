@@ -89,10 +89,17 @@ export default defineConfig(() => ({
   // 在这里自定义变量
   define: {
     "process.env.DEV_MODE": `"${isDev}"`,
+    __VUE_I18N_FULL_INSTALL__: "true",
+    __VUE_I18N_LEGACY_API__: "false",
+    __INTLIFY_JIT_COMPILATION__: "false",
+    __INTLIFY_DROP_MESSAGE_COMPILER__: "true",
+    __INTLIFY_PROD_DEVTOOLS__: "false",
   },
 
   resolve: {
     alias: {
+      "lodash-unified": path.resolve(__dirname, "./src/lib/lodashUnifiedSafe.ts"),
+      "vue-i18n": "vue-i18n/dist/vue-i18n.runtime.esm-bundler.js",
       "~": path.resolve(__dirname, "./"),
       "@": path.resolve(__dirname, "./src/"),
       $routes: path.resolve(__dirname, "./src/routes"),

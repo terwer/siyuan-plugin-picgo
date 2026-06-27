@@ -13,6 +13,7 @@ import { ILogger } from "zhi-lib-base"
 import { AxiosRequestConfig } from "axios"
 import { IJSON } from "universal-picgo-store"
 import { PicgoTypeEnum } from "../utils/enums"
+import { ObjectCannedACL } from "@aws-sdk/client-s3/dist-types/models/models_0"
 
 export interface IPicGo extends EventEmitter {
   /**
@@ -22,7 +23,11 @@ export interface IPicGo extends EventEmitter {
    */
   configPath: string
   /**
-   * the picgo configPath's baseDir
+   * Device-local runtime directory.
+   *
+   * In v2 this is intentionally independent from dirname(configPath): the
+   * main config may live in a synced workspace file while clipboard cache,
+   * i18n files, logs and helper libs stay under the local runtime directory.
    */
   baseDir: string
   /**
@@ -84,6 +89,10 @@ export interface IPicGo extends EventEmitter {
    */
   getConfig: <T>(name?: string) => T
   /**
+   * reload picgo config from configPath into runtime memory
+   */
+  reloadConfig: () => IConfig
+  /**
    * save picgo config to configPath
    */
   saveConfig: (config: IStringKeyMap<any>) => void
@@ -103,6 +112,51 @@ export interface IPicGo extends EventEmitter {
    * upload gogogo
    */
   upload: (input?: any[]) => Promise<IImgInfo[] | Error>
+
+  readonly storageMode: "sync" | "async"
+  reloadConfigAsync: () => Promise<IConfig>
+  flushConfig: () => Promise<void>
+  /** Optional storage adapter factory from options. */
+  storageAdapterFactory?: (dbPath: string) => import("universal-picgo-store").StorageAdapter
+  /** PicGo 3.0 unified facade attached by product lifecycle. */
+  attachConfigFacade?: (facade: import("../config").ReadyUnifiedPicGoConfigFacade) => void
+  getConfigFacade?: () => import("../config").ReadyUnifiedPicGoConfigFacade | undefined
+}
+
+/**
+ * UniversalPicGo path options.
+ *
+ * In v2, `configPath` is allowed to point at a synced workspace file while
+ * `baseDir` / `pluginBaseDir` stay device-local for runtime files and plugins.
+ */
+export interface IUniversalPicGoOptions {
+  /**
+   * PicGo main config path.
+   */
+  configPath?: string
+  /**
+   * Device-local runtime directory. This is exposed as ctx.baseDir for
+   * compatibility with existing runtime code.
+   */
+  baseDir?: string
+  /**
+   * Alias of baseDir for callers that want clearer v2 wording.
+   */
+  runtimeDir?: string
+  /**
+   * Device-local third-party PicGo plugin directory.
+   */
+  pluginBaseDir?: string
+  /**
+   * zhi npm helper path.
+   */
+  zhiNpmPath?: string
+  /**
+   * Enable development logging.
+   */
+  isDev?: boolean
+  /** Storage adapter factory. Optional. Receives logical dbPath, returns adapter. */
+  storageAdapterFactory?: (dbPath: string) => import("universal-picgo-store").StorageAdapter
 }
 
 export type Nullable<T> = T | null
@@ -242,7 +296,7 @@ export interface IAwsS3Config {
   customUrl?: string
   pathStyleAccess?: boolean
   rejectUnauthorized?: boolean
-  acl?: string
+  acl?: ObjectCannedACL | undefined
   // S3或S3兼容服务一般支持对桶设置CORS策略，优先修改桶的CORS策略
   // SiYuan 桌面版没有CORS问题
   // SiYuan 内置的 CORS Proxy 在iOS版上没跑通
@@ -603,6 +657,15 @@ interface IExternalPicgoConfig {
    */
   extPicgoApiUrl?: string
 
+  /**
+   * picListApiUrl 是远程 PicList 服务的上传接口地址
+   */
+  picListApiUrl?: string
+
+  /**
+   * picListApiKey 是远程 PicList 服务的 API 认证密钥
+   */
+  picListApiKey?: string
 
   /**
    * 其他配置项，可以是任意类型

@@ -8,22 +8,21 @@
  */
 
 import { IAliyunConfig, IPicGo } from "../../../types"
-import crypto from "crypto"
-import mime from "mime-types"
 import { IBuildInEvent } from "../../../utils/enums"
 import { ILocalesKey } from "../../../i18n/zh-CN"
 import { AxiosRequestConfig } from "axios"
 import { base64ToBuffer, safeParse } from "../../../utils/common"
+import { lookupMimeType } from "../../../utils/mimeLookup"
+import { digestHmacSha1 } from "../../../utils/cryptoUtil"
 
 // generate OSS signature
-const generateSignature = (options: IAliyunConfig, fileName: string): string => {
-  const date = new Date().toUTCString()
-  const mimeType = mime.lookup(fileName)
+const generateSignature = (options: IAliyunConfig, fileName: string, date: string): string => {
+  const mimeType = lookupMimeType(fileName)
   if (!mimeType) throw Error(`No mime type found for file ${fileName}`)
 
   const signString = `PUT\n\n${mimeType}\n${date}\n/${options.bucket}/${options.path}${fileName}`
 
-  const signature = crypto.createHmac("sha1", options.accessKeySecret).update(signString).digest("base64")
+  const signature = digestHmacSha1(options.accessKeySecret, signString, "base64")
   return `OSS ${options.accessKeyId}:${signature}`
 }
 
@@ -31,24 +30,29 @@ const postOptions = (
   options: IAliyunConfig,
   fileName: string,
   signature: string,
-  image: Buffer
+  image: Buffer,
+  date: string
 ): AxiosRequestConfig => {
-  const xCorsHeaders = {
-    Host: `${options.bucket}.${options.area}.aliyuncs.com`,
-    Date: new Date().toUTCString(),
-  }
+  const host = `${options.bucket}.${options.area}.aliyuncs.com`
 
-  return {
+  const requestOptions: any = {
     method: "PUT",
-    url: `https://${options.bucket}.${options.area}.aliyuncs.com/${encodeURI(options.path)}${encodeURI(fileName)}`,
+    url: `https://${host}/${encodeURI(options.path)}${encodeURI(fileName)}`,
     headers: {
       Authorization: signature,
-      "Content-Type": mime.lookup(fileName),
-      "x-cors-headers": JSON.stringify(xCorsHeaders),
+      "Content-Type": lookupMimeType(fileName),
+      Date: date,
+      "x-cors-headers": JSON.stringify({
+        Host: host,
+        Date: date,
+      }),
     },
     data: image,
+    proxy: true,
     resolveWithFullResponse: true,
-  } as AxiosRequestConfig
+  }
+
+  return requestOptions as AxiosRequestConfig
 }
 
 const handleWeb = async (ctx: IPicGo): Promise<IPicGo> => {
@@ -71,8 +75,9 @@ const handleWeb = async (ctx: IPicGo): Promise<IPicGo> => {
         throw new Error("Can not find image buffer")
       }
       try {
-        const signature = generateSignature(aliYunOptions, img.fileName)
-        const options = postOptions(aliYunOptions, img.fileName, signature, image)
+        const date = new Date().toUTCString()
+        const signature = generateSignature(aliYunOptions, img.fileName, date)
+        const options = postOptions(aliYunOptions, img.fileName, signature, image, date)
         const res: any = await ctx.request(options)
         const body = safeParse<any>(res)
         if (body.statusCode === 200) {
@@ -106,4 +111,4 @@ const handleWeb = async (ctx: IPicGo): Promise<IPicGo> => {
   return ctx
 }
 
-export { handleWeb }
+export { handleWeb, generateSignature, postOptions }

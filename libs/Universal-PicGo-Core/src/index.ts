@@ -1,5 +1,6 @@
 import { UniversalPicGo } from "./core/UniversalPicGo"
 import { ExternalPicgo } from "./core/ExternalPicgo"
+import { PicListUploader } from "./core/PicListUploader"
 import ConfigDb from "./db/config"
 import PluginLoaderDb from "./db/pluginLoder"
 import ExternalPicgoConfigDb from "./db/externalPicGo"
@@ -15,16 +16,40 @@ import {
   IPicgoDb,
   IPicGoPlugin,
   IPluginConfig,
+  IUniversalPicGoOptions,
   IUploaderConfigItem,
   IUploaderConfigListItem,
 } from "./types"
 import { calculateMD5, isFileOrBlob, isSiyuanProxyAvailable } from "./utils/common"
+import { deepMerge, getByPath, setByPath, unsetByPath } from "./utils/pathObject"
+import { isElectronRuntime, isPicGoPluginPackageName, isThirdPartyPluginRuntimeAvailable } from "./utils/pluginRuntime"
+import { UniversalPicGoHeadlessManager, createPicGoHeadlessManager } from "./headless"
 
-export { UniversalPicGo, ExternalPicgo, picgoEventBus }
+export { UniversalPicGo, ExternalPicgo, PicListUploader, picgoEventBus }
+export { UniversalPicGoHeadlessManager, createPicGoHeadlessManager }
 export { ConfigDb, PluginLoaderDb, ExternalPicgoConfigDb }
 export { PicgoTypeEnum, IBusEvent }
 export { isFileOrBlob, calculateMD5, isSiyuanProxyAvailable }
+export { deepMerge, getByPath, setByPath, unsetByPath }
+export { isElectronRuntime, isPicGoPluginPackageName, isThirdPartyPluginRuntimeAvailable }
 export { win, currentWin, parentWin, hasNodeEnv }
+
+// PicGo 3.0 Unified Async Config Facade
+export {
+  createUnifiedPicGoConfigFacade,
+  type ConfigDomain,
+  type ReadyUnifiedPicGoConfigFacade,
+  type UnifiedConfigSnapshot,
+  type UnifiedConfigMigrationState,
+  type UnifiedPicGoConfigFacadeOptions,
+  type UnifiedConfigPaths,
+  type PasteTakeoverSnapshot,
+  type SiyuanConfigLike,
+  UNIFIED_CONFIG_MIGRATION_VERSION,
+  ConfigReadError,
+  ConfigFlushError,
+  ConfigNotReadyError,
+} from "./config"
 export {
   type IPicGo,
   type IImgInfo,
@@ -36,4 +61,28 @@ export {
   type IUploaderConfigListItem,
   type IPluginConfig,
   type IPicGoPlugin,
+  type IUniversalPicGoOptions,
 }
+export {
+  BUILT_IN_UPLOADER_IDS,
+  PICGO_HEADLESS_ERROR_CODES,
+  PicGoHeadlessError,
+  auditBuiltInUploaderSchemas,
+  getPicGoUploaderSchema,
+  isBuiltInUploaderId,
+  listPicGoUploaders,
+  type BuiltInUploaderId,
+  type IPicGoHeadlessManager,
+  type PicGoHeadlessErrorCode,
+  type PicGoHeadlessErrorInput,
+  type PicGoHeadlessManagerOptions,
+  type PicGoHeadlessSaveUploaderConfigOptions,
+  type PicGoUploaderConfigSchema,
+  type PicGoUploaderListItem,
+  type PicGoUploaderSchemaAuditResult,
+  type PicGoUploaderSchemaChoice,
+  type PicGoUploaderSchemaField,
+  type PicGoUploaderSchemaFieldType,
+  type PicGoValidationFieldError,
+  type PicGoValidationResult,
+} from "./headless"

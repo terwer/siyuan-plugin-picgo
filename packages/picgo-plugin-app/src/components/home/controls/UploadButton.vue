@@ -85,6 +85,12 @@ const { picgoUploadMethods } = usePicgoUpload(
       &nbsp;{{ t("picgo.upload.onclick") }}
     </el-button>
 
+    <!-- 强制上传所有图片到图床 -->
+    <el-button type="danger" @click="picgoUploadMethods.doForceUploaddAllImagesToBed">
+      <el-icon><UiwCloudUpload /></el-icon>
+      &nbsp;{{ t("picgo.upload.onclick.force") }}
+    </el-button>
+
     <!-- 下载所有远程图片 -->
     <el-button type="primary" @click="picgoUploadMethods.doDownloadAllImagesToLocal">
       <el-icon><MaterialSymbolsCloudDownloadRounded /></el-icon>

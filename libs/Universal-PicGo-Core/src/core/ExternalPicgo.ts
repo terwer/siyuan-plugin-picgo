@@ -8,12 +8,10 @@
  */
 
 import { ILogger, simpleLogger } from "zhi-lib-base"
-import ExternalPicgoConfigDb from "../db/externalPicGo"
-import { IImgInfo, IPicGo } from "../types"
+import { IExternalPicgoConfig, IImgInfo, IPicGo } from "../types"
 import { PicgoTypeEnum } from "../utils/enums"
 import { browserPathJoin } from "../utils/browserUtils"
-import { fileToBuffer, isFileOrBlob } from "../utils/common"
-import { CodingUtil } from "../utils/CodingUtil"
+import { isFileOrBlob } from "../utils/common"
 
 /**
  *外部的PicGO 上传 Api
@@ -26,11 +24,11 @@ class ExternalPicgo {
   private logger: ILogger
   private requestUrl = "http://127.0.0.1:36677"
   private readonly endpointUrl = "/upload"
-  public db: ExternalPicgoConfigDb
+  private readonly configProvider?: () => IExternalPicgoConfig
 
-  constructor(ctx: IPicGo, isDev?: boolean) {
+  constructor(_ctx: IPicGo, isDev?: boolean, configProvider?: () => IExternalPicgoConfig) {
     this.logger = simpleLogger("external-picgo", "external-picgo", isDev)
-    this.db = new ExternalPicgoConfigDb(ctx)
+    this.configProvider = configProvider
   }
 
   /**
@@ -39,8 +37,9 @@ class ExternalPicgo {
    * @param input 路径数组，可为空，为空上传剪贴板
    */
   public async upload(input?: any[]): Promise<IImgInfo[] | Error> {
-    const useBundledPicgo = this.db.get("useBundledPicgo")
-    const picgoType = this.db.get("picgoType")
+    const routeConfig = this.getRouteConfig()
+    const useBundledPicgo = routeConfig.useBundledPicgo
+    const picgoType = routeConfig.picgoType
     if (useBundledPicgo) {
       throw new Error("bundled picgo cannot use extenal picgo api")
     }
@@ -53,12 +52,12 @@ class ExternalPicgo {
     if (input) {
       for (const inputItem of input) {
         if (isFileOrBlob(inputItem)) {
-          this.logger.warn("try to get path from blob", inputItem.path)
-          if (inputItem.path.trim() === "") {
-            this.logger.warn("blob path is empty")
-            continue
+          this.logger.warn(`try to get path from blob => ${inputItem.path}`)
+          if (inputItem.path && inputItem.path.trim() !== "") {
+            newInput.push(inputItem.path)
+          } else {
+            this.logger.warn("blob path is empty, treat as clipboard image")
           }
-          newInput.push(inputItem.path)
         } else {
           newInput.push(inputItem)
         }
@@ -66,7 +65,7 @@ class ExternalPicgo {
       input = newInput
     }
 
-    this.requestUrl = this.db.get("extPicgoApiUrl") ?? this.requestUrl
+    this.requestUrl = routeConfig.extPicgoApiUrl ?? this.requestUrl
     let ret: IImgInfo[] = []
 
     const fetchOptions = {
@@ -75,7 +74,7 @@ class ExternalPicgo {
 
     let data
     // 传递了路径，上传具体图片，否则上传剪贴板
-    if (input) {
+    if (input && input.length > 0) {
       data = { list: input }
     }
 
@@ -94,7 +93,19 @@ class ExternalPicgo {
     })
 
     // 发送请求
-    const apiUrl = browserPathJoin(this.requestUrl, this.endpointUrl)
+    // 如果 URL 已经包含 /upload 路径，则不再添加尾缀
+    let apiUrl: string
+    if (this.requestUrl.endsWith("/upload")) {
+      // URL 以 /upload 结尾，移除后重新拼接（保持原始行为）
+      const baseUrl = this.requestUrl.slice(0, -7)
+      apiUrl = browserPathJoin(baseUrl, this.endpointUrl)
+    } else if (this.requestUrl.includes("/upload?")) {
+      // URL 包含 /upload?（带查询参数），直接使用，不添加尾缀
+      apiUrl = this.requestUrl
+    } else {
+      // URL 不包含 /upload，正常拼接
+      apiUrl = browserPathJoin(this.requestUrl, this.endpointUrl)
+    }
     this.logger.debug("调用HTTP请求上传图片到PicGO，apiUrl=>", apiUrl)
     this.logger.debug("调用HTTP请求上传图片到PicGO，fetchOps=>", fetchOptions)
 
@@ -121,6 +132,13 @@ class ExternalPicgo {
     }
 
     return Promise.resolve(ret)
+  }
+
+  private getRouteConfig(): IExternalPicgoConfig {
+    if (!this.configProvider) {
+      throw new Error("Unified config facade route provider is required for external PicGo upload")
+    }
+    return this.configProvider()
   }
 }
 

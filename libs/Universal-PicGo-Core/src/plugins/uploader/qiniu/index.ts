@@ -11,11 +11,11 @@ import { ILocalesKey } from "../../../i18n/zh-CN"
 import { IPicGo, IPluginConfig, IQiniuConfig } from "../../../types"
 import { IBuildInEvent } from "../../../utils/enums"
 import { bufferToBase64, safeParse } from "../../../utils/common"
-import mime from "mime-types"
 import { AxiosRequestConfig } from "axios"
 import { Mac } from "./digest"
 import { PutPolicy } from "./rs"
 import { browserPathJoin } from "../../../utils/browserUtils"
+import { lookupMimeType } from "../../../utils/mimeLookup"
 
 function postOptions(options: IQiniuConfig, fileName: string, token: string, imgBase64: string): AxiosRequestConfig {
   const area = selectArea(options.area || "z0")
@@ -26,10 +26,10 @@ function postOptions(options: IQiniuConfig, fileName: string, token: string, img
     .replace(/\//g, "_")
   return {
     method: "POST",
-    url: `http://upload${area}.qiniup.com/putb64/-1/key/${base64FileName}`,
+    url: `https://upload${area}.qiniup.com/putb64/-1/key/${base64FileName}`,
     headers: {
       Authorization: `UpToken ${token}`,
-      "Content-Type": mime.lookup(fileName) || "application/octet-stream",
+      "Content-Type": lookupMimeType(fileName) || "application/octet-stream",
     },
     data: imgBase64,
     // proxy=false 表示浏览器换无需代理也可以直接使用
@@ -80,7 +80,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           delete img.buffer
           const baseUrl = qiniuOptions.url
           const options = qiniuOptions.options || ""
-          img.imgUrl = browserPathJoin(baseUrl, body.key, options)
+          img.imgUrl = browserPathJoin(baseUrl, body.key) + options
         } else {
           ctx.emit(IBuildInEvent.NOTIFICATION, {
             title: ctx.i18n.translate<ILocalesKey>("UPLOAD_FAILED"),

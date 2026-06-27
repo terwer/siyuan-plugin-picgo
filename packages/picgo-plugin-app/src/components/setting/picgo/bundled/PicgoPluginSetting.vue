@@ -14,13 +14,13 @@ import { useVueI18n } from "$composables/useVueI18n.ts"
 import MaterialSymbolsShoppingBagOutlineSharp from "~icons/material-symbols/shopping-bag-outline-sharp"
 import MaterialSymbolsDownload from "~icons/material-symbols/download"
 import { handleStreamlinePluginName, IPicGoPlugin, PicgoHelper, PicgoHelperEvents } from "zhi-siyuan-picgo"
-import _ from "lodash-es"
 import { createAppLogger } from "@/utils/appLogger.ts"
 import MaterialSymbolsSettings from "~icons/material-symbols/settings"
 import PhBellSimpleSlashFill from "~icons/ph/bell-simple-slash-fill"
 import IconoirXmark from "~icons/iconoir/xmark"
 import { ElMessage, ElMessageBox } from "element-plus"
 import { icons } from "@element-plus/icons-vue/global"
+import { markRuntimeReloadRequired } from "$composables/useRuntimeReloadNotice.ts"
 
 const props = defineProps({
   ctx: {
@@ -63,6 +63,17 @@ const npmSearchText = computed(() => {
     : formData.searchText
 })
 let getSearchResult: any
+
+const debounce = <T extends (...args: any[]) => void>(fn: T, delay: number): T => {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  return ((...args: Parameters<T>) => {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => fn(...args), delay)
+  }) as T
+}
+
 // PicGo 持久化操作帮助类
 const picgoHelper = new PicgoHelper(props.ctx, formData.cfg)
 
@@ -76,9 +87,14 @@ const openHomepage = (url: string) => {
   }
 }
 
+const markPluginRuntimeReloadRequired = (reason: string) => {
+  markRuntimeReloadRequired(reason)
+}
+
 const handleImportLocalPlugin = async () => {
   try {
     await picgoHelper.importPlugin()
+    markPluginRuntimeReloadRequired("导入本地 PicGo 插件")
     ElMessage.success(t("main.opt.success"))
   } catch (e) {
     const errMsg = t("main.opt.failure") + "=>" + e
@@ -164,6 +180,7 @@ const doInstallPlugin = async (item: IPicGoPlugin) => {
     const res = await picgoHelper.installPlugin(item.fullName)
     if (res.success) {
       cleanSearch()
+      markPluginRuntimeReloadRequired(`安装 PicGo 插件：${item.fullName}`)
       ElMessage.success(t("main.opt.success"))
     } else {
       ElMessage({
@@ -185,6 +202,11 @@ const doInstallPlugin = async (item: IPicGoPlugin) => {
 
 const buildContextMenu = async (plugin: IPicGoPlugin) => {
   picgoHelper.buildPluginMenu(plugin)
+}
+
+const handleRefreshPluginList = () => {
+  markPluginRuntimeReloadRequired("启用、禁用或刷新 PicGo 插件运行状态")
+  initPage()
 }
 
 const handlePluginStateIng = (res: string) => {
@@ -216,6 +238,7 @@ const handlePluginStateUninstalled = (res: { success: boolean; body: string; err
     })
 
     initPage()
+    markPluginRuntimeReloadRequired(`卸载 PicGo 插件：${fullName}`)
     ElMessage.success(t("setting.picgo.plugin.uninstall.success"))
   } else {
     formData.pluginList.forEach((item: IPicGoPlugin) => {
@@ -241,6 +264,7 @@ const handlePluginStateUpdated = (res: { success: boolean; body: string; errMsg:
   })
 
   if (success) {
+    markPluginRuntimeReloadRequired(`更新 PicGo 插件：${fullName}`)
     ElMessage.success(t("setting.picgo.plugin.update.success"))
   } else {
     ElMessage.error(errMsg)
@@ -279,7 +303,7 @@ const initPage = () => {
   loadPluginList()
 
   // show search reault after delay
-  getSearchResult = _.debounce(_getSearchResult, 50)
+  getSearchResult = debounce(_getSearchResult, 50)
   logger.debug("picgo plugin store inited", formData.pluginList)
 }
 
@@ -294,7 +318,7 @@ watch(npmSearchText, (val: string) => {
 
 onBeforeMount(() => {
   // bind events
-  picgoHelper.bindPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST, initPage)
+  picgoHelper.bindPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST, handleRefreshPluginList)
   picgoHelper.bindPicgoEvent(PicgoHelperEvents.DO_PICGO_CONFIG_PLUGIN, handlePicgoConfigPlugin)
   picgoHelper.bindPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_ING, handlePluginStateIng)
   picgoHelper.bindPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_UNINSTALLED, handlePluginStateUninstalled)
@@ -306,7 +330,7 @@ onBeforeMount(() => {
 
 onBeforeUnmount(() => {
   // unbind events
-  picgoHelper.unbindPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST, initPage)
+  picgoHelper.unbindPicgoEvent(PicgoHelperEvents.REFRESH_PLUGIN_LIST, handleRefreshPluginList)
   picgoHelper.unbindPicgoEvent(PicgoHelperEvents.DO_PICGO_CONFIG_PLUGIN, handlePicgoConfigPlugin)
   picgoHelper.unbindPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_ING, handlePluginStateIng)
   picgoHelper.unbindPicgoEvent(PicgoHelperEvents.HANDLE_PLUGIN_UNINSTALLED, handlePluginStateUninstalled)

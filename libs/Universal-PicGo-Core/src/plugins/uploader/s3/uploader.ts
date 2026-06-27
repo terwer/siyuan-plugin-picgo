@@ -4,6 +4,7 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   PutObjectCommandOutput,
+  ObjectCannedACL,
 } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { HttpRequest, HttpResponse } from "@smithy/protocol-http"
@@ -11,8 +12,6 @@ import { HttpHandlerOptions } from "@smithy/types"
 import { buildQueryString } from "@smithy/querystring-builder"
 import { FetchHttpHandler, FetchHttpHandlerOptions } from "@smithy/fetch-http-handler"
 import { AxiosRequestConfig, AxiosResponse } from "axios"
-import url from "url"
-import https from "https"
 import { IAwsS3Config, IImgInfo, IPicGo } from "../../../types"
 import { extractInfo } from "./utils"
 
@@ -77,9 +76,6 @@ class PicGoHttpHandler extends FetchHttpHandler {
       headers: transformedHeaders,
       data: transformedBody,
       timeout: this.requestTimeoutInMs,
-      httpsAgent: new https.Agent({
-        rejectUnauthorized: this.rejectUnauthorized,
-      }),
       resolveWithFullResponse: true,
     } as AxiosRequestConfig
     if (!this.corsProxy) {
@@ -145,7 +141,7 @@ export interface IUploadResult {
 function createS3Client(ctx: IPicGo, opts: IAwsS3Config): S3Client {
   let sslEnabled = true
   try {
-    const u = new url.URL(opts.endpoint!)
+    const u = new URL(opts.endpoint!)
     sslEnabled = u.protocol === "https:"
   } catch {
     // eslint-disable-next-line no-empty
@@ -175,7 +171,7 @@ interface createUploadTaskOpts {
   path: string
   item: IImgInfo
   index: number
-  acl: string
+  acl: ObjectCannedACL | undefined
   customUrl?: string
   corsProxy?: boolean
 }
@@ -244,7 +240,7 @@ async function getFileURL(opts: createUploadTaskOpts, eTag: string, versionId: s
       }),
       { expiresIn: 3600 }
     )
-    const urlObject = new url.URL(signedUrl)
+    const urlObject = new URL(signedUrl)
     urlObject.search = ""
     return urlObject.href
   } catch (err) {

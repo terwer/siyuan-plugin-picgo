@@ -1,0 +1,60 @@
+
+> siyuan-plugin-picgo@1.12.1 build D:\Users\Administrator\Documents\mydocs\siyuan-plugins\siyuan-plugin-picgo
+> turbo run build "-F" "universal-picgo"
+
+• Packages in scope: universal-picgo
+• Running build in 1 packages
+• Remote caching disabled
+universal-picgo-store:build: cache hit, replaying logs 3f0fa732927962d2
+universal-picgo-store:build: 
+universal-picgo-store:build: > universal-picgo-store@1.12.1 build D:\Users\Administrator\Documents\mydocs\siyuan-plugins\siyuan-plugin-picgo\libs\Universal-PicGo-Store
+universal-picgo-store:build: > vite build
+universal-picgo-store:build: 
+universal-picgo-store:build: isWatch=> false
+universal-picgo-store:build: distDir=> ./dist
+universal-picgo-store:build: [36mvite v5.2.9 [32mbuilding for production...[36m[39m
+universal-picgo-store:build: transforming...
+universal-picgo-store:build: [32m✓[39m 9 modules transformed.
+universal-picgo-store:build: rendering chunks...
+universal-picgo-store:build: 
+universal-picgo-store:build: [vite:dts] Start generate declaration files...
+universal-picgo-store:build: computing gzip size...
+universal-picgo-store:build: [2mdist/[22m[36mindex.js  [39m[1m[2m8.58 kB[22m[1m[22m[2m │ gzip: 3.01 kB[22m
+universal-picgo-store:build: [vite:dts] Declaration files built in 1211ms.
+universal-picgo-store:build: 
+universal-picgo-store:build: [36m[vite-plugin-static-copy][39m [32mCopied 2 items.[39m
+universal-picgo-store:build: [32m✓ built in 1.35s[39m
+universal-picgo:build: cache hit, replaying logs 111aeae9667c5341
+universal-picgo:build: 
+universal-picgo:build: > universal-picgo@1.12.1 build D:\Users\Administrator\Documents\mydocs\siyuan-plugins\siyuan-plugin-picgo\libs\Universal-PicGo-Core
+universal-picgo:build: > vite build
+universal-picgo:build: 
+universal-picgo:build: isWatch=> false
+universal-picgo:build: distDir=> ./dist
+universal-picgo:build: isServe=> undefined
+universal-picgo:build: mode=> production
+universal-picgo:build: defineEnv=> {
+universal-picgo:build:   'process.env': {
+universal-picgo:build:     DEV_MODE: 'false',
+universal-picgo:build:     NODE_ENV: 'production',
+universal-picgo:build:     PICGO_VERSION: '1.12.1'
+universal-picgo:build:   }
+universal-picgo:build: }
+universal-picgo:build: [36mvite v5.2.9 [32mbuilding for production...[36m[39m
+universal-picgo:build: transforming...
+universal-picgo:build: [32m✓[39m 931 modules transformed.
+universal-picgo:build: rendering chunks...
+universal-picgo:build: 
+universal-picgo:build: [vite:dts] Start generate declaration files...
+universal-picgo:build: computing gzip size...
+universal-picgo:build: [36m[vite-plugin-static-copy][39m [32mCopied 2 items.[39m
+universal-picgo:build: [vite:dts] Declaration files built in 2971ms.
+universal-picgo:build: 
+universal-picgo:build: [2mdist/[22m[36mindex.js  [39m[1m[33m756.39 kB[39m[22m[2m │ gzip: 200.70 kB[22m
+universal-picgo:build: [32m✓ built in 6.04s[39m
+
+ Tasks:    2 successful, 2 total
+Cached:    2 cached, 2 total
+  Time:    239ms >>> FULL TURBO
+
+

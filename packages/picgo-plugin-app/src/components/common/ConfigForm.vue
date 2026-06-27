@@ -9,11 +9,10 @@
 
 <script lang="ts" setup>
 import { ElMessage, FormInstance } from "element-plus"
-import { reactive, ref, toRaw, watch } from "vue"
+import { nextTick, reactive, ref, toRaw, watch } from "vue"
 import { IPluginConfig } from "zhi-siyuan-picgo"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { createAppLogger } from "@/utils/appLogger.ts"
-import _ from "lodash-es"
 import { PicgoHelper } from "zhi-siyuan-picgo"
 
 const logger = createAppLogger("picbed-config-form")
@@ -55,6 +54,18 @@ const $configForm = ref<FormInstance>()
 
 const configList = ref<IPluginConfig[]>([])
 const configRuleForm = reactive<IStringKeyMap>({})
+const isConfigRuleFormReady = ref(false)
+
+const cloneConfigItems = (items: any[]) => {
+  return items.map((item) => ({
+    ...item,
+    choices: Array.isArray(item.choices)
+      ? item.choices.map((choice: any) => (choice && typeof choice === "object" ? { ...choice } : choice))
+      : item.choices,
+  }))
+}
+
+const uniqueArray = (items: any[]) => Array.from(new Set(items))
 
 const getCurConfigFormData = () => {
   const configId = formData.configId
@@ -82,16 +93,24 @@ const getCurConfigFormData = () => {
   return curConfig
 }
 
+const resetConfigRuleForm = (nextConfig: IStringKeyMap) => {
+  Object.keys(configRuleForm).forEach((key) => {
+    delete configRuleForm[key]
+  })
+  Object.assign(configRuleForm, nextConfig)
+}
+
 const handleConfigChange = (val: any) => {
+  isConfigRuleFormReady.value = false
   const config = (formData.isNewForm ? {} : getCurConfigFormData()) as any
   const configId = formData.isNewForm ? undefined : formData.configId
-  Object.assign(configRuleForm, config)
+  resetConfigRuleForm(config)
 
   // 追加form属性
   const rawVal = toRaw(val)
 
   if (rawVal.length > 0) {
-    configList.value = _.cloneDeep(rawVal).map((item: any) => {
+    configList.value = cloneConfigItems(rawVal).map((item: any) => {
       if (!configId) return item
       let defaultValue = item.default !== undefined ? item.default : item.type === "checkbox" ? [] : null
       if (item.type === "checkbox") {
@@ -101,7 +120,8 @@ const handleConfigChange = (val: any) => {
               return i.checked
             })
             .map((i: any) => i.value) || []
-        defaultValue = _.union(defaultValue, defaults)
+        const existingDefaults = Array.isArray(defaultValue) ? defaultValue : defaultValue == null ? [] : [defaultValue]
+        defaultValue = uniqueArray([...existingDefaults, ...defaults])
       }
       if (config && config[item.name] !== undefined) {
         defaultValue = config[item.name]
@@ -110,6 +130,9 @@ const handleConfigChange = (val: any) => {
       return item
     })
   }
+  nextTick(() => {
+    isConfigRuleFormReady.value = true
+  })
   logger.debug("config change finish")
 }
 
@@ -147,6 +170,9 @@ watch(
 watch(
   configRuleForm,
   (val: IStringKeyMap) => {
+    if (!isConfigRuleFormReady.value) {
+      return
+    }
     logger.debug("save config change to db", val)
     doSubmit(val)
 

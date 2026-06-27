@@ -8,7 +8,7 @@
  */
 
 import { Buffer } from "../../../utils/nodePolyfill"
-import crypto from "crypto"
+import { digestHmacSha1 } from "../../../utils/cryptoUtil"
 
 const base64ToUrlSafe = function (v: string) {
   return v.replace(/\//g, "_").replace(/\+/g, "-")
@@ -31,10 +31,7 @@ const urlSafeBase64Decode = function (fromStr: string) {
 
 // Hmac-sha1 Crypt
 const hmacSha1 = (encodedFlags: string, secretKey: string) => {
-  // return value already encoded with base64
-  const hmac = crypto.createHmac("sha1", secretKey)
-  hmac.update(encodedFlags)
-  return hmac.digest("base64")
+  return digestHmacSha1(secretKey, encodedFlags, "base64") as string
 }
 
 const util = { urlsafeBase64Encode, urlSafeBase64Decode, base64ToUrlSafe, urlSafeToBase64, hmacSha1 }

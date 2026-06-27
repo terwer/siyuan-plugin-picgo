@@ -7,8 +7,12 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { SyncAdapter } from "@commonify/lowdb"
 import { win } from "../../utils"
+
+interface SyncAdapter<T> {
+  read(): T | null
+  write(data: T): void
+}
 
 export class TextFileSync implements SyncAdapter<string> {
   // PathLike

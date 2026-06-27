@@ -68,11 +68,22 @@ export default {
   "setting.picgo.plugin.nowork": "Nowork",
   "setting.picgo.plugin.nouse": "Nouse",
   "setting.picgo.plugin.update.success": "Update success",
+  "setting.runtime.reload.required.title": "Manual plugin reload required",
+  "setting.runtime.reload.required.desc":
+    "The configuration has been saved, but menus, commands, status bar entries, document paste behavior, or plugin runtime registrations may not update immediately. This is a plugin/Siyuan lifecycle refresh issue, not a settings-save issue.",
+  "setting.runtime.reload.required.reason": "Reason: ",
+  "setting.runtime.reload.required.step1":
+    "Disable and re-enable the PicGo plugin in Siyuan plugin settings, or restart Siyuan.",
+  "setting.runtime.reload.required.step2": "After reloading, return here and clear this notice.",
+  "setting.runtime.reload.required.clear": "I reloaded manually, clear notice",
   "setting.picgo.manage": "Picture manage",
   "picgo.chrome.tip":
     "If you are using a browser plug -in, you need to download the configuration Picgo client from here: https://github.com/Molunerfinn/PicGo/releases",
   "picgo.siyuan.tip":
     "If you are using Siyuan notes pendants, you need to configure your own integration of PICGO. The pendant version of the PICGO configuration file is:`[Siyuan Workspace]/data/widgets/sy-post-publisher/lib/picgo/picgo.cfg.json`，Please refer to the official picgo document for configuration：https://picgo.github.io/PicGo-Core-Doc/zh/guide/config.html#%E6%89%8B%E5%8A%A8%E7%94%9F%E6%88%90",
+  "picgo.upload.onclick.force": "Upload All Images Forcefully",
+  "picgo.upload.onclick.force.tips":
+    "This operation will re-upload all images (including those already uploaded to the image bed). This is generally used when switching image beds. Please do not proceed unless necessary. Do you want to continue?",
   "picgo.upload.status": "Upload status",
   "picgo.upload.select.pic": "Select picture",
   "picgo.upload.clipboard": "Clipboard picture",
@@ -154,4 +165,18 @@ export default {
   "picgo.siyuan.replace.link": "Substitute Local Link",
   "picgo.siyuan.txt.with.img.upload":
     "When there are both text and images on the clipboard, should they be uploaded, e.g., in applications like PPT or Excel?",
+  "setting.picgo.external.mode.label": "External PicGo Mode",
+  "setting.picgo.external.mode.local": "Local PicGo App",
+  "setting.picgo.external.mode.local.desc":
+    "Connect to PicGo desktop app running locally (default port 36677). Suitable when PicGo/PicList desktop client is installed on the same machine as Siyuan.",
+  "setting.picgo.external.mode.remote": "Remote PicList Service",
+  "setting.picgo.external.mode.remote.desc":
+    "Connect to a remotely deployed PicList container service. Suitable for Docker-deployed PicList on a server, accessible via public network without requiring a local client.",
+  "setting.picgo.piclist.apiurl": "PicList API URL",
+  "setting.picgo.piclist.apiurl.tip": "Upload endpoint of the remote PicList service, e.g.: https://piclist.powercess.com/upload",
+  "setting.picgo.piclist.apikey": "API Key",
+  "setting.picgo.piclist.apikey.tip": "API Key for authenticating with the PicList service",
+  "setting.picgo.piclist.notice.title": "About Remote PicList",
+  "setting.picgo.piclist.notice.desc":
+    "Remote PicList mode uploads image file data directly to the remote server via multipart/form-data. Unlike the local PicGo App, this mode sends actual file content over the network, enabling cross-device usage. Note: Clipboard upload is not supported in remote mode.",
 }

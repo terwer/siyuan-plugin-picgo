@@ -1,7 +1,7 @@
 {
   "name": "picgo-plugin-app",
   "private": true,
-  "version": "1.11.0",
+  "version": "3.0.0",
   "type": "module",
   "scripts": {
     "serve": "python -u scripts/serve.py && vite",
@@ -18,7 +18,7 @@
     "typescript": "^5.4.5",
     "unplugin-auto-import": "^0.17.5",
     "unplugin-vue-components": "^0.27.0",
-    "vite": "^5.2.9",
+    "vite": "^5.4.0",
     "vite-plugin-html": "^3.2.2",
     "vitest": "^1.5.0",
     "vue-tsc": "^2.0.14"
@@ -28,7 +28,6 @@
     "@iconify/json": "^2.2.216",
     "@vueuse/core": "^10.9.0",
     "element-plus": "^2.7.4",
-    "lodash-es": "^4.17.21",
     "unplugin-icons": "^0.19.0",
     "vue": "^3.4.24",
     "vue-i18n": "^9.13.0",

@@ -8,7 +8,8 @@
  */
 
 import { IConfig, IPicGo, IPicgoDb } from "../../types"
-import { IJSON, JSONStore } from "universal-picgo-store"
+import { IJSON, JSONStore, JSONAdapter, LocalStorageAdapter } from "universal-picgo-store"
+import { hasNodeEnv } from "universal-picgo-store"
 
 class ConfigDb implements IPicgoDb<IConfig> {
   private readonly ctx: IPicGo
@@ -20,15 +21,28 @@ class ConfigDb implements IPicgoDb<IConfig> {
       current: "smms",
     },
     picgoPlugins: {},
+    siyuan: {
+      waitTimeout: 2,
+      retryTimes: 5,
+      autoUpload: true,
+      replaceLink: true,
+      txtImageSwitch: false,
+    },
   }
+  private initReady = false
 
   constructor(ctx: IPicGo) {
     this.ctx = ctx
     this.key = this.ctx.configPath
-    this.db = new JSONStore(this.key)
+    const adapter = ctx.storageAdapterFactory?.(this.key)
+      ?? (hasNodeEnv ? new JSONAdapter(this.key) : new LocalStorageAdapter(this.key))
+    this.db = new JSONStore(this.key, adapter)
 
-    this.safeSet("picBed", this.initialValue.picBed)
-    this.safeSet("picgoPlugins", this.initialValue.picgoPlugins)
+    // sync adapter: safeSet immediately. async: defer to ensureReady() after remote load.
+    if (!this.db.isAsync) {
+      this.doSafeSet()
+      this.initReady = true
+    }
   }
 
   read(flush?: boolean): IJSON {
@@ -67,7 +81,29 @@ class ConfigDb implements IPicgoDb<IConfig> {
     })
   }
 
+  get isAsync(): boolean { return (this.db as any).isAsync }
+
+  async ensureReady(): Promise<void> {
+    if (this.initReady) return
+    await this.db.waitReady()
+    this.doSafeSet()
+    this.initReady = true
+    if (this.isAsync) await this.db.flush()
+  }
+
+  async flush(): Promise<void> { await (this.db as any).flush?.() }
+
   // ===================================================================================================================
+  private doSafeSet() {
+    this.safeSet("picBed", this.initialValue.picBed)
+    this.safeSet("picgoPlugins", this.initialValue.picgoPlugins)
+    this.safeSet("siyuan.waitTimeout", this.initialValue.siyuan.waitTimeout)
+    this.safeSet("siyuan.retryTimes", this.initialValue.siyuan.retryTimes)
+    this.safeSet("siyuan.autoUpload", this.initialValue.siyuan.autoUpload)
+    this.safeSet("siyuan.replaceLink", this.initialValue.siyuan.replaceLink)
+    this.safeSet("siyuan.txtImageSwitch", this.initialValue.siyuan.txtImageSwitch)
+  }
+
   safeSet(key: string, value: any) {
     if (!this.db.has(key)) {
       try {
