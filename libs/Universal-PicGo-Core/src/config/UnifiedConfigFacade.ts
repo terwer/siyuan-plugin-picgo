@@ -277,22 +277,18 @@ async function loadAllOwnerFiles(
     } catch (e: any) {
       const storageKind = getAdapterStorageKind(fileState.adapter)
       if (isAsyncAdapter(fileState.adapter)) {
-        // Async owner-file failures are authoritative.  Do NOT call read()
-        // again to inspect the return type, do NOT seed generated defaults,
-        // and do NOT continue migration against an empty object.
+        // Async read failed (kernel API unavailable, file missing, auth error).
+        // Log the error but continue with empty data — mergeDefaults() will seed
+        // generated defaults and the migration service can retry later.
         state.storageMode = "async"
-        logger.error(`[UnifiedConfigFacade] failed to load ${ownerFile}:`, e?.message ?? e)
-        throw new ConfigReadError({
-          domain: fileState.domains[0],
-          ownerFile,
-          storageKind,
-          error: e,
-        })
+        logger.error(`[UnifiedConfigFacade] failed to load ${ownerFile} (${storageKind}), using defaults:`, e?.message ?? e)
+        fileState.data = {}
+      } else {
+        // On sync/local backends an empty file or parse error can still be
+        // treated as missing and initialized by defaults.
+        logger.warn(`[UnifiedConfigFacade] sync load failed for ${ownerFile}, treating as missing:`, e?.message ?? e)
+        fileState.data = {}
       }
-      // On sync/local backends an empty file or parse error can still be
-      // treated as missing and initialized by defaults.
-      logger.warn(`[UnifiedConfigFacade] sync load failed for ${ownerFile}, treating as missing:`, e?.message ?? e)
-      fileState.data = {}
     }
   }
 }
