@@ -23,7 +23,7 @@ describe("V3MigrationService", () => {
     it("completes with 'done' status when owner files have user data", async () => {
       const ownerFileData = new Map<string, Record<string, any>>()
       ownerFileData.set("picgo.cfg.json", {
-        picBed: { uploader: "github", current: "github", github: { token: "ghp_xxx" } },
+        picBed: { uploader: "github", current: "github", github: { token: "fake-tok-xxx" } },
         picgoPlugins: {},
         siyuan: { autoUpload: false },
       })
@@ -154,7 +154,7 @@ describe("V3MigrationService", () => {
       const ownerFileData = new Map<string, Record<string, any>>()
       // Put user data in picgo.cfg.json so picgoMain imports successfully
       ownerFileData.set("picgo.cfg.json", {
-        picBed: { uploader: "github", current: "github", github: { token: "ghp_xxx" } },
+        picBed: { uploader: "github", current: "github", github: { token: "fake-tok-xxx" } },
         picgoPlugins: {},
       })
 
@@ -217,7 +217,7 @@ describe("V3MigrationService", () => {
       window.localStorage.setItem(
         "universal-picgo/picgo.cfg.json",
         JSON.stringify({
-          picBed: { uploader: "github", current: "github", github: { token: "ghp_browser" } },
+          picBed: { uploader: "github", current: "github", github: { token: "fake-tok-browser" } },
           picgoPlugins: { "plugin-x": true },
           siyuan: { autoUpload: false, replaceLink: false, txtImageSwitch: true },
         })
@@ -281,7 +281,7 @@ describe("V3MigrationService", () => {
         "siyuan-cfg",
         JSON.stringify({
           apiUrl: "https://remote:6806",
-          password: "secret-pass",
+          password: "test-migration-pw",
         })
       )
 
@@ -298,7 +298,7 @@ describe("V3MigrationService", () => {
 
       const connData = ownerFileData.get("siyuan-cfg")
       expect(connData?.apiUrl).toBe("https://remote:6806")
-      expect(connData?.password).toBe("secret-pass")
+      expect(connData?.password).toBe("test-migration-pw")
     })
 
     it("does NOT overwrite existing user config with browser data", async () => {
@@ -313,7 +313,7 @@ describe("V3MigrationService", () => {
       // Owner file has real user data (github uploader)
       const ownerFileData = new Map<string, Record<string, any>>()
       ownerFileData.set("picgo.cfg.json", {
-        picBed: { uploader: "github", current: "github", github: { token: "ghp_real" } },
+        picBed: { uploader: "github", current: "github", github: { token: "fake-tok-real" } },
         picgoPlugins: {},
         siyuan: { autoUpload: false },
       })
