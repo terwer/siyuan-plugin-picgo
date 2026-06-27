@@ -1,6 +1,6 @@
 {
   "name": "universal-picgo-store",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "type": "module",
   "description": "For PicGo projects to write &amp; read data from browser, node or electron",
   "main": "./dist/index.js",
@@ -22,7 +22,8 @@
     "dev": "vite build --watch",
     "build": "vite build",
     "start": "vite preview",
-    "test": "npx vitest --watch"
+    "test": "vitest run",
+    "test:watch": "npx vitest --watch"
   },
   "devDependencies": {
     "@terwer/eslint-config-custom": "^1.3.6",
