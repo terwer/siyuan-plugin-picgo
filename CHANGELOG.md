@@ -1,26 +1,15 @@
 # Changelog
 
 ## [3.0.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.1...siyuan-plugin-picgo-v3.0.2) (2026-06-27)
-
-
 ### Bug Fixes
-
 * **config:** replace require fallback with window object checks ([#696](https://github.com/terwer/siyuan-plugin-picgo/issues/696)) ([fda0eb8](https://github.com/terwer/siyuan-plugin-picgo/commit/fda0eb8020d62a152f47aa511ce53d9170d30231))
-
 ## [3.0.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.0...siyuan-plugin-picgo-v3.0.1) (2026-06-27)
-
-
-### Bug Fixes
-
-* **core:** prevent config facade crash on async storage read failures ([#690](https://github.com/terwer/siyuan-plugin-picgo/issues/690)) ([#693](https://github.com/terwer/siyuan-plugin-picgo/issues/693)) ([a83e0d9](https://github.com/terwer/siyuan-plugin-picgo/commit/a83e0d9176cb81f8c4edcb1d93319383b22dfbc5))
 * **core:** prevent config facade crash on async storage read failures ([#691](https://github.com/terwer/siyuan-plugin-picgo/issues/691)) ([33c6e98](https://github.com/terwer/siyuan-plugin-picgo/commit/33c6e98f8f587e75078df3fc9eb7eefcd0dfd47e))
-
 ## [3.0.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.1.1...siyuan-plugin-picgo-v3.0.0) (2026-06-24)
 ### ⚠ BREAKING CHANGES
 * **config:** picgo config access is async-only in 3.0; legacy synchronous config apis and split runtime storage paths are replaced by the unified facade.
 ### Features
 * **config:** unify PicGo config persistence strategy ([#689](https://github.com/terwer/siyuan-plugin-picgo/issues/689)) ([41f7490](https://github.com/terwer/siyuan-plugin-picgo/commit/41f749096e0e194de6ab3d0957e54107d46bed34))
-### Bug Fixes
 * **core:** ensure ExternalPicgoConfigDb defaults survive async load ([#687](https://github.com/terwer/siyuan-plugin-picgo/issues/687)) ([6144292](https://github.com/terwer/siyuan-plugin-picgo/commit/6144292ac210d5911f1fdae623662ecad0106bfb))
 ## [2.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.1.0...siyuan-plugin-picgo-v2.1.1) (2026-06-17)
 * **docs:** add release summary for 2.1.0 changelog ([#685](https://github.com/terwer/siyuan-plugin-picgo/issues/685)) ([81df207](https://github.com/terwer/siyuan-plugin-picgo/commit/81df207114352934f237cb55ec215f29f31017ce))
