@@ -6,9 +6,9 @@
 
 Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 
-## v3.0.1
+## v3.0.1 — Fix Settings Page Crash on Browser/Docker
 
-v3.0.1 fixes a crash in browser/Docker environments where a missing or unavailable kernel storage file would cause the entire settings page to blank out. The config facade now continues gracefully with defaults instead of stopping on async read failures, and the JavaScript Object Notation (JSON) parser in the kernel storage adapter catches corrupted files rather than throwing.
+v3.0.1 fixes a crash where the settings page would go completely blank in browser or Docker environments when kernel storage files were missing or unavailable. The config facade now continues gracefully with defaults instead of crashing on async read failures, and the kernel storage adapter catches corrupted JSON instead of throwing.
 
 ## PicGo 3.0+: Unified Workspace Configuration Across Desktop, Browser, and Docker
 

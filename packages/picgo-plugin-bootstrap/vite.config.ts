@@ -7,10 +7,10 @@
  *  of this license document, but changing it is not allowed.
  */
 
+import { cpSync, existsSync, mkdirSync } from "fs"
 import { resolve } from "path"
 import { defineConfig } from "vite"
 import minimist from "minimist"
-import { viteStaticCopy } from "vite-plugin-static-copy"
 import livereload from "rollup-plugin-livereload"
 import fg from "fast-glob"
 
@@ -21,37 +21,50 @@ const distDir = "../../artifacts/siyuan-plugin-picgo/dist"
 console.log("isWatch=>", isWatch)
 console.log("distDir=>", distDir)
 
+const staticCopyTargets = [
+  { src: "../../README.md", dest: "./" },
+  { src: "../../README_zh_CN.md", dest: "./" },
+  { src: "../../LICENSE", dest: "./" },
+  { src: "../../icon.png", dest: "./" },
+  { src: "../../preview.png", dest: "./" },
+  { src: "../../plugin.json", dest: "./" },
+]
+
+// Copy entire i18n directory (globbed by fast-glob)
+const copyI18nAssets = () => ({
+  name: "copy-i18n-assets",
+  async closeBundle() {
+    const fg = await import("fast-glob")
+    const files = await fg.default("src/i18n/**", { cwd: __dirname, absolute: false })
+    for (const file of files) {
+      const src = resolve(__dirname, file)
+      const dest = resolve(__dirname, distDir, "i18n", file.replace("src/i18n/", ""))
+      const destDir = resolve(dest, "..")
+      if (!existsSync(destDir)) {
+        mkdirSync(destDir, { recursive: true })
+      }
+      cpSync(src, dest)
+    }
+  },
+})
+
+const copyStaticAssets = () => ({
+  name: "copy-plugin-assets",
+  closeBundle() {
+    for (const target of staticCopyTargets) {
+      const src = resolve(__dirname, target.src)
+      const dest = resolve(__dirname, distDir, target.dest, src.split("/").pop()!)
+      const destDir = resolve(dest, "..")
+      if (!existsSync(destDir)) {
+        mkdirSync(destDir, { recursive: true })
+      }
+      cpSync(src, dest)
+    }
+  },
+})
+
 export default defineConfig({
-  plugins: [
-    viteStaticCopy({
-      targets: [
-        {
-          src: "../../README*.md",
-          dest: "./",
-        },
-        {
-          src: "../../LICENSE",
-          dest: "./",
-        },
-        {
-          src: "../../icon.png",
-          dest: "./",
-        },
-        {
-          src: "../../preview.png",
-          dest: "./",
-        },
-        {
-          src: "../../plugin.json",
-          dest: "./",
-        },
-        {
-          src: "./src/i18n/**",
-          dest: "./i18n/",
-        },
-      ],
-    }),
-  ],
+  plugins: [copyStaticAssets(), copyI18nAssets()],
 
   // https://github.com/vitejs/vite/issues/1930
   // https://vitejs.dev/guide/env-and-mode.html#env-files
