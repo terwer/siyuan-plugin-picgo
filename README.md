@@ -6,23 +6,17 @@
 
 Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 
-## v3.0.1 — Fix Settings Page Crash on Browser/Docker
+## Recent Changes
 
-v3.0.1 fixes a crash where the settings page would go completely blank in browser or Docker environments when kernel storage files were missing or unavailable. The config facade now continues gracefully with defaults instead of crashing on async read failures, and the kernel storage adapter catches corrupted JSON instead of throwing.
+- **v3.0.3** — HarmonyOS platform support: plugin now installable on harmony devices
+- **v3.0.1** — Fix settings page crash on browser and Docker environments
+- **v3.0.0** — Unified workspace configuration across desktop, browser, and Docker
 
-## PicGo 3.0+: Unified Workspace Configuration Across Desktop, Browser, and Docker
-
-PicGo 3.0 builds on the smoother upload path from 2.0 and moves the same cleanup into configuration. Your image-bed settings, external PicGo/PicList choice, and SiYuan connection settings now each have their own clear configuration file. Whether you open PicGo from the desktop app, from a browser page that can reach the SiYuan API, or from a Docker-style SiYuan deployment, PicGo reads the same real workspace-backed configuration instead of quietly falling back to a browser-only default.
-
-The everyday difference is simple: fewer surprises when you switch environments. The popup can open with the same image bed you saved on another SiYuan entry point; external PicGo and PicList settings no longer live in a separate local corner; and connection settings now come from the same real configuration source. The old runtime files are still kept safely on the current device, so plugins, cache, logs, and scripts do not get dragged into workspace sync.
-
-Under the surface, 3.0 also makes configuration loading and saving stricter and calmer. Real configuration reads must finish before PicGo is considered ready; saves can be awaited when a screen needs durable state; and migration is split by configuration domain so existing user data is not overwritten just because another part still needs defaults. If 2.0 made uploading clean, 3.0 makes the configuration behind that upload feel dependable too.
-
-One small detail stays invisible: in browser or Docker-style environments where the SiYuan API is available, PicGo can use SiYuan's built-in forward proxy under the hood, keeping cross-origin details out of the way.
+See [CHANGELOG.md](./CHANGELOG.md) for full history.
 
 ## Recommended Configuration
 
-Breaking News! Using MinIO with the PicGo plugin is recommended, if you don't know how, I've written a step-by-step guide with screenshots, [click here to view](https://siyuan.wiki/s/20241129133646-lz08gnl).
+Recommended: use [rustfs](https://siyuan.wiki/x/20260525135317-fc5wirw) with the PicGo plugin for the best self-hosted image hosting setup.
 
 ## Version Compatibility
 
