@@ -37,7 +37,7 @@ jobs:
 
       # Install pnpm
       - name: Install pnpm
-        uses: pnpm/action-setup@v4.0.0
+        uses: pnpm/action-setup@v6.0.9
         id: pnpm-install
         with:
           run_install: false
