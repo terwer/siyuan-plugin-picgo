@@ -42,7 +42,7 @@
     "dayjs": "^1.11.11",
     "hash.js": "^1.1.7",
     "js-md5": "^0.8.3",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^5.2.0",
     "mime": "^4.0.3",
     "queue": "^7.0.0",
     "universal-picgo-store": "workspace:*",
