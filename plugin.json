@@ -10,7 +10,8 @@
     "darwin",
     "docker",
     "android",
-    "ios"
+    "ios",
+    "harmony"
   ],
   "frontends": [
     "desktop",
