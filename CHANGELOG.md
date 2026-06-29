@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.3](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.2...siyuan-plugin-picgo-v3.0.3) (2026-06-29)
+
+
+### Bug Fixes
+
+* **plugin:** add harmony platform to supported platforms list ([#736](https://github.com/terwer/siyuan-plugin-picgo/issues/736)) ([944f590](https://github.com/terwer/siyuan-plugin-picgo/commit/944f5903980f7deec37d1516b1c6bdc1b3cb572e))
+
 ## [3.0.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.1...siyuan-plugin-picgo-v3.0.2) (2026-06-27)
 ### Bug Fixes
 * **config:** replace require fallback with window object checks ([#696](https://github.com/terwer/siyuan-plugin-picgo/issues/696)) ([fda0eb8](https://github.com/terwer/siyuan-plugin-picgo/commit/fda0eb8020d62a152f47aa511ce53d9170d30231))
