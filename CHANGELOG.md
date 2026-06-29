@@ -1,7 +1,9 @@
 # Changelog
 
-## [3.0.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.1...siyuan-plugin-picgo-v3.0.2) (2026-06-27)
+## [3.0.3](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.2...siyuan-plugin-picgo-v3.0.3) (2026-06-29)
 ### Bug Fixes
+* **plugin:** add harmony platform to supported platforms list ([#736](https://github.com/terwer/siyuan-plugin-picgo/issues/736)) ([944f590](https://github.com/terwer/siyuan-plugin-picgo/commit/944f5903980f7deec37d1516b1c6bdc1b3cb572e))
+## [3.0.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.1...siyuan-plugin-picgo-v3.0.2) (2026-06-27)
 * **config:** replace require fallback with window object checks ([#696](https://github.com/terwer/siyuan-plugin-picgo/issues/696)) ([fda0eb8](https://github.com/terwer/siyuan-plugin-picgo/commit/fda0eb8020d62a152f47aa511ce53d9170d30231))
 ## [3.0.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.0...siyuan-plugin-picgo-v3.0.1) (2026-06-27)
 * **core:** prevent config facade crash on async storage read failures ([#691](https://github.com/terwer/siyuan-plugin-picgo/issues/691)) ([33c6e98](https://github.com/terwer/siyuan-plugin-picgo/commit/33c6e98f8f587e75078df3fc9eb7eefcd0dfd47e))
