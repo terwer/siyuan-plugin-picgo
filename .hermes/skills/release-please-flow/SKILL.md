@@ -33,10 +33,26 @@ conventional commits 自动决定版本号（major/minor/patch）。**绝对不�
    ```
 3. release-please CI 检测到 main 更新，自动创建发版分支：
    `release-please--branches--main--components--<package-name>`
-4. 切换到发版分支：
+   ⚠️ **发版分支不是立即创建的** — release-please CI 需要时间检测 main
+   的变更并生成分支，通常需要 30 秒到 2 分钟，具体取决于 CI 的轮询间隔。
+4. **轮询等待发版分支出现，然后切换**：
    ```bash
-   git fetch origin
-   git checkout release-please--branches--main--components--*
+   # 循环 fetch 直到发版分支出现（最多等待 120 秒）
+   for i in $(seq 1 24); do
+     git fetch origin
+     BRANCH=$(git branch -r | grep 'origin/release-please--branches--main' | head -1 | sed 's|.*origin/||')
+     if [ -n "$BRANCH" ]; then
+       echo "found: $BRANCH"
+       git checkout "$BRANCH"
+       break
+     fi
+     echo "waiting for release-please branch... ($((i * 5))s)"
+     sleep 5
+   done
+   if [ -z "$BRANCH" ]; then
+     echo "ERROR: release-please branch not found after 120s, check CI status"
+     exit 1
+   fi
    ```
 5. 运行 prepareRelease：
    ```bash
