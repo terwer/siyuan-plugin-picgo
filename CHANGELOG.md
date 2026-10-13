@@ -1,14 +1,9 @@
 # Changelog
 
 ## [3.0.5](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.4...siyuan-plugin-picgo-v3.0.5) (2026-10-13)
-
-
 ### Bug Fixes
-
 * **manifest:** conform the bazaar manifest to the new spec ([#804](https://github.com/terwer/siyuan-plugin-picgo/issues/804)) ([453e8e6](https://github.com/terwer/siyuan-plugin-picgo/commit/453e8e60e39263135738899ffc48bf31e73fa4d2))
-
 ## [3.0.4](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.3...siyuan-plugin-picgo-v3.0.4) (2026-10-13)
-### Bug Fixes
 * **headless:** skip uploader validation when the post has no local images ([#802](https://github.com/terwer/siyuan-plugin-picgo/issues/802)) ([69fc694](https://github.com/terwer/siyuan-plugin-picgo/commit/69fc694bfd47c05731a14a6b67f6b93344d03675))
 ## [3.0.3](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.2...siyuan-plugin-picgo-v3.0.3) (2026-06-29)
 * **plugin:** add harmony platform to supported platforms list ([#736](https://github.com/terwer/siyuan-plugin-picgo/issues/736)) ([944f590](https://github.com/terwer/siyuan-plugin-picgo/commit/944f5903980f7deec37d1516b1c6bdc1b3cb572e))

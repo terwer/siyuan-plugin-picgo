@@ -8,9 +8,9 @@ Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 
 ## Recent Changes
 
+- **v3.0.5** — Conform the bazaar manifest to the new spec (drop the deprecated `i18n` field, declare `icon`/`preview` explicitly)
 - **v3.0.4** — Skip uploader validation for documents without images (headless upload)
 - **v3.0.3** — HarmonyOS platform support: plugin now installable on harmony devices
-- **v3.0.1** — Fix settings page crash on browser and Docker environments
 
 See [CHANGELOG.md](./CHANGELOG.md) for full history.
 
