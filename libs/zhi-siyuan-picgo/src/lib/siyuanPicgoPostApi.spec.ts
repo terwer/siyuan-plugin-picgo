@@ -82,3 +82,37 @@ describe("SiyuanPicgoPostApi v3 migration state bridge", () => {
     expect(result.domains.siyuanConnection.status).toBe("imported")
   })
 })
+
+describe("SiyuanPicgoPostApi.parsePostLocalImages", () => {
+  const createPostApi = () => {
+    const api = Object.create(SiyuanPicgoPostApi.prototype) as any
+    api.logger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    api.siyuanApi = {
+      getImageBlocksByID: vi.fn(async () => [{ id: "block-1" }]),
+    }
+    api.imageParser = {
+      parseLocalImagesToArray: vi.fn(() => [
+        { url: "assets/a.png", alt: "a", title: "", isLocal: true, blockId: "" },
+      ]),
+    }
+    return api
+  }
+
+  it("returns parsed local images with blockId bound to the image block", async () => {
+    const api = createPostApi()
+
+    const images = await api.parsePostLocalImages("page-1", "![a](assets/a.png)")
+
+    expect(api.siyuanApi.getImageBlocksByID).toHaveBeenCalledWith("page-1")
+    expect(images).toEqual([{ url: "assets/a.png", alt: "a", title: "", isLocal: true, blockId: "block-1" }])
+  })
+
+  it("returns an empty array when the document has no image blocks", async () => {
+    const api = createPostApi()
+    api.siyuanApi.getImageBlocksByID = vi.fn(async () => [])
+
+    const images = await api.parsePostLocalImages("page-1", "plain text")
+
+    expect(images).toEqual([])
+  })
+})
