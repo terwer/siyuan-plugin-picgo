@@ -32,10 +32,8 @@
     "default": "README.md",
     "zh_CN": "README_zh_CN.md"
   },
-  "i18n": [
-    "en_US",
-    "zh_CN"
-  ],
+  "icon": "icon.png",
+  "preview": "preview.png",
   "funding": {
     "custom": [
       "https://afdian.net/a/terwer"
