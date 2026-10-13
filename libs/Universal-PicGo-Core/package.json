@@ -38,7 +38,7 @@
     "@smithy/protocol-http": "^4.0.0",
     "@smithy/querystring-builder": "^3.0.0",
     "@smithy/fetch-http-handler": "^3.0.1",
-    "axios": "^1.6.8",
+    "axios": "^1.18.1",
     "dayjs": "^1.11.11",
     "hash.js": "^1.1.7",
     "js-md5": "^0.8.3",
