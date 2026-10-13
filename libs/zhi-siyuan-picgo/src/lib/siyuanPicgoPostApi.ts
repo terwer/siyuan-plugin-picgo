@@ -231,15 +231,15 @@ class SiyuanPicgoPostApi {
   // ===================================================================================================================
 
   /**
-   * 上传当前文章图片到图床（单篇文档所有图片全部批量上传，提供给外部调用，例如：发布工具）
+   * 解析文章中的本地图片
+   *
+   * 供「是否存在本地图片」判断（uploadMarkdownImages 前置检测）与上传流程复用，
+   * 保证两处判据一致。
    *
    * @param pageId 文章ID
-   * @param attrs 文章属性
    * @param mdContent 文章的Markdown文本
    */
-  public async uploadPostImagesToBed(pageId: string, attrs: any, mdContent: string): Promise<PicgoPostResult> {
-    const ret = new PicgoPostResult()
-
+  public async parsePostLocalImages(pageId: string, mdContent: string): Promise<ParsedImage[]> {
     const imageBlocks: any[] = await this.siyuanApi.getImageBlocksByID(pageId)
     this.logger.debug("查询文章中的图片块=>", imageBlocks)
 
@@ -256,6 +256,20 @@ class SiyuanPicgoPostApi {
     // const parsedLocalImages = this.imageParser.parseLocalImagesToArray(mdContent)
     // const uniqueLocalImages = [...new Set([...localImages])]
     this.logger.debug("uniqueLocalImages=>", uniqueLocalImages)
+    return uniqueLocalImages
+  }
+
+  /**
+   * 上传当前文章图片到图床（单篇文档所有图片全部批量上传，提供给外部调用，例如：发布工具）
+   *
+   * @param pageId 文章ID
+   * @param attrs 文章属性
+   * @param mdContent 文章的Markdown文本
+   */
+  public async uploadPostImagesToBed(pageId: string, attrs: any, mdContent: string): Promise<PicgoPostResult> {
+    const ret = new PicgoPostResult()
+
+    const uniqueLocalImages = await this.parsePostLocalImages(pageId, mdContent)
 
     if (uniqueLocalImages.length === 0) {
       ret.flag = false
