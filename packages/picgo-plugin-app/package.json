@@ -30,7 +30,7 @@
     "element-plus": "^2.7.4",
     "unplugin-icons": "^0.19.0",
     "vue": "^3.4.24",
-    "vue-i18n": "^9.13.0",
+    "vue-i18n": "^11.4.6",
     "vue-router": "^4.3.0",
     "zhi-common": "^1.33.0",
     "zhi-device": "^2.11.0",
