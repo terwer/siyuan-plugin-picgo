@@ -43,7 +43,7 @@
     "hash.js": "^1.1.7",
     "js-md5": "^0.8.3",
     "js-yaml": "^4.1.0",
-    "mime": "^4.0.3",
+    "mime": "^4.1.0",
     "queue": "^7.0.0",
     "universal-picgo-store": "workspace:*",
     "zhi-lib-base": "^0.8.0"
