@@ -31,7 +31,7 @@
     "unplugin-icons": "^0.19.0",
     "vue": "^3.4.24",
     "vue-i18n": "^9.13.0",
-    "vue-router": "^4.3.0",
+    "vue-router": "^5.1.0",
     "zhi-common": "^1.33.0",
     "zhi-device": "^2.11.0",
     "zhi-lib-base": "^0.8.0",
