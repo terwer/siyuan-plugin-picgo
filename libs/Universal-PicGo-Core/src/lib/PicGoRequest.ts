@@ -295,12 +295,12 @@ class PicGoRequestWrapper {
           break
       }
       const respContentType = userRespData.contentType
+      let isJsonBodyParsed = false
       switch (respContentType) {
         case "application/json":
-          respBody = safeParse(respBody.toString())
-          break
         case "application/json; charset=utf-8":
           respBody = safeParse(respBody.toString())
+          isJsonBodyParsed = true
           break
         case "application/xml":
           respBody = respBody.toString()
@@ -309,7 +309,8 @@ class PicGoRequestWrapper {
           respBody = respBody.toString()
           break
       }
-      if (userOptions.responseType === "json") {
+      // 已经按 JSON 解析过的响应不能再 toString() 一次，否则会变成 "[object Object]"
+      if (!isJsonBodyParsed && userOptions.responseType === "json") {
         respBody = safeParse(respBody.toString())
       }
       if (userOptions.responseType === "text") {
