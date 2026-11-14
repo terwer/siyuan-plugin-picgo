@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.1.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.5...siyuan-plugin-picgo-v3.1.0) (2026-11-14)
+
+
+### Features
+
+* **smms:** upload to S.EE after the SM.MS migration ([#806](https://github.com/terwer/siyuan-plugin-picgo/issues/806)) ([05efc50](https://github.com/terwer/siyuan-plugin-picgo/commit/05efc50af26d0e0b677a313d076b477c0a16f64a))
+
+
+### Bug Fixes
+
+* **paste:** keep paste upload and link replacement independent ([#810](https://github.com/terwer/siyuan-plugin-picgo/issues/810)) ([d5fad24](https://github.com/terwer/siyuan-plugin-picgo/commit/d5fad2435df108c7ab52efe67f4afca397bed76b)), closes [#809](https://github.com/terwer/siyuan-plugin-picgo/issues/809)
+
 ## [3.0.5](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.4...siyuan-plugin-picgo-v3.0.5) (2026-10-13)
 ### Bug Fixes
 * **manifest:** conform the bazaar manifest to the new spec ([#804](https://github.com/terwer/siyuan-plugin-picgo/issues/804)) ([453e8e6](https://github.com/terwer/siyuan-plugin-picgo/commit/453e8e60e39263135738899ffc48bf31e73fa4d2))
