@@ -106,11 +106,52 @@ describe("smms uploader", () => {
     })
     const { ctx, uploader } = createUploader({ token: "test-token" }, request)
 
-    await expect(uploader.handle(ctx)).rejects.toBe("Error: invalid token")
+    await expect(uploader.handle(ctx)).rejects.toBe("invalid token")
     expect(ctx.emit).toHaveBeenCalledWith(IBuildInEvent.NOTIFICATION, {
       title: "UPLOAD_FAILED",
       body: "invalid token",
     })
     expect(ctx.output[0].imgUrl).toBeUndefined()
+  })
+
+  it("describes an error response that carries no message text", async () => {
+    const request = vi.fn().mockResolvedValue({
+      code: 500,
+      data: { reason: "storage quota exceeded" },
+    })
+    const { ctx, uploader } = createUploader({ token: "test-token" }, request)
+
+    const error = await uploader.handle(ctx).catch((e: unknown) => e)
+    expect(typeof error).toBe("string")
+    expect(error).not.toContain("[object Object]")
+    expect(error).toContain("storage quota exceeded")
+  })
+
+  it("describes an HTTP error with the status code and response body", async () => {
+    const request = vi.fn().mockRejectedValue({
+      method: "POST",
+      url: "https://s.ee/api/v1/file/upload",
+      statusCode: 401,
+      message: "Request failed with status code 401",
+      response: { status: 401, statusCode: 401, body: { code: -1, message: "Unauthorized", data: "" } },
+    })
+    const { ctx, uploader } = createUploader({ token: "test-token" }, request)
+
+    await expect(uploader.handle(ctx)).rejects.toBe("HTTP 401 Unauthorized")
+    expect(ctx.output[0].imgUrl).toBeUndefined()
+  })
+
+  it("never surfaces [object Object] for an object shaped error", async () => {
+    const request = vi.fn().mockRejectedValue({
+      statusCode: 500,
+      message: "",
+      response: { status: 500, statusCode: 500, body: { code: -1, details: { hint: "retry later" } } },
+    })
+    const { ctx, uploader } = createUploader({ token: "test-token" }, request)
+
+    const error = await uploader.handle(ctx).catch((e: unknown) => e)
+    expect(typeof error).toBe("string")
+    expect(error).not.toContain("[object Object]")
+    expect(error).toContain("retry later")
   })
 })

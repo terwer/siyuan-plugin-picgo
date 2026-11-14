@@ -36,6 +36,35 @@ const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDo
   }
 }
 
+/**
+ * 把各种形态的错误值转成可读文案，避免界面上出现 [object Object]
+ */
+const toErrorMessage = (value: any, fallback = ""): string => {
+  if (value === null || value === undefined || value === "") return fallback
+  if (typeof value === "string") return value
+  if (value instanceof Error) return value.message || value.name || fallback
+  if (typeof value === "object") {
+    try {
+      const text = JSON.stringify(value)
+      return text && text !== "{}" ? text : fallback
+    } catch {
+      return fallback
+    }
+  }
+  return String(value)
+}
+
+/**
+ * 提取上传接口响应体里的具体错误信息
+ */
+const describeBodyError = (body: any): string => {
+  const message = toErrorMessage(
+    body?.message ?? body?.msg ?? body?.error ?? body?.data?.message ?? body?.data?.error
+  )
+  if (message) return message
+  return toErrorMessage(body)
+}
+
 const handle = async (ctx: IPicGo): Promise<IPicGo> => {
   const userConfig = ctx.getConfig<ISmmsConfig>("picBed.smms")
   if (!userConfig) {
@@ -67,19 +96,21 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           delete img.buffer
           img.imgUrl = body.images
         } else {
+          const message = describeBodyError(body) || "unknown error"
           ctx.emit(IBuildInEvent.NOTIFICATION, {
             title: ctx.i18n.translate<ILocalesKey>("UPLOAD_FAILED"),
-            body: body.message,
+            body: message,
           })
-          throw new Error(body?.message ?? body ?? "unknown error")
+          throw new Error(message)
         }
       } catch (e: any) {
-        let errMsg: any
+        let errMsg: string
         if (e?.statusCode) {
-          errMsg =
-            e.response?.body?.error ?? e.response?.body?.message ?? e.response?.body ?? e.stack ?? "unknown error"
+          // HTTP 层错误：带上状态码和响应体里的具体信息
+          const detail = describeBodyError(e.response?.body) || toErrorMessage(e.message)
+          errMsg = detail ? `HTTP ${e.statusCode} ${detail}` : `HTTP ${e.statusCode}`
         } else {
-          errMsg = e.toString()
+          errMsg = toErrorMessage(e) || toErrorMessage(e?.stack) || "unknown error"
         }
         ctx.log.error(errMsg)
         throw errMsg
