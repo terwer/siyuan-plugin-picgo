@@ -12,6 +12,7 @@
 
 * **agent:** exclude the CDP endpoint from the HTTP proxy ([a9a00e4](https://github.com/terwer/siyuan-plugin-picgo/commit/a9a00e4c40f9bfd8dd114360c2de8f2936766706))
 * **paste:** keep paste upload and link replacement independent ([#810](https://github.com/terwer/siyuan-plugin-picgo/issues/810)) ([d5fad24](https://github.com/terwer/siyuan-plugin-picgo/commit/d5fad2435df108c7ab52efe67f4afca397bed76b)), closes [#809](https://github.com/terwer/siyuan-plugin-picgo/issues/809)
+* **zhi-siyuan-picgo:** add missing PicListUploader import ([#815](https://github.com/terwer/siyuan-plugin-picgo/issues/815)) ([98f60a7](https://github.com/terwer/siyuan-plugin-picgo/commit/98f60a70756f042ba936e7f5d88adb80899fa57e))
 
 
 ### Miscellaneous
