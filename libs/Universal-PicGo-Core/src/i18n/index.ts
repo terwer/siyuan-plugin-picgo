@@ -12,7 +12,7 @@ import { I18n, ObjectAdapter } from "./simpleI18n"
 import { ILocales, ILocalesKey, ZH_CN } from "./zh-CN"
 import { EN } from "./en"
 import { ZH_TW } from "./zh-TW"
-import yaml from "js-yaml"
+import { load as yamlLoad } from "js-yaml"
 import { hasNodeEnv, win } from "universal-picgo-store"
 import { ensureFolderSync, pathExistsSync } from "../utils/nodeUtils"
 import { browserPathJoin } from "../utils/browserUtils"
@@ -111,7 +111,7 @@ class I18nManager implements II18nManager {
           const i18nFilePath = path.join(i18nFolder, file.name)
           const i18nFile = fs.readFileSync(i18nFilePath, "utf8")
           try {
-            const i18nFileObj = yaml.load(i18nFile) as ILocales
+            const i18nFileObj = yamlLoad(i18nFile) as ILocales
             languageList[file.name.replace(/\.yml$/, "")] = i18nFileObj
           } catch (e) {
             console.error(e)
@@ -127,7 +127,7 @@ class I18nManager implements II18nManager {
       // ]
       const i18ns = this.browserI18nDb?.read() ?? []
       i18ns.forEach((i18n: IBrowserLocal) => {
-        const i18nFileObj = yaml.load(i18n.yaml) as ILocales
+        const i18nFileObj = yamlLoad(i18n.yaml) as ILocales
         languageList[i18n.name] = i18nFileObj
       })
     }
