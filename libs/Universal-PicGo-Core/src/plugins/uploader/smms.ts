@@ -14,15 +14,17 @@ import { AxiosRequestConfig } from "axios"
 import { base64ToBuffer, safeParse } from "../../utils/common"
 
 const postOptions = (fileName: string, image: Buffer, apiToken: string, backupDomain = ""): AxiosRequestConfig => {
-  const domain = backupDomain || "sm.ms"
+  // SM.MS 已迁移至 S.EE，默认走 S.EE 的图片上传接口；
+  // 显式配置备用域名时仍按 SM.MS 兼容接口处理，便于继续使用旧域名。
+  const domain = backupDomain || "s.ee"
+  const apiPath = domain === "s.ee" ? "/api/v1/file/upload" : "/api/v2/upload"
 
   const formData = new FormData()
   formData.append("smfile", new Blob([image], { type: "image/png" }), fileName)
-  formData.append("ssl", "true")
 
   return {
     method: "POST",
-    url: `https://${domain}/api/v2/upload`,
+    url: `https://${domain}${apiPath}`,
     headers: {
       // multipart/form-data 是自动设置的，这里不需要
       // "Content-Type": "multipart/form-data",
@@ -54,12 +56,13 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
       try {
         const res: any = await ctx.request(postConfig)
         const body = safeParse<any>(res)
-        if (body.code === "success") {
+        // S.EE 返回 code: 200 + message: "success"，旧 SM.MS 接口返回 code: "success"
+        if (body.code === 200 || body.code === "success" || body.message === "success") {
           delete img.base64Image
           delete img.buffer
           img.imgUrl = body.data.url
         } else if (body.code === "image_repeated" && typeof body.images === "string") {
-          // do extra check since this error return is not documented at https://doc.sm.ms/#api-Image-Upload
+          // 旧 SM.MS 接口的重复图片返回值，未记录在文档中，这里做额外兼容
           delete img.base64Image
           delete img.buffer
           img.imgUrl = body.images
