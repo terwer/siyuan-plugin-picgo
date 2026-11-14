@@ -55,3 +55,11 @@ interface INPMSearchResultObject {
     }
   }
 }
+
+/**
+ * The browser app has no Node type definitions loaded, but vite.config.ts replaces
+ * `process.env.*` at build time through `define`, so the object has to be declared here.
+ */
+declare const process: {
+  env: Record<string, string | undefined>
+}

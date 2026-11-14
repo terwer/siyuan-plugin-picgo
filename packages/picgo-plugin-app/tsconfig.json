@@ -20,19 +20,18 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
 
-    "baseUrl": ".",
     "paths": {
       "~/*": ["./*"],
-      "@/*": ["src/*"],
-      "$pages/*": ["src/pages/*"],
-      "$routes/*": ["src/routes/*"],
-      "$lib/*": ["src/lib/*"],
-      "$assets/*": ["src/assets/*"],
-      "$components/*": ["src/components/*"],
-      "$composables/*": ["src/composables/*"]
+      "@/*": ["./src/*"],
+      "$pages/*": ["./src/pages/*"],
+      "$routes/*": ["./src/routes/*"],
+      "$lib/*": ["./src/lib/*"],
+      "$assets/*": ["./src/assets/*"],
+      "$components/*": ["./src/components/*"],
+      "$composables/*": ["./src/composables/*"]
     },
 
-    "types": ["unplugin-icons/types/vue"]
+    "types": ["unplugin-icons/types/vue", "vite/client"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }]
