@@ -228,6 +228,21 @@ export function findLastIndex<T>(array: T[], predicate: (item: T, index: number,
 
 export const isNil = (value: any) => value == null
 export const isUndefined = (value: any) => value === undefined
+export const isNull = (value: any) => value === null
+export const isPlainObject = (value: any): value is Record<string, any> => isPlainMergeable(value)
+
+export function clamp(value: number, lower: number, upper?: number) {
+  let low: number | undefined = lower
+  let high: number | undefined = upper
+  if (high === undefined) {
+    high = low
+    low = undefined
+  }
+  let result = value
+  if (high !== undefined && result > high) result = high
+  if (low !== undefined && result < low) result = low
+  return result
+}
 
 export function memoize<T extends AnyFn>(func: T, resolver?: (...args: Parameters<T>) => any) {
   const memoized = function (this: any, ...args: Parameters<T>) {

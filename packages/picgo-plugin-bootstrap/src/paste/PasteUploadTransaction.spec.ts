@@ -23,7 +23,13 @@ const buildSnapshot = (overrides: Partial<PasteInputSnapshot> = {}): PasteInputS
 })
 
 const buildTransaction = (
-  options: { assetResult?: any; assetThrows?: Error; bedThrows?: Error; insertFails?: boolean } = {}
+  options: {
+    assetResult?: any
+    assetThrows?: Error
+    bedThrows?: Error
+    insertFails?: boolean
+    useSiyuanRequestOnly?: boolean
+  } = {}
 ) => {
   const notifyInfo = vi.fn()
   const notifySuccess = vi.fn()
@@ -35,7 +41,7 @@ const buildTransaction = (
     error: vi.fn(),
   }
 
-  const uploadAsset = vi.fn(async () => {
+  const uploadAsset = vi.fn(async (..._args: any[]) => {
     if (options.assetThrows) {
       throw options.assetThrows
     }
@@ -43,18 +49,18 @@ const buildTransaction = (
   })
 
   const insertResponse = options.insertFails ? [{ doOperations: [] }] : [{ doOperations: [{ id: "inserted-block-1" }] }]
-  const insertBlock = vi.fn(async () => insertResponse)
-  const siyuanRequest = vi.fn(async () => insertResponse)
+  const insertBlock = vi.fn(async (..._args: any[]) => insertResponse)
+  const siyuanRequest = vi.fn(async (..._args: any[]) => insertResponse)
 
-  const uploadSingleImageToBed = vi.fn(async () => {
+  const uploadSingleImageToBed = vi.fn(async (..._args: any[]) => {
     if (options.bedThrows) {
       throw options.bedThrows
     }
     return [{ imgUrl: REMOTE_URL }]
   })
 
-  const setBlockAttrs = vi.fn(async () => undefined)
-  const getBlockAttrs = vi.fn(async () => ({}))
+  const setBlockAttrs = vi.fn(async (..._args: any[]) => undefined)
+  const getBlockAttrs = vi.fn(async (..._args: any[]) => ({}))
 
   // SiyuanKernelApi in production has no insertBlock(); it goes through siyuanRequest.
   const siyuanApi: any = options.useSiyuanRequestOnly
