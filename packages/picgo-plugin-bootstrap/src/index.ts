@@ -19,7 +19,7 @@ import { PageRoute } from "./pageRoute"
 import { initStatusBar, updateStatusBar } from "./statusBar"
 import { initTopbar } from "./topbar"
 import { destroyPluginShell, openPluginShell } from "./shell"
-import { PasteEventAdapter } from "./paste/PasteEventAdapter"
+import { PasteEventAdapter, type PasteTakeoverConfig } from "./paste/PasteEventAdapter"
 import { PasteUploadTransaction } from "./paste/PasteUploadTransaction"
 import { icons } from "./utils/svg"
 
@@ -29,7 +29,7 @@ export default class PicgoPlugin extends Plugin {
   private readonly pasteEventAdapter: PasteEventAdapter
   private picgoPostApi?: SiyuanPicgoPostApi
   private siyuanApi?: any
-  private pasteTakeoverSnapshot?: { autoUpload: boolean; allowPicAndText: boolean; replaceLink: boolean }
+  private pasteTakeoverSnapshot?: PasteTakeoverConfig
 
   constructor(options: { app: App; id: string; name: string; i18n: IObject }) {
     super(options)
