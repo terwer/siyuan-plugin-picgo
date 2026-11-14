@@ -132,4 +132,63 @@ describe("PicGoRequestWrapper", () => {
     expect(direct.url).toBe("https://example-bucket.oss-cn-beijing.aliyuncs.com/test/image.jpg")
     expect(direct.url).not.toContain("/api/network/forwardProxy")
   })
+
+  it("parses a proxied JSON response only once for a json caller", async () => {
+    const currentOrigin = "http://127.0.0.1:59205"
+    vi.spyOn(store, "hasNodeEnv", "get").mockReturnValue(false)
+    vi.spyOn(store, "win", "get").mockReturnValue({
+      location: { origin: currentOrigin },
+      siyuan: { config: { system: {} } },
+    } as any)
+
+    const upstreamBody = JSON.stringify({
+      code: 200,
+      message: "success",
+      data: { url: "https://files.example.com/2026/11/14/probe.png" },
+    })
+    const request = vi.fn().mockResolvedValue({
+      status: 200,
+      data: {
+        code: 0,
+        data: {
+          status: 200,
+          body: Buffer.from(upstreamBody).toString("base64"),
+          bodyEncoding: "base64",
+          contentType: "application/json; charset=utf-8",
+          headers: {},
+        },
+      },
+      config: {},
+      request: {},
+    })
+    vi.spyOn(axios, "create").mockReturnValue({
+      interceptors: {
+        response: { use: vi.fn() },
+        request: { use: vi.fn() },
+      },
+      request,
+    } as any)
+
+    const ctx = {
+      getLogger: vi.fn(() => createLogger()),
+      getConfig: vi.fn(() => undefined),
+      i18n: { translate: vi.fn((key: string) => key) },
+    } as any
+    const wrapper = new PicGoRequestWrapper(ctx)
+
+    const response = await wrapper.PicGoRequest({
+      method: "POST",
+      url: "https://s.ee/api/v1/file/upload",
+      headers: { Authorization: "test-token" },
+      data: Buffer.from("image-content"),
+      responseType: "json",
+    } as any)
+
+    expect(request.mock.calls[0][0].url).toBe(`${currentOrigin}/api/network/forwardProxy`)
+    expect(response).toEqual({
+      code: 200,
+      message: "success",
+      data: { url: "https://files.example.com/2026/11/14/probe.png" },
+    })
+  })
 })

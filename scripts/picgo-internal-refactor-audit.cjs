@@ -271,8 +271,40 @@ function checkV3UnifiedConfigGates() {
     "externalConfigPath: options.paths?.externalConfigPath",
     "siyuanConnectionConfigPath: options.paths?.siyuanConnectionConfigPath",
     "resolveNodeOwnerPath(ownerFile, logicalKey, options)",
+    "dirtyVersion",
+    "writeQueue",
+    "currentWriteTask",
+    "markOwnerDirty(state, owner)",
+    "cancelScheduledFlush(state, ownerFile)",
+    "flushOwnerFile(state, ownerFile, fileState)",
+    "writeOwnerFile(fileState, snapshot)",
   ]) {
     if (!unifiedFacade.includes(expected)) failures.push(`UnifiedConfigFacade v3 lifecycle/instanceKey contract missing: ${expected}`)
+  }
+  const facadeFlushBody = sectionBetween(unifiedFacade, "async flush(domains?: ConfigDomain[])", "async reload(domains?: ConfigDomain[])")
+  if (!facadeFlushBody.includes("cancelScheduledFlush(state, ownerFile)")) {
+    failures.push("UnifiedConfigFacade flush() must cancel pending debounce timers before writing")
+  }
+  if (!facadeFlushBody.includes("flushOwnerFile(state, ownerFile, fileState)")) {
+    failures.push("UnifiedConfigFacade flush() must drain through flushOwnerFile")
+  }
+  const scheduleFlushBody = sectionBetween(unifiedFacade, "function scheduleFlush", "function markOwnerDirty")
+  if (!scheduleFlushBody.includes("flushOwnerFile(state, ownerFile, fileState)")) {
+    failures.push("UnifiedConfigFacade scheduleFlush() must reuse drainable flushOwnerFile pipeline")
+  }
+  if (/writeOwnerFile\s*\(/.test(scheduleFlushBody)) {
+    failures.push("UnifiedConfigFacade scheduleFlush() must not directly call writeOwnerFile")
+  }
+  const flushOwnerFileBody = sectionBetween(unifiedFacade, "async function flushOwnerFile", "async function writeOwnerFile")
+  for (const expected of [
+    "currentWriteVersion >= targetVersion",
+    "fileState.writeQueue.catch(() => undefined)",
+    "fileState.currentWriteTask = task",
+    "fileState.writeQueue = task.catch(() => undefined)",
+    "fileState.dirtyVersion <= targetVersion",
+    "fileState.dirty = true",
+  ]) {
+    if (!flushOwnerFileBody.includes(expected)) failures.push(`UnifiedConfigFacade flushOwnerFile drain/dirty contract missing: ${expected}`)
   }
   const retryMigrationBody = sectionBetween(unifiedFacade, "async retryMigration(domains?: ConfigDomain[])", "maskSnapshot(snapshot")
   if (!retryMigrationBody.includes("retryV3MigrationInternal(state, options, logger, domains)")) {

@@ -6,44 +6,49 @@
 
 Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 
-## PicGo 2.0+: Uploading Finally Feels Smooth
+## Recent Changes
 
-PicGo 2.0+ clears away years of historical debt from the upload path. Paste an image, and PicGo now takes it over from the first moment: no duplicate uploads, no polling waits, no DOM guessing, and no post-processing that first lets SiYuan insert a local image and then rewrites it into an image-hosting link. Fewer stalls, fewer doubts, and no more wondering how many times that image was uploaded.
+- **v3.0.5** — Conform the bazaar manifest to the new spec (drop the deprecated `i18n` field, declare `icon`/`preview` explicitly)
+- **v3.0.4** — Skip uploader validation for documents without images (headless upload)
+- **v3.0.3** — HarmonyOS platform support: plugin now installable on harmony devices
 
-Under the surface, the foundation is cleaner too. Your main image-bed config can follow the SiYuan workspace, while plugins, cache, logs, and other heavy runtime files stay safely on the current device. Publisher and other plugins can call PicGo's upload core directly, without forcing the full PicGo plugin UI into every scenario.
-
-What you feel every day is lighter and calmer: a lightweight popup, a one-time migration that stays quiet after it finishes, clear reload hints when SiYuan needs a refresh, and an upload flow that finally feels clean. If PicGo ever felt like it could be better, 2.0 is the version worth opening again.
+See [CHANGELOG.md](./CHANGELOG.md) for full history.
 
 ## Recommended Configuration
 
-Breaking News!Using MinIO with the PicGo plugin is recommended, if you don't know how, I've written a step-by-step guide with screenshots, [click here to view](https://siyuan.wiki/s/20241129133646-lz08gnl).
+Recommended: use [rustfs](https://siyuan.wiki/x/20260525135317-fc5wirw) with the PicGo plugin for the best self-hosted image hosting setup.
 
 ## Version Compatibility
 
 > Important Note:
 >
-> PicGo `2.0.0+` uses split configuration paths: the main config syncs with the workspace, while runtime files, plugins, cache, and logs stay on the current device. See `v2.0.0 configuration paths` below for details.
+> PicGo `3.0.0+` uses a unified configuration source. The bundled PicGo config, external PicGo/PicList config, and SiYuan connection config are read from workspace-backed configuration files when the SiYuan API is available. Runtime files, third-party plugin dependencies, cache, scripts, and logs still stay on the current device.
+>
+> The `2.0.0` path split is now listed under `Historical paths` for reference.
 >
 > Please refrain from updating this plugin for versions of siyuan-note prior to `3.0.3`; the highest permissible version remains `1.5.1`. For siyuan-note versions `3.0.3` and beyond, the PicGO plugin may be upgraded to `1.6.0+`.
 >
 > For versions of siyuan-note before `2.10.8`, it is advised not to upgrade this plugin beyond version `1.4.5`. Subsequent to siyuan-note `2.10.8`, the PicGO plugin can be updated to `1.5.0+`.
 
-### v2.0.0 configuration paths
+### v3.0.0 configuration paths
 
-v2.0.0 is a breaking cleanup release. It includes the internal PicGo refactor and the storage path split.
+v3.0.0 is a configuration cleanup release. It keeps the v2 runtime split, and moves all user-facing PicGo configuration into explicit workspace configuration files.
 
-The bundled PicGo main config is synced with the SiYuan workspace:
+Workspace-backed configuration:
 
 ```text
 [workspace]/data/storage/syp/picgo/
-  picgo.cfg.json
+  picgo.cfg.json                  # bundled PicGo config, uploaders, plugin values, paste behavior
+  external-picgo-cfg.json         # external PicGo App / PicList API selection and endpoint
+
+[workspace]/data/storage/syp/
+  siyuan-cfg.json                 # SiYuan API connection settings
 ```
 
 Device-local runtime files stay outside workspace sync:
 
 ```text
 ~/.universal-picgo/
-  external-picgo-cfg.json
   package.json
   package-lock.json
   node_modules/
@@ -54,22 +59,26 @@ Device-local runtime files stay outside workspace sync:
   picgo.log
 ```
 
-Migration rule: if the workspace `picgo.cfg.json` is missing and `~/.universal-picgo/picgo.cfg.json` exists, v2 copies only that single file to the workspace. It does not delete the home file, does not overwrite an existing workspace config, and does not move the whole directory.
+Migration rule: v3 imports eligible legacy data by domain, writes the new configuration files, and leaves existing real user configuration in place. After migration finishes, PicGo records a marker and stays quiet on later starts.
+
+About rare simultaneous edits: if multiple PicGo entry points in the same SiYuan workspace edit the same setting at almost the same time, the last save wins.
+
+Note: this does not affect SiYuan's multiple-workspace model; separate workspaces remain naturally isolated. Most users will never hit this.
 
 ### Historical paths
 
 ```text
-<= 1.5.6
+2.0.0 - 2.x
 [workspace]/data/storage/syp/picgo/picgo.cfg.json
-[workspace]/data/storage/syp/picgo/external-picgo-cfg.json
-[workspace]/data/storage/syp/picgo/package.json
-[workspace]/data/storage/syp/picgo/package-lock.json
-[workspace]/data/storage/syp/picgo/node_modules/
-[workspace]/data/storage/syp/picgo/libs/
-[workspace]/data/storage/syp/picgo/i18n-cli/
-[workspace]/data/storage/syp/picgo/picgo-clipboard-images/
-[workspace]/data/storage/syp/picgo/*.script
-[workspace]/data/storage/syp/picgo/picgo.log
+~/.universal-picgo/external-picgo-cfg.json
+~/.universal-picgo/package.json
+~/.universal-picgo/package-lock.json
+~/.universal-picgo/node_modules/
+~/.universal-picgo/libs/
+~/.universal-picgo/i18n-cli/
+~/.universal-picgo/picgo-clipboard-images/
+~/.universal-picgo/*.script
+~/.universal-picgo/picgo.log
 
 1.6.0+
 ~/.universal-picgo/picgo.cfg.json
@@ -82,6 +91,18 @@ Migration rule: if the workspace `picgo.cfg.json` is missing and `~/.universal-p
 ~/.universal-picgo/picgo-clipboard-images/
 ~/.universal-picgo/*.script
 ~/.universal-picgo/picgo.log
+
+<= 1.5.6
+[workspace]/data/storage/syp/picgo/picgo.cfg.json
+[workspace]/data/storage/syp/picgo/external-picgo-cfg.json
+[workspace]/data/storage/syp/picgo/package.json
+[workspace]/data/storage/syp/picgo/package-lock.json
+[workspace]/data/storage/syp/picgo/node_modules/
+[workspace]/data/storage/syp/picgo/libs/
+[workspace]/data/storage/syp/picgo/i18n-cli/
+[workspace]/data/storage/syp/picgo/picgo-clipboard-images/
+[workspace]/data/storage/syp/picgo/*.script
+[workspace]/data/storage/syp/picgo/picgo.log
 ```
 
 

@@ -1,0 +1,13 @@
+# GitGuardian configuration for siyuan-plugin-picgo
+version: 2
+
+# Exclude test files from secret scanning.
+# Test files contain deliberately fake placeholder values
+# (e.g., "test-pass-123", "ghp_xxx") that match secret patterns
+# but are not real credentials.
+paths-ignore:
+  - "**/*.spec.ts"
+  - "**/*.test.ts"
+  - "**/__tests__/**"
+  - "**/test/**"
+  - "**/tests/**"

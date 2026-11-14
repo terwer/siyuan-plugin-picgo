@@ -92,7 +92,7 @@ describe("6.6 Facade per-domain routing & persistence", () => {
       draft.picBed = {
         uploader: "github",
         current: "github",
-        github: { repo: "user/repo", token: "ghp_test", branch: "main", path: "img/", customUrl: "" },
+        github: { repo: "user/repo", token: "fake-tok-test", branch: "main", path: "img/", customUrl: "" },
       } as any
     })
     await facade.flush(["picgoMain"])

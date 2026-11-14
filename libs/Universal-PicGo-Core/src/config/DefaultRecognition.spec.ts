@@ -192,7 +192,7 @@ describe("DefaultRecognition", () => {
 
     it("returns 'user-data' for picgoMain with real uploader config", () => {
       const data = {
-        picBed: { uploader: "github", current: "github", github: { token: "ghp_xxx" } },
+        picBed: { uploader: "github", current: "github", github: { token: "fake-tok-xxx" } },
         picgoPlugins: {},
         siyuan: { waitTimeout: 2, retryTimes: 5, autoUpload: true, replaceLink: true, txtImageSwitch: false },
       }
@@ -233,7 +233,7 @@ describe("DefaultRecognition", () => {
 
     it("does not let uploader credentials block settings migration", () => {
       const data = {
-        picBed: { uploader: "github", current: "github", github: { token: "ghp_xxx" } },
+        picBed: { uploader: "github", current: "github", github: { token: "fake-tok-xxx" } },
       }
       expect(classifyDomainDefaults("uploaderConfig", data)).toBe("user-data")
       expect(classifyDomainDefaults("picgoSettings", data)).toBe("generated-default")

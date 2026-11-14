@@ -82,15 +82,19 @@ class SiyuanPicGoHeadlessManager implements ISiyuanPicGoHeadlessManager {
   }
 
   async uploadMarkdownImages(pageId: string, attrs: any, mdContent: string): Promise<PicgoPostResult> {
-    const uploaderId = await this.getCurrentUploader()
-    const validation = this.validateUploaderConfig(uploaderId, await this.getUploaderConfig(uploaderId))
-    if (!validation.ok) {
-      throw new PicGoHeadlessError({
-        code: PICGO_HEADLESS_ERROR_CODES.VALIDATION_FAILED,
-        uploaderId,
-        message: `Uploader "${uploaderId}" config is invalid`,
-        errors: validation.errors,
-      })
+    // 无本地图片时不需要图床：跳过 uploader 配置校验，直接交由底层返回「文章中没有图片」
+    const localImages = await this.postApi.parsePostLocalImages(pageId, mdContent)
+    if (localImages.length > 0) {
+      const uploaderId = await this.getCurrentUploader()
+      const validation = this.validateUploaderConfig(uploaderId, await this.getUploaderConfig(uploaderId))
+      if (!validation.ok) {
+        throw new PicGoHeadlessError({
+          code: PICGO_HEADLESS_ERROR_CODES.VALIDATION_FAILED,
+          uploaderId,
+          message: `Uploader "${uploaderId}" config is invalid`,
+          errors: validation.errors,
+        })
+      }
     }
     return this.postApi.uploadPostImagesToBed(pageId, attrs, mdContent)
   }

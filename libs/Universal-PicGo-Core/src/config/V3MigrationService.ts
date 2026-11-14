@@ -251,9 +251,8 @@ export async function runV3Migration(options: V3MigrationOptions): Promise<Unifi
 
   for (const domain of ALL_CONFIG_DOMAINS) {
     const domainState = state.domains[domain]
-    if (domainState.status === "imported" || domainState.status === "skipped" || domainState.status === "failed") {
-      // Already done (imported/skipped) or only retried via explicit retryMigration (failed)
-      continue
+    if (domainState.status === "imported" || domainState.status === "skipped") {
+      continue // Already done — idempotent
     }
 
     try {
@@ -634,7 +633,6 @@ function initMigrationState(
 function getNodeFsApi(): any {
   try {
     if (win?.fs) return win.fs
-    if (typeof require !== "undefined") return require("fs")
   } catch {
     return null
   }
@@ -644,7 +642,6 @@ function getNodeFsApi(): any {
 function getNodePathApi(): any {
   try {
     if (win?.require) return win.require("path")
-    if (typeof require !== "undefined") return require("path")
   } catch {
     return null
   }
