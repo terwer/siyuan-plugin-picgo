@@ -251,8 +251,9 @@ export async function runV3Migration(options: V3MigrationOptions): Promise<Unifi
 
   for (const domain of ALL_CONFIG_DOMAINS) {
     const domainState = state.domains[domain]
-    if (domainState.status === "imported" || domainState.status === "skipped") {
-      continue // Already done — idempotent
+    if (domainState.status === "imported" || domainState.status === "skipped" || domainState.status === "failed") {
+      // Already done (imported/skipped) or only retried via explicit retryMigration (failed)
+      continue
     }
 
     try {
