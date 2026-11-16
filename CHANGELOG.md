@@ -1,7 +1,9 @@
 # Changelog
 
-## [3.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.1.0...siyuan-plugin-picgo-v3.1.1) (2026-11-16)
+## [3.1.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.1.1...siyuan-plugin-picgo-v3.1.2) (2026-11-16)
 ### Bug Fixes
+* **logger:** keep only errors and upload results in the console ([#835](https://github.com/terwer/siyuan-plugin-picgo/issues/835)) ([977dc3c](https://github.com/terwer/siyuan-plugin-picgo/commit/977dc3cf13753ad4564e44ed42fcf23c0c99b92b))
+## [3.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.1.0...siyuan-plugin-picgo-v3.1.1) (2026-11-16)
 * **bootstrap:** keep the plugin entry a single self-contained file ([#828](https://github.com/terwer/siyuan-plugin-picgo/issues/828)) ([#829](https://github.com/terwer/siyuan-plugin-picgo/issues/829)) ([afb776e](https://github.com/terwer/siyuan-plugin-picgo/commit/afb776e6ce0aca66ec0cb04ca5d698fc79e7788a))
 ## [3.1.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.5...siyuan-plugin-picgo-v3.1.0) (2026-11-14)
 ### Features
