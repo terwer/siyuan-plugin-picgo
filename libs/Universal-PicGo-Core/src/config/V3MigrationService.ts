@@ -375,7 +375,6 @@ function applyMigratedData(
         main.uploader.lsky = main.uploader.lsky ?? {}
         main.uploader.lsky.token = token
         ownerFileData.set("picgo.cfg.json", main)
-        logger?.info?.(`[V3Migration] lskyState: imported token from ${legacy.source}`)
       }
       break
     }
@@ -392,7 +391,6 @@ function applyMigratedData(
       const main = ownerFileData.get("picgo.cfg.json") ?? {}
       mergePicgoDomainSlice(main, domain, extractPicgoDomainSlice(domain, legacy.data))
       ownerFileData.set("picgo.cfg.json", main)
-      logger?.info?.(`[V3Migration] ${domain}: imported from ${legacy.source}`)
       break
     }
 
@@ -402,7 +400,6 @@ function applyMigratedData(
         ext[key] = value
       }
       ownerFileData.set("external-picgo-cfg.json", ext)
-      logger?.info?.(`[V3Migration] externalPicList: imported from ${legacy.source}`)
       break
     }
 
@@ -412,7 +409,6 @@ function applyMigratedData(
         conn[key] = value
       }
       ownerFileData.set("siyuan-cfg", conn)
-      logger?.info?.(`[V3Migration] siyuanConnection: imported from ${legacy.source}`)
       break
     }
 

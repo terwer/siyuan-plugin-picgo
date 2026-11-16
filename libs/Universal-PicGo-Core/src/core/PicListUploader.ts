@@ -12,7 +12,6 @@ import { IExternalPicgoConfig, IImgInfo, IPicGo } from "../types"
 import { PicgoTypeEnum } from "../utils/enums"
 import { isFileOrBlob } from "../utils/common"
 import { hasNodeEnv, win } from "universal-picgo-store"
-import { MASK_VALUE } from "../config"
 
 /**
  * 远程 PicList 上传 API
@@ -76,7 +75,6 @@ class PicListUploader {
         }
 
         const requestUrl = this.buildRequestUrl(apiUrl, apiKey)
-        this.logger.debug("Uploading to PicList, url =>", requestUrl.replace(apiKey, MASK_VALUE))
 
         const formData = new FormData()
         formData.append("file", fileBlob, fileName)
@@ -112,17 +110,17 @@ class PicListUploader {
           throw new Error(resJson.message || "PicList upload failed with unknown error")
         }
       } catch (e: any) {
-        this.logger.error(`PicList upload error for item ${inputItem}:`, e)
         errors.push({ item: inputItem, error: e })
         // 不 throw，继续处理剩余文件
       }
     }
 
-    // 如果有部分失败，记录汇总日志
-    if (errors.length > 0) {
+    // 部分成功时只报一次汇总：数量 + 首个失败原因。全部失败由调用方
+    // （SiyuanPicGoUploadApi）统一打印一条带目标图床的错误，避免同一事件重复。
+    if (errors.length > 0 && results.length > 0) {
       this.logger.warn(
         `PicList upload finished with ${errors.length}/${input.length} failures. ` +
-        `${results.length} succeeded.`
+        `${results.length} succeeded. First error: ${errors[0].error.message}`
       )
     }
 

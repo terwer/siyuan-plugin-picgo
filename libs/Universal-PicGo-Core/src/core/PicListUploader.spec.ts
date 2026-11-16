@@ -1,6 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest"
 import { PicListUploader } from "./PicListUploader"
-import { MASK_VALUE } from "../config"
 
 const mockLogger = vi.hoisted(() => ({
   debug: vi.fn(),
@@ -103,7 +102,7 @@ describe("PicListUploader", () => {
       await expect(uploader.upload(["file.jpg"])).rejects.toThrow("not configured")
     })
 
-    it("masks PicList API key in debug upload URL logs", async () => {
+    it("never writes the PicList API key to any log", async () => {
       routeConfig = createRouteConfig({
         picListApiUrl: "https://piclist.example.com/upload",
         picListApiKey: "super-secret-key",
@@ -119,9 +118,13 @@ describe("PicListUploader", () => {
 
       await uploader.upload([new Blob(["png"], { type: "image/png" })])
 
-      const debugLog = JSON.stringify(mockLogger.debug.mock.calls)
-      expect(debugLog).toContain(MASK_VALUE)
-      expect(debugLog).not.toContain("super-secret-key")
+      const allLogs = JSON.stringify({
+        debug: mockLogger.debug.mock.calls,
+        info: mockLogger.info.mock.calls,
+        warn: mockLogger.warn.mock.calls,
+        error: mockLogger.error.mock.calls,
+      })
+      expect(allLogs).not.toContain("super-secret-key")
     })
   })
 })

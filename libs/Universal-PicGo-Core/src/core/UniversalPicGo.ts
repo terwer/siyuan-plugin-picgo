@@ -330,7 +330,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       const fs = win.fs; const path = win.require("path")
       if (this.zhiNpmPath === "") this.zhiNpmPath = path.join(this.baseDir, "libs")
       ensureFolderSync(fs, path.join(this.baseDir, "libs"))
-    } else this.log.warn("zhi is not supported in browser")
+    }
   }
 
   private initConfig(): void {

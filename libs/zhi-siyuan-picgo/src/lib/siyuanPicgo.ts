@@ -109,9 +109,7 @@ class SiyuanPicGo {
     }
     if (initialState.status === "running" && finalState.status === "done") {
       siyuanApi.pushMsg({ msg: "PicGO 配置初始化或迁移完成", timeout: 7000 })
-      this.logger?.info("PicGO 配置初始化或迁移完成🎉")
     }
-    this.logger?.info("PicGO instance is ready😄")
   }
 }
 

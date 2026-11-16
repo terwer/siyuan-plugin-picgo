@@ -8,7 +8,6 @@
  */
 
 import { useRouter } from "vue-router"
-import { createAppLogger } from "@/utils/appLogger.ts"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { reactive } from "vue"
 import { generateUniqueName, ImageItem } from "zhi-siyuan-picgo"
@@ -22,7 +21,6 @@ import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
  */
 export const usePicgoUpload = (props: any, deps: any, refs: any) => {
   // private data
-  const logger = createAppLogger("picgo-upload")
   const { t } = useVueI18n()
   const router = useRouter()
   const { kernelApi } = useSiyuanApi()
@@ -148,7 +146,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
             type: "error",
             message: t("main.opt.failure") + "=>" + e,
           })
-          logger.error(t("main.opt.failure") + "=>" + e)
         }
         picgoCommonData.loggerMsg = t("main.opt.failure") + "=>" + e
         picgoCommonData.isUploadLoading = false
@@ -174,7 +171,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
             type: "error",
             message: t("main.opt.failure") + "=>" + e,
           })
-          logger.error(t("main.opt.failure") + "=>", e)
         }
         picgoCommonData.loggerMsg = t("main.opt.failure") + "=>" + e
         picgoCommonData.isUploadLoading = false
@@ -230,7 +226,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
           type: "error",
           message: t("main.opt.failure") + "=>" + e,
         })
-        logger.error(t("main.opt.failure") + "=>" + e)
       }
     },
     doForceUploaddAllImagesToBed: async () => {
@@ -259,7 +254,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
               type: "error",
               message: t("main.opt.failure") + "=>" + e,
             })
-            logger.error(t("main.opt.failure") + "=>" + e)
           }
         })
         .catch((e) => {
@@ -270,7 +264,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
               type: "error",
               message: t("main.opt.failure") + "，图片上传异常=>" + e,
             })
-            logger.error(t("main.opt.failure") + "=>" + e)
           }
         })
     },

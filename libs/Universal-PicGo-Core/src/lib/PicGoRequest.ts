@@ -258,7 +258,6 @@ class PicGoRequestWrapper {
         obj.headers["Content-Type"] = contentType
       }
 
-      that.logger.debug("PicGoRequest request interceptor, obj", obj)
       return obj
     })
 
@@ -375,7 +374,6 @@ class PicGoRequestWrapper {
 
       if ("resolveWithFullResponse" in userOptions && userOptions.resolveWithFullResponse) {
         const resp = (await instance.request(opt)) as Promise<IResponse<T, U>>
-        that.logger.debug("PicGoRequest request interceptor resolveWithFullResponse, resp", resp)
         return resp
       } else {
         return instance.request(opt).then((res) => {
@@ -400,7 +398,6 @@ class PicGoRequestWrapper {
               customResp = res.data
             }
           }
-          that.logger.debug("PicGoRequest request interceptor oldRequest, oldResp", customResp)
           return customResp
         }) as Promise<IResponse<T, U>>
       }

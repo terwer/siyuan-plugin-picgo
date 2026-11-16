@@ -87,7 +87,7 @@ class SiyuanPicGoUploadApi {
       }
       return result
     } catch (e: any) {
-      this.logger.error(`upload failed, target=${target}: ${e?.message ?? e}`, e)
+      this.logger.error(`upload failed, target=${target}, count=${count}: ${e?.message ?? e}`)
       throw e
     }
   }

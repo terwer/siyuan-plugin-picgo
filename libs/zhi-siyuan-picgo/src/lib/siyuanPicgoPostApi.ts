@@ -309,7 +309,6 @@ class SiyuanPicgoPostApi {
           newImageItem = imageItem
           ret.flag = false
           ret.errmsg = e.toString()
-          this.logger.error(`单图上传失败, pageId=${pageId}: ${e?.message ?? e}`)
         }
 
         // 无论成功失败都要保存元数据，失败了当做本地图片
@@ -333,7 +332,6 @@ class SiyuanPicgoPostApi {
     } catch (e: any) {
       ret.flag = false
       ret.errmsg = e.toString()
-      this.logger.error("文章图片上传失败=>", e)
     }
     return ret
   }
