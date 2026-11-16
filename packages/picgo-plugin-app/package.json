@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
-    "@iconify/json": "^2.2.216",
+    "@iconify/json": "^2.2.556",
     "@vueuse/core": "^14.4.0",
     "element-plus": "^2.14.8",
     "unplugin-icons": "^0.19.0",
