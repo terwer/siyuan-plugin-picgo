@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.1.0...siyuan-plugin-picgo-v3.1.1) (2026-11-16)
+
+
+### Bug Fixes
+
+* **bootstrap:** keep the plugin entry a single self-contained file ([#828](https://github.com/terwer/siyuan-plugin-picgo/issues/828)) ([#829](https://github.com/terwer/siyuan-plugin-picgo/issues/829)) ([afb776e](https://github.com/terwer/siyuan-plugin-picgo/commit/afb776e6ce0aca66ec0cb04ca5d698fc79e7788a))
+
 ## [3.1.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.5...siyuan-plugin-picgo-v3.1.0) (2026-11-14)
 ### Features
 * **smms:** upload to S.EE after the SM.MS migration ([#806](https://github.com/terwer/siyuan-plugin-picgo/issues/806)) ([05efc50](https://github.com/terwer/siyuan-plugin-picgo/commit/05efc50af26d0e0b677a313d076b477c0a16f64a))
