@@ -8,9 +8,10 @@ Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 
 ## Recent Changes
 
-- **v3.0.5** — Conform the bazaar manifest to the new spec (drop the deprecated `i18n` field, declare `icon`/`preview` explicitly)
-- **v3.0.4** — Skip uploader validation for documents without images (headless upload)
-- **v3.0.3** — HarmonyOS platform support: plugin now installable on harmony devices
+Only the three most recent 3.x minor versions are kept here, with patch releases folded into their minor version.
+
+- **v3.1.x** — SM.MS uploads now go to S.EE after the SM.MS migration; paste upload and link replacement follow their own settings; the plugin entry stays a single self-contained file
+- **v3.0.x** — Workspace-backed PicGo config behind a unified async facade; HarmonyOS support; documents without images skip uploader validation; bazaar manifest aligned with the new spec
 
 See [CHANGELOG.md](./CHANGELOG.md) for full history.
 
