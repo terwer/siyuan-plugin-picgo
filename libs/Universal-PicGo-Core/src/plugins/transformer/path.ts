@@ -29,10 +29,8 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
     ctx.input.map(async (item: string | Buffer | typeof win.Buffer, index: number) => {
       let info: IPathTransformedImgInfo
       if (isFileOrBlob(item)) {
-        ctx.log.debug("using File or Blob in path transform")
         info = await getBlobFile(item)
       } else if (isBuffer(item)) {
-        ctx.log.debug("using buffer in path transform")
         info = {
           success: true,
           buffer: item,
@@ -40,13 +38,10 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           extname: "", // will use getImageSize result
         }
       } else if (isUrl(item)) {
-        ctx.log.debug("using image url in path transform")
         info = await getURLFile(item, ctx)
       } else if (isBase64(item)) {
-        ctx.log.debug("using image base64 in path transform")
         info = await getBase64File(item)
       } else {
-        ctx.log.debug("using fs in path transform")
         info = await getFSFile(item)
       }
       if (info.success && info.buffer) {
@@ -82,7 +77,6 @@ const getImgSize = (
     } else {
       ctx.log.warn("can't get image size")
     }
-    ctx.log.warn("fallback to 200 * 200")
   }
   return imageSize
 }

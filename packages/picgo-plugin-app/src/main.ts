@@ -9,11 +9,9 @@
 
 import App from "./App.vue"
 import { createApp } from "vue"
-import { createAppLogger } from "@/utils/appLogger.ts"
 import i18n from "@/i18n"
 import { useVueRouter } from "$composables/useVueRouter.ts"
 
-const logger = createAppLogger("vue-main-entry")
 
 /**
  * Vue 入口
@@ -36,7 +34,6 @@ const createVueApp = async () => {
 
   // 挂载 vue app
   app.mount("#app")
-  logger.info("vue app created")
 }
 
 ;(async () => {

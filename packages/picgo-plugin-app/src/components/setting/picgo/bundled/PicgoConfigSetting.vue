@@ -11,9 +11,7 @@
 import { onBeforeMount, reactive } from "vue"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { PicgoHelper } from "zhi-siyuan-picgo"
-import { createAppLogger } from "@/utils/appLogger.ts"
 
-const logger = createAppLogger("picgo-config-setting")
 const { t } = useVueI18n()
 
 const props = defineProps({
@@ -51,13 +49,10 @@ const handleShowPicBedListChange = (val: ICheckBoxValueType[]) => {
   picgoHelper.savePicgoConfig({
     "picBed.list": list,
   })
-  logger.debug("保存启用的图床", list)
 }
 
 const initPicBeds = () => {
   const picBeds = picgoHelper.getPicBeds()
-  console.log(picBeds)
-  console.log(formData.cfg)
   formData.picBeds = picBeds
   formData.showPicBedList = PicgoHelper.getVisiablePicBedNamesByPicBeds(picBeds)
 }

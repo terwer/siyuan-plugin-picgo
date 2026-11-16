@@ -26,10 +26,8 @@ import type { StorageLike, UseStorageOptions, RemovableRef } from "@vueuse/core"
 import type { MaybeRefOrGetter } from "vue"
 import { defaultWindow, useStorage } from "@vueuse/core"
 import JsonStorage from "~/src/stores/common/jsonStorage.ts"
-import { createAppLogger } from "~/src/utils/appLogger.ts"
 import { useSiyuanDevice } from "~/src/composables/useSiyuanDevice.ts"
 
-const logger = createAppLogger("use-common-local-storage")
 
 /**
  * 通用响应式的 LocalStorage
@@ -61,11 +59,9 @@ const getLocalStorageAdaptor = <T>(filePath: string, options: UseStorageOptions<
   const { isInSiyuanOrSiyuanNewWin } = useSiyuanDevice()
   if (isInSiyuanOrSiyuanNewWin()) {
     localStorageAdaptor = new JsonStorage(filePath)
-    logger.info("using JsonStorage for localStorage")
   } else {
     const { window = defaultWindow } = options
     localStorageAdaptor = window!.localStorage
-    logger.info("using window.localStorage for localStorage")
   }
   return localStorageAdaptor
 }

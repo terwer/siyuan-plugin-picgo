@@ -235,15 +235,9 @@ const migrateV2WorkspacePicGoConfig = (paths: SiyuanPicGoPaths, logger?: { info?
   if (fs.existsSync(workspaceConfigPath)) {
     const workspaceConfigText = fs.readFileSync(workspaceConfigPath, "utf-8")
     if (hasV3MigrationMarker(workspaceConfigText)) {
-      logger?.info?.(
-        `PicGo v3 migration marker exists in workspace config, skip legacy v2 copy => ${workspaceConfigPath}`
-      )
       return false
     }
     if (isDefaultInitializedConfig(workspaceConfigText) && fs.existsSync(homeConfigPath)) {
-      logger?.info?.(
-        `PicGo v2 workspace config only contains default initialized config, replace it from ${homeConfigPath}`
-      )
       try {
         fs.copyFileSync(homeConfigPath, workspaceConfigPath)
         return true
@@ -252,7 +246,6 @@ const migrateV2WorkspacePicGoConfig = (paths: SiyuanPicGoPaths, logger?: { info?
         return false
       }
     }
-    logger?.info?.(`PicGo v2 workspace config exists, keep it as authoritative => ${workspaceConfigPath}`)
     return false
   }
 
@@ -260,7 +253,6 @@ const migrateV2WorkspacePicGoConfig = (paths: SiyuanPicGoPaths, logger?: { info?
     return false
   }
 
-  logger?.info?.(`PicGo v2 copy main config from ${homeConfigPath} to ${workspaceConfigPath}`)
   try {
     fs.copyFileSync(homeConfigPath, workspaceConfigPath)
     return true

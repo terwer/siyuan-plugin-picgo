@@ -7,7 +7,6 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { ILogger, simpleLogger } from "zhi-lib-base"
 import { IExternalPicgoConfig, IImgInfo, IPicGo } from "../types"
 import { PicgoTypeEnum } from "../utils/enums"
 import { browserPathJoin } from "../utils/browserUtils"
@@ -21,13 +20,11 @@ import { isFileOrBlob } from "../utils/common"
  * @author terwer
  */
 class ExternalPicgo {
-  private logger: ILogger
   private requestUrl = "http://127.0.0.1:36677"
   private readonly endpointUrl = "/upload"
   private readonly configProvider?: () => IExternalPicgoConfig
 
   constructor(_ctx: IPicGo, isDev?: boolean, configProvider?: () => IExternalPicgoConfig) {
-    this.logger = simpleLogger("external-picgo", "external-picgo", isDev)
     this.configProvider = configProvider
   }
 
@@ -52,11 +49,9 @@ class ExternalPicgo {
     if (input) {
       for (const inputItem of input) {
         if (isFileOrBlob(inputItem)) {
-          this.logger.warn(`try to get path from blob => ${inputItem.path}`)
           if (inputItem.path && inputItem.path.trim() !== "") {
             newInput.push(inputItem.path)
           } else {
-            this.logger.warn("blob path is empty, treat as clipboard image")
           }
         } else {
           newInput.push(inputItem)
@@ -106,13 +101,10 @@ class ExternalPicgo {
       // URL 不包含 /upload，正常拼接
       apiUrl = browserPathJoin(this.requestUrl, this.endpointUrl)
     }
-    this.logger.debug("调用HTTP请求上传图片到PicGO，apiUrl=>", apiUrl)
-    this.logger.debug("调用HTTP请求上传图片到PicGO，fetchOps=>", fetchOptions)
 
     // 使用兼容的fetch调用并返回统一的JSON数据
     const response = await fetch(apiUrl, fetchOptions)
     const resJson = await response.json()
-    this.logger.debug("调用HTTP请求上传图片到PicGO，resJson=>", resJson)
 
     if (resJson.success) {
       const rtnArray: IImgInfo[] = []

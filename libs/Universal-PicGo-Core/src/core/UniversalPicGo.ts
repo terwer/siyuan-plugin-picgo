@@ -124,7 +124,6 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       if (isThirdPartyPluginRuntimeAvailable()) {
         this._pluginLoader.load()
       } else {
-        this.log.info("third-party PicGo plugins are ignored outside Electron runtime")
       }
       this.lifecycle = new Lifecycle(this)
     } catch (e: any) {
@@ -135,8 +134,6 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
 
     // Defer async storage readiness check (kernel API adapter only)
     this.readyPromise = this.initAsync()
-
-    this.log.info("UniversalPicGo inited")
   }
 
   /** Async init: wait for config DB from remote storage, then refresh config. */
@@ -333,7 +330,7 @@ class UniversalPicGo extends EventEmitter implements IPicGo {
       const fs = win.fs; const path = win.require("path")
       if (this.zhiNpmPath === "") this.zhiNpmPath = path.join(this.baseDir, "libs")
       ensureFolderSync(fs, path.join(this.baseDir, "libs"))
-    } else this.log.warn("zhi is not supported in browser")
+    }
   }
 
   private initConfig(): void {

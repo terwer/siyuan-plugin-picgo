@@ -367,7 +367,6 @@ export const openPluginShell = (pluginInstance: PicgoPlugin, pageKey: PageRoute 
   reloadPluginShellFrame(pageIndex)
 
   showPluginShell()
-  logger.info("open mounted shell page =>", pageIndex)
 }
 
 export const showPluginShell = () => {

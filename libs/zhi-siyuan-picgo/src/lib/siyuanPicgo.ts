@@ -64,21 +64,17 @@ class SiyuanPicGo {
     }
 
     if (this.instanceKey !== null && this.instanceKey !== instanceKey) {
-      this.logger.info("PicGo instance path contract changed, reinitializing singleton")
       this.siyuanApiInstance = null
       this.picgoInstance = null
       this.instanceKey = null
     }
 
     if (!this.siyuanApiInstance) {
-      this.logger.debug("初始化 SiyuanKernelApi 实例")
       this.siyuanApiInstance = new SiyuanKernelApi(siyuanConfig as any)
     }
 
     const isNewInstance = !this.picgoInstance
     if (!this.picgoInstance) {
-      this.logger.debug("初始化 SiyuanPicgoPostApi 实例")
-      this.logger.info("resolved PicGo paths =>", paths)
       this.picgoInstance = new SiyuanPicgoPostApi(siyuanConfig, isDev, paths, factory)
       this.instanceKey = instanceKey
     }
@@ -113,9 +109,7 @@ class SiyuanPicGo {
     }
     if (initialState.status === "running" && finalState.status === "done") {
       siyuanApi.pushMsg({ msg: "PicGO 配置初始化或迁移完成", timeout: 7000 })
-      this.logger?.info("PicGO 配置初始化或迁移完成🎉")
     }
-    this.logger?.info("PicGO instance is ready😄")
   }
 }
 
@@ -145,7 +139,6 @@ function resolveStorageAdapterFactory(config: SiyuanConfigLike, paths: ReturnTyp
 
   // 同域直开：通过 API 连通性验证
   if (isSiyuanProxyAvailable()) {
-    console.info("[resolveStorageAdapterFactory] proxy available, using kernel adapter")
     return createKernelFactory(config)
   }
 

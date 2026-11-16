@@ -13,10 +13,7 @@ import { onBeforeMount, onBeforeUnmount, reactive, ref } from "vue"
 import { ElMessage, UploadRequestOptions } from "element-plus"
 import { generateUniqueName, ImageItem, retrieveImageFromClipboardAsBlob } from "zhi-siyuan-picgo"
 import { useVueI18n } from "$composables/useVueI18n.ts"
-import { createAppLogger } from "@/utils/appLogger.ts"
 import { usePicgoUpload } from "$composables/usePicgoUpload.ts"
-
-const logger = createAppLogger("drag-upload")
 
 // props
 const props = defineProps({
@@ -60,7 +57,6 @@ const handleDragAction = async (file: Blob) => {
     }
   } catch (e: any) {
     const errMsg = t("main.opt.failure") + "=>" + e
-    logger.error(errMsg)
     ElMessage.error(errMsg)
     res = {
       success: false,

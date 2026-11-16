@@ -191,10 +191,8 @@ class SiyuanPicgoPostApi {
 
       // 获取属性存储的映射数据
       let fileMap = {} as any
-      this.logger.debug("attrs=>", attrs)
       if (!StrUtil.isEmptyString(attrs[SIYUAN_PICGO_FILE_MAP_KEY])) {
         fileMap = JsonUtil.safeParse(attrs[SIYUAN_PICGO_FILE_MAP_KEY], {})
-        this.logger.debug("fileMap=>", fileMap)
       }
 
       // 处理思源本地图片预览
@@ -210,7 +208,6 @@ class SiyuanPicgoPostApi {
       // fileMap 查出来的是是否上传，上传了，isLocal就false
       if (fileMap[imageItem.hash]) {
         const newImageItem = fileMap[imageItem.hash]
-        this.logger.debug("newImageItem=>", newImageItem)
         // 注意：可能存在元数据没有的情况，这种情况要跳过
         if (newImageItem.isLocal === false) {
           imageItem.isLocal = false
@@ -220,11 +217,9 @@ class SiyuanPicgoPostApi {
 
       // imageItem.originUrl = decodeURIComponent(imageItem.originUrl)
       // imageItem.url = decodeURIComponent(imageItem.url)
-      this.logger.debug("imageItem=>", imageItem)
       ret.push(imageItem)
     }
 
-    this.logger.debug("ret=>", ret)
     return ret
   }
 
@@ -241,7 +236,6 @@ class SiyuanPicgoPostApi {
    */
   public async parsePostLocalImages(pageId: string, mdContent: string): Promise<ParsedImage[]> {
     const imageBlocks: any[] = await this.siyuanApi.getImageBlocksByID(pageId)
-    this.logger.debug("查询文章中的图片块=>", imageBlocks)
 
     // 解析图片地址
     let uniqueLocalImages: ParsedImage[] = []
@@ -255,7 +249,6 @@ class SiyuanPicgoPostApi {
     })
     // const parsedLocalImages = this.imageParser.parseLocalImagesToArray(mdContent)
     // const uniqueLocalImages = [...new Set([...localImages])]
-    this.logger.debug("uniqueLocalImages=>", uniqueLocalImages)
     return uniqueLocalImages
   }
 
@@ -284,7 +277,6 @@ class SiyuanPicgoPostApi {
       ret.hasImages = true
 
       const imageItemArray = await this.doConvertImagesToImagesItemArray(attrs, uniqueLocalImages)
-      this.logger.debug("pared image array =>", imageItemArray)
 
       const replaceMap = {} as any
       let hasLocalImages = false
@@ -295,7 +287,6 @@ class SiyuanPicgoPostApi {
         }
 
         if (!imageItem.isLocal) {
-          this.logger.debug("[外部调用]已经上传过图床，请勿重复上传=>", imageItem.originUrl)
           continue
         }
 
@@ -318,8 +309,6 @@ class SiyuanPicgoPostApi {
           newImageItem = imageItem
           ret.flag = false
           ret.errmsg = e.toString()
-          this.logger.warn("单个图片上传异常", { pageId, attrs, imageItem })
-          this.logger.warn("单个图片上传失败，错误信息如下", e)
         }
 
         // 无论成功失败都要保存元数据，失败了当做本地图片
@@ -334,21 +323,15 @@ class SiyuanPicgoPostApi {
 
       if (!hasLocalImages) {
         // ElMessage.info("未发现本地图片，不上传！若之前上传过，将做链接替换")
-        this.logger.warn("未发现本地图片，不上传！若之前上传过，将做链接替换")
       }
 
       // 处理链接替换
-      this.logger.debug("准备替换正文图片，replaceMap=>", JSON.stringify(replaceMap))
-      this.logger.debug("开始替换正文，原文=>", JSON.stringify({ mdContent }))
       ret.mdContent = this.imageParser.replaceImagesWithImageItemArray(mdContent, replaceMap)
-      this.logger.debug("图片链接替换完成，新正文=>", JSON.stringify({ newmdContent: ret.mdContent }))
 
       ret.flag = true
-      this.logger.debug("正文替换完成，最终结果=>", ret)
     } catch (e: any) {
       ret.flag = false
       ret.errmsg = e.toString()
-      this.logger.error("文章图片上传失败=>", e)
     }
     return ret
   }
@@ -381,12 +364,10 @@ class SiyuanPicgoPostApi {
 
     const mapInfoStr = attrs[SIYUAN_PICGO_FILE_MAP_KEY] ?? "{}"
     const fileMap = JsonUtil.safeParse<any>(mapInfoStr, {})
-    this.logger.debug("fileMap=>", fileMap)
 
     // 处理上传
     const filePaths = []
     if (!forceUpload && !imageItem.isLocal) {
-      this.logger.warn("非本地图片，忽略=>", imageItem.url)
       return
     }
 
@@ -401,9 +382,6 @@ class SiyuanPicgoPostApi {
         const win = SiyuanDevice.siyuanWindow()
         const dataDir: string = win.siyuan.config.system.dataDir
         imageFullPath = `${dataDir}/assets/${imageItem.name}`
-        this.logger.info(`Will upload picture from ${imageFullPath}, imageItem =>`, {
-          imageItem,
-        })
 
         const fs = win.require("fs")
         if (!fs.existsSync(imageFullPath)) {
@@ -418,15 +396,12 @@ class SiyuanPicgoPostApi {
 
     // noinspection SuspiciousTypeOfGuard
     if (!imageFullPath || (typeof imageFullPath === "string" && imageFullPath.trim().length == 0)) {
-      this.logger.warn("upload from clipboard")
     } else {
       filePaths.push(imageFullPath)
     }
-    this.logger.info("start uploading =>", filePaths)
 
     // 批量上传
     const imageJson: any = await this.originalUpload(filePaths)
-    this.logger.debug("图片上传完成，imageJson=>", imageJson)
     let newImageItem: ImageItem
     const imageJsonObj = JsonUtil.safeParse(imageJson, []) as any
     // 处理后续
@@ -444,7 +419,6 @@ class SiyuanPicgoPostApi {
       throw new Error("图片上传失败，可能原因：PicGO配置错误，请检查配置。请打开picgo.log查看更多信息")
     }
 
-    this.logger.debug("newFileMap=>", fileMap)
 
     if (!ignoreReplaceLink) {
       const newFileMapStr = JSON.stringify(fileMap)
@@ -457,25 +431,18 @@ class SiyuanPicgoPostApi {
     if (!ignoreReplaceLink) {
       // 如果没有块 ID，则不替换
       if (StrUtil.isEmptyString(newImageItem.blockId)) {
-        this.logger.warn("[单个上传] 图床未插入文档，不做链接替换")
       } else {
         // 不强制忽略则去查询配置
         const ctx = this.ctx()
         // 是否替换链接
         const SIYUAN_REPLACE_LINK = ctx.getConfig("siyuan.replaceLink") ?? true
         if (SIYUAN_REPLACE_LINK) {
-          this.logger.info("[单个上传] 链接替换已开启，准备替换链接")
 
           const newImageBlock = await this.siyuanApi.getBlockByID(newImageItem.blockId)
           // newImageBlock.markdown
           // "![image](assets/image-20240327190812-yq6esh4.png)"
-          this.logger.debug("[单个上传] newImageBlock.markdown", newImageBlock.markdown)
           // 如果查询出来的块信息不对，不更新，防止误更新
           if (!newImageBlock.markdown.includes(newImageItem.originUrl)) {
-            this.logger.warn("[单个上传] 块信息不符合，取消更新", {
-              newImageItem,
-              newImageBlock,
-            })
           } else {
             // =========================================================================================================
             // 正式更新替换
@@ -484,15 +451,11 @@ class SiyuanPicgoPostApi {
             // dataType?: "markdown" | "dom"
             const newImageContent = replaceImageLink(newImageBlock.markdown, newImageItem.originUrl, newImageItem.url)
             // const newImageContent = `![${newImageItem.alt}](${newImageItem.url})`
-            this.logger.debug("[单个上传] repalced new block md", newImageContent)
             await this.siyuanApi.updateBlock(newImageItem.blockId, newImageContent, "markdown")
-
-            this.logger.info("🤩图片链接替换成功")
           }
         }
       }
     } else {
-      this.logger.info("当前调用方负责文档写入和元数据提交，跳过通用单图上传的链接替换与元数据写入")
     }
 
     return imageJsonObj
@@ -550,22 +513,14 @@ class SiyuanPicgoPostApi {
     // 代理地址改为请求时直接使用当前 window.location.origin，这里只清理历史字段。
     const ctx = this.ctx()
     ctx.removeConfig("siyuan", "proxy")
-    this.logger.debug("siyuan.proxy deprecated and removed from picgo config")
   }
 
   private migrateV2WorkspaceConfig() {
     if (this.isConfigMigrationMarkedDone() || isSiyuanPicGoMigrationMarkedDone(this.paths)) {
-      this.logger.info(`PicGo v2 migration ${getSiyuanPicGoMigrationVersion()} already marked done, skip`)
       return
     }
 
     const ctx = this.ctx()
-
-    this.logger.info("PicGo v2 legacy main-config copy context =>", {
-      configPath: ctx.configPath,
-      baseDir: ctx.baseDir,
-      pluginBaseDir: ctx.pluginBaseDir,
-    })
     if (migrateV2WorkspacePicGoConfig(this.paths, this.logger)) {
       ctx.reloadConfig()
     }
@@ -581,7 +536,6 @@ class SiyuanPicgoPostApi {
     }
 
     // 运行时依赖复制到本机目录，不删除源目录
-    this.logger.info(`will copy runtime folder ${from} to ${to}`)
     try {
       if (existTo) {
         // 目的地存在复制

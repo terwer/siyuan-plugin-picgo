@@ -47,7 +47,6 @@ export default class PicgoPlugin extends Plugin {
       hotkey: "",
       callback: () => this.openDialogFallback(PageRoute.Page_Home),
     })
-    this.logger.info("PicGo Plugin loaded")
   }
 
   openSetting() {
@@ -77,15 +76,11 @@ export default class PicgoPlugin extends Plugin {
     await this.prewarmPicGoRuntimeForPaste()
     this.eventBus.on("paste", this.picturePasteEventListener)
     this.eventBus.on("open-menu-image", this.pictureBlockEventListener)
-    this.logger.info("注册粘贴事件完成")
-    this.logger.info("注册图片菜单完成")
   }
 
   private offEvent() {
     this.eventBus.off("paste", this.picturePasteEventListener)
     this.eventBus.off("open-menu-image", this.pictureBlockEventListener)
-    this.logger.info("销毁粘贴事件完成")
-    this.logger.info("销毁图片菜单完成")
   }
 
   /**
@@ -96,7 +91,6 @@ export default class PicgoPlugin extends Plugin {
     const siyuanApi = this.siyuanApi
     const pasteTakeoverSnapshot = this.pasteTakeoverSnapshot
     if (!picgoPostApi || !siyuanApi || !pasteTakeoverSnapshot) {
-      this.logger.warn("PicGo paste snapshot unavailable; skip takeover for this paste event")
       return
     }
     const ctx = picgoPostApi.ctx()
@@ -119,7 +113,6 @@ export default class PicgoPlugin extends Plugin {
           timeout: 7000,
         })
       } else {
-        this.logger.debug("粘贴事件未被 PicGo 接管", takeover.reason)
       }
       return
     }
@@ -143,7 +136,6 @@ export default class PicgoPlugin extends Plugin {
   protected readonly pictureBlockEventListener = async (e: CustomEvent) => {
     // 获取菜单信息
     const detail = e.detail
-    this.logger.debug("detail =>", detail)
 
     const pageId = detail?.protyle?.block.rootID
     if (!pageId) {
@@ -157,13 +149,11 @@ export default class PicgoPlugin extends Plugin {
       this.logger.error("获取图片菜单失败")
       return
     }
-    this.logger.debug("当前上下文 =>", context)
 
     const elem = detail.element as HTMLElement
     const img = elem.querySelector("img")
     const imageUrl = img.getAttribute("src")
     const alt = img.getAttribute("alt")
-    this.logger.info("current image url =>", imageUrl)
 
     // 使用 PicGo 插件上传
     context.push({
@@ -178,7 +168,6 @@ export default class PicgoPlugin extends Plugin {
           this.noticeError(siyuanApi, "未找到图片块 ID，无法上传图片")
           return
         }
-        this.logger.info("😆found image nodeId=>", nodeId)
 
         const that = this
         if (/^(http|https):\/\//i.test(imageUrl)) {
@@ -199,7 +188,6 @@ export default class PicgoPlugin extends Plugin {
       this.picgoPostApi = picgoPostApi
       this.siyuanApi = picgoPostApi.siyuanApi
       this.pasteTakeoverSnapshot = picgoPostApi.getPasteTakeoverSnapshot()
-      this.logger.info("PicGo paste takeover snapshot ready")
     } catch (e) {
       this.picgoPostApi = undefined
       this.siyuanApi = undefined
@@ -231,11 +219,9 @@ export default class PicgoPlugin extends Plugin {
         const dataNodeId = parentDiv.getAttribute("data-node-id")
         return dataNodeId
       } else {
-        this.logger.error("Parent div element with data-node-id attribute not found.")
         throw new Error("Parent div element with data-node-id attribute not found.")
       }
     } else {
-      this.logger.error("Image element with specified src attribute not found.")
       throw new Error("Image element with specified src attribute not found.")
     }
   }
@@ -285,7 +271,6 @@ export default class PicgoPlugin extends Plugin {
       }
       const imageItem = new ImageItem(imageUrl, url, isLocal, alt ?? "", title ?? "")
       imageItem.blockId = blockId
-      this.logger.info("doSelectedPictureUpload imageItem =>", imageItem)
       // 直接替换
       await picgoPostApi.uploadSingleImageToBed(pageId, attrs, imageItem, true, false)
       this.noticeSuccess(siyuanApi, "🎉图片上传成功")

@@ -99,8 +99,6 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
           throw new Error("Server error, please try again =>" + res.message)
         }
       } catch (e: any) {
-        console.log("lsky error")
-        console.log(e)
 
         let errMsg: any
         if (e?.statusCode) {

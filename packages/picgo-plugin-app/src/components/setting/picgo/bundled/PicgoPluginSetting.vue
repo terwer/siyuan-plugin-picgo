@@ -132,13 +132,11 @@ const cleanSearch = () => {
 
 const _getSearchResult = (val: string) => {
   const fetchUrl = `https://registry.npmjs.com/-/v1/search?text=${val}`
-  logger.info("npmjs请求fetchUrl=>", fetchUrl)
   formData.loading = true
   fetch(fetchUrl)
     .then(async (response) => {
       const json = await response.json() // 返回的json
       const list: INPMSearchResultObject[] = json?.objects ?? []
-      logger.info("npmjs返回的package列表list=>", list)
 
       formData.pluginList = list
         .filter((item: INPMSearchResultObject) => {
@@ -150,7 +148,7 @@ const _getSearchResult = (val: string) => {
       formData.loading = false
     })
     .catch((err) => {
-      console.log(err)
+      logger.error(err)
       formData.loading = false
     })
 }
@@ -166,7 +164,6 @@ const installPlugin = (item: IPicGoPlugin) => {
         doInstallPlugin(item)
       })
       .catch(() => {
-        logger.warn("Install canceled")
       })
   } else {
     doInstallPlugin(item)
@@ -274,7 +271,6 @@ const handlePluginStateUpdated = (res: { success: boolean; body: string; errMsg:
 }
 
 const handlePicgoConfigPlugin = (args: { currentType: string; configName: string; config: any }) => {
-  logger.debug("handlePicgoConfigPlugin args =>", args)
 
   // set form data
   formData.pluginConfigData.currentType = args.currentType
@@ -304,7 +300,6 @@ const initPage = () => {
 
   // show search reault after delay
   getSearchResult = debounce(_getSearchResult, 50)
-  logger.debug("picgo plugin store inited", formData.pluginList)
 }
 
 watch(npmSearchText, (val: string) => {

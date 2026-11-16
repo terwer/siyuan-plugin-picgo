@@ -7,7 +7,6 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { createAppLogger } from "@/utils/appLogger.ts"
 import { ImageParser, ParsedImage } from "zhi-siyuan-picgo"
 import { isDev } from "@/utils/Constants.ts"
 import { useSiyuanApi } from "$composables/useSiyuanApi.ts"
@@ -18,7 +17,6 @@ import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
  * Picgo页面初始化组件
  */
 export const usePicgoInitPage = (props: any, deps: any) => {
-  const logger = createAppLogger("picgo-common")
   const { kernelApi } = useSiyuanApi()
 
   // private data
@@ -34,11 +32,9 @@ export const usePicgoInitPage = (props: any, deps: any) => {
   // private methods
   const initPage = async () => {
     const pageId = props.pageId
-    logger.debug("pageId=>", pageId)
 
     // 图片信息
     const imageBlocks: any[] = await siyuanApi.getImageBlocksByID(pageId)
-    logger.debug("查询文章中的图片块=>", imageBlocks)
 
     if (!imageBlocks || imageBlocks.length === 0) {
       return
@@ -56,7 +52,6 @@ export const usePicgoInitPage = (props: any, deps: any) => {
     // 去重
     // retImgs = [...new Set([...retImgs])]
     retImgs = retImgs.filter((item, index, self) => index === self.findIndex((t) => t.url === item.url))
-    logger.debug("解析出来的所有的图片地址=>", retImgs)
 
     // 将字符串数组格式的图片信息转换成图片对象数组
     const attrs = await siyuanApi.getBlockAttrs(pageId)
@@ -85,7 +80,6 @@ export const usePicgoInitPage = (props: any, deps: any) => {
     () => props.pageId,
     async () => {
       await initPage()
-      logger.debug("Picgo初始化")
     }
   )
 
