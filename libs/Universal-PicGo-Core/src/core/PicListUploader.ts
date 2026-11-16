@@ -72,13 +72,11 @@ class PicListUploader {
       try {
         const { fileBlob, fileName } = await this.resolveFileData(inputItem)
         if (!fileBlob) {
-          this.logger.warn("Skipping empty input item:", inputItem)
           continue
         }
 
         const requestUrl = this.buildRequestUrl(apiUrl, apiKey)
         this.logger.debug("Uploading to PicList, url =>", requestUrl.replace(apiKey, MASK_VALUE))
-        this.logger.debug(`File name => ${fileName}, size => ${fileBlob.size}`)
 
         const formData = new FormData()
         formData.append("file", fileBlob, fileName)
@@ -94,7 +92,6 @@ class PicListUploader {
         }
 
         const resJson = await response.json()
-        this.logger.debug("PicList response =>", resJson)
 
         if (resJson.success && resJson.result) {
           // PicList 返回的 result 可能是单个 URL 字符串，也可能是 URL 数组
@@ -111,7 +108,6 @@ class PicListUploader {
               imgUrl,
             })
           }
-          this.logger.info(`PicList upload success: ${fileName} => ${JSON.stringify(resultList)}`)
         } else {
           throw new Error(resJson.message || "PicList upload failed with unknown error")
         }
@@ -201,7 +197,6 @@ class PicListUploader {
 
     if (!fs.existsSync(filePath)) {
       // 路径不存在，尝试作为 URL fetch
-      this.logger.warn(`File not found on disk: ${filePath}, trying fetch as URL`)
       return this.resolveBrowserUrlOrPath(filePath)
     }
 

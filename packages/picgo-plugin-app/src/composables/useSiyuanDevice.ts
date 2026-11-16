@@ -8,13 +8,11 @@
  */
 
 import { DeviceDetection, DeviceTypeEnum } from "zhi-device"
-import { createAppLogger } from "@/utils/appLogger.ts"
 
 /**
  * 设备检测
  */
 export const useSiyuanDevice = () => {
-  const logger = createAppLogger("use-siyuan-device")
 
   const isInSiyuanMainWin = () => {
     const deviceType = DeviceDetection.getDevice()

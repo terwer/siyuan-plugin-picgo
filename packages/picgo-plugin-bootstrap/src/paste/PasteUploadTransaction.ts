@@ -81,12 +81,6 @@ class DocumentMutationPort {
   ): Promise<DocumentMutationResult> {
     const response = await this.insertBlock(markdown, snapshot)
     const blockId = this.extractInsertedBlockId(response)
-    this.logger.info("paste image markdown inserted", {
-      transactionId: snapshot.transactionId,
-      blockId,
-      imageKind,
-      response,
-    })
 
     return {
       blockId,
@@ -168,11 +162,6 @@ class AssetUploadPort {
       throw new Error(`思源资源上传未返回资源路径${errFiles ? `（失败文件：${errFiles}）` : ""}`)
     }
 
-    this.logger.info("paste local asset uploaded", {
-      transactionId: snapshot.transactionId,
-      assetPath,
-    })
-
     return {
       assetPath,
       assetName: assetPath.split("/").pop() ?? fileName,
@@ -250,13 +239,7 @@ class PasteUploadTransaction {
 
   public async execute(snapshot: PasteInputSnapshot) {
     const mode: PasteUploadMode = snapshot.replaceLink === false ? "local-link" : "remote-link"
-    this.deps.logger.info("paste upload transaction started", {
-      transactionId: snapshot.transactionId,
-      pageId: snapshot.pageId,
-      targetBlockId: snapshot.targetBlockId,
-      mode,
-      preventedBy: snapshot.preventedBy,
-    })
+    this.deps.logger.info(`paste upload started, mode=${mode}`)
 
     let remoteImage: any
     let localAsset: LocalAssetUploadResult | undefined
@@ -296,14 +279,9 @@ class PasteUploadTransaction {
       }
     } catch (error: any) {
       const message = this.toUserError(error, Boolean(remoteImage), Boolean(mutation), mode)
-      this.deps.logger.error("paste upload transaction failed", {
-        transactionId: snapshot.transactionId,
-        mode,
-        remoteImage,
-        localAsset,
-        mutation,
-        error,
-      })
+      this.deps.logger.error(
+        `paste upload failed, mode=${mode}, stage=${remoteImage ? "insert" : "upload"}: ${error?.message ?? error}`
+      )
       this.deps.notifyError(message)
       return {
         ok: false,

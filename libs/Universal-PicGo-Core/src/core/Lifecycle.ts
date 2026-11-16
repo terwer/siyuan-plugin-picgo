@@ -9,19 +9,15 @@
 
 import { EventEmitter } from "../utils/nodePolyfill"
 import { ILifecyclePlugins, IPicGo, IPlugin, Undefinable } from "../types"
-import { ILogger } from "zhi-lib-base"
 import { createContext } from "../utils/createContext"
 import { IBuildInEvent } from "../utils/enums"
 
 export class Lifecycle extends EventEmitter {
   private readonly ctx: IPicGo
-  private readonly logger: ILogger
 
   constructor(ctx: IPicGo) {
     super()
     this.ctx = ctx
-    this.logger = this.ctx.getLogger("lifecycle")
-    this.logger.debug("lifecycle is inited")
   }
 
   async start(input: any[]): Promise<IPicGo> {
@@ -43,10 +39,8 @@ export class Lifecycle extends EventEmitter {
       await this.afterUpload(ctx)
       return ctx
     } catch (e: any) {
-      ctx.log.warn(IBuildInEvent.FAILED)
       ctx.emit(IBuildInEvent.UPLOAD_PROGRESS, -1)
       ctx.emit(IBuildInEvent.FAILED, e)
-      ctx.log.error(e)
       // if (ctx.getConfig<Undefinable<string>>("debug")) {
       // }
       // should throw error to stop the process
@@ -58,7 +52,6 @@ export class Lifecycle extends EventEmitter {
   private async beforeTransform(ctx: IPicGo): Promise<IPicGo> {
     ctx.emit(IBuildInEvent.UPLOAD_PROGRESS, 0)
     ctx.emit(IBuildInEvent.BEFORE_TRANSFORM, ctx)
-    ctx.log.info("Before transform")
     await this.handlePlugins(ctx.helper.beforeTransformPlugins, ctx)
     return ctx
   }
@@ -66,21 +59,17 @@ export class Lifecycle extends EventEmitter {
   private async doTransform(ctx: IPicGo): Promise<IPicGo> {
     ctx.emit(IBuildInEvent.UPLOAD_PROGRESS, 30)
     const type = ctx.getConfig<Undefinable<string>>("picBed.transformer") || "path"
-    let currentTransformer = type
     let transformer = ctx.helper.transformer.get(type)
     if (!transformer) {
       transformer = ctx.helper.transformer.get("path")
-      currentTransformer = "path"
       ctx.log.warn(`Can't find transformer - ${type}, switch to default transformer - path`)
     }
-    ctx.log.info(`Transforming... Current transformer is [${currentTransformer}]`)
     await transformer?.handle(ctx)
     return ctx
   }
 
   private async beforeUpload(ctx: IPicGo): Promise<IPicGo> {
     ctx.emit(IBuildInEvent.UPLOAD_PROGRESS, 60)
-    ctx.log.info("Before upload")
     ctx.emit(IBuildInEvent.BEFORE_UPLOAD, ctx)
     await this.handlePlugins(ctx.helper.beforeUploadPlugins, ctx)
     return ctx
@@ -92,14 +81,11 @@ export class Lifecycle extends EventEmitter {
       ctx.getConfig<Undefinable<string>>("picBed.current") ||
       "smms"
     let uploader = ctx.helper.uploader.get(type)
-    let currentTransformer = type
     if (!uploader) {
       type = "smms"
-      currentTransformer = "smms"
       uploader = ctx.helper.uploader.get("smms")
       ctx.log.warn(`Can't find uploader - ${type}, switch to default uploader - smms`)
     }
-    ctx.log.info(`Uploading... Current uploader is [${currentTransformer}]`)
     await uploader?.handle(ctx)
     for (const outputImg of ctx.output) {
       outputImg.type = type
@@ -125,10 +111,7 @@ export class Lifecycle extends EventEmitter {
     }
     ctx.emit(IBuildInEvent.FINISHED, ctx)
     if (msg === "") {
-      ctx.log.warn("[after-upload] image upload occured an error, please read log for details")
       throw new Error("image upload occured an error, please read log for details")
-    } else {
-      ctx.log.info(`[after-upload] upload finishied => \n${msg}`)
     }
     return ctx
   }
@@ -142,7 +125,6 @@ export class Lifecycle extends EventEmitter {
     await Promise.all(
       plugins.map(async (plugin: IPlugin, index: number) => {
         try {
-          ctx.log.info(`${lifeCycleName}: ${pluginNames[index]} running`)
           await plugin.handle(ctx)
         } catch (e) {
           ctx.log.error(`${lifeCycleName}: ${pluginNames[index]} error`)

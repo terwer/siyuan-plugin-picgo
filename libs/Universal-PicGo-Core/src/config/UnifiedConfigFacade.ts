@@ -233,7 +233,6 @@ export async function createUnifiedPicGoConfigFacade(
   }
 
   state.instanceKey = createFacadeInstanceKey(options, state.ownerFiles)
-  logger.info("[UnifiedConfigFacade] initializing, instanceKey:", state.instanceKey)
 
   // Load all owner files
   await loadAllOwnerFiles(state, logger)
@@ -246,8 +245,6 @@ export async function createUnifiedPicGoConfigFacade(
 
   // Construct snapshot and mark ready
   state.ready = true
-
-  logger.info("[UnifiedConfigFacade] ready")
 
   return buildReadyFacade(state, logger, options)
 }
@@ -267,7 +264,6 @@ async function loadAllOwnerFiles(
       if ("read" in adapter && typeof adapter.read === "function") {
         const data = await (adapter as any).read()
         fileState.data = data ?? {}
-        logger.debug(`[UnifiedConfigFacade] loaded ${ownerFile}, keys:`, Object.keys(fileState.data))
       } else {
         // Sync adapter — read synchronously
         const store = (adapter as any)
@@ -307,13 +303,11 @@ async function ensureMigration(
     const existingMigration = mainOwner.data?.siyuan?.picgoMigration
     if (existingMigration?.version === UNIFIED_CONFIG_MIGRATION_VERSION) {
       state.migrationState = existingMigration as UnifiedConfigMigrationState
-      logger.info("[UnifiedConfigFacade] existing v3 migration state found, status:", state.migrationState.status)
       return
     }
   }
 
   // No existing v3 migration — run it
-  logger.info("[UnifiedConfigFacade] running v3 migration...")
   state.migrationState = {
     ...INITIAL_MIGRATION_STATE,
     status: "running",
@@ -328,7 +322,6 @@ async function ensureMigration(
       logger.error("[UnifiedConfigFacade] migration failed:", state.migrationState.error)
     } else {
       state.migrationState.status = "done"
-      logger.info("[UnifiedConfigFacade] migration complete")
     }
   } catch (e: any) {
     state.migrationState.status = "failed"
@@ -600,7 +593,6 @@ function buildReadyFacade(
         if (!fileState.dirty && !fileState.currentWriteTask) continue
         try {
           await flushOwnerFile(state, ownerFile, fileState)
-          logger.debug(`[UnifiedConfigFacade] flushed ${ownerFile}`)
         } catch (e: any) {
           failures.push({
             domain: fileState.domains[0],
@@ -727,7 +719,6 @@ function scheduleFlush(
 
     try {
       await flushOwnerFile(state, ownerFile, fileState)
-      logger.debug(`[UnifiedConfigFacade] auto-flushed ${ownerFile}`)
     } catch (e: any) {
       logger.error(`[UnifiedConfigFacade] auto-flush failed for ${ownerFile}:`, e?.message ?? e)
     }

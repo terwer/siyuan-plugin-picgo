@@ -7,7 +7,6 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { ILogger, simpleLogger } from "zhi-lib-base"
 import { ParsedImage } from "../models/ParsedImage"
 import { ImageItem } from "../models/ImageItem"
 
@@ -21,11 +20,8 @@ import { ImageItem } from "../models/ImageItem"
  * @since 0.1.0
  */
 export class ImageParser {
-  private readonly logger: ILogger
-
-  constructor(isDev?: boolean) {
-    this.logger = simpleLogger("image-parser", "zhi-siyuan-picgo", isDev)
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  constructor(_isDev?: boolean) {}
 
   /**
    * 检测是否有外链图片
@@ -137,7 +133,6 @@ export class ImageParser {
   // }
 
   public parseRemoteImagesToArray(markdownText: string): ParsedImage[] {
-    this.logger.debug("准备解析文本中的远程图片=>", markdownText)
 
     const regex = /!\[(.*?)\]\((https?:\/\/\S+?\.(?:jpe?g|png|gif))(?:\s+"([^"]*)")?(?:{([^}]*)})?\)/g
 
@@ -196,7 +191,6 @@ export class ImageParser {
   //   return ParsedImages
   // }
   public parseLocalImagesToArray(markdownText: string): ParsedImage[] {
-    this.logger.debug("准备解析文本中的本地图片=>", markdownText)
 
     // 定义正则表达式来匹配以 assets 开头但不以 http、https 或 ftp 开头的 Markdown 格式的图片链接
     const regex = /!\[([^[\]]*)]\((assets\/.*?)\s*(?:(?:"([^"]*)")|(?:'([^']*)'))?\)/g
@@ -237,16 +231,13 @@ export class ImageParser {
     const matches = newcontent.match(imgRegex)
     // 没有图片，无需处理
     if (matches == null || matches.length === 0) {
-      this.logger.warn("未匹配到本地图片，将不会替换图片链接")
       return newcontent
     }
 
     for (let i = 0; i < matches.length; i++) {
       const img = matches[i]
-      this.logger.debug("img=>", img)
 
       const src = img.replace(/!\[.*]\(/g, "").replace(/\)/, "")
-      this.logger.debug("src=>", src)
       let url
       let title
       const urlAttrs = src.split(" ")
@@ -266,7 +257,6 @@ export class ImageParser {
       if (title) {
         newImg = `![${alt}](${replaceImageItem?.url} "${title}")`
       }
-      this.logger.debug("newImg=>", newImg)
 
       // 使用正则表达式和replace方法来实现replaceAll方法
       // 将search转换为正则表达式，使用g标志表示全局匹配
@@ -278,7 +268,6 @@ export class ImageParser {
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#flags_in_constructor
       const escapedImg = img.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // 转义处理
       const imgRegex = new RegExp(escapedImg, "g")
-      this.logger.debug("imgRegex =>", imgRegex)
       newcontent = newcontent.replace(imgRegex, newImg)
     }
 

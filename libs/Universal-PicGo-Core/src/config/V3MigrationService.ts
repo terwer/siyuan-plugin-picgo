@@ -236,7 +236,6 @@ export async function runV3Migration(options: V3MigrationOptions): Promise<Unifi
   const state = initMigrationState(options.existingState)
 
   if (state.status === "done") {
-    logger.info("[V3Migration] migration already complete, skipping")
     return state
   }
 
@@ -273,8 +272,6 @@ export async function runV3Migration(options: V3MigrationOptions): Promise<Unifi
   const hasFailures = ALL_CONFIG_DOMAINS.some((d) => state.domains[d].status === "failed")
   state.status = hasFailures ? "failed" : "done"
   state.updatedAt = Date.now()
-
-  logger.info(`[V3Migration] complete, status=${state.status}`)
   return state
 }
 

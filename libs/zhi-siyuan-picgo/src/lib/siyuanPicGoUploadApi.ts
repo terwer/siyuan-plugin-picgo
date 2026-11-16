@@ -42,7 +42,6 @@ class SiyuanPicGoUploadApi {
     this.externalPicGo = new ExternalPicgo(this.picgo, isDev, routeConfigProvider)
     this.picListUploader = new PicListUploader(this.picgo, isDev, routeConfigProvider)
     this.logger = this.picgo.getLogger("siyuan-picgo-upload-api")
-    this.logger.debug("picgo upload api inited")
   }
 
   public attachConfigFacade(facade: ReadyUnifiedPicGoConfigFacade): void {
@@ -61,23 +60,36 @@ class SiyuanPicGoUploadApi {
     }
     const routeConfig = this.getExternalRouteConfig()
     const useBundledPicgo = routeConfig.useBundledPicgo
-    if (useBundledPicgo) {
-      const picgoType = routeConfig.picgoType
-      if (picgoType !== PicgoTypeEnum.Bundled) {
-        throw new Error("当前配置使用内置PicGo，请先在配置页面选择使用内置PicGo")
+    const target = useBundledPicgo
+      ? "bundled-picgo"
+      : this.picListUploader.isPicListConfigured()
+        ? "piclist"
+        : "picgo-app"
+    const count = Array.isArray(input) ? input.length : 0
+    this.logger.info(`upload start, target=${target}, count=${count}`)
+    try {
+      let result: IImgInfo[] | Error
+      if (useBundledPicgo) {
+        const picgoType = routeConfig.picgoType
+        if (picgoType !== PicgoTypeEnum.Bundled) {
+          throw new Error("当前配置使用内置PicGo，请先在配置页面选择使用内置PicGo")
+        }
+        result = await this.picgo.upload(input)
+      } else if (this.picListUploader.isPicListConfigured()) {
+        result = await this.picListUploader.upload(input)
+      } else {
+        result = await this.externalPicGo.upload(input)
       }
-      return this.picgo.upload(input)
+      if (result instanceof Error) {
+        this.logger.error(`upload failed, target=${target}: ${result.message}`)
+      } else {
+        this.logger.info(`upload done, target=${target}, uploaded=${result?.length ?? 0}`)
+      }
+      return result
+    } catch (e: any) {
+      this.logger.error(`upload failed, target=${target}: ${e?.message ?? e}`, e)
+      throw e
     }
-
-    // 检查是否配置了远程 PicList 服务
-    if (this.picListUploader.isPicListConfigured()) {
-      this.logger.info("Using remote PicList uploader")
-      return this.picListUploader.upload(input)
-    }
-
-    // 默认走本地 PicGo App
-    this.logger.info("Using local PicGo App uploader")
-    return this.externalPicGo.upload(input)
   }
 
   private getExternalRouteConfig(): IExternalPicgoConfig {

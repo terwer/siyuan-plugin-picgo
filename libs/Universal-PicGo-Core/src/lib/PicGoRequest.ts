@@ -127,7 +127,6 @@ async function siyuanProxyInterceptor(
   // GET or HEAD cannot have request body
   if (options.method !== "GET" && options.method !== "HEAD") {
     const myRequest = new Request(options.url || "http://localhost", { method: options.method, body: options.data })
-    console.log("generate temp myRequest =>", myRequest)
     payloadBuf = await myRequest.arrayBuffer()
     // multipart/form-data 需要自动设置
     const formDataContentType = myRequest.headers.get("Content-Type") ?? ""
@@ -221,7 +220,6 @@ class PicGoRequestWrapper {
    * @constructor
    */
   public async PicGoRequest<T, U extends AxiosRequestConfig>(userOptions: U): Promise<IResponse<T, U>> {
-    this.logger.debug("PicGoRequest before request, userOptions", userOptions)
     const that = this
 
     // handle proxy
@@ -240,7 +238,6 @@ class PicGoRequestWrapper {
     this.options.maxBodyLength = Infinity
     this.options.maxContentLength = Infinity
 
-    this.logger.debug("PicGoRequest start request, options", this.options)
     const instance = axios.create(this.options)
     instance.interceptors.response.use(responseInterceptor, responseErrorHandler)
     // handle Content-Type
@@ -270,20 +267,18 @@ class PicGoRequestWrapper {
     const siyuanProxyUrl = getSiyuanProxyUrl()
     if (isSiyuanProxyAvailable() && isUseSiyuanProxy) {
       // 处理思源笔记代理
-      this.logger.debug("opt =>", opt)
       opt = await siyuanProxyInterceptor(siyuanProxyUrl, opt)
-      this.logger.debug("newopt =>", opt)
 
       // 处理返回值
       const siyuanResp = await instance.request(opt)
-      this.logger.debug("siyuanResp =>", siyuanResp)
       if (siyuanResp.status !== 200 || siyuanResp.data.code !== 0) {
-        this.logger.error(`siyuanProxy request error with proxy ${siyuanProxyUrl}, siyuanResp =>`, siyuanResp)
+        this.logger.error(
+          `siyuanProxy request failed, proxy=${siyuanProxyUrl}, http=${siyuanResp.status}, code=${siyuanResp.data?.code}: ${siyuanResp.data?.msg ?? ""}`
+        )
         throw new Error(`siyuanProxy request error, msg => ${siyuanResp.data.msg}`)
       }
 
       const userRespData = siyuanResp.data.data
-      this.logger.debug("userRespData =>", userRespData)
 
       let respBody = userRespData.body
       switch (userRespData.bodyEncoding) {
@@ -320,7 +315,6 @@ class PicGoRequestWrapper {
       if (typeof respBody === "string" && respBody.trim() === "") {
         respBody = `request error, code ${userRespData.status}`
       }
-      this.logger.debug("respBody =>", respBody)
 
       if ("resolveWithFullResponse" in userOptions && userOptions.resolveWithFullResponse) {
         return {

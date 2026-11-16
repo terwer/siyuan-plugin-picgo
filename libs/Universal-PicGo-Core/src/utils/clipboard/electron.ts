@@ -102,8 +102,6 @@ const getClipboardImageElectron = async (ctx: IPicGo): Promise<IClipboardImage> 
         }
       }
       const imgPath = data.toString().trim()
-      logger.debug("spawn data imgPath =>", imgPath)
-      logger.debug("imagePathgPath =>", imagePath)
 
       // if the filePath is the real file in system
       // we should keep it instead of removing
