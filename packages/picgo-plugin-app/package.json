@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@terwer/eslint-config-custom": "^1.4.0",
-    "@vitejs/plugin-vue": "^6.0.7",
+    "@vitejs/plugin-vue": "^6.0.11",
     "fast-glob": "^3.3.3",
     "minimist": "^1.2.8",
     "rollup-plugin-livereload": "^2.0.5",
