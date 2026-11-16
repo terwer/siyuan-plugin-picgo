@@ -11,11 +11,9 @@
 // uses
 import { useRoute, useRouter } from "vue-router"
 import { ref } from "vue"
-import { createAppLogger } from "@/utils/appLogger.ts"
 import { ArrowLeft } from "@element-plus/icons-vue"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 
-const logger = createAppLogger("back-page")
 const { t } = useVueI18n()
 const router = useRouter()
 const { query } = useRoute()
@@ -40,10 +38,8 @@ const emit = defineEmits(["backEmit"])
 
 const onBack = () => {
   if (emit && props.hasBackEmit) {
-    logger.info("using backEmit do back")
     emit("backEmit")
   } else {
-    logger.warn("no backEmit, using router handle back")
     router.back()
   }
 }

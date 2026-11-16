@@ -31,14 +31,11 @@ export class SiYuanKernelStorageAdapter implements IAsyncStorageAdapter {
   ) {}
 
   async read(): Promise<IJSON> {
-    this.logger.info("[KernelAdapter] reading from", this.serverPath)
     const remote = await this.readKernelFile()
-    this.logger.info("[KernelAdapter] readKernelFile result =>", remote.status)
 
     if (remote.status === "exists" && remote.text && remote.text.trim() !== "") {
       try {
         const parsed = JSON.parse(remote.text) as IJSON
-        this.logger.info("[KernelAdapter] parsed remote data, keys:", Object.keys(parsed))
         return parsed
       } catch (parseError: any) {
         this.logger.error(`[KernelAdapter] JSON parse failed for ${this.serverPath}: ${parseError?.message ?? parseError}`)
@@ -57,21 +54,17 @@ export class SiYuanKernelStorageAdapter implements IAsyncStorageAdapter {
     // Only a real missing owner file may consult browser legacy data.
     // Kernel unavailable/auth/transport failures are not missing files and
     // must never fall back to localStorage or generated defaults.
-    this.logger.info("[KernelAdapter] file missing, trying localStorage migration")
     const migrated = await this.tryMigrateLocalStorage()
     if (migrated) {
-      this.logger.info("[KernelAdapter] migrated from localStorage, keys:", Object.keys(migrated))
       return migrated
     }
 
     // No remote data and no localStorage data — return empty.
     // The facade will seed defaults via mergeDefaults().
-    this.logger.info("[KernelAdapter] no data, returning empty")
     return {}
   }
 
   async write(data: IJSON): Promise<void> {
-    this.logger.info("[KernelAdapter] writing to", this.serverPath)
     const serialized = JSON.stringify(data, null, 2)
 
     let result: unknown
@@ -90,19 +83,13 @@ export class SiYuanKernelStorageAdapter implements IAsyncStorageAdapter {
     }
 
     await this.verifyWrite(serialized)
-    this.logger.info("[KernelAdapter] write complete")
   }
 
   // ── 内部 ──
 
   private async readKernelFile(): Promise<KernelFileResult> {
     try {
-      this.logger.info("[KernelAdapter] calling getFile:", this.serverPath)
       const text = await this.api.getFile(this.serverPath, "text")
-      this.logger.info("[KernelAdapter] getFile returned", {
-        type: typeof text,
-        value: text === null ? "null" : text === "" ? "empty-string" : `length=${String(text).length}`,
-      })
 
       // getFile 合约：
       // - HTTP 200 且有数据 → 文本内容
@@ -122,24 +109,20 @@ export class SiYuanKernelStorageAdapter implements IAsyncStorageAdapter {
 
   private async tryMigrateLocalStorage(): Promise<IJSON | null> {
     if (typeof window === "undefined" || !window.localStorage) {
-      this.logger.info("[KernelAdapter] no window.localStorage, skip migration")
       return null
     }
 
     const raw = window.localStorage.getItem(this.localStorageKey)
     if (!raw) {
-      this.logger.info("[KernelAdapter] localStorage key not found:", this.localStorageKey)
       return null
     }
 
     try { JSON.parse(raw) } catch {
-      this.logger.info("[KernelAdapter] localStorage data is not valid JSON")
       return null
     }
 
     try {
       await this.write(JSON.parse(raw))
-      this.logger.info("[KernelAdapter] migrated localStorage → kernel:", this.serverPath)
     } catch (e: any) {
       throw this.createKernelError("write", `Migration write failed: ${String(e?.message || e)}`)
     }

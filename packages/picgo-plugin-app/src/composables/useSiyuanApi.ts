@@ -7,7 +7,6 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { createAppLogger } from "@/utils/appLogger.ts"
 import { SiyuanPicgoConfig } from "zhi-siyuan-picgo"
 import { useSiyuanDevice } from "$composables/useSiyuanDevice.ts"
 import { SiYuanApiAdaptor, SiyuanKernelApi } from "zhi-siyuan-api"
@@ -17,7 +16,6 @@ import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
  * 通用 Siyuan API 封装
  */
 export const useSiyuanApi = () => {
-  const logger = createAppLogger("use-siyuan-api")
   const cachedKernelApi = SiyuanPicGoClient.getCachedKernelApi()
   const siyuanConfig = createRuntimeSiyuanConfig()
 
@@ -35,8 +33,6 @@ export const useSiyuanApi = () => {
     // const storeViaSiyuanApi = process.env.VITE_DEFAULT_TYPE === "siyuan"
     const defaultType = process.env.VITE_DEFAULT_TYPE ?? "siyuan"
     const storeViaSiyuanApi = defaultType === "siyuan"
-    logger.info("defaultType=>", defaultType)
-    logger.info("storeViaSiyuanApi=>", String(storeViaSiyuanApi))
     return storeViaSiyuanApi
   }
 

@@ -11,10 +11,8 @@ import PicgoPlugin from "./index"
 import { Dialog } from "siyuan"
 import { PageRoute } from "./pageRoute"
 import { BrowserUtil } from "zhi-device"
-import { createAppLogger } from "./appLogger"
 import PageUtil from "./utils/pageUtil"
 
-const logger = createAppLogger("page-util")
 
 export const buildPluginPageIndex = (pageKey: PageRoute) => {
   let pageUrl = String(pageKey)
@@ -35,7 +33,6 @@ export const buildPluginPageIndex = (pageKey: PageRoute) => {
  */
 export const showDialogPage = (pluginInstance: PicgoPlugin, pageKey: PageRoute) => {
   const pageIndex = buildPluginPageIndex(pageKey)
-  logger.info("open legacy dialog page =>", pageIndex)
   showIframePage(pluginInstance, pageIndex)
 }
 

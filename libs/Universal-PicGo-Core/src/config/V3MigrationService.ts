@@ -236,7 +236,6 @@ export async function runV3Migration(options: V3MigrationOptions): Promise<Unifi
   const state = initMigrationState(options.existingState)
 
   if (state.status === "done") {
-    logger.info("[V3Migration] migration already complete, skipping")
     return state
   }
 
@@ -273,8 +272,6 @@ export async function runV3Migration(options: V3MigrationOptions): Promise<Unifi
   const hasFailures = ALL_CONFIG_DOMAINS.some((d) => state.domains[d].status === "failed")
   state.status = hasFailures ? "failed" : "done"
   state.updatedAt = Date.now()
-
-  logger.info(`[V3Migration] complete, status=${state.status}`)
   return state
 }
 
@@ -378,7 +375,6 @@ function applyMigratedData(
         main.uploader.lsky = main.uploader.lsky ?? {}
         main.uploader.lsky.token = token
         ownerFileData.set("picgo.cfg.json", main)
-        logger?.info?.(`[V3Migration] lskyState: imported token from ${legacy.source}`)
       }
       break
     }
@@ -395,7 +391,6 @@ function applyMigratedData(
       const main = ownerFileData.get("picgo.cfg.json") ?? {}
       mergePicgoDomainSlice(main, domain, extractPicgoDomainSlice(domain, legacy.data))
       ownerFileData.set("picgo.cfg.json", main)
-      logger?.info?.(`[V3Migration] ${domain}: imported from ${legacy.source}`)
       break
     }
 
@@ -405,7 +400,6 @@ function applyMigratedData(
         ext[key] = value
       }
       ownerFileData.set("external-picgo-cfg.json", ext)
-      logger?.info?.(`[V3Migration] externalPicList: imported from ${legacy.source}`)
       break
     }
 
@@ -415,7 +409,6 @@ function applyMigratedData(
         conn[key] = value
       }
       ownerFileData.set("siyuan-cfg", conn)
-      logger?.info?.(`[V3Migration] siyuanConnection: imported from ${legacy.source}`)
       break
     }
 

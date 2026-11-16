@@ -86,7 +86,7 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
             title: ctx.i18n.translate<ILocalesKey>("UPLOAD_FAILED"),
             body: body.msg,
           })
-          ctx.log.error("qiniu error", body)
+          ctx.log.error(`qiniu upload failed: ${body?.msg ?? "unknown error"}`)
           throw new Error("Upload failed")
         }
       } catch (e: any) {

@@ -8,8 +8,6 @@
  */
 
 import { isDev, siyuanApiToken, siyuanApiUrl } from "../Constants"
-import { simpleLogger } from "zhi-lib-base"
-import { ILogger } from "../appLogger"
 
 /**
  * 思源 API 返回类型
@@ -32,11 +30,6 @@ export interface SiyuanData {
 }
 
 export class BaseApi {
-  private logger: ILogger
-
-  constructor() {
-    this.logger = simpleLogger("base-api", "custom-slug", isDev)
-  }
 
   /**
    * 以sql发送请求
@@ -71,16 +64,8 @@ export class BaseApi {
       })
     }
 
-    if (isDev) {
-      this.logger.info("开始向思源请求数据，reqUrl=>", reqUrl)
-      this.logger.info("开始向思源请求数据，fetchOps=>", fetchOps)
-    }
-
     const response = await fetch(reqUrl, fetchOps)
     const resJson = (await response.json()) as SiyuanData
-    if (isDev) {
-      this.logger.info("思源请求数据返回，resJson=>", resJson)
-    }
     return resJson
   }
 }

@@ -32,7 +32,6 @@ export const copyToClipboardInBrowser = async (text: string): Promise<boolean> =
     }
     return true
   } catch (e) {
-    console.warn("复制失败=>", e)
     return false
   }
 }

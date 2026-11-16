@@ -44,7 +44,6 @@ export class PluginHandler implements IPluginHandler {
         // or will cause error
         if (this.ctx.pluginLoader.hasPlugin(item.pkgName)) {
           installedPlugins.push(item.pkgName)
-          this.ctx.log.info(`PicGo has already installed ${item.pkgName}`)
           return false
         }
         // if something wrong, filter it out
@@ -65,7 +64,6 @@ export class PluginHandler implements IPluginHandler {
         pkgNameList.forEach((pluginName: string) => {
           this.ctx.pluginLoader.registerPlugin(pluginName)
         })
-        this.ctx.log.info(this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_INSTALL_SUCCESS"))
         this.ctx.emit("installSuccess", {
           title: this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_INSTALL_SUCCESS"),
           body: [...pkgNameList, ...installedPlugins],
@@ -74,7 +72,6 @@ export class PluginHandler implements IPluginHandler {
           success: true,
           body: [...pkgNameList, ...installedPlugins],
         }
-        console.log("install plugin success =>", result)
         return res
       } else {
         const err = this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_INSTALL_FAILED_REASON", {
@@ -105,7 +102,6 @@ export class PluginHandler implements IPluginHandler {
       }
       return res
     } else {
-      this.ctx.log.info(this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_INSTALL_SUCCESS"))
       this.ctx.emit("installSuccess", {
         title: this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_INSTALL_SUCCESS"),
         body: [...pkgNameList, ...installedPlugins],
@@ -131,7 +127,6 @@ export class PluginHandler implements IPluginHandler {
         pkgNameList.forEach((pluginName: string) => {
           this.ctx.pluginLoader.unregisterPlugin(pluginName)
         })
-        this.ctx.log.info(this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UNINSTALL_SUCCESS"))
         this.ctx.emit("uninstallSuccess", {
           title: this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UNINSTALL_SUCCESS"),
           body: pkgNameList,
@@ -186,7 +181,6 @@ export class PluginHandler implements IPluginHandler {
       // npm update will use the package.json's name
       const result = await this.execCommand("update", pkgNameList, this.ctx.pluginBaseDir, options, env)
       if (result.success) {
-        this.ctx.log.info(this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UPDATE_SUCCESS"))
         this.ctx.emit("updateSuccess", {
           title: this.ctx.i18n.translate<ILocalesKey>("PLUGIN_HANDLER_PLUGIN_UPDATE_SUCCESS"),
           body: pkgNameList,
@@ -253,7 +247,6 @@ export class PluginHandler implements IPluginHandler {
 
       // 2、await zhi.npm.checkAndInitNode()
       await win.zhi.npm.checkAndInitNode()
-      console.log("node installed, start exec cmd...")
 
       // exec cmd
       // options first

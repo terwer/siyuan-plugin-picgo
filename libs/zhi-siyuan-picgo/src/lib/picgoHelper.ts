@@ -99,7 +99,6 @@ class PicgoHelper {
    */
   public savePicgoConfig(cfg: Partial<IConfig>) {
     if (!cfg) {
-      console.warn(`cfg can not be undefined `)
       return
     }
     // 刷新

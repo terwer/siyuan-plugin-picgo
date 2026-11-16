@@ -368,7 +368,6 @@ export const removePluginVersion = (nameOrPath: string, scope = false): string =
     }
     const matchArr = nameOrPath.match(reg)
     if (!matchArr) {
-      console.warn("can not remove plugin version")
       return nameOrPath
     } else {
       return matchArr[2]
@@ -564,7 +563,6 @@ export const isSiyuanProxyAvailable = () => {
   // 回退路径：同域直开，通过同步探测验证
   const origin = win?.location?.origin
   if (!origin) {
-    console.info("[isSiyuanProxyAvailable] no origin, proxy unavailable")
     return false
   }
 
@@ -573,10 +571,8 @@ export const isSiyuanProxyAvailable = () => {
     req.open("HEAD", `${origin}/api/system/version`, false)
     req.send()
     const available = req.status >= 200 && req.status < 500
-    console.info("[isSiyuanProxyAvailable] check API available", { origin, status: req.status, available })
     return available
   } catch (e) {
-    console.info("[isSiyuanProxyAvailable] check API available failed", e)
     return false
   }
 }

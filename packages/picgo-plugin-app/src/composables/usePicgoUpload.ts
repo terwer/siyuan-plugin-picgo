@@ -8,7 +8,6 @@
  */
 
 import { useRouter } from "vue-router"
-import { createAppLogger } from "@/utils/appLogger.ts"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { reactive } from "vue"
 import { generateUniqueName, ImageItem } from "zhi-siyuan-picgo"
@@ -22,7 +21,6 @@ import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
  */
 export const usePicgoUpload = (props: any, deps: any, refs: any) => {
   // private data
-  const logger = createAppLogger("picgo-upload")
   const { t } = useVueI18n()
   const router = useRouter()
   const { kernelApi } = useSiyuanApi()
@@ -54,14 +52,12 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
     } else {
       let imageJson
       if (typeof imgInfos == "string") {
-        logger.warn("doAfterUpload返回的是字符串，需要解析")
         imageJson = JSON.parse(imgInfos)
       } else {
         imageJson = imgInfos
       }
 
       picgoCommonData.loggerMsg = JSON.stringify(imgInfos)
-      logger.debug("doAfterUpload,imgInfos=>", imgInfos)
 
       const img = imageJson[0]
       const rtnItem = new ImageItem(img.imgUrl, img.imgUrl, false)
@@ -81,14 +77,12 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
   const doAfterUploadReplace = (imgInfos: any, imageItem: ImageItem) => {
     let imageJson
     if (typeof imgInfos == "string") {
-      logger.warn("doAfterUpload返回的是字符串，需要解析")
       imageJson = JSON.parse(imgInfos)
     } else {
       imageJson = imgInfos
     }
 
     picgoCommonData.loggerMsg = JSON.stringify(imgInfos)
-    logger.debug("doAfterUpload,imgInfos=>", imgInfos)
 
     if (imageJson && imageJson.length > 0) {
       const img = imageJson[0]
@@ -122,7 +116,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
       try {
         const fileList = event.target.files
 
-        logger.debug("onRequest fileList=>", fileList)
         if (!fileList || fileList.length === 0) {
           ElMessage.error("请选择图片")
           picgoCommonData.loggerMsg = t("main.opt.failure") + "=>" + "请选择图片"
@@ -143,7 +136,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
             // 处理后续
             doAfterUpload(imgInfos)
           } else {
-            logger.debug("路径为空，忽略")
           }
         }
 
@@ -154,7 +146,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
             type: "error",
             message: t("main.opt.failure") + "=>" + e,
           })
-          logger.error(t("main.opt.failure") + "=>" + e)
         }
         picgoCommonData.loggerMsg = t("main.opt.failure") + "=>" + e
         picgoCommonData.isUploadLoading = false
@@ -180,7 +171,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
             type: "error",
             message: t("main.opt.failure") + "=>" + e,
           })
-          logger.error(t("main.opt.failure") + "=>", e)
         }
         picgoCommonData.loggerMsg = t("main.opt.failure") + "=>" + e
         picgoCommonData.isUploadLoading = false
@@ -216,7 +206,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
         for (let i = 0; i < imageItemArray.length; i++) {
           const imageItem = imageItemArray[i]
           if (!imageItem.isLocal) {
-            logger.debug("已经上传过图床，请勿重复上传=>", imageItem.originUrl)
             continue
           }
 
@@ -237,7 +226,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
           type: "error",
           message: t("main.opt.failure") + "=>" + e,
         })
-        logger.error(t("main.opt.failure") + "=>" + e)
       }
     },
     doForceUploaddAllImagesToBed: async () => {
@@ -266,7 +254,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
               type: "error",
               message: t("main.opt.failure") + "=>" + e,
             })
-            logger.error(t("main.opt.failure") + "=>" + e)
           }
         })
         .catch((e) => {
@@ -277,7 +264,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
               type: "error",
               message: t("main.opt.failure") + "，图片上传异常=>" + e,
             })
-            logger.error(t("main.opt.failure") + "=>" + e)
           }
         })
     },
@@ -291,7 +277,6 @@ export const usePicgoUpload = (props: any, deps: any, refs: any) => {
 
       try {
         const ret = await siyuanApi.netAssets2LocalAssets(props.pageId)
-        logger.debug("ret=>", ret)
         ElMessage.success("网络图片下载成功")
       } catch (e: any) {
         throw new Error("网络图片下载失败" + e.toString())

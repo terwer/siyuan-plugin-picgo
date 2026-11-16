@@ -117,7 +117,6 @@ const handle = async (ctx: IPicGo): Promise<IPicGo> => {
 
         const options = postOptions(upyunOptions, img.fileName, saveKey, image)
         const res: any = await ctx.request(options)
-        console.log("Using upyun SDK for upload, res=>", res)
 
         if (res) {
           delete img.base64Image

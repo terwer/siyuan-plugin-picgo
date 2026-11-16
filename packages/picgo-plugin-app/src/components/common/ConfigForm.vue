@@ -12,10 +12,8 @@ import { ElMessage, FormInstance } from "element-plus"
 import { nextTick, reactive, ref, toRaw, watch } from "vue"
 import { IPluginConfig } from "zhi-siyuan-picgo"
 import { useVueI18n } from "$composables/useVueI18n.ts"
-import { createAppLogger } from "@/utils/appLogger.ts"
 import { PicgoHelper } from "zhi-siyuan-picgo"
 
-const logger = createAppLogger("picbed-config-form")
 const { t } = useVueI18n()
 
 const emit = defineEmits(["on-close", "drawer-title-change"])
@@ -133,11 +131,9 @@ const handleConfigChange = (val: any) => {
   nextTick(() => {
     isConfigRuleFormReady.value = true
   })
-  logger.debug("config change finish")
 }
 
 const doSubmit = (val: any) => {
-  logger.debug(`准备保存 ${props.configType} 配置val`, val)
   switch (props.configType) {
     case "plugin":
       picgoHelper.savePicgoConfig({
@@ -158,7 +154,6 @@ const doSubmit = (val: any) => {
 watch(
   formData.config as any,
   (val: IPluginConfig[]) => {
-    logger.debug("config file is changed，val=>", val)
     handleConfigChange(val)
   },
   {
@@ -173,7 +168,6 @@ watch(
     if (!isConfigRuleFormReady.value) {
       return
     }
-    logger.debug("save config change to db", val)
     doSubmit(val)
 
     if (formData.isNewForm) {
