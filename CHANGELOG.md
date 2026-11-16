@@ -1,16 +1,11 @@
 # Changelog
 
 ## [3.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.1.0...siyuan-plugin-picgo-v3.1.1) (2026-11-16)
-
-
 ### Bug Fixes
-
 * **bootstrap:** keep the plugin entry a single self-contained file ([#828](https://github.com/terwer/siyuan-plugin-picgo/issues/828)) ([#829](https://github.com/terwer/siyuan-plugin-picgo/issues/829)) ([afb776e](https://github.com/terwer/siyuan-plugin-picgo/commit/afb776e6ce0aca66ec0cb04ca5d698fc79e7788a))
-
 ## [3.1.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.5...siyuan-plugin-picgo-v3.1.0) (2026-11-14)
 ### Features
 * **smms:** upload to S.EE after the SM.MS migration ([#806](https://github.com/terwer/siyuan-plugin-picgo/issues/806)) ([05efc50](https://github.com/terwer/siyuan-plugin-picgo/commit/05efc50af26d0e0b677a313d076b477c0a16f64a))
-### Bug Fixes
 * **agent:** exclude the cdp endpoint from the http proxy ([a9a00e4](https://github.com/terwer/siyuan-plugin-picgo/commit/a9a00e4c40f9bfd8dd114360c2de8f2936766706))
 * **paste:** keep paste upload and link replacement independent ([#810](https://github.com/terwer/siyuan-plugin-picgo/issues/810)) ([d5fad24](https://github.com/terwer/siyuan-plugin-picgo/commit/d5fad2435df108c7ab52efe67f4afca397bed76b)), closes [#809](https://github.com/terwer/siyuan-plugin-picgo/issues/809)
 * **zhi-siyuan-picgo:** add missing PicListUploader import ([#815](https://github.com/terwer/siyuan-plugin-picgo/issues/815)) ([98f60a7](https://github.com/terwer/siyuan-plugin-picgo/commit/98f60a70756f042ba936e7f5d88adb80899fa57e))
