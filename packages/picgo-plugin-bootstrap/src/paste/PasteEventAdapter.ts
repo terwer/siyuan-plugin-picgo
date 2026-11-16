@@ -3,6 +3,15 @@ import { IPicGo, generateUniqueName } from "zhi-siyuan-picgo"
 interface PasteTakeoverConfig {
   autoUpload: boolean
   allowPicAndText: boolean
+  /**
+   * `siyuan.replaceLink` (replace local links).
+   *
+   * Uploading the clipboard image and replacing the document link are two
+   * independent settings. This flag only decides which document mutation the
+   * paste transaction performs; it never decides whether the paste is taken
+   * over.
+   */
+  replaceLink: boolean
 }
 
 export interface PasteInputSnapshot {
@@ -14,6 +23,8 @@ export interface PasteInputSnapshot {
   textHTML: string
   textPlain: string
   siyuanHTML: string
+  /** `siyuan.replaceLink` snapshot: whether the document gets the image-bed URL. */
+  replaceLink: boolean
   preventedBy: string[]
 }
 
@@ -134,6 +145,7 @@ class PasteEventAdapter {
       textHTML,
       textPlain,
       siyuanHTML,
+      replaceLink: finalConfig.replaceLink,
       preventedBy: this.preventHostPaste(candidate.detail, event),
     }
 
@@ -150,7 +162,7 @@ class PasteEventAdapter {
    * during facade initialization so paste events can decide synchronously
    * without crossing the async boundary.
    */
-  public tryTakeoverFromSnapshot(event: CustomEvent, snapshot: { autoUpload: boolean; allowPicAndText: boolean }): PasteTakeoverResult {
+  public tryTakeoverFromSnapshot(event: CustomEvent, snapshot: PasteTakeoverConfig): PasteTakeoverResult {
     return this.tryTakeoverWithConfig(event, snapshot)
   }
 
@@ -221,6 +233,7 @@ class PasteEventAdapter {
       textHTML,
       textPlain,
       siyuanHTML,
+      replaceLink: ctx.getConfig<boolean>("siyuan.replaceLink", true),
       preventedBy: candidate.preventedBy ?? [],
     }
 
@@ -308,6 +321,7 @@ class PasteEventAdapter {
     return this.normalizeConfig({
       autoUpload: ctx.getConfig<boolean>("siyuan.autoUpload", true),
       allowPicAndText: ctx.getConfig<boolean>("siyuan.txtImageSwitch", false),
+      replaceLink: ctx.getConfig<boolean>("siyuan.replaceLink", true),
     })
   }
 
@@ -315,6 +329,7 @@ class PasteEventAdapter {
     return {
       autoUpload: config?.autoUpload ?? true,
       allowPicAndText: config?.allowPicAndText ?? false,
+      replaceLink: config?.replaceLink ?? true,
     }
   }
 }

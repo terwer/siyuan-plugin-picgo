@@ -120,6 +120,9 @@ export default defineConfig({
       external: ["siyuan", "process"],
 
       output: {
+        // SiYuan evaluates the plugin entry with window.require, which cannot resolve a
+        // plugin-relative chunk. Fold every dynamic import into the single entry file.
+        codeSplitting: false,
         entryFileNames: "[name].js",
         assetFileNames: (assetInfo) => {
           if (assetInfo.name === "style.css") {

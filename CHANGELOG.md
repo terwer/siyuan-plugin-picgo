@@ -1,7 +1,23 @@
 # Changelog
 
-## [3.0.5](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.4...siyuan-plugin-picgo-v3.0.5) (2026-10-13)
+## [3.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.1.0...siyuan-plugin-picgo-v3.1.1) (2026-11-16)
+
+
 ### Bug Fixes
+
+* **bootstrap:** keep the plugin entry a single self-contained file ([#828](https://github.com/terwer/siyuan-plugin-picgo/issues/828)) ([#829](https://github.com/terwer/siyuan-plugin-picgo/issues/829)) ([afb776e](https://github.com/terwer/siyuan-plugin-picgo/commit/afb776e6ce0aca66ec0cb04ca5d698fc79e7788a))
+
+## [3.1.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.5...siyuan-plugin-picgo-v3.1.0) (2026-11-14)
+### Features
+* **smms:** upload to S.EE after the SM.MS migration ([#806](https://github.com/terwer/siyuan-plugin-picgo/issues/806)) ([05efc50](https://github.com/terwer/siyuan-plugin-picgo/commit/05efc50af26d0e0b677a313d076b477c0a16f64a))
+### Bug Fixes
+* **agent:** exclude the cdp endpoint from the http proxy ([a9a00e4](https://github.com/terwer/siyuan-plugin-picgo/commit/a9a00e4c40f9bfd8dd114360c2de8f2936766706))
+* **paste:** keep paste upload and link replacement independent ([#810](https://github.com/terwer/siyuan-plugin-picgo/issues/810)) ([d5fad24](https://github.com/terwer/siyuan-plugin-picgo/commit/d5fad2435df108c7ab52efe67f4afca397bed76b)), closes [#809](https://github.com/terwer/siyuan-plugin-picgo/issues/809)
+* **zhi-siyuan-picgo:** add missing PicListUploader import ([#815](https://github.com/terwer/siyuan-plugin-picgo/issues/815)) ([98f60a7](https://github.com/terwer/siyuan-plugin-picgo/commit/98f60a70756f042ba936e7f5d88adb80899fa57e))
+### Miscellaneous
+* **agent:** project-level electron cdp config for dev tooling ([2c0b86d](https://github.com/terwer/siyuan-plugin-picgo/commit/2c0b86daae4e2f85b4a592280ed96ca6f575e0ab))
+* **deps:** apply the open dependabot upgrades from [#811](https://github.com/terwer/siyuan-plugin-picgo/issues/811) ([#812](https://github.com/terwer/siyuan-plugin-picgo/issues/812)) ([a949afa](https://github.com/terwer/siyuan-plugin-picgo/commit/a949afa7d729a54c9c46ef454aaebd3e43e1bd36))
+## [3.0.5](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.4...siyuan-plugin-picgo-v3.0.5) (2026-10-13)
 * **manifest:** conform the bazaar manifest to the new spec ([#804](https://github.com/terwer/siyuan-plugin-picgo/issues/804)) ([453e8e6](https://github.com/terwer/siyuan-plugin-picgo/commit/453e8e60e39263135738899ffc48bf31e73fa4d2))
 ## [3.0.4](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.3...siyuan-plugin-picgo-v3.0.4) (2026-10-13)
 * **headless:** skip uploader validation when the post has no local images ([#802](https://github.com/terwer/siyuan-plugin-picgo/issues/802)) ([69fc694](https://github.com/terwer/siyuan-plugin-picgo/commit/69fc694bfd47c05731a14a6b67f6b93344d03675))
@@ -14,7 +30,6 @@
 ## [3.0.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.1.1...siyuan-plugin-picgo-v3.0.0) (2026-06-24)
 ### ⚠ BREAKING CHANGES
 * **config:** picgo config access is async-only in 3.0; legacy synchronous config apis and split runtime storage paths are replaced by the unified facade.
-### Features
 * **config:** unify PicGo config persistence strategy ([#689](https://github.com/terwer/siyuan-plugin-picgo/issues/689)) ([41f7490](https://github.com/terwer/siyuan-plugin-picgo/commit/41f749096e0e194de6ab3d0957e54107d46bed34))
 * **core:** ensure ExternalPicgoConfigDb defaults survive async load ([#687](https://github.com/terwer/siyuan-plugin-picgo/issues/687)) ([6144292](https://github.com/terwer/siyuan-plugin-picgo/commit/6144292ac210d5911f1fdae623662ecad0106bfb))
 ## [2.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.1.0...siyuan-plugin-picgo-v2.1.1) (2026-06-17)
@@ -29,7 +44,6 @@ this release adds remote piclist service support and includes several bug fixes.
 * **piclistuploader:** fix logger.debug argument count ts2554 error ([1bf6f98](https://github.com/terwer/siyuan-plugin-picgo/commit/1bf6f985c4faa1723f71e020ce11c8d48bd03bd2))
 * **piclistuploader:** preserve partial upload results on batch failure ([00a8be4](https://github.com/terwer/siyuan-plugin-picgo/commit/00a8be497b72f00db3362dbe37d6cd37635d08c3))
 * **qiniu:** fix url suffix concatenation for qiniu uploader ([165a7ef](https://github.com/terwer/siyuan-plugin-picgo/commit/165a7ef5855da9ccbdd101e6d02bd05a9756f7a0))
-### Miscellaneous
 * **planning:** document detailed findings on picgo architecture and internal refactor ([a617fbe](https://github.com/terwer/siyuan-plugin-picgo/commit/a617fbed18512c9730d83222f5d02daf3aedd08d))
 ## [2.0.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v2.0.0...siyuan-plugin-picgo-v2.0.1) (2026-05-26)
 * harden packaging and picgo config stability ([961ef0f](https://github.com/terwer/siyuan-plugin-picgo/commit/961ef0fe844377a61aa7b77ad86207fc97612573))
