@@ -8,12 +8,23 @@ Your favorite PicGo image bed is still available in siyuan-notes, wuhu~
 
 ## Recent Changes
 
-Only the three most recent 3.x minor versions are kept here, with patch releases folded into their minor version.
+Only the latest 3.x minor versions are listed here, with patch releases folded into their minor version.
 
-- **v3.1.x** — SM.MS uploads now go to S.EE after the SM.MS migration; paste upload and link replacement follow their own settings; the plugin entry stays a single self-contained file
-- **v3.0.x** — Workspace-backed PicGo config behind a unified async facade; HarmonyOS support; documents without images skip uploader validation; bazaar manifest aligned with the new spec
+- **v3.1.x**
+  - SM.MS uploads now go to S.EE after the SM.MS migration
+  - Paste upload and link replacement are independent
+  - Fixed a missing PicListUploader import
+  - The plugin entry remains a single self-contained file
+  - The console keeps only errors and upload results
+  - Added project-level Electron CDP config for dev tooling and excluded the CDP endpoint from the HTTP proxy
+  - Dependencies upgraded
+- **v3.0.x**
+  - PicGo config is now stored in the workspace and accessed through an async facade
+  - HarmonyOS support
+  - Documents without images skip uploader validation
+  - The bazaar manifest conforms to the new spec
 
-See [CHANGELOG.md](./CHANGELOG.md) for full history.
+See [CHANGELOG.md](./CHANGELOG.md) for the full history.
 
 ## Recommended Configuration
 
