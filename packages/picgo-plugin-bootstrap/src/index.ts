@@ -22,6 +22,10 @@ import { destroyPluginShell, openPluginShell } from "./shell"
 import { PasteEventAdapter, type PasteTakeoverConfig } from "./paste/PasteEventAdapter"
 import { PasteUploadTransaction } from "./paste/PasteUploadTransaction"
 import { icons } from "./utils/svg"
+import { configureLogging } from "./logging"
+
+// Configure the zhi loggers before the plugin and its bundled libraries log.
+configureLogging()
 
 export default class PicgoPlugin extends Plugin {
   private logger: ILogger

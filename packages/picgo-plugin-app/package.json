@@ -7,7 +7,8 @@
     "serve": "python -u scripts/serve.py && vite",
     "dev": "python -u scripts/dev.py",
     "build": "python -u scripts/build.py",
-    "lint": "vue-tsc --noEmit"
+    "lint": "vue-tsc --noEmit",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@terwer/eslint-config-custom": "^1.6.0",
