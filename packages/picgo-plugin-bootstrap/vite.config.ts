@@ -8,7 +8,7 @@
  */
 
 import { cpSync, existsSync, mkdirSync } from "fs"
-import { resolve } from "path"
+import { basename, resolve } from "path"
 import { defineConfig } from "vite"
 import minimist from "minimist"
 import livereload from "rollup-plugin-livereload"
@@ -53,7 +53,7 @@ const copyStaticAssets = () => ({
   closeBundle() {
     for (const target of staticCopyTargets) {
       const src = resolve(__dirname, target.src)
-      const dest = resolve(__dirname, distDir, target.dest, src.split("/").pop()!)
+      const dest = resolve(__dirname, distDir, target.dest, basename(src))
       const destDir = resolve(dest, "..")
       if (!existsSync(destDir)) {
         mkdirSync(destDir, { recursive: true })
