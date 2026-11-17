@@ -11,7 +11,10 @@ import App from "./App.vue"
 import { createApp } from "vue"
 import i18n from "@/i18n"
 import { useVueRouter } from "$composables/useVueRouter.ts"
+import { configureLogging } from "./utils/logging"
 
+// The zhi libraries read this runtime configuration on every log call.
+configureLogging()
 
 /**
  * Vue 入口

@@ -7,10 +7,11 @@
     "serve": "python -u scripts/serve.py && vite",
     "dev": "python -u scripts/dev.py",
     "build": "python -u scripts/build.py",
-    "lint": "vue-tsc --noEmit"
+    "lint": "vue-tsc --noEmit",
+    "test": "vitest run"
   },
   "devDependencies": {
-    "@terwer/eslint-config-custom": "^1.4.0",
+    "@terwer/eslint-config-custom": "^1.6.0",
     "@vitejs/plugin-vue": "^6.0.11",
     "fast-glob": "^3.3.3",
     "minimist": "^1.2.8",
@@ -32,10 +33,10 @@
     "vue": "^3.5.45",
     "vue-i18n": "^11.4.20",
     "vue-router": "^5.5.1",
-    "zhi-common": "^1.36.0",
-    "zhi-device": "^2.13.0",
-    "zhi-lib-base": "^0.9.0",
-    "zhi-siyuan-api": "^2.38.0",
+    "zhi-common": "^1.38.0",
+    "zhi-device": "^2.15.0",
+    "zhi-lib-base": "^0.12.0",
+    "zhi-siyuan-api": "^2.39.0",
     "zhi-siyuan-picgo": "workspace:*"
   }
 }
