@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.1.3](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.1.2...siyuan-plugin-picgo-v3.1.3) (2026-11-17)
+
+
+### Miscellaneous
+
+* **deps:** apply the open dependabot upgrades from [#834](https://github.com/terwer/siyuan-plugin-picgo/issues/834) ([#843](https://github.com/terwer/siyuan-plugin-picgo/issues/843)) ([1e0e047](https://github.com/terwer/siyuan-plugin-picgo/commit/1e0e04719b8840b91f91fa12eff8f880b353788c))
+* **deps:** upgrade zhi-framework dependencies to the 2026-11-17 release ([#842](https://github.com/terwer/siyuan-plugin-picgo/issues/842)) ([c0d5515](https://github.com/terwer/siyuan-plugin-picgo/commit/c0d55158b84e8d677862e496b2d1daf5284729ae))
+
 ## [3.1.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.1.1...siyuan-plugin-picgo-v3.1.2) (2026-11-16)
 ### Bug Fixes
 * **logger:** keep only errors and upload results in the console ([#835](https://github.com/terwer/siyuan-plugin-picgo/issues/835)) ([977dc3c](https://github.com/terwer/siyuan-plugin-picgo/commit/977dc3cf13753ad4564e44ed42fcf23c0c99b92b))
