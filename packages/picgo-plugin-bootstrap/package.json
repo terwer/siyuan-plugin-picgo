@@ -15,7 +15,7 @@
     "test:watch": "vitest --watch"
   },
   "devDependencies": {
-    "@terwer/eslint-config-custom": "^1.4.0",
+    "@terwer/eslint-config-custom": "^1.5.0",
     "@tsconfig/svelte": "^5.0.9",
     "@types/minimist": "1.2.5",
     "fast-glob": "^3.3.3",
@@ -33,8 +33,8 @@
     "vitest": "^4.1.12"
   },
   "dependencies": {
-    "zhi-device": "^2.13.0",
-    "zhi-lib-base": "^0.9.0",
+    "zhi-device": "^2.14.0",
+    "zhi-lib-base": "^0.10.0",
     "zhi-siyuan-picgo": "workspace:*"
   }
 }

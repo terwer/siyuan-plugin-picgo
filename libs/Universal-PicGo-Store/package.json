@@ -26,11 +26,11 @@
     "test:watch": "npx vitest --watch"
   },
   "devDependencies": {
-    "@terwer/eslint-config-custom": "^1.4.0",
-    "@terwer/vite-config-custom": "^0.8.0"
+    "@terwer/eslint-config-custom": "^1.5.0",
+    "@terwer/vite-config-custom": "^0.9.0"
   },
   "dependencies": {
-    "zhi-lib-base": "^0.9.0"
+    "zhi-lib-base": "^0.10.0"
   },
   "publishConfig": {
     "access": "public"
