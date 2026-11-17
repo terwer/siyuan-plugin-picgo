@@ -13,8 +13,8 @@ if __name__ == "__main__":
     dist_folder = "./artifacts/siyuan-plugin-picgo/dist"
     scriptutils.rm_folder(dist_folder)
 
-    subprocess.run(["pnpm", "build", "-F", "picgo-plugin-app", "--force"], check=True)
-    subprocess.run(["pnpm", "build", "-F", "picgo-plugin-bootstrap", "--force"], check=True)
+    subprocess.run("pnpm build -F picgo-plugin-app --force", shell=True, check=True)
+    subprocess.run("pnpm build -F picgo-plugin-bootstrap --force", shell=True, check=True)
 
     required_artifacts = [
         "index.html",
