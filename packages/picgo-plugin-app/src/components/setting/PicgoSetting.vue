@@ -228,13 +228,17 @@ watch(
       <el-divider border-style="dashed" />
 
       <div>
-        <el-form-item label-width="130px" :label="t('picgo.siyuan.clipboard.auto')">
+        <el-form-item label-width="200px" :label="t('picgo.siyuan.clipboard.auto')">
           <el-switch v-model="bundledPicGoSettingForm.siyuan.autoUpload" inline-prompt size="small"></el-switch>
         </el-form-item>
-        <el-form-item label-width="115px" :label="t('picgo.siyuan.replace.link')">
+        <el-form-item label-width="200px" :label="t('picgo.siyuan.replace.link')">
           <el-switch v-model="bundledPicGoSettingForm.siyuan.replaceLink" inline-prompt size="small"></el-switch>
         </el-form-item>
-        <el-form-item label-width="428px" :label="t('picgo.siyuan.txt.with.img.upload')">
+        <el-form-item
+          class="picgo-siyuan-option--wrap-label"
+          label-width="200px"
+          :label="t('picgo.siyuan.txt.with.img.upload')"
+        >
           <el-switch v-model="bundledPicGoSettingForm.siyuan.txtImageSwitch" inline-prompt size="small"></el-switch>
         </el-form-item>
         <el-form-item label-width="200px" :label="t('picgo.siyuan.max.upload.count')">
@@ -283,7 +287,17 @@ watch(
   gap 12px
   flex-wrap wrap
 
+.picgo-siyuan-option--wrap-label
+  :deep(.el-form-item__label)
+    height auto
+    padding-top 6px
+    padding-bottom 6px
+    line-height 20px
+    white-space normal
+    text-align right
+
 .form-item-tip
+  flex-basis 100%
   font-size 12px
   color var(--b3-theme-on-surface-light, #999)
   line-height 1.5
