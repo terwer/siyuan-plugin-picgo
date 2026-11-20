@@ -59,8 +59,8 @@ importers:
         specifier: ^1.1.7
         version: 1.1.7
       js-md5:
-        specifier: ^0.9.2
-        version: 0.9.2
+        specifier: ^0.10.0
+        version: 0.10.0
       js-yaml:
         specifier: ^5.5.0
         version: 5.5.0
@@ -3072,11 +3072,11 @@ packages:
   jju@1.4.0:
     resolution: {integrity: sha512-8wb9Yw966OSxApiCt0K3yNJL8pnNeIv+OEq2YMidz4FKP6nonSRoOXc80iXY4JaN2FC11B9qsNmDsm+ZOfMROA==}
 
+  js-md5@0.10.0:
+    resolution: {integrity: sha512-ty2QGIWsaCGQkw9OKXhrDElDXuAaCtFAkNW/N75NbHoU+ELVQA5FRqyzqrTUr0olOKeoEHuTIYOfu7VssGw+2Q==}
+
   js-md5@0.8.3:
     resolution: {integrity: sha512-qR0HB5uP6wCuRMrWPTrkMaev7MJZwJuuw4fnwAzRgP4J4/F8RwtodOKpGp4XpqsLBFzzgqIO42efFAyz2Et6KQ==}
-
-  js-md5@0.9.2:
-    resolution: {integrity: sha512-QK62elp/ozZj7kzyCG5yaeK+uWeqxPlg3w3znYDBvwyqzJs7nh5bgTAAH9KltLni2LT7qx/E1EgSVwfiOSRe0Q==}
 
   js-tokens@10.0.0:
     resolution: {integrity: sha512-lM/UBzQmfJRo9ABXbPWemivdCW8V2G8FHaHdypQaIy523snUjog0W71ayWXTjiR+ixeMyVHN2XcpnTd/liPg/Q==}
@@ -8041,9 +8041,9 @@ snapshots:
   jju@1.4.0:
     optional: true
 
-  js-md5@0.8.3: {}
+  js-md5@0.10.0: {}
 
-  js-md5@0.9.2: {}
+  js-md5@0.8.3: {}
 
   js-tokens@10.0.0: {}
 
