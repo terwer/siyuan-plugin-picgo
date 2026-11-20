@@ -172,8 +172,7 @@ export default {
   "picgo.siyuan.txt.with.img.upload":
     "When there are both text and images on the clipboard, should they be uploaded, e.g., in applications like PPT or Excel?",
   "picgo.siyuan.max.upload.count": "Max images per drag upload",
-  "picgo.siyuan.max.upload.count.tip":
-    "Default 5. Increase it for large batches; applies to drag upload only, not the file picker.",
+  "picgo.siyuan.max.upload.count.tip": "Default 5; drag only.",
   "setting.picgo.external.mode.label": "External PicGo Mode",
   "setting.picgo.external.mode.local": "Local PicGo App",
   "setting.picgo.external.mode.local.desc":

@@ -185,7 +185,7 @@ watch(
         </el-button>
       </div>
     </el-alert>
-    <el-form label-width="100px" label-position="left" class="picgo-setting-form">
+    <el-form label-width="auto" label-position="left" class="picgo-setting-form">
       <el-form-item :label="t('upload.default.adaptor')" required>
         <el-select
           v-model="externalPicGoSettingForm.picgoType"
@@ -228,20 +228,16 @@ watch(
       <el-divider border-style="dashed" />
 
       <div>
-        <el-form-item label-width="200px" :label="t('picgo.siyuan.clipboard.auto')">
+        <el-form-item :label="t('picgo.siyuan.clipboard.auto')">
           <el-switch v-model="bundledPicGoSettingForm.siyuan.autoUpload" inline-prompt size="small"></el-switch>
         </el-form-item>
-        <el-form-item label-width="200px" :label="t('picgo.siyuan.replace.link')">
+        <el-form-item :label="t('picgo.siyuan.replace.link')">
           <el-switch v-model="bundledPicGoSettingForm.siyuan.replaceLink" inline-prompt size="small"></el-switch>
         </el-form-item>
-        <el-form-item
-          class="picgo-siyuan-option--wrap-label"
-          label-width="200px"
-          :label="t('picgo.siyuan.txt.with.img.upload')"
-        >
+        <el-form-item :label="t('picgo.siyuan.txt.with.img.upload')">
           <el-switch v-model="bundledPicGoSettingForm.siyuan.txtImageSwitch" inline-prompt size="small"></el-switch>
         </el-form-item>
-        <el-form-item label-width="200px" :label="t('picgo.siyuan.max.upload.count')">
+        <el-form-item :label="t('picgo.siyuan.max.upload.count')">
           <div class="max-upload-count-field">
             <el-input-number
               v-model="bundledPicGoSettingForm.siyuan.maxUploadCount"
@@ -288,15 +284,6 @@ watch(
   flex-wrap wrap
 
   :deep(.el-input-number .el-input__inner)
-    text-align left
-
-.picgo-siyuan-option--wrap-label
-  :deep(.el-form-item__label)
-    height auto
-    padding-top 6px
-    padding-bottom 6px
-    line-height 20px
-    white-space normal
     text-align left
 
 .form-item-tip

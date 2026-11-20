@@ -164,7 +164,7 @@ export default {
   "picgo.siyuan.replace.link": "替换本地连接",
   "picgo.siyuan.txt.with.img.upload": "当剪切板同时有文字和图片时，是否上传，例如：PPT、Excel 等",
   "picgo.siyuan.max.upload.count": "单次拖拽上传数量上限",
-  "picgo.siyuan.max.upload.count.tip": "默认 5，可按需调大；仅限制拖拽上传，不影响「选择图片」上传。",
+  "picgo.siyuan.max.upload.count.tip": "默认 5；仅限拖拽上传。",
   "setting.picgo.external.mode.label": "外部 PicGo 模式",
   "setting.picgo.external.mode.local": "本地 PicGo App",
   "setting.picgo.external.mode.local.desc":
