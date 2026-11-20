@@ -185,7 +185,7 @@ watch(
         </el-button>
       </div>
     </el-alert>
-    <el-form label-width="100px" class="picgo-setting-form">
+    <el-form label-width="100px" label-position="left" class="picgo-setting-form">
       <el-form-item :label="t('upload.default.adaptor')" required>
         <el-select
           v-model="externalPicGoSettingForm.picgoType"
@@ -287,6 +287,9 @@ watch(
   gap 12px
   flex-wrap wrap
 
+  :deep(.el-input-number .el-input__inner)
+    text-align left
+
 .picgo-siyuan-option--wrap-label
   :deep(.el-form-item__label)
     height auto
@@ -294,7 +297,7 @@ watch(
     padding-bottom 6px
     line-height 20px
     white-space normal
-    text-align right
+    text-align left
 
 .form-item-tip
   flex-basis 100%
