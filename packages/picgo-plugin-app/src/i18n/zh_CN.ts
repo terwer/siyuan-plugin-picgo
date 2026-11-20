@@ -144,6 +144,7 @@ export default {
   "upload.select.tip1": "拖拽图片到这里或者",
   "upload.select.tip2": "选择图片",
   "upload.select.limit": "支持jp(e)g/png/gif/svg/webp 格式，单次最大上传图片数量限制为",
+  "upload.select.exceed": "单次最多可上传图片数量为",
   "upload.tab.upload": "图片上传",
   "upload.tab.setting": "插件设置",
   "component.test": "组件测试",
@@ -162,6 +163,8 @@ export default {
   "picgo.siyuan.clipboard.auto": "剪切板自动上传",
   "picgo.siyuan.replace.link": "替换本地连接",
   "picgo.siyuan.txt.with.img.upload": "当剪切板同时有文字和图片时，是否上传，例如：PPT、Excel 等",
+  "picgo.siyuan.max.upload.count": "单次拖拽上传数量上限",
+  "picgo.siyuan.max.upload.count.tip": "默认 5；仅限拖拽上传。",
   "setting.picgo.external.mode.label": "外部 PicGo 模式",
   "setting.picgo.external.mode.local": "本地 PicGo App",
   "setting.picgo.external.mode.local.desc":

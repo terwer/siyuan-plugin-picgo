@@ -9,11 +9,13 @@
 
 <script setup lang="ts">
 import { UploadFilled } from "@element-plus/icons-vue"
-import { onBeforeMount, onBeforeUnmount, reactive, ref } from "vue"
+import { onBeforeMount, onBeforeUnmount, onMounted, reactive, ref } from "vue"
 import { ElMessage, UploadRequestOptions } from "element-plus"
 import { generateUniqueName, ImageItem, retrieveImageFromClipboardAsBlob } from "zhi-siyuan-picgo"
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { usePicgoUpload } from "$composables/usePicgoUpload.ts"
+import { DEFAULT_MAX_UPLOAD_COUNT, normalizeMaxUploadCount } from "@/utils/uploadLimit.ts"
+import { SiyuanPicGoClient } from "@/utils/SiyuanPicGoClient.ts"
 
 // props
 const props = defineProps({
@@ -41,13 +43,25 @@ const formData = reactive({
 const { t } = useVueI18n()
 const { picgoUploadMethods } = usePicgoUpload(props, { picgoCommonMethods: formData.picgoCommonMethods }, {})
 
-const limit = ref(5)
+const maxUploadCount = ref(DEFAULT_MAX_UPLOAD_COUNT)
+const uploadRef = ref<{ clearFiles: () => void }>()
+
+const loadMaxUploadCount = async () => {
+  try {
+    const siyuanPicgo = await SiyuanPicGoClient.getInstance()
+    const ctx = siyuanPicgo?.ctx?.()
+    maxUploadCount.value = normalizeMaxUploadCount(ctx?.getConfig?.("siyuan.maxUploadCount"))
+  } catch {
+    // 配置读取失败时沿用默认值，避免拖拽上传不可用
+    maxUploadCount.value = DEFAULT_MAX_UPLOAD_COUNT
+  }
+}
+
+onMounted(loadMaxUploadCount)
 
 const handleDragAction = async (file: Blob) => {
   let res: any
   try {
-    formData.picgoCommonData.isUploadLoading = true
-
     const imageItem = new ImageItem(generateUniqueName(), file as any, true, "", "")
     await picgoUploadMethods.doUploadImageToBed(imageItem)
 
@@ -62,19 +76,39 @@ const handleDragAction = async (file: Blob) => {
       success: false,
       message: errMsg,
     }
-  } finally {
-    formData.picgoCommonData.isUploadLoading = false
   }
 
   return res
 }
 
-const customRequestHandler = (options: UploadRequestOptions): Promise<unknown> => {
-  return handleDragAction(options.file)
+// 拖拽上传会一次触发多个请求。图片较多时并发请求容易触发图床限流或超时，
+// 因此按队列逐张上传；上传期间保持 loading 状态，队列清空后再结束。
+let pendingUploadCount = 0
+let uploadChain: Promise<unknown> = Promise.resolve()
+
+const enqueueDragUpload = (file: Blob): Promise<unknown> => {
+  pendingUploadCount++
+  formData.picgoCommonData.isUploadLoading = true
+
+  const task = uploadChain.then(() => handleDragAction(file))
+  uploadChain = task.catch(() => undefined)
+
+  return task.finally(() => {
+    pendingUploadCount = Math.max(0, pendingUploadCount - 1)
+    if (pendingUploadCount === 0) {
+      formData.picgoCommonData.isUploadLoading = false
+      // el-upload 的 limit 会累计已选文件；每批处理完后清空，保证上限按“单次”生效。
+      uploadRef.value?.clearFiles()
+    }
+  })
 }
 
-const handleExceed = (_e: any) => {
-  ElMessage.error("selected files exceed to upload limit  " + limit.value)
+const customRequestHandler = (options: UploadRequestOptions): Promise<unknown> => {
+  return enqueueDragUpload(options.file)
+}
+
+const handleExceed = () => {
+  ElMessage.error(`${t("upload.select.exceed")} ${maxUploadCount.value}`)
 }
 
 // const handlePasteAction = (e: any) => {
@@ -102,11 +136,12 @@ const handleExceed = (_e: any) => {
 <template>
   <div>
     <el-upload
+      ref="uploadRef"
       class="drag-upload"
       drag
       :http-request="customRequestHandler"
       multiple
-      :limit="limit"
+      :limit="maxUploadCount"
       accept="image/png,image/jpg,image/jpeg,image/gif,image/webp,image/svg"
       :on-exceed="handleExceed"
     >
@@ -117,7 +152,7 @@ const handleExceed = (_e: any) => {
         {{ t("upload.select.tip1") }} <em>{{ t("upload.select.tip2") }}</em>
       </div>
       <template #tip>
-        <div class="el-upload__tip">{{ t("upload.select.limit") }} 5</div>
+        <div class="el-upload__tip">{{ t("upload.select.limit") }} {{ maxUploadCount }}</div>
       </template>
     </el-upload>
   </div>

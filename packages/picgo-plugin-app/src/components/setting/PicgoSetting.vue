@@ -17,6 +17,7 @@ import { PicgoTypeEnum, type SiyuanPicGoMigrationSnapshot } from "zhi-siyuan-pic
 import { ElMessage } from "element-plus"
 import { markRuntimeReloadRequired } from "$composables/useRuntimeReloadNotice.ts"
 import RuntimeReloadNotice from "$components/setting/RuntimeReloadNotice.vue"
+import { normalizeMaxUploadCount, MAX_UPLOAD_COUNT_LIMIT } from "@/utils/uploadLimit.ts"
 
 const { t } = useVueI18n()
 const { getBundledPicGoSetting } = useBundledPicGoSetting()
@@ -36,6 +37,7 @@ const failedMigrationDomains = computed(() =>
       error: state.error ?? "未知错误",
     }))
 )
+const maxUploadCountLimit = MAX_UPLOAD_COUNT_LIMIT
 const runtimeRelevantSiyuanKeys = {
   autoUpload: "剪切板自动上传",
   replaceLink: "替换本地链接",
@@ -134,6 +136,9 @@ onBeforeMount(() => {
   bundledPicGoSettingForm.value.siyuan.autoUpload = bundledPicGoSettingForm.value.siyuan.autoUpload ?? true
   bundledPicGoSettingForm.value.siyuan.replaceLink = bundledPicGoSettingForm.value.siyuan.replaceLink ?? true
   bundledPicGoSettingForm.value.siyuan.txtImageSwitch = bundledPicGoSettingForm.value.siyuan.txtImageSwitch ?? false
+  bundledPicGoSettingForm.value.siyuan.maxUploadCount = normalizeMaxUploadCount(
+    bundledPicGoSettingForm.value.siyuan.maxUploadCount
+  )
   isRuntimeRelevantWatchReady.value = true
 })
 
@@ -180,7 +185,7 @@ watch(
         </el-button>
       </div>
     </el-alert>
-    <el-form label-width="100px" class="picgo-setting-form">
+    <el-form label-width="auto" label-position="left" class="picgo-setting-form">
       <el-form-item :label="t('upload.default.adaptor')" required>
         <el-select
           v-model="externalPicGoSettingForm.picgoType"
@@ -223,14 +228,26 @@ watch(
       <el-divider border-style="dashed" />
 
       <div>
-        <el-form-item label-width="130px" :label="t('picgo.siyuan.clipboard.auto')">
+        <el-form-item :label="t('picgo.siyuan.clipboard.auto')">
           <el-switch v-model="bundledPicGoSettingForm.siyuan.autoUpload" inline-prompt size="small"></el-switch>
         </el-form-item>
-        <el-form-item label-width="115px" :label="t('picgo.siyuan.replace.link')">
+        <el-form-item :label="t('picgo.siyuan.replace.link')">
           <el-switch v-model="bundledPicGoSettingForm.siyuan.replaceLink" inline-prompt size="small"></el-switch>
         </el-form-item>
-        <el-form-item label-width="428px" :label="t('picgo.siyuan.txt.with.img.upload')">
+        <el-form-item :label="t('picgo.siyuan.txt.with.img.upload')">
           <el-switch v-model="bundledPicGoSettingForm.siyuan.txtImageSwitch" inline-prompt size="small"></el-switch>
+        </el-form-item>
+        <el-form-item :label="t('picgo.siyuan.max.upload.count')">
+          <div class="max-upload-count-field">
+            <el-input-number
+              v-model="bundledPicGoSettingForm.siyuan.maxUploadCount"
+              :min="1"
+              :max="maxUploadCountLimit"
+              :step="1"
+              step-strictly
+            />
+            <div class="form-item-tip">{{ t("picgo.siyuan.max.upload.count.tip") }}</div>
+          </div>
         </el-form-item>
       </div>
     </el-form>
@@ -256,6 +273,21 @@ watch(
 
 .external-mode-desc
   margin-top 6px
+  font-size 12px
+  color var(--b3-theme-on-surface-light, #999)
+  line-height 1.5
+
+.max-upload-count-field
+  display flex
+  align-items center
+  gap 12px
+  flex-wrap wrap
+
+  :deep(.el-input-number .el-input__inner)
+    text-align left
+
+.form-item-tip
+  flex-basis 100%
   font-size 12px
   color var(--b3-theme-on-surface-light, #999)
   line-height 1.5

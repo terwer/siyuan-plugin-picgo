@@ -22,6 +22,7 @@ describe("ConfigDb defaults", () => {
     expect(db.get("siyuan.txtImageSwitch")).toBe(false)
     expect(db.get("siyuan.waitTimeout")).toBe(2)
     expect(db.get("siyuan.retryTimes")).toBe(5)
+    expect(db.get("siyuan.maxUploadCount")).toBe(5)
   })
 
   it("does not overwrite an explicit user choice", () => {
@@ -37,6 +38,7 @@ describe("ConfigDb defaults", () => {
           autoUpload: false,
           replaceLink: false,
           txtImageSwitch: true,
+          maxUploadCount: 50,
         },
       })
     )
@@ -46,5 +48,6 @@ describe("ConfigDb defaults", () => {
     expect(db.get("siyuan.autoUpload")).toBe(false)
     expect(db.get("siyuan.replaceLink")).toBe(false)
     expect(db.get("siyuan.txtImageSwitch")).toBe(true)
+    expect(db.get("siyuan.maxUploadCount")).toBe(50)
   })
 })

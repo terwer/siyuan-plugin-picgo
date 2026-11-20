@@ -103,3 +103,71 @@ describe("PageUtil.getPageId", () => {
     expect(PageUtil.getPageId()).toBe("")
   })
 })
+
+describe("PageUtil.getActiveEditorScope", () => {
+  it("聚焦时返回正文首个块作为 scopeBlockId", () => {
+    document.body.innerHTML = `
+      <div class="layout__wnd--active">
+        <ul class="layout-tab-bar">
+          <li class="item item--focus" data-id="tab-1">当前文档</li>
+        </ul>
+        <div class="protyle" data-id="tab-1">
+          <div class="protyle-title" data-node-id="20260526165741-page">
+            <div class="protyle-title__rich protyle-lite-fragment protyle">当前文档</div>
+          </div>
+          <div class="protyle-breadcrumb"><span data-type="exit-focus">退出聚焦</span></div>
+          <div class="protyle-wysiwyg">
+            <div data-node-id="20260526165741-focus">聚焦块</div>
+          </div>
+        </div>
+      </div>`
+
+    expect(PageUtil.getActiveEditorScope()).toEqual({
+      pageId: "20260526165741-page",
+      scopeBlockId: "20260526165741-focus",
+    })
+  })
+
+  it("未聚焦时只返回整篇文档的 pageId", () => {
+    document.body.innerHTML = `
+      <div class="layout__wnd--active">
+        <ul class="layout-tab-bar">
+          <li class="item item--focus" data-id="tab-1">当前文档</li>
+        </ul>
+        <div class="protyle" data-id="tab-1">
+          <div class="protyle-title" data-node-id="20260526165741-page">
+            <div class="protyle-title__rich protyle-lite-fragment protyle">当前文档</div>
+          </div>
+          <div class="protyle-breadcrumb"><span data-type="exit-focus" class="fn__none">退出聚焦</span></div>
+          <div class="protyle-wysiwyg">
+            <div data-node-id="20260526165741-first">首个块</div>
+          </div>
+        </div>
+      </div>`
+
+    expect(PageUtil.getActiveEditorScope()).toEqual({ pageId: "20260526165741-page" })
+  })
+
+  it("分屏时从活动窗口的焦点页签取编辑器", () => {
+    document.body.innerHTML = `
+      <div data-type="wnd">
+        <ul class="layout-tab-bar">
+          <li class="item item--focus" data-id="left-tab">左侧文档</li>
+        </ul>
+        <div class="protyle" data-id="left-tab">
+          <div class="protyle-title" data-node-id="20260526165741-left"></div>
+        </div>
+      </div>
+      <div class="layout__wnd--active" data-type="wnd">
+        <ul class="layout-tab-bar">
+          <li class="item item--focus" data-id="right-tab">右侧文档</li>
+        </ul>
+        <div class="protyle" data-id="right-tab">
+          <div class="protyle-title" data-node-id="20260526165741-right"></div>
+        </div>
+      </div>`
+
+    expect(PageUtil.getActiveProtyleElement()?.getAttribute("data-id")).toBe("right-tab")
+    expect(PageUtil.getActiveEditorScope()).toEqual({ pageId: "20260526165741-right" })
+  })
+})
