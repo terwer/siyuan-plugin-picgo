@@ -11,19 +11,23 @@ import PicgoPlugin from "./index"
 import { Dialog } from "siyuan"
 import { PageRoute } from "./pageRoute"
 import { BrowserUtil } from "zhi-device"
-import PageUtil from "./utils/pageUtil"
+import PageUtil, { type EditorScope } from "./utils/pageUtil"
 
-
-export const buildPluginPageIndex = (pageKey: PageRoute) => {
+export const buildPluginPageIndex = (pageKey: PageRoute, scope?: EditorScope) => {
   let pageUrl = String(pageKey)
   // 暗色模式
   // const isDark = document.documentElement.dataset.themeMode === "dark"
   // pageUrl = BrowserUtil.setUrlParameter(pageUrl, "isDark", String(isDark))
-  // 页面ID
-  const pageId = PageUtil.getPageId()
-  pageUrl = BrowserUtil.setUrlParameter(pageUrl, "pageId", pageId)
+  // 页面ID与聚焦范围
+  const editorScope = scope ?? PageUtil.getActiveEditorScope()
+  pageUrl = BrowserUtil.setUrlParameter(pageUrl, "pageId", editorScope.pageId)
+  if (editorScope.scopeBlockId) {
+    pageUrl = BrowserUtil.setUrlParameter(pageUrl, "scopeBlockId", editorScope.scopeBlockId)
+  }
 
-  return `/plugins/siyuan-plugin-picgo/#${pageUrl}`
+  // 插件更新后宿主可能仍缓存旧的 index.html，导致页面继续加载旧资源；
+  // 在 hash 前追加版本串让入口页始终取最新构建。
+  return `/plugins/siyuan-plugin-picgo/?v=${Date.now()}#${pageUrl}`
 }
 
 /**

@@ -223,6 +223,89 @@ class SiyuanPicgoPostApi {
     return ret
   }
 
+  /**
+   * 查询文档中的图片块。
+   *
+   * 传入聚焦块 ID 时，只返回该块及其子块中的图片块；未传入或等于文档 ID 时，
+   * 保持原来的整篇文档行为。聚焦范围由思源内核的标题子树语义确定，
+   * 嵌套标题、列表等子块中的图片都会包含。
+   *
+   * @param rootId 文档 ID
+   * @param scopeBlockId 聚焦块 ID，可选
+   */
+  public async getImageBlocksInScope(rootId: string, scopeBlockId?: string): Promise<any[]> {
+    if (StrUtil.isEmptyString(scopeBlockId) || scopeBlockId === rootId) {
+      return this.siyuanApi.getImageBlocksByID(rootId)
+    }
+
+    const scopeBlockIds = await this.resolveImageScopeBlockIds(scopeBlockId)
+    return this.queryImageBlocksInSubtree(rootId, scopeBlockIds)
+  }
+
+  /**
+   * 收集聚焦块及其标题子块 ID。
+   *
+   * 标题下的内容块在 blocks 表中是标题的兄弟或子级，单靠 parent_id 递归无法
+   * 覆盖嵌套标题，因此优先复用思源内核的 getHeadingChildrenIDs（与内核自带
+   * “上传资源文件到图床”的聚焦语义一致）。接口不可用时至少保留聚焦块本身。
+   */
+  private async resolveImageScopeBlockIds(scopeBlockId: string): Promise<string[]> {
+    const ids = new Set<string>([scopeBlockId])
+    try {
+      const headingChildren = (await this.siyuanApi.siyuanRequest("/api/block/getHeadingChildrenIDs", {
+        id: scopeBlockId,
+      })) as string[] | null
+      if (Array.isArray(headingChildren)) {
+        headingChildren.forEach((id) => {
+          if (!StrUtil.isEmptyString(id)) {
+            ids.add(id)
+          }
+        })
+      }
+    } catch (e) {
+      this.logger.warn("查询聚焦块子块失败，仅使用聚焦块本身", e)
+    }
+    return [...ids]
+  }
+
+  /**
+   * 查询聚焦子树内的图片块。
+   *
+   * 使用递归 CTE 展开所有后代，并按深度倒序返回，让正文中最内层的图片块优先，
+   * 便于调用方把图片链接替换落到真正的图片所在块。SQL 使用显式 LIMIT，
+   * 避免被思源的默认搜索条数截断。
+   */
+  private async queryImageBlocksInSubtree(rootId: string, scopeBlockIds: string[]): Promise<any[]> {
+    if (!this.isValidBlockId(rootId)) {
+      return []
+    }
+
+    const seedIds = scopeBlockIds.filter((id) => this.isValidBlockId(id)).map((id) => `'${id}'`)
+    if (seedIds.length === 0) {
+      return []
+    }
+
+    const sql = [
+      "WITH RECURSIVE scope(id, depth) AS (",
+      `  SELECT id, 0 FROM blocks WHERE id IN (${seedIds.join(", ")})`,
+      "  UNION ALL",
+      "  SELECT b.id, s.depth + 1 FROM blocks b JOIN scope s ON b.parent_id = s.id",
+      "), dedup AS (",
+      "  SELECT id, MAX(depth) AS depth FROM scope GROUP BY id",
+      ")",
+      "SELECT b.* FROM blocks b JOIN dedup d ON b.id = d.id",
+      `WHERE b.root_id = '${rootId}' AND b.markdown LIKE '%![%'`,
+      "ORDER BY d.depth DESC",
+      "LIMIT 10000",
+    ].join("\n")
+
+    return (await this.siyuanApi.sql(sql)) as any[]
+  }
+
+  private isValidBlockId(id: string): boolean {
+    return /^\d{14}-[a-z0-9]{7}$/.test(id)
+  }
+
   // ===================================================================================================================
 
   /**

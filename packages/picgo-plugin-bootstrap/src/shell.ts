@@ -356,12 +356,16 @@ const reloadPluginShellFrame = (pageIndex: string) => {
   shellState.pageIndex = pageIndex
 }
 
-export const openPluginShell = (pluginInstance: PicgoPlugin, pageKey: PageRoute = PageRoute.Page_Home, anchor?: HTMLElement | null) => {
+export const openPluginShell = (
+  pluginInstance: PicgoPlugin,
+  pageKey: PageRoute = PageRoute.Page_Home,
+  anchor?: HTMLElement | null
+) => {
   if (!shellState.root || !shellState.panel || !shellState.iframe) {
     createShellRoot(pluginInstance)
   }
 
-  const pageIndex = buildPluginPageIndex(pageKey)
+  const pageIndex = buildPluginPageIndex(pageKey, pluginInstance.getEditorScope())
   shellState.anchor = anchor ?? shellState.anchor
 
   reloadPluginShellFrame(pageIndex)
