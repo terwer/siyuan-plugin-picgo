@@ -238,7 +238,8 @@ class SiyuanPicgoPostApi {
       return this.siyuanApi.getImageBlocksByID(rootId)
     }
 
-    const scopeBlockIds = await this.resolveImageScopeBlockIds(scopeBlockId)
+    // 上面的空值检查已排除 undefined；这里显式收窄，避免 d.ts 生成时报类型错误。
+    const scopeBlockIds = await this.resolveImageScopeBlockIds(scopeBlockId!)
     return this.queryImageBlocksInSubtree(rootId, scopeBlockIds)
   }
 
@@ -318,20 +319,37 @@ class SiyuanPicgoPostApi {
    * @param mdContent 文章的Markdown文本
    */
   public async parsePostLocalImages(pageId: string, mdContent: string): Promise<ParsedImage[]> {
-    const imageBlocks: any[] = await this.siyuanApi.getImageBlocksByID(pageId)
+    // 正文 Markdown 是本地图片的唯一判据：数据库、嵌入块等容器里的图片
+    // 不属于思源的图片块（blocks 表中没有对应 img 记录），不能以图片块是否存在来决定
+    // 「有没有图片」，否则会漏掉这些图片（publisher #1999）。
+    const parsedLocalImages = this.imageParser.parseLocalImagesToArray(mdContent)
+    if (parsedLocalImages.length === 0) {
+      return []
+    }
 
-    // 解析图片地址
-    let uniqueLocalImages: ParsedImage[] = []
-    imageBlocks.forEach((page) => {
-      const parsedLocalImages = this.imageParser.parseLocalImagesToArray(mdContent)
-      uniqueLocalImages = [...new Set([...uniqueLocalImages, ...parsedLocalImages])]
-      // 设置 blockId 属性
-      uniqueLocalImages = uniqueLocalImages.map((image: any) => {
-        return { ...image, blockId: page.id }
-      })
-    })
-    // const parsedLocalImages = this.imageParser.parseLocalImagesToArray(mdContent)
-    // const uniqueLocalImages = [...new Set([...localImages])]
+    // 图片块只用于定位链接回写目标；数据库/嵌入块图片没有图片块，blockId 留空即可。
+    let imageBlocks: any[] = []
+    try {
+      imageBlocks = await this.siyuanApi.getImageBlocksByID(pageId)
+    } catch (e) {
+      this.logger.warn("查询文章图片块失败，继续按正文解析本地图片", e)
+    }
+
+    const uniqueLocalImages: ParsedImage[] = []
+    const seenUrls = new Set<string>()
+    for (const image of parsedLocalImages) {
+      if (seenUrls.has(image.url)) {
+        continue
+      }
+      seenUrls.add(image.url)
+
+      // 同一张图片可能出现在多个图片块中，取第一个能匹配到该地址的块。
+      const imageBlock = imageBlocks.find(
+        (block: any) => typeof block?.markdown === "string" && block.markdown.includes(image.url)
+      )
+      uniqueLocalImages.push({ ...image, blockId: imageBlock?.id ?? "" })
+    }
+
     return uniqueLocalImages
   }
 
@@ -436,7 +454,7 @@ class SiyuanPicgoPostApi {
     imageItem: ImageItem,
     forceUpload?: boolean,
     ignoreReplaceLink = false
-  ): Promise<void> {
+  ): Promise<IImgInfo[]> {
     // Settings UI persists PicGo config through a reactive storage bridge.
     // Long-lived plugin runtimes (especially the mounted floating shell) can
     // otherwise keep using the in-memory config captured when the iframe was
@@ -451,7 +469,7 @@ class SiyuanPicgoPostApi {
     // 处理上传
     const filePaths = []
     if (!forceUpload && !imageItem.isLocal) {
-      return
+      return []
     }
 
     // 兼容剪贴板
@@ -541,7 +559,7 @@ class SiyuanPicgoPostApi {
     } else {
     }
 
-    return imageJsonObj
+    return imageJsonObj as IImgInfo[]
   }
 
   // ===================================================================================================================

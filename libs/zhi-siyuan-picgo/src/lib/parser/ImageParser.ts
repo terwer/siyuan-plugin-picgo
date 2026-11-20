@@ -225,53 +225,33 @@ export class ImageParser {
    * @param replaceMap 替换信息
    */
   public replaceImagesWithImageItemArray(content: string, replaceMap: any): string {
-    let newcontent = content
-
-    const imgRegex = /!\[.*]\(assets\/.*\..*\)/g
-    const matches = newcontent.match(imgRegex)
-    // 没有图片，无需处理
-    if (matches == null || matches.length === 0) {
-      return newcontent
+    if (!content || !replaceMap) {
+      return content
     }
 
-    for (let i = 0; i < matches.length; i++) {
-      const img = matches[i]
+    // 一次只匹配一张本地图片，不能使用贪婪的 /!\[.*]\(assets\/.*\..*\)/g：
+    // 数据库资源单元格里可能同时有多张图片，贪婪匹配会把整行当成一张图片，
+    // 替换后只保留最后一张（publisher #1999）。
+    const localImageRegex = /!\[([^[\]]*)\]\((assets\/.*?)\s*(?:(?:"([^"]*)")|(?:'([^']*)'))?\)/g
 
-      const src = img.replace(/!\[.*]\(/g, "").replace(/\)/, "")
-      let url
-      let title
-      const urlAttrs = src.split(" ")
-      if (urlAttrs.length > 1) {
-        url = urlAttrs[0]
-        title = urlAttrs[1].replace(/"/g, "")
-      } else {
-        url = urlAttrs[0]
+    return content.replace(
+      localImageRegex,
+      (match: string, alt: string, url: string, doubleQuotedTitle?: string, singleQuotedTitle?: string) => {
+        const tempImageItem = new ImageItem(url, "", true)
+        const replaceImageItem: ImageItem = replaceMap[tempImageItem.hash]
+        // 没有映射或上传失败（isLocal 仍为 true）时保留原图，不能替换成 undefined。
+        if (!replaceImageItem || replaceImageItem.isLocal || !replaceImageItem.url) {
+          return match
+        }
+
+        const title = doubleQuotedTitle ?? singleQuotedTitle ?? ""
+        const newAlt = replaceImageItem.alt || alt || ""
+        if (title) {
+          return `![${newAlt}](${replaceImageItem.url} "${title}")`
+        }
+        return `![${newAlt}](${replaceImageItem.url})`
       }
-
-      const tempImageItem = new ImageItem(url, "", true)
-      const hash = tempImageItem.hash
-      const replaceImageItem: ImageItem = replaceMap[hash]
-      const alt = replaceImageItem?.alt ?? ""
-
-      let newImg = `![${alt}](${replaceImageItem?.url})`
-      if (title) {
-        newImg = `![${alt}](${replaceImageItem?.url} "${title}")`
-      }
-
-      // 使用正则表达式和replace方法来实现replaceAll方法
-      // 将search转换为正则表达式，使用g标志表示全局匹配
-      //
-      // 注意需要编码，否则无法替换
-      // 问题说明：由于原始图片链接中包含特殊字符，如斜杠和点，这些字符在正则表达式中具有特殊含义，可能导致匹配失败。需要对原始图片链接中的特殊字符进行转义处理，以确保正则表达式能够正确匹配。
-      // 修复方法：对原始图片链接中的特殊字符进行转义处理，然后再创建正则表达式进行匹配替换。
-      // MDN 的解释
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#flags_in_constructor
-      const escapedImg = img.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // 转义处理
-      const imgRegex = new RegExp(escapedImg, "g")
-      newcontent = newcontent.replace(imgRegex, newImg)
-    }
-
-    return newcontent
+    )
   }
 
   /**
