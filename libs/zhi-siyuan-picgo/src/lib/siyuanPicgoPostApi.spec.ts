@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from "vitest"
 import type { ConfigDomain, UnifiedConfigMigrationState } from "universal-picgo"
+import { SIYUAN_PICGO_FILE_MAP_KEY } from "./constants"
+import { ImageItem } from "./models/ImageItem"
+import { ImageParser } from "./parser/ImageParser"
 import { SiyuanPicgoPostApi } from "./siyuanPicgoPostApi"
 
 const INITIAL_DOMAINS: UnifiedConfigMigrationState["domains"] = {
@@ -84,34 +87,97 @@ describe("SiyuanPicgoPostApi v3 migration state bridge", () => {
 })
 
 describe("SiyuanPicgoPostApi.parsePostLocalImages", () => {
-  const createPostApi = () => {
+  const createPostApi = (imageBlocks: any[] = []) => {
     const api = Object.create(SiyuanPicgoPostApi.prototype) as any
     api.logger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }
     api.siyuanApi = {
-      getImageBlocksByID: vi.fn(async () => [{ id: "block-1" }]),
+      getImageBlocksByID: vi.fn(async () => imageBlocks),
     }
-    api.imageParser = {
-      parseLocalImagesToArray: vi.fn(() => [{ url: "assets/a.png", alt: "a", title: "", isLocal: true, blockId: "" }]),
-    }
+    api.imageParser = new ImageParser()
     return api
   }
 
-  it("returns parsed local images with blockId bound to the image block", async () => {
-    const api = createPostApi()
+  it("binds each local image to the image block that contains it", async () => {
+    const api = createPostApi([
+      { id: "block-a", markdown: "![a](assets/a.png)" },
+      { id: "block-b", markdown: "![b](assets/b.png)" },
+    ])
 
-    const images = await api.parsePostLocalImages("page-1", "![a](assets/a.png)")
+    const images = await api.parsePostLocalImages("page-1", "![a](assets/a.png)\n![b](assets/b.png)")
 
-    expect(api.siyuanApi.getImageBlocksByID).toHaveBeenCalledWith("page-1")
-    expect(images).toEqual([{ url: "assets/a.png", alt: "a", title: "", isLocal: true, blockId: "block-1" }])
+    expect(images).toEqual([
+      { url: "assets/a.png", alt: "a", title: "", isLocal: true, blockId: "block-a" },
+      { url: "assets/b.png", alt: "b", title: "", isLocal: true, blockId: "block-b" },
+    ])
   })
 
-  it("returns an empty array when the document has no image blocks", async () => {
-    const api = createPostApi()
-    api.siyuanApi.getImageBlocksByID = vi.fn(async () => [])
+  it("returns database-table images from the markdown even when there is no image block", async () => {
+    const api = createPostApi([])
+    const markdown = "|图片|主键|\n| --- | --- |\n|![cat](assets/cat.png)|图片行|"
+
+    const images = await api.parsePostLocalImages("page-1", markdown)
+
+    expect(api.siyuanApi.getImageBlocksByID).toHaveBeenCalledWith("page-1")
+    expect(images).toEqual([{ url: "assets/cat.png", alt: "cat", title: "", isLocal: true, blockId: "" }])
+  })
+
+  it("returns an empty array when the document has no local images", async () => {
+    const api = createPostApi([])
 
     const images = await api.parsePostLocalImages("page-1", "plain text")
 
     expect(images).toEqual([])
+  })
+
+  it("keeps parsing the markdown when the image-block query fails", async () => {
+    const api = createPostApi([])
+    api.siyuanApi.getImageBlocksByID = vi.fn(async () => {
+      throw new Error("database is busy")
+    })
+
+    const images = await api.parsePostLocalImages("page-1", "![a](assets/a.png)")
+
+    expect(images).toEqual([{ url: "assets/a.png", alt: "a", title: "", isLocal: true, blockId: "" }])
+    expect(api.logger.warn).toHaveBeenCalled()
+  })
+})
+
+describe("SiyuanPicgoPostApi.uploadPostImagesToBed", () => {
+  it("replaces every database image when one cell has multiple local images", async () => {
+    const api = Object.create(SiyuanPicgoPostApi.prototype) as any
+    api.logger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    api.imageParser = new ImageParser()
+    api.parsePostLocalImages = vi.fn(async () => [
+      { url: "assets/a.png", alt: "a", title: "", isLocal: true, blockId: "" },
+      { url: "assets/b.png", alt: "b", title: "", isLocal: true, blockId: "" },
+    ])
+    const imageItems = [
+      new ImageItem("assets/a.png", "http://kernel/assets/a.png", true, "a", ""),
+      new ImageItem("assets/b.png", "http://kernel/assets/b.png", true, "b", ""),
+    ]
+    api.doConvertImagesToImagesItemArray = vi.fn(async () => imageItems)
+    const fileMap: Record<string, ImageItem> = {}
+    for (const item of imageItems) {
+      const uploaded = new ImageItem(item.originUrl, "https://bed/" + item.name, false, item.alt, item.title)
+      fileMap[uploaded.hash] = uploaded
+    }
+    api.siyuanApi = {
+      getBlockAttrs: vi.fn(async () => ({ [SIYUAN_PICGO_FILE_MAP_KEY]: JSON.stringify(fileMap) })),
+    }
+    api.uploadSingleImageToBed = vi.fn(async () => undefined)
+
+    const result = await api.uploadPostImagesToBed(
+      "page-1",
+      {},
+      "|图片|主键|\n| --- | --- |\n|![a](assets/a.png) ![b](assets/b.png)|x|"
+    )
+
+    expect(api.uploadSingleImageToBed).toHaveBeenCalledTimes(2)
+    expect(result.hasImages).toBe(true)
+    expect(result.flag).toBe(true)
+    expect(result.mdContent).toContain("![a](https://bed/a.png)")
+    expect(result.mdContent).toContain("![b](https://bed/b.png)")
+    expect(result.mdContent).not.toContain("assets/")
   })
 })
 

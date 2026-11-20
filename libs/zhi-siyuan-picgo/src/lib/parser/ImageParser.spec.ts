@@ -7,7 +7,8 @@
  *  of this license document, but changing it is not allowed.
  */
 
-import { describe, it } from "vitest"
+import { describe, expect, it } from "vitest"
+import { ImageItem } from "../models/ImageItem"
 import { ImageParser } from "./ImageParser"
 
 describe("test ImageParser", (): void => {
@@ -70,5 +71,35 @@ describe("test ImageParser", (): void => {
       ![image2](assets/image2.jpg "Image 2")
     `
     console.log(imageParser.parseLocalImagesToArray(testMarkdownText))
+  })
+
+  it("replaces every local image when multiple images share a table line", () => {
+    const a = new ImageItem("assets/a.png", "https://bed/a.png", false, "a", "")
+    const b = new ImageItem("assets/b.png", "https://bed/b.png", false, "b", "")
+    const replaceMap = { [a.hash]: a, [b.hash]: b }
+    const markdown = "|图片|主键|\n| --- | --- |\n|![a](assets/a.png) ![b](assets/b.png)|x|"
+
+    const result = imageParser.replaceImagesWithImageItemArray(markdown, replaceMap)
+
+    expect(result).toContain("![a](https://bed/a.png)")
+    expect(result).toContain("![b](https://bed/b.png)")
+    expect(result).not.toContain("assets/")
+  })
+
+  it("keeps the original image when it has no uploaded mapping", () => {
+    const markdown = "![a](assets/a.png)"
+
+    const result = imageParser.replaceImagesWithImageItemArray(markdown, {})
+
+    expect(result).toBe(markdown)
+  })
+
+  it("preserves the image title when replacing the link", () => {
+    const a = new ImageItem("assets/a.png", "https://bed/a.png", false, "a", "")
+    const markdown = '![a](assets/a.png "caption")'
+
+    const result = imageParser.replaceImagesWithImageItemArray(markdown, { [a.hash]: a })
+
+    expect(result).toBe('![a](https://bed/a.png "caption")')
   })
 })
