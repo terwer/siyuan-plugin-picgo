@@ -10,6 +10,7 @@
 <script setup lang="ts">
 import { useVueI18n } from "$composables/useVueI18n.ts"
 import { usePicgoInitPage } from "$composables/usePicgoInitPage.ts"
+import { computed } from "vue"
 import { usePicgoManage } from "$composables/usePicgoManage.ts"
 import Fa6SolidUpload from "~icons/fa6-solid/upload"
 import MdiArrowRightTopBold from "~icons/mdi/arrow-right-top-bold"
@@ -18,6 +19,10 @@ import MaterialSymbolsSoundDetectionGlassBreakOutline from "~icons/material-symb
 // props
 const props = defineProps({
   pageId: {
+    type: String,
+    default: "",
+  },
+  scopeBlockId: {
     type: String,
     default: "",
   },
@@ -35,15 +40,47 @@ const props = defineProps({
 // uses
 const { t } = useVueI18n()
 
-const { picgoInitMethods } = usePicgoInitPage(props, { picgoCommonMethods: props.picgoCommonMethods })
+const { picgoInitData, picgoInitMethods } = usePicgoInitPage(props, {
+  picgoCommonMethods: props.picgoCommonMethods,
+})
 const { picgoManageData, picgoManageMethods } = usePicgoManage(props, {
   picgoCommonMethods: props.picgoCommonMethods,
   picgoInitMethods,
+})
+
+const scopeTitle = computed(() => {
+  const base = t("picgo.upload.scope.focused")
+  return picgoInitData.scope.blockName ? `${base}「${picgoInitData.scope.blockName}」` : base
 })
 </script>
 
 <template>
   <div>
+    <!-- 上传范围提示：从聚焦页签打开时默认只处理聚焦块 -->
+    <div v-if="picgoInitData.scope.hasFocusScope" class="upload-scope">
+      <span class="upload-scope__text">
+        <template v-if="picgoInitData.scope.mode === 'focus'">
+          <span>{{ scopeTitle }}</span>
+          <span class="upload-scope__hint">{{ t("picgo.upload.scope.focused.tip") }}</span>
+        </template>
+        <template v-else>
+          {{ t("picgo.upload.scope.document") }}
+        </template>
+      </span>
+      <el-button
+        v-if="picgoInitData.scope.mode === 'focus'"
+        class="upload-scope__switch"
+        link
+        type="primary"
+        @click="picgoInitMethods.useWholeDocument"
+      >
+        {{ t("picgo.upload.scope.switch.to.document") }}
+      </el-button>
+      <el-button v-else class="upload-scope__switch" link type="primary" @click="picgoInitMethods.useFocusBlock">
+        {{ t("picgo.upload.scope.switch.to.focused") }}
+      </el-button>
+    </div>
+
     <!-- 图片列表 -->
     <ul class="file-list">
       <li v-for="f in picgoCommonData.fileList.files" :key="f.name" class="file-list-item">
@@ -89,6 +126,28 @@ const { picgoManageData, picgoManageMethods } = usePicgoManage(props, {
 </template>
 
 <style scoped lang="stylus">
+.upload-scope
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 12px
+  margin-bottom: 16px
+  padding: 8px 12px
+  border: dashed 1px var(--el-color-primary)
+  border-radius: var(--el-input-border-radius, var(--el-border-radius-base))
+  font-size: 13px
+  line-height: 1.5
+
+.upload-scope__text
+  min-width: 0
+
+.upload-scope__hint
+  margin-left: 8px
+  color: var(--el-text-color-secondary)
+
+.upload-scope__switch
+  flex: 0 0 auto
+
 .file-list
   list-style: none
   margin: 0

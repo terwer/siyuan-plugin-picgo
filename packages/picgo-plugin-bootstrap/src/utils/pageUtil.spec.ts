@@ -49,3 +49,58 @@ describe("PageUtil.getPageId", () => {
     expect(PageUtil.getPageId()).toBe("")
   })
 })
+
+describe("PageUtil.getActiveEditorScope", () => {
+  const renderProtyle = (options: { focusedBlockId?: string; titleId?: string } = {}) => {
+    const titleId = options.titleId ?? "20260526165741-p675vq6"
+    const focusClass = options.focusedBlockId ? "" : "fn__none"
+    const firstBlockId = options.focusedBlockId ?? "20260526165741-first"
+    document.body.innerHTML = `
+      <div class="fn__flex-1 protyle">
+        <div class="protyle-title" data-node-id="${titleId}">
+          <div class="protyle-wysiwyg"><div data-node-id="${titleId}-title"></div></div>
+        </div>
+        <div class="protyle-breadcrumb">
+          <button data-type="exit-focus" class="${focusClass}">退出聚焦</button>
+        </div>
+        <div class="protyle-content">
+          <div class="protyle-wysiwyg">
+            <div data-node-id="${firstBlockId}" data-type="NodeHeading"></div>
+          </div>
+        </div>
+      </div>`
+  }
+
+  it("未聚焦时返回整篇文档范围", () => {
+    renderProtyle()
+
+    expect(PageUtil.getActiveEditorScope()).toEqual({
+      pageId: "20260526165741-p675vq6",
+      scopeBlockId: undefined,
+    })
+  })
+
+  it("聚焦时返回聚焦块 ID", () => {
+    renderProtyle({ focusedBlockId: "20260526165741-focus" })
+
+    expect(PageUtil.getActiveEditorScope()).toEqual({
+      pageId: "20260526165741-p675vq6",
+      scopeBlockId: "20260526165741-focus",
+    })
+  })
+
+  it("聚焦块就是文档时按整篇文档处理", () => {
+    renderProtyle({ focusedBlockId: "20260526165741-p675vq6" })
+
+    expect(PageUtil.getActiveEditorScope()).toEqual({
+      pageId: "20260526165741-p675vq6",
+      scopeBlockId: undefined,
+    })
+  })
+
+  it("没有正文编辑器时返回空范围", () => {
+    document.body.innerHTML = `<div class="layout"></div>`
+
+    expect(PageUtil.getActiveEditorScope()).toEqual({ pageId: "" })
+  })
+})

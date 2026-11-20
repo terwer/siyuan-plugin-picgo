@@ -91,9 +91,7 @@ describe("SiyuanPicgoPostApi.parsePostLocalImages", () => {
       getImageBlocksByID: vi.fn(async () => [{ id: "block-1" }]),
     }
     api.imageParser = {
-      parseLocalImagesToArray: vi.fn(() => [
-        { url: "assets/a.png", alt: "a", title: "", isLocal: true, blockId: "" },
-      ]),
+      parseLocalImagesToArray: vi.fn(() => [{ url: "assets/a.png", alt: "a", title: "", isLocal: true, blockId: "" }]),
     }
     return api
   }
@@ -114,5 +112,83 @@ describe("SiyuanPicgoPostApi.parsePostLocalImages", () => {
     const images = await api.parsePostLocalImages("page-1", "plain text")
 
     expect(images).toEqual([])
+  })
+})
+
+describe("SiyuanPicgoPostApi.getImageBlocksInScope", () => {
+  const ROOT_ID = "20261120122056-w4d5tyy"
+  const FOCUS_ID = "20261120122056-sf4l9x9"
+  const CHILD_ID = "20261120122056-y0dv20c"
+
+  const createPostApi = (overrides: { headingChildren?: string[] | null; headingError?: Error } = {}) => {
+    const api = Object.create(SiyuanPicgoPostApi.prototype) as any
+    api.logger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    api.siyuanApi = {
+      getImageBlocksByID: vi.fn(async () => [{ id: "doc-block" }]),
+      sql: vi.fn(async () => [{ id: "scoped-block" }]),
+      siyuanRequest: vi.fn(async () => {
+        if (overrides.headingError) {
+          throw overrides.headingError
+        }
+        return overrides.headingChildren ?? []
+      }),
+    }
+    return api
+  }
+
+  it("keeps the whole-document query when no focus block is given", async () => {
+    const api = createPostApi()
+
+    const blocks = await api.getImageBlocksInScope(ROOT_ID)
+    const blocksForRoot = await api.getImageBlocksInScope(ROOT_ID, "")
+
+    expect(blocks).toEqual([{ id: "doc-block" }])
+    expect(blocksForRoot).toEqual([{ id: "doc-block" }])
+    expect(api.siyuanApi.getImageBlocksByID).toHaveBeenCalledTimes(2)
+    expect(api.siyuanApi.sql).not.toHaveBeenCalled()
+  })
+
+  it("keeps the whole-document query when the focus block is the document itself", async () => {
+    const api = createPostApi()
+
+    await api.getImageBlocksInScope(ROOT_ID, ROOT_ID)
+
+    expect(api.siyuanApi.getImageBlocksByID).toHaveBeenCalledWith(ROOT_ID)
+    expect(api.siyuanApi.sql).not.toHaveBeenCalled()
+  })
+
+  it("queries the heading subtree including nested heading children", async () => {
+    const api = createPostApi({ headingChildren: [CHILD_ID, "20261120122056-nd7mpfq"] })
+
+    const blocks = await api.getImageBlocksInScope(ROOT_ID, FOCUS_ID)
+
+    expect(api.siyuanApi.siyuanRequest).toHaveBeenCalledWith("/api/block/getHeadingChildrenIDs", { id: FOCUS_ID })
+    const sql = api.siyuanApi.sql.mock.calls[0][0] as string
+    expect(sql).toContain(`'${FOCUS_ID}'`)
+    expect(sql).toContain(`'${CHILD_ID}'`)
+    expect(sql).toContain(`b.root_id = '${ROOT_ID}'`)
+    expect(sql).toContain("ORDER BY d.depth DESC")
+    expect(sql).toContain("LIMIT 10000")
+    expect(blocks).toEqual([{ id: "scoped-block" }])
+  })
+
+  it("falls back to the focus block when heading children are unavailable", async () => {
+    const api = createPostApi({ headingError: new Error("not found") })
+
+    await api.getImageBlocksInScope(ROOT_ID, FOCUS_ID)
+
+    expect(api.logger.warn).toHaveBeenCalled()
+    const sql = api.siyuanApi.sql.mock.calls[0][0] as string
+    expect(sql).toContain(`'${FOCUS_ID}'`)
+    expect(api.siyuanApi.sql).toHaveBeenCalledTimes(1)
+  })
+
+  it("skips the scoped query for an invalid document id", async () => {
+    const api = createPostApi({ headingChildren: [CHILD_ID] })
+
+    const blocks = await api.getImageBlocksInScope("invalid-doc", FOCUS_ID)
+
+    expect(blocks).toEqual([])
+    expect(api.siyuanApi.sql).not.toHaveBeenCalled()
   })
 })

@@ -23,6 +23,8 @@ import { PasteEventAdapter, type PasteTakeoverConfig } from "./paste/PasteEventA
 import { PasteUploadTransaction } from "./paste/PasteUploadTransaction"
 import { icons } from "./utils/svg"
 import { configureLogging } from "./logging"
+import { EditorScopeTracker } from "./editorScope"
+import type { EditorScope } from "./utils/pageUtil"
 
 // Configure the zhi loggers before the plugin and its bundled libraries log.
 configureLogging()
@@ -31,6 +33,7 @@ export default class PicgoPlugin extends Plugin {
   private logger: ILogger
   public statusBarElement: any
   private readonly pasteEventAdapter: PasteEventAdapter
+  private readonly editorScopeTracker = new EditorScopeTracker()
   private picgoPostApi?: SiyuanPicgoPostApi
   private siyuanApi?: any
   private pasteTakeoverSnapshot?: PasteTakeoverConfig
@@ -61,6 +64,13 @@ export default class PicgoPlugin extends Plugin {
     showPage(this, pageKey)
   }
 
+  /**
+   * 当前编辑器页签的上传范围（整篇文档或聚焦块）。
+   */
+  public getEditorScope(): EditorScope {
+    return this.editorScopeTracker.getScope()
+  }
+
   onLayoutReady() {
     // onEvent
     this.onEvent()
@@ -80,11 +90,15 @@ export default class PicgoPlugin extends Plugin {
     await this.prewarmPicGoRuntimeForPaste()
     this.eventBus.on("paste", this.picturePasteEventListener)
     this.eventBus.on("open-menu-image", this.pictureBlockEventListener)
+    this.eventBus.on("loaded-protyle-static", this.editorScopeTracker.handleProtyleEvent)
+    this.eventBus.on("switch-protyle", this.editorScopeTracker.handleProtyleEvent)
   }
 
   private offEvent() {
     this.eventBus.off("paste", this.picturePasteEventListener)
     this.eventBus.off("open-menu-image", this.pictureBlockEventListener)
+    this.eventBus.off("loaded-protyle-static", this.editorScopeTracker.handleProtyleEvent)
+    this.eventBus.off("switch-protyle", this.editorScopeTracker.handleProtyleEvent)
   }
 
   /**

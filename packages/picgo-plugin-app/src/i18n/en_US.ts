@@ -84,6 +84,11 @@ export default {
   "picgo.upload.onclick.force": "Upload All Images Forcefully",
   "picgo.upload.onclick.force.tips":
     "This operation will re-upload all images (including those already uploaded to the image bed). This is generally used when switching image beds. Please do not proceed unless necessary. Do you want to continue?",
+  "picgo.upload.scope.focused": "Upload scope: focused block",
+  "picgo.upload.scope.focused.tip": "Only images in this block and its children are listed and uploaded",
+  "picgo.upload.scope.document": "Upload scope: whole document",
+  "picgo.upload.scope.switch.to.document": "Use whole document",
+  "picgo.upload.scope.switch.to.focused": "Use focused block",
   "picgo.upload.status": "Upload status",
   "picgo.upload.select.pic": "Select picture",
   "picgo.upload.clipboard": "Clipboard picture",
