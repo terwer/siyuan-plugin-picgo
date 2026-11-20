@@ -27,6 +27,7 @@ class ConfigDb implements IPicgoDb<IConfig> {
       autoUpload: true,
       replaceLink: true,
       txtImageSwitch: false,
+      maxUploadCount: 5,
     },
   }
   private initReady = false
@@ -102,6 +103,7 @@ class ConfigDb implements IPicgoDb<IConfig> {
     this.safeSet("siyuan.autoUpload", this.initialValue.siyuan.autoUpload)
     this.safeSet("siyuan.replaceLink", this.initialValue.siyuan.replaceLink)
     this.safeSet("siyuan.txtImageSwitch", this.initialValue.siyuan.txtImageSwitch)
+    this.safeSet("siyuan.maxUploadCount", this.initialValue.siyuan.maxUploadCount)
   }
 
   safeSet(key: string, value: any) {

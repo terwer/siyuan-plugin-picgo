@@ -149,7 +149,8 @@ export default {
   "form.validate.name.required": "Please enter a name",
   "upload.select.tip1": "Drop file here or",
   "upload.select.tip2": "click to upload",
-  "upload.select.limit": "jp(e)g/png/gif/svg/webp files, max upload size is",
+  "upload.select.limit": "jp(e)g/png/gif/svg/webp files, max images per upload is",
+  "upload.select.exceed": "Max number of images per upload:",
   "upload.tab.upload": "Picture upload",
   "upload.tab.setting": "Plugin setting",
   "component.test": "Component test",
@@ -170,6 +171,9 @@ export default {
   "picgo.siyuan.replace.link": "Substitute Local Link",
   "picgo.siyuan.txt.with.img.upload":
     "When there are both text and images on the clipboard, should they be uploaded, e.g., in applications like PPT or Excel?",
+  "picgo.siyuan.max.upload.count": "Max images per drag upload",
+  "picgo.siyuan.max.upload.count.tip":
+    "Default 5. Increase it for large batches; applies to drag upload only, not the file picker.",
   "setting.picgo.external.mode.label": "External PicGo Mode",
   "setting.picgo.external.mode.local": "Local PicGo App",
   "setting.picgo.external.mode.local.desc":
