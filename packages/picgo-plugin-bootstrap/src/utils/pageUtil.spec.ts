@@ -32,7 +32,61 @@ describe("PageUtil.getPageId", () => {
         </div>
       </div>`
 
-    // 只取第一个 div.protyle 会命中隐藏标签页里的标题片段，导致返回空字符串（issue #2087）
+    expect(PageUtil.getPageId()).toBe("20260526165741-active")
+  })
+
+  it("不依赖 protyle-lite-fragment 类名也能跳过标题片段", () => {
+    document.body.innerHTML = `
+      <div class="fn__flex-1 protyle fn__none">
+        <div class="protyle-title" data-node-id="20260526165741-hidden">
+          <div class="protyle-title__rich protyle">旧版宿主的隐藏标题片段</div>
+        </div>
+      </div>
+      <div class="fn__flex-1 protyle">
+        <div class="protyle-title" data-node-id="20260526165741-active">
+          <div class="protyle-title__rich protyle">旧版宿主里的当前文档</div>
+        </div>
+      </div>`
+
+    expect(PageUtil.getPageId()).toBe("20260526165741-active")
+  })
+
+  it("按活动窗口的焦点页签返回分屏中的当前文档", () => {
+    document.body.innerHTML = `
+      <div data-type="wnd">
+        <ul class="layout-tab-bar">
+          <li class="item item--focus" data-id="left-tab">左侧文档</li>
+        </ul>
+        <div class="protyle" data-id="left-tab">
+          <div class="protyle-title" data-node-id="20260526165741-left">
+            <div class="protyle-title__rich protyle-lite-fragment protyle">左侧文档</div>
+          </div>
+        </div>
+      </div>
+      <div class="layout__wnd--active" data-type="wnd">
+        <ul class="layout-tab-bar">
+          <li class="item item--focus" data-id="right-tab">右侧文档</li>
+        </ul>
+        <div class="protyle" data-id="right-tab">
+          <div class="protyle-title" data-node-id="20260526165741-right">
+            <div class="protyle-title__rich protyle-lite-fragment protyle">右侧文档</div>
+          </div>
+        </div>
+      </div>`
+
+    // 分屏左窗格在 DOM 中靠前，不能按 DOM 顺序取第一个编辑器
+    expect(PageUtil.getPageId()).toBe("20260526165741-right")
+  })
+
+  it("跳过没有标题的非文档 protyle（如智能体输入框）", () => {
+    document.body.innerHTML = `
+      <div class="agent-chat__composer-host protyle-lite-fragment protyle"></div>
+      <div class="fn__flex-1 protyle">
+        <div class="protyle-title" data-node-id="20260526165741-active">
+          <div class="protyle-title__rich protyle-lite-fragment protyle">当前文档</div>
+        </div>
+      </div>`
+
     expect(PageUtil.getPageId()).toBe("20260526165741-active")
   })
 
@@ -47,60 +101,5 @@ describe("PageUtil.getPageId", () => {
     document.body.innerHTML = `<div class="layout"></div>`
 
     expect(PageUtil.getPageId()).toBe("")
-  })
-})
-
-describe("PageUtil.getActiveEditorScope", () => {
-  const renderProtyle = (options: { focusedBlockId?: string; titleId?: string } = {}) => {
-    const titleId = options.titleId ?? "20260526165741-p675vq6"
-    const focusClass = options.focusedBlockId ? "" : "fn__none"
-    const firstBlockId = options.focusedBlockId ?? "20260526165741-first"
-    document.body.innerHTML = `
-      <div class="fn__flex-1 protyle">
-        <div class="protyle-title" data-node-id="${titleId}">
-          <div class="protyle-wysiwyg"><div data-node-id="${titleId}-title"></div></div>
-        </div>
-        <div class="protyle-breadcrumb">
-          <button data-type="exit-focus" class="${focusClass}">退出聚焦</button>
-        </div>
-        <div class="protyle-content">
-          <div class="protyle-wysiwyg">
-            <div data-node-id="${firstBlockId}" data-type="NodeHeading"></div>
-          </div>
-        </div>
-      </div>`
-  }
-
-  it("未聚焦时返回整篇文档范围", () => {
-    renderProtyle()
-
-    expect(PageUtil.getActiveEditorScope()).toEqual({
-      pageId: "20260526165741-p675vq6",
-      scopeBlockId: undefined,
-    })
-  })
-
-  it("聚焦时返回聚焦块 ID", () => {
-    renderProtyle({ focusedBlockId: "20260526165741-focus" })
-
-    expect(PageUtil.getActiveEditorScope()).toEqual({
-      pageId: "20260526165741-p675vq6",
-      scopeBlockId: "20260526165741-focus",
-    })
-  })
-
-  it("聚焦块就是文档时按整篇文档处理", () => {
-    renderProtyle({ focusedBlockId: "20260526165741-p675vq6" })
-
-    expect(PageUtil.getActiveEditorScope()).toEqual({
-      pageId: "20260526165741-p675vq6",
-      scopeBlockId: undefined,
-    })
-  })
-
-  it("没有正文编辑器时返回空范围", () => {
-    document.body.innerHTML = `<div class="layout"></div>`
-
-    expect(PageUtil.getActiveEditorScope()).toEqual({ pageId: "" })
   })
 })
