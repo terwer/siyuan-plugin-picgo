@@ -1,37 +1,24 @@
 # Changelog
 
 ## [3.2.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.1.3...siyuan-plugin-picgo-v3.2.0) (2026-11-20)
-
-
 ### Features
-
 * **plugin:** make the drag upload image limit configurable ([#664](https://github.com/terwer/siyuan-plugin-picgo/issues/664)) ([#852](https://github.com/terwer/siyuan-plugin-picgo/issues/852)) ([65f7145](https://github.com/terwer/siyuan-plugin-picgo/commit/65f7145647c52a1da3637b3ac80feb435a281e55))
 * **plugin:** scope image uploads to the focused block ([#668](https://github.com/terwer/siyuan-plugin-picgo/issues/668)) ([#849](https://github.com/terwer/siyuan-plugin-picgo/issues/849)) ([9f27518](https://github.com/terwer/siyuan-plugin-picgo/commit/9f27518f94cd7587c1c8dcfa2dc6f4bbc6b369d5))
-
-
 ### Bug Fixes
-
 * **deps:** bump js-md5 in /libs/Universal-PicGo-Core ([#846](https://github.com/terwer/siyuan-plugin-picgo/issues/846)) ([c7f9159](https://github.com/terwer/siyuan-plugin-picgo/commit/c7f9159efe96a90c1e1f2c892a123e378f2ac292))
 * detect the active document by the focused tab ([#2087](https://github.com/terwer/siyuan-plugin-picgo/issues/2087)) ([#850](https://github.com/terwer/siyuan-plugin-picgo/issues/850)) ([f511ae2](https://github.com/terwer/siyuan-plugin-picgo/commit/f511ae21e9dbd9a663ee3be42b4b1b31b16122b4))
 * detect the active document when a rich title protyle comes first ([#2087](https://github.com/terwer/siyuan-plugin-picgo/issues/2087)) ([#845](https://github.com/terwer/siyuan-plugin-picgo/issues/845)) ([469cf04](https://github.com/terwer/siyuan-plugin-picgo/commit/469cf045ea5f0dcf5609216f976370f994152af6))
 * **headless:** resolve database images from markdown and replace exactly ([#851](https://github.com/terwer/siyuan-plugin-picgo/issues/851)) ([fbac600](https://github.com/terwer/siyuan-plugin-picgo/commit/fbac600567cce38649047be5ff8fb53c3deb6bd6))
-
-
 ### Miscellaneous
-
 * **deps:** bump js-md5 from 0.9.2 to 0.10.0 ([#848](https://github.com/terwer/siyuan-plugin-picgo/issues/848)) ([cf7d92b](https://github.com/terwer/siyuan-plugin-picgo/commit/cf7d92b0c96b65680f8d101f351559d8e9efbd30))
-
 ## [3.1.3](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.1.2...siyuan-plugin-picgo-v3.1.3) (2026-11-17)
-### Miscellaneous
 * **deps:** apply the open dependabot upgrades from [#834](https://github.com/terwer/siyuan-plugin-picgo/issues/834) ([#843](https://github.com/terwer/siyuan-plugin-picgo/issues/843)) ([1e0e047](https://github.com/terwer/siyuan-plugin-picgo/commit/1e0e04719b8840b91f91fa12eff8f880b353788c))
 * **deps:** upgrade zhi-framework dependencies to the 2026-11-17 release ([#842](https://github.com/terwer/siyuan-plugin-picgo/issues/842)) ([c0d5515](https://github.com/terwer/siyuan-plugin-picgo/commit/c0d55158b84e8d677862e496b2d1daf5284729ae))
 ## [3.1.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.1.1...siyuan-plugin-picgo-v3.1.2) (2026-11-16)
-### Bug Fixes
 * **logger:** keep only errors and upload results in the console ([#835](https://github.com/terwer/siyuan-plugin-picgo/issues/835)) ([977dc3c](https://github.com/terwer/siyuan-plugin-picgo/commit/977dc3cf13753ad4564e44ed42fcf23c0c99b92b))
 ## [3.1.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.1.0...siyuan-plugin-picgo-v3.1.1) (2026-11-16)
 * **bootstrap:** keep the plugin entry a single self-contained file ([#828](https://github.com/terwer/siyuan-plugin-picgo/issues/828)) ([#829](https://github.com/terwer/siyuan-plugin-picgo/issues/829)) ([afb776e](https://github.com/terwer/siyuan-plugin-picgo/commit/afb776e6ce0aca66ec0cb04ca5d698fc79e7788a))
 ## [3.1.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.0.5...siyuan-plugin-picgo-v3.1.0) (2026-11-14)
-### Features
 * **smms:** upload to S.EE after the SM.MS migration ([#806](https://github.com/terwer/siyuan-plugin-picgo/issues/806)) ([05efc50](https://github.com/terwer/siyuan-plugin-picgo/commit/05efc50af26d0e0b677a313d076b477c0a16f64a))
 * **agent:** exclude the cdp endpoint from the http proxy ([a9a00e4](https://github.com/terwer/siyuan-plugin-picgo/commit/a9a00e4c40f9bfd8dd114360c2de8f2936766706))
 * **paste:** keep paste upload and link replacement independent ([#810](https://github.com/terwer/siyuan-plugin-picgo/issues/810)) ([d5fad24](https://github.com/terwer/siyuan-plugin-picgo/commit/d5fad2435df108c7ab52efe67f4afca397bed76b)), closes [#809](https://github.com/terwer/siyuan-plugin-picgo/issues/809)

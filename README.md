@@ -13,11 +13,15 @@ Only the latest 3.x minor versions are listed here, with patch releases folded i
 - **v3.1.x**
   - SM.MS uploads now go to S.EE after the SM.MS migration
   - Paste upload and link replacement are independent
+  - Image uploads are scoped to the focused block
+  - The drag upload image limit is configurable
+  - Headless upload resolves database images from Markdown and replaces them exactly
+  - Fixed active document detection for focused tabs and when a rich title protyle comes first
   - Fixed a missing PicListUploader import
   - The plugin entry remains a single self-contained file
   - The console prints warnings and errors by default, keeping only key upload start/finish lines
   - Added project-level Electron CDP config for dev tooling and excluded the CDP endpoint from the HTTP proxy
-  - Upgraded zhi dependencies and a batch of dev dependencies (including dependabot updates)
+  - Upgraded zhi dependencies and a batch of dev dependencies (including dependabot updates and js-md5)
 - **v3.0.x**
   - PicGo config is now stored in the workspace and accessed through an async facade
   - HarmonyOS support
