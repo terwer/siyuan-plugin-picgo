@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.2.0...siyuan-plugin-picgo-v3.2.1) (2026-11-21)
+
+
+### Miscellaneous
+
+* sync plugin version to 3.2.0 and refresh recent changes ([3eb4c34](https://github.com/terwer/siyuan-plugin-picgo/commit/3eb4c34aab51dfdab48ed3fdc2d562077dc9184f))
+
 ## [3.2.0](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.1.3...siyuan-plugin-picgo-v3.2.0) (2026-11-20)
 ### Features
 * **plugin:** make the drag upload image limit configurable ([#664](https://github.com/terwer/siyuan-plugin-picgo/issues/664)) ([#852](https://github.com/terwer/siyuan-plugin-picgo/issues/852)) ([65f7145](https://github.com/terwer/siyuan-plugin-picgo/commit/65f7145647c52a1da3637b3ac80feb435a281e55))
