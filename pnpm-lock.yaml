@@ -81,8 +81,8 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0(@nuxt/eslint-config@0.1.1(eslint@8.57.0))(@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@7.0.2))(eslint@8.57.0)(typescript@7.0.2))(astro-eslint-parser@0.13.3)(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint-config-turbo@2.10.0(eslint@8.57.0)(turbo@2.10.0))(eslint-plugin-prettier@4.2.1(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint@8.57.0)(prettier@2.8.8))(eslint-plugin-svelte@2.37.0(eslint@8.57.0)(svelte@4.2.15)(ts-node@10.9.2(@types/node@20.12.7)(typescript@7.0.2)))(eslint-plugin-vue@9.25.0(eslint@8.57.0))(eslint@8.57.0)(prettier-plugin-svelte@2.10.1(prettier@2.8.8)(svelte@4.2.15))(prettier@2.8.8)(typescript@7.0.2)
       '@terwer/vite-config-custom':
-        specifier: ^0.10.0
-        version: 0.10.0(@types/minimist@1.2.2)(jsdom@31.0.1)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@7.0.2)(vite-plugin-dts@5.1.2(@microsoft/api-extractor@7.58.9(@types/node@20.12.7))(@vue/language-core@3.3.14)(esbuild@0.28.1)(rolldown@1.2.19)(rollup@4.62.2)(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-node-polyfills@0.28.0(rollup@4.62.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-static-copy@4.1.1(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-tsconfig-paths@6.1.1(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3))(vitest@5.1.0(@types/node@20.12.7)(jsdom@31.0.1)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))
+        specifier: ^0.11.0
+        version: 0.11.0(@types/minimist@1.2.2)(jsdom@31.0.1)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@7.0.2)(vite-plugin-dts@5.1.2(@microsoft/api-extractor@7.58.9(@types/node@20.12.7))(@vue/language-core@3.3.14)(esbuild@0.28.1)(rolldown@1.2.19)(rollup@4.62.2)(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-node-polyfills@0.28.0(rollup@4.62.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-static-copy@4.1.1(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-tsconfig-paths@6.1.1(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3))(vitest@5.1.0(@types/node@20.12.7)(jsdom@31.0.1)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))
       '@types/mime':
         specifier: ^4.0.0
         version: 4.0.0
@@ -100,8 +100,8 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0(@nuxt/eslint-config@0.1.1(eslint@8.57.0))(@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@7.0.2))(eslint@8.57.0)(typescript@7.0.2))(astro-eslint-parser@0.13.3)(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint-config-turbo@2.10.0(eslint@8.57.0)(turbo@2.10.0))(eslint-plugin-prettier@4.2.1(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint@8.57.0)(prettier@2.8.8))(eslint-plugin-svelte@2.37.0(eslint@8.57.0)(svelte@4.2.15)(ts-node@10.9.2(@types/node@20.12.7)(typescript@7.0.2)))(eslint-plugin-vue@9.25.0(eslint@8.57.0))(eslint@8.57.0)(prettier-plugin-svelte@2.10.1(prettier@2.8.8)(svelte@4.2.15))(prettier@2.8.8)(typescript@7.0.2)
       '@terwer/vite-config-custom':
-        specifier: ^0.10.0
-        version: 0.10.0(@types/minimist@1.2.2)(jsdom@31.0.1)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@7.0.2)(vite-plugin-dts@5.1.2(@microsoft/api-extractor@7.58.9(@types/node@20.12.7))(@vue/language-core@3.3.14)(esbuild@0.28.1)(rolldown@1.2.19)(rollup@4.62.2)(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-node-polyfills@0.28.0(rollup@4.62.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-static-copy@4.1.1(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-tsconfig-paths@6.1.1(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3))(vitest@5.1.0(@types/node@20.12.7)(jsdom@31.0.1)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))
+        specifier: ^0.11.0
+        version: 0.11.0(@types/minimist@1.2.2)(jsdom@31.0.1)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@7.0.2)(vite-plugin-dts@5.1.2(@microsoft/api-extractor@7.58.9(@types/node@20.12.7))(@vue/language-core@3.3.14)(esbuild@0.28.1)(rolldown@1.2.19)(rollup@4.62.2)(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-node-polyfills@0.28.0(rollup@4.62.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-static-copy@4.1.1(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-tsconfig-paths@6.1.1(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3))(vitest@5.1.0(@types/node@20.12.7)(jsdom@31.0.1)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))
 
   libs/zhi-siyuan-picgo:
     dependencies:
@@ -131,8 +131,8 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0(@nuxt/eslint-config@0.1.1(eslint@8.57.0))(@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@7.0.2))(eslint@8.57.0)(typescript@7.0.2))(astro-eslint-parser@0.13.3)(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint-config-turbo@2.10.0(eslint@8.57.0)(turbo@2.10.0))(eslint-plugin-prettier@4.2.1(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint@8.57.0)(prettier@2.8.8))(eslint-plugin-svelte@2.37.0(eslint@8.57.0)(svelte@4.2.15)(ts-node@10.9.2(@types/node@20.12.7)(typescript@7.0.2)))(eslint-plugin-vue@9.25.0(eslint@8.57.0))(eslint@8.57.0)(prettier-plugin-svelte@2.10.1(prettier@2.8.8)(svelte@4.2.15))(prettier@2.8.8)(typescript@7.0.2)
       '@terwer/vite-config-custom':
-        specifier: ^0.10.0
-        version: 0.10.0(@types/minimist@1.2.2)(jsdom@31.0.1)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@7.0.2)(vite-plugin-dts@5.1.2(@microsoft/api-extractor@7.58.9(@types/node@20.12.7))(@vue/language-core@3.3.14)(esbuild@0.28.1)(rolldown@1.2.19)(rollup@4.62.2)(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-node-polyfills@0.28.0(rollup@4.62.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-static-copy@4.1.1(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-tsconfig-paths@6.1.1(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3))(vitest@5.1.0(@types/node@20.12.7)(jsdom@31.0.1)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))
+        specifier: ^0.11.0
+        version: 0.11.0(@types/minimist@1.2.2)(jsdom@31.0.1)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@7.0.2)(vite-plugin-dts@5.1.2(@microsoft/api-extractor@7.58.9(@types/node@20.12.7))(@vue/language-core@3.3.14)(esbuild@0.28.1)(rolldown@1.2.19)(rollup@4.62.2)(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-node-polyfills@0.28.0(rollup@4.62.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-static-copy@4.1.1(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-tsconfig-paths@6.1.1(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3))(vitest@5.1.0(@types/node@20.12.7)(jsdom@31.0.1)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))
       '@types/uuid':
         specifier: ^9.0.8
         version: 9.0.8
@@ -1256,8 +1256,8 @@ packages:
       prettier-plugin-svelte: ^2.10.0
       typescript: ^5.0.4
 
-  '@terwer/vite-config-custom@0.10.0':
-    resolution: {integrity: sha512-jO1H0QMkJekVvqIEw38lidmW3iFK/PB+ORVVbiFXfyzM2Qh8aeOQIGb/sAcTOE8eRZglJruPpXeoG65wIDqMIQ==}
+  '@terwer/vite-config-custom@0.11.0':
+    resolution: {integrity: sha512-T6w47fue0ivFK0jzwYdDbNmQCJL856ruwXXvxLA3hAvx97T4WkDXE6927aSCtZj2zFIy//c0ZufY/ezGwB2zcw==}
     peerDependencies:
       '@types/minimist': 1.2.2
       jsdom: ^22.0.0
@@ -4024,6 +4024,10 @@ packages:
     resolution: {integrity: sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==}
     engines: {node: '>=0.10.0'}
 
+  source-map-js@1.2.4:
+    resolution: {integrity: sha512-J7ZjMvHd9O1fcT/5V09QWaaSl2BbWx3F6O08spde82Namf9UB0GxRVIPiNbVsdKkoizHiSpTodo3vp2bAy91MA==}
+    engines: {node: '>=6.0.0'}
+
   source-map-support@0.5.21:
     resolution: {integrity: sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==}
 
@@ -5887,7 +5891,7 @@ snapshots:
       prettier-plugin-svelte: 2.10.1(prettier@2.8.8)(svelte@4.2.15)
       typescript: 7.0.2
 
-  ? '@terwer/vite-config-custom@0.10.0(@types/minimist@1.2.2)(jsdom@31.0.1)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@7.0.2)(vite-plugin-dts@5.1.2(@microsoft/api-extractor@7.58.9(@types/node@20.12.7))(@vue/language-core@3.3.14)(esbuild@0.28.1)(rolldown@1.2.19)(rollup@4.62.2)(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-node-polyfills@0.28.0(rollup@4.62.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-static-copy@4.1.1(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-tsconfig-paths@6.1.1(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3))(vitest@5.1.0(@types/node@20.12.7)(jsdom@31.0.1)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))'
+  ? '@terwer/vite-config-custom@0.11.0(@types/minimist@1.2.2)(jsdom@31.0.1)(minimist@1.2.8)(rollup-plugin-livereload@2.0.5)(typescript@7.0.2)(vite-plugin-dts@5.1.2(@microsoft/api-extractor@7.58.9(@types/node@20.12.7))(@vue/language-core@3.3.14)(esbuild@0.28.1)(rolldown@1.2.19)(rollup@4.62.2)(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-node-polyfills@0.28.0(rollup@4.62.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-plugin-static-copy@4.1.1(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite-tsconfig-paths@6.1.1(typescript@7.0.2)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3))(vitest@5.1.0(@types/node@20.12.7)(jsdom@31.0.1)(vite@8.3.8(@types/node@20.12.7)(esbuild@0.28.1)(jiti@2.7.0)(stylus@0.64.0)(terser@5.30.3)))'
   : dependencies:
       '@types/minimist': 1.2.2
       jsdom: 31.0.1
@@ -7024,7 +7028,7 @@ snapshots:
   css-tree@2.3.1:
     dependencies:
       mdn-data: 2.0.30
-      source-map-js: 1.2.2
+      source-map-js: 1.2.4
 
   css-what@6.1.0: {}
 
@@ -9040,6 +9044,8 @@ snapshots:
   source-map-js@1.2.1: {}
 
   source-map-js@1.2.2: {}
+
+  source-map-js@1.2.4: {}
 
   source-map-support@0.5.21:
     dependencies:
