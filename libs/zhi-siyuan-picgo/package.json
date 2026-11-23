@@ -33,7 +33,7 @@
   "dependencies": {
     "js-md5": "^0.8.3",
     "universal-picgo": "workspace:*",
-    "uuid": "^9.0.1",
+    "uuid": "^14.0.3",
     "zhi-common": "^1.38.0",
     "zhi-device": "^2.15.0",
     "zhi-lib-base": "^0.12.0",
