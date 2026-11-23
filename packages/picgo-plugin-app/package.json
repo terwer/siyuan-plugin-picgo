@@ -11,7 +11,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@terwer/eslint-config-custom": "^1.6.0",
+    "@terwer/eslint-config-custom": "^1.7.0",
     "@vitejs/plugin-vue": "^6.0.11",
     "fast-glob": "^3.3.3",
     "minimist": "^1.2.8",
