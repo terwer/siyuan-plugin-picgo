@@ -1,12 +1,8 @@
 # Changelog
 
 ## [3.2.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.2.1...siyuan-plugin-picgo-v3.2.2) (2026-11-26)
-
-
 ### Bug Fixes
-
 * **awss3:** normalize forward proxy response headers for AWS SDK ([#877](https://github.com/terwer/siyuan-plugin-picgo/issues/877)) ([#878](https://github.com/terwer/siyuan-plugin-picgo/issues/878)) ([7d6d9dd](https://github.com/terwer/siyuan-plugin-picgo/commit/7d6d9dda71c65877e1ff516be74e82f3ce1e763b))
-
 ## [3.2.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.2.0...siyuan-plugin-picgo-v3.2.1) (2026-11-21)
 ### Miscellaneous
 * sync plugin version to 3.2.0 and refresh recent changes ([3eb4c34](https://github.com/terwer/siyuan-plugin-picgo/commit/3eb4c34aab51dfdab48ed3fdc2d562077dc9184f))
@@ -14,7 +10,6 @@
 ### Features
 * **plugin:** make the drag upload image limit configurable ([#664](https://github.com/terwer/siyuan-plugin-picgo/issues/664)) ([#852](https://github.com/terwer/siyuan-plugin-picgo/issues/852)) ([65f7145](https://github.com/terwer/siyuan-plugin-picgo/commit/65f7145647c52a1da3637b3ac80feb435a281e55))
 * **plugin:** scope image uploads to the focused block ([#668](https://github.com/terwer/siyuan-plugin-picgo/issues/668)) ([#849](https://github.com/terwer/siyuan-plugin-picgo/issues/849)) ([9f27518](https://github.com/terwer/siyuan-plugin-picgo/commit/9f27518f94cd7587c1c8dcfa2dc6f4bbc6b369d5))
-### Bug Fixes
 * **deps:** bump js-md5 in /libs/Universal-PicGo-Core ([#846](https://github.com/terwer/siyuan-plugin-picgo/issues/846)) ([c7f9159](https://github.com/terwer/siyuan-plugin-picgo/commit/c7f9159efe96a90c1e1f2c892a123e378f2ac292))
 * detect the active document by the focused tab ([#2087](https://github.com/terwer/siyuan-plugin-picgo/issues/2087)) ([#850](https://github.com/terwer/siyuan-plugin-picgo/issues/850)) ([f511ae2](https://github.com/terwer/siyuan-plugin-picgo/commit/f511ae21e9dbd9a663ee3be42b4b1b31b16122b4))
 * detect the active document when a rich title protyle comes first ([#2087](https://github.com/terwer/siyuan-plugin-picgo/issues/2087)) ([#845](https://github.com/terwer/siyuan-plugin-picgo/issues/845)) ([469cf04](https://github.com/terwer/siyuan-plugin-picgo/commit/469cf045ea5f0dcf5609216f976370f994152af6))
