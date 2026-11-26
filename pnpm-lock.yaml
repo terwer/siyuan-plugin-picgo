@@ -59,8 +59,8 @@ importers:
         specifier: ^1.1.7
         version: 1.1.7
       js-md5:
-        specifier: ^0.10.0
-        version: 0.10.0
+        specifier: ^0.11.0
+        version: 0.11.0
       js-yaml:
         specifier: ^5.5.0
         version: 5.5.0
@@ -106,8 +106,8 @@ importers:
   libs/zhi-siyuan-picgo:
     dependencies:
       js-md5:
-        specifier: ^0.8.3
-        version: 0.8.3
+        specifier: ^0.11.0
+        version: 0.11.0
       universal-picgo:
         specifier: workspace:*
         version: link:../Universal-PicGo-Core
@@ -3072,11 +3072,8 @@ packages:
   jju@1.4.0:
     resolution: {integrity: sha512-8wb9Yw966OSxApiCt0K3yNJL8pnNeIv+OEq2YMidz4FKP6nonSRoOXc80iXY4JaN2FC11B9qsNmDsm+ZOfMROA==}
 
-  js-md5@0.10.0:
-    resolution: {integrity: sha512-ty2QGIWsaCGQkw9OKXhrDElDXuAaCtFAkNW/N75NbHoU+ELVQA5FRqyzqrTUr0olOKeoEHuTIYOfu7VssGw+2Q==}
-
-  js-md5@0.8.3:
-    resolution: {integrity: sha512-qR0HB5uP6wCuRMrWPTrkMaev7MJZwJuuw4fnwAzRgP4J4/F8RwtodOKpGp4XpqsLBFzzgqIO42efFAyz2Et6KQ==}
+  js-md5@0.11.0:
+    resolution: {integrity: sha512-/H/cS7fFxJvOy/oIlkEdfWBOxggi8MQ24rZWUFCOfNYV0Y5E3hepUacQ0kbpdmsItul7l9gfiHa04hZnZR+osA==}
 
   js-tokens@10.0.0:
     resolution: {integrity: sha512-lM/UBzQmfJRo9ABXbPWemivdCW8V2G8FHaHdypQaIy523snUjog0W71ayWXTjiR+ixeMyVHN2XcpnTd/liPg/Q==}
@@ -4023,6 +4020,10 @@ packages:
   source-map-js@1.2.2:
     resolution: {integrity: sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==}
     engines: {node: '>=0.10.0'}
+
+  source-map-js@1.2.4:
+    resolution: {integrity: sha512-J7ZjMvHd9O1fcT/5V09QWaaSl2BbWx3F6O08spde82Namf9UB0GxRVIPiNbVsdKkoizHiSpTodo3vp2bAy91MA==}
+    engines: {node: '>=6.0.0'}
 
   source-map-support@0.5.21:
     resolution: {integrity: sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==}
@@ -7024,7 +7025,7 @@ snapshots:
   css-tree@2.3.1:
     dependencies:
       mdn-data: 2.0.30
-      source-map-js: 1.2.2
+      source-map-js: 1.2.4
 
   css-what@6.1.0: {}
 
@@ -8041,9 +8042,7 @@ snapshots:
   jju@1.4.0:
     optional: true
 
-  js-md5@0.10.0: {}
-
-  js-md5@0.8.3: {}
+  js-md5@0.11.0: {}
 
   js-tokens@10.0.0: {}
 
@@ -9040,6 +9039,8 @@ snapshots:
   source-map-js@1.2.1: {}
 
   source-map-js@1.2.2: {}
+
+  source-map-js@1.2.4: {}
 
   source-map-support@0.5.21:
     dependencies:
