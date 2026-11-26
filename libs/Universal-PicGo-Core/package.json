@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@terwer/eslint-config-custom": "^1.6.0",
-    "@terwer/vite-config-custom": "^0.10.0",
+    "@terwer/vite-config-custom": "^0.11.0",
     "@types/mime": "^4.0.0",
     "vite-plugin-node-polyfills": "^0.28.0"
   },
