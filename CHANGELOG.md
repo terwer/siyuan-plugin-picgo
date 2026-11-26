@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.2](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.2.1...siyuan-plugin-picgo-v3.2.2) (2026-11-26)
+
+
+### Bug Fixes
+
+* **awss3:** normalize forward proxy response headers for AWS SDK ([#877](https://github.com/terwer/siyuan-plugin-picgo/issues/877)) ([#878](https://github.com/terwer/siyuan-plugin-picgo/issues/878)) ([7d6d9dd](https://github.com/terwer/siyuan-plugin-picgo/commit/7d6d9dda71c65877e1ff516be74e82f3ce1e763b))
+
 ## [3.2.1](https://github.com/terwer/siyuan-plugin-picgo/compare/siyuan-plugin-picgo-v3.2.0...siyuan-plugin-picgo-v3.2.1) (2026-11-21)
 ### Miscellaneous
 * sync plugin version to 3.2.0 and refresh recent changes ([3eb4c34](https://github.com/terwer/siyuan-plugin-picgo/commit/3eb4c34aab51dfdab48ed3fdc2d562077dc9184f))
