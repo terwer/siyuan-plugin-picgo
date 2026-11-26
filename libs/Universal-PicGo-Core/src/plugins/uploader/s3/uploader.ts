@@ -85,10 +85,10 @@ class PicGoHttpHandler extends FetchHttpHandler {
     const raceOfPromises = [
       this.ctx.request(param).then((rsp: any) => {
         const resp = rsp as AxiosResponse
-        const headers = resp.headers
+        const headers = resp.headers as Record<string, unknown>
         const headersLower: Record<string, string> = {}
         for (const key of Object.keys(headers)) {
-          headersLower[key.toLowerCase()] = headers[key]
+          headersLower[key.toLowerCase()] = normalizeHeaderValue(headers[key])
         }
 
         const stream = new ReadableStream<Uint8Array>({
@@ -127,6 +127,15 @@ class PicGoHttpHandler extends FetchHttpHandler {
 
 const bufferToArrayBuffer = (b: Buffer | Uint8Array | ArrayBufferView) => {
   return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)
+}
+
+// SiYuan's forward proxy serializes response headers as string arrays (Go's http.Header).
+// The AWS SDK header deserializer only accepts a string or Uint8Array, so flatten the arrays.
+const normalizeHeaderValue = (value: unknown): string => {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item)).join(", ")
+  }
+  return value === undefined || value === null ? "" : String(value)
 }
 
 export interface IUploadResult {
