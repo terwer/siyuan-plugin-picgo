@@ -15,7 +15,7 @@
     "test:watch": "vitest --watch"
   },
   "devDependencies": {
-    "@terwer/eslint-config-custom": "^1.6.0",
+    "@terwer/eslint-config-custom": "^1.7.0",
     "@tsconfig/svelte": "^5.0.9",
     "@types/minimist": "1.2.5",
     "fast-glob": "^3.3.3",
