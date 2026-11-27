@@ -4,6 +4,7 @@ import { SIYUAN_PICGO_FILE_MAP_KEY } from "./constants"
 import { ImageItem } from "./models/ImageItem"
 import { ImageParser } from "./parser/ImageParser"
 import { SiyuanPicgoPostApi } from "./siyuanPicgoPostApi"
+import { getFileHash } from "./utils/md5Util"
 
 const INITIAL_DOMAINS: UnifiedConfigMigrationState["domains"] = {
   picgoMain: { status: "not-started", importedSources: [] },
@@ -140,6 +141,18 @@ describe("SiyuanPicgoPostApi.parsePostLocalImages", () => {
     expect(images).toEqual([{ url: "assets/a.png", alt: "a", title: "", isLocal: true, blockId: "" }])
     expect(api.logger.warn).toHaveBeenCalled()
   })
+
+  it("includes remote images and skips the image-block query when only remote images exist", async () => {
+    const api = createPostApi([])
+    const markdown = "![cat](https://cdn.example.com/cat.png?x=1)"
+
+    const images = await api.parsePostImages("page-1", markdown, true)
+
+    expect(images).toEqual([
+      { url: "https://cdn.example.com/cat.png?x=1", alt: "cat", title: "", isLocal: false, blockId: "" },
+    ])
+    expect(api.siyuanApi.getImageBlocksByID).not.toHaveBeenCalled()
+  })
 })
 
 describe("SiyuanPicgoPostApi.uploadPostImagesToBed", () => {
@@ -147,7 +160,7 @@ describe("SiyuanPicgoPostApi.uploadPostImagesToBed", () => {
     const api = Object.create(SiyuanPicgoPostApi.prototype) as any
     api.logger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }
     api.imageParser = new ImageParser()
-    api.parsePostLocalImages = vi.fn(async () => [
+    api.parsePostImages = vi.fn(async () => [
       { url: "assets/a.png", alt: "a", title: "", isLocal: true, blockId: "" },
       { url: "assets/b.png", alt: "b", title: "", isLocal: true, blockId: "" },
     ])
@@ -178,6 +191,59 @@ describe("SiyuanPicgoPostApi.uploadPostImagesToBed", () => {
     expect(result.mdContent).toContain("![a](https://bed/a.png)")
     expect(result.mdContent).toContain("![b](https://bed/b.png)")
     expect(result.mdContent).not.toContain("assets/")
+  })
+
+  it("uploads and replaces remote images when includeRemoteImages is enabled", async () => {
+    const api = Object.create(SiyuanPicgoPostApi.prototype) as any
+    api.logger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    api.imageParser = new ImageParser()
+    const remoteUrl = "https://cdn.example.com/photo.png?x=1"
+    const uploadedUrl = "https://bed.example.com/photo.png"
+    const uploadedHash = getFileHash(remoteUrl)
+    const remoteItem = new ImageItem(remoteUrl, remoteUrl, false, "photo", "")
+    remoteItem.hash = uploadedHash
+    api.parsePostImages = vi.fn(async () => [
+      { url: remoteUrl, alt: "photo", title: "", isLocal: false, blockId: "" },
+    ])
+    api.doConvertImagesToImagesItemArray = vi.fn(async () => [remoteItem])
+    const uploadedItem = new ImageItem(remoteUrl, uploadedUrl, false, "photo", "")
+    api.siyuanApi = {
+      getBlockAttrs: vi.fn(async () => ({
+        [SIYUAN_PICGO_FILE_MAP_KEY]: JSON.stringify({ [uploadedHash]: uploadedItem }),
+      })),
+    }
+    api.uploadSingleImageToBed = vi.fn(async () => undefined)
+    const markdown = `![photo](${remoteUrl})`
+
+    const result = await api.uploadPostImagesToBed("page-1", {}, markdown, { includeRemoteImages: true })
+
+    expect(api.parsePostImages).toHaveBeenCalledWith("page-1", markdown, true)
+    expect(api.uploadSingleImageToBed).toHaveBeenCalledWith("page-1", {}, remoteItem, true)
+    expect(result.hasImages).toBe(true)
+    expect(result.flag).toBe(true)
+    expect(result.mdContent).toContain(`![photo](${uploadedUrl})`)
+    expect(result.mdContent).not.toContain(remoteUrl)
+  })
+
+  it("keeps remote images untouched by default", async () => {
+    const api = Object.create(SiyuanPicgoPostApi.prototype) as any
+    api.logger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    api.imageParser = new ImageParser()
+    const remoteUrl = "https://cdn.example.com/photo.png"
+    const remoteItem = new ImageItem(remoteUrl, remoteUrl, false, "photo", "")
+    api.parsePostImages = vi.fn(async () => [
+      { url: remoteUrl, alt: "photo", title: "", isLocal: false, blockId: "" },
+    ])
+    api.doConvertImagesToImagesItemArray = vi.fn(async () => [remoteItem])
+    api.siyuanApi = { getBlockAttrs: vi.fn(async () => ({})) }
+    api.uploadSingleImageToBed = vi.fn(async () => undefined)
+    const markdown = `![photo](${remoteUrl})`
+
+    const result = await api.uploadPostImagesToBed("page-1", {}, markdown)
+
+    expect(api.parsePostImages).toHaveBeenCalledWith("page-1", markdown, false)
+    expect(api.uploadSingleImageToBed).not.toHaveBeenCalled()
+    expect(result.mdContent).toBe(markdown)
   })
 })
 

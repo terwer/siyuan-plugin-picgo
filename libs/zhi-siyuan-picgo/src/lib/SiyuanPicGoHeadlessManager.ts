@@ -17,9 +17,15 @@ import { SiyuanPicGo } from "./siyuanPicgo"
 import type { SiyuanConfigLike } from "./siyuanConfigLike"
 import type { SiyuanPicgoPostApi } from "./siyuanPicgoPostApi"
 import type { SiyuanPicGoInstanceOptions } from "./siyuanPicgoPaths"
+import type { UploadMarkdownImagesOptions } from "./types"
 
 interface ISiyuanPicGoHeadlessManager extends IPicGoHeadlessManager {
-  uploadMarkdownImages(pageId: string, attrs: any, mdContent: string): Promise<PicgoPostResult>
+  uploadMarkdownImages(
+    pageId: string,
+    attrs: any,
+    mdContent: string,
+    options?: UploadMarkdownImagesOptions
+  ): Promise<PicgoPostResult>
 }
 
 class SiyuanPicGoHeadlessManager implements ISiyuanPicGoHeadlessManager {
@@ -81,10 +87,16 @@ class SiyuanPicGoHeadlessManager implements ISiyuanPicGoHeadlessManager {
     return this.headlessManager.upload(input)
   }
 
-  async uploadMarkdownImages(pageId: string, attrs: any, mdContent: string): Promise<PicgoPostResult> {
-    // 无本地图片时不需要图床：跳过 uploader 配置校验，直接交由底层返回「文章中没有图片」
-    const localImages = await this.postApi.parsePostLocalImages(pageId, mdContent)
-    if (localImages.length > 0) {
+  async uploadMarkdownImages(
+    pageId: string,
+    attrs: any,
+    mdContent: string,
+    options: UploadMarkdownImagesOptions = {}
+  ): Promise<PicgoPostResult> {
+    // 无图片时不需要图床：跳过 uploader 配置校验，直接交由底层返回「文章中没有图片」。
+    // 开启 includeRemoteImages 后，外链图片也算图片，必须先校验 uploader 配置。
+    const images = await this.postApi.parsePostImages(pageId, mdContent, options.includeRemoteImages === true)
+    if (images.length > 0) {
       const uploaderId = await this.getCurrentUploader()
       const validation = this.validateUploaderConfig(uploaderId, await this.getUploaderConfig(uploaderId))
       if (!validation.ok) {
@@ -96,7 +108,7 @@ class SiyuanPicGoHeadlessManager implements ISiyuanPicGoHeadlessManager {
         })
       }
     }
-    return this.postApi.uploadPostImagesToBed(pageId, attrs, mdContent)
+    return this.postApi.uploadPostImagesToBed(pageId, attrs, mdContent, options)
   }
 }
 

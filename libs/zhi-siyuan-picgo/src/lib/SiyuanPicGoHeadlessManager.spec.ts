@@ -2,6 +2,13 @@ import { describe, expect, it, vi } from "vitest"
 import { SiyuanPicGoHeadlessManager } from "./SiyuanPicGoHeadlessManager"
 
 const LOCAL_IMAGE = { url: "assets/a.png", alt: "a", title: "", isLocal: true, blockId: "block-1" }
+const REMOTE_IMAGE = {
+  url: "https://cdn.example.com/a.png",
+  alt: "a",
+  title: "",
+  isLocal: false,
+  blockId: "",
+}
 
 const makePostResult = (overrides: Record<string, unknown> = {}) => ({
   flag: false,
@@ -20,7 +27,7 @@ const createManager = (
 ) => {
   const manager = Object.create(SiyuanPicGoHeadlessManager.prototype) as any
   manager.postApi = {
-    parsePostLocalImages: vi.fn(async () => options.localImages ?? []),
+    parsePostImages: vi.fn(async () => options.localImages ?? []),
     uploadPostImagesToBed: vi.fn(async () => options.postResult ?? makePostResult()),
   }
   manager.getCurrentUploader = vi.fn(async () => "smms")
@@ -35,10 +42,10 @@ describe("SiyuanPicGoHeadlessManager.uploadMarkdownImages", () => {
 
     const result = await manager.uploadMarkdownImages("page-1", { box: "nb" }, "plain text")
 
-    expect(manager.postApi.parsePostLocalImages).toHaveBeenCalledWith("page-1", "plain text")
+    expect(manager.postApi.parsePostImages).toHaveBeenCalledWith("page-1", "plain text", false)
     expect(manager.getCurrentUploader).not.toHaveBeenCalled()
     expect(manager.validateUploaderConfig).not.toHaveBeenCalled()
-    expect(manager.postApi.uploadPostImagesToBed).toHaveBeenCalledWith("page-1", { box: "nb" }, "plain text")
+    expect(manager.postApi.uploadPostImagesToBed).toHaveBeenCalledWith("page-1", { box: "nb" }, "plain text", {})
     expect(result.hasImages).toBe(false)
   })
 
@@ -49,7 +56,7 @@ describe("SiyuanPicGoHeadlessManager.uploadMarkdownImages", () => {
 
     expect(manager.getCurrentUploader).toHaveBeenCalled()
     expect(manager.validateUploaderConfig).toHaveBeenCalledTimes(1)
-    expect(manager.postApi.uploadPostImagesToBed).toHaveBeenCalledWith("page-1", {}, "![a](assets/a.png)")
+    expect(manager.postApi.uploadPostImagesToBed).toHaveBeenCalledWith("page-1", {}, "![a](assets/a.png)", {})
   })
 
   it("throws a structured validation error and does not start uploading when config is invalid", async () => {
@@ -62,5 +69,27 @@ describe("SiyuanPicGoHeadlessManager.uploadMarkdownImages", () => {
       'Uploader "smms" config is invalid'
     )
     expect(manager.postApi.uploadPostImagesToBed).not.toHaveBeenCalled()
+  })
+
+  it("validates the uploader for remote images when includeRemoteImages is enabled", async () => {
+    const manager = createManager({ localImages: [REMOTE_IMAGE] })
+
+    await manager.uploadMarkdownImages("page-1", {}, "![a](https://cdn.example.com/a.png)", {
+      includeRemoteImages: true,
+    })
+
+    expect(manager.postApi.parsePostImages).toHaveBeenCalledWith(
+      "page-1",
+      "![a](https://cdn.example.com/a.png)",
+      true
+    )
+    expect(manager.getCurrentUploader).toHaveBeenCalled()
+    expect(manager.validateUploaderConfig).toHaveBeenCalledTimes(1)
+    expect(manager.postApi.uploadPostImagesToBed).toHaveBeenCalledWith(
+      "page-1",
+      {},
+      "![a](https://cdn.example.com/a.png)",
+      { includeRemoteImages: true }
+    )
   })
 })

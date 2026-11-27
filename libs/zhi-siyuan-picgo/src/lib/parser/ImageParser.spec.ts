@@ -27,7 +27,21 @@ describe("test ImageParser", (): void => {
   it("should parse a single image link without title and attributes", () => {
     const markdownText = "![Cat](https://example.com/cat.png)"
     const parsedImages = imageParser.parseRemoteImagesToArray(markdownText)
-    console.log(parsedImages)
+    expect(parsedImages).toEqual([
+      { url: "https://example.com/cat.png", alt: "Cat", title: "", isLocal: false, blockId: "" },
+    ])
+  })
+
+  it("parses remote images with query strings and non-legacy extensions", () => {
+    const markdownText = `
+      ![A](https://cdn.example.com/a.webp?imageView2/2/w/800)
+      ![B](https://cdn.example.com/b.png#fragment)
+    `
+    const parsedImages = imageParser.parseRemoteImagesToArray(markdownText)
+    expect(parsedImages.map((image) => image.url)).toEqual([
+      "https://cdn.example.com/a.webp?imageView2/2/w/800",
+      "https://cdn.example.com/b.png#fragment",
+    ])
   })
 
   it("should parse a single image link with title", () => {
@@ -101,5 +115,23 @@ describe("test ImageParser", (): void => {
     const result = imageParser.replaceImagesWithImageItemArray(markdown, { [a.hash]: a })
 
     expect(result).toBe('![a](https://bed/a.png "caption")')
+  })
+
+  it("replaces uploaded remote image links", () => {
+    const originUrl = "https://cdn.example.com/a.png?x=1"
+    const uploaded = new ImageItem(originUrl, "https://bed.example.com/a.png", false, "a", "")
+
+    const result = imageParser.replaceRemoteImagesWithImageItemArray(`![a](${originUrl})`, [uploaded])
+
+    expect(result).toBe("![a](https://bed.example.com/a.png)")
+  })
+
+  it("keeps failed remote images unchanged", () => {
+    const originUrl = "https://cdn.example.com/a.png"
+    const failed = new ImageItem(originUrl, originUrl, true, "a", "")
+
+    const result = imageParser.replaceRemoteImagesWithImageItemArray(`![a](${originUrl})`, [failed])
+
+    expect(result).toBe(`![a](${originUrl})`)
   })
 })
