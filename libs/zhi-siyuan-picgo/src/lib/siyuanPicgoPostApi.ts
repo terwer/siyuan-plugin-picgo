@@ -29,6 +29,8 @@ import { ParsedImage } from "./models/ParsedImage"
 import { PicgoPostResult } from "./models/PicgoPostResult"
 import { ImageParser } from "./parser/ImageParser"
 import { SiyuanPicGoUploadApi } from "./siyuanPicGoUploadApi"
+import type { UploadMarkdownImagesOptions } from "./types"
+import { getFileHash } from "./utils/md5Util"
 import { replaceImageLink } from "./utils/utils"
 import { SiyuanPicGoPaths, migrateV2WorkspacePicGoConfig } from "./siyuanPicgoPaths"
 import {
@@ -205,6 +207,10 @@ class SiyuanPicgoPostApi {
       const imageItem = new ImageItem(originUrl, imgUrl, retImg.isLocal, retImg.alt, retImg.title)
       // 块 ID 赋值进去
       imageItem.blockId = retImg.blockId
+      // 外链图片用完整 URL 作为缓存键；文件名可能重复，不能用文件名 hash。
+      if (!retImg.isLocal) {
+        imageItem.hash = getFileHash(originUrl)
+      }
       // fileMap 查出来的是是否上传，上传了，isLocal就false
       if (fileMap[imageItem.hash]) {
         const newImageItem = fileMap[imageItem.hash]
@@ -310,47 +316,65 @@ class SiyuanPicgoPostApi {
   // ===================================================================================================================
 
   /**
-   * 解析文章中的本地图片
+   * 解析文章中的图片。
    *
-   * 供「是否存在本地图片」判断（uploadMarkdownImages 前置检测）与上传流程复用，
-   * 保证两处判据一致。
+   * 默认只解析本地图片；开启 includeRemoteImages 时同时解析正文中的外链图片。
+   * 图片块只用于本地图片的链接回写定位，外链图片没有图片块。
    *
    * @param pageId 文章ID
    * @param mdContent 文章的Markdown文本
+   * @param includeRemoteImages 是否包含外链图片
    */
-  public async parsePostLocalImages(pageId: string, mdContent: string): Promise<ParsedImage[]> {
-    // 正文 Markdown 是本地图片的唯一判据：数据库、嵌入块等容器里的图片
-    // 不属于思源的图片块（blocks 表中没有对应 img 记录），不能以图片块是否存在来决定
-    // 「有没有图片」，否则会漏掉这些图片（publisher #1999）。
-    const parsedLocalImages = this.imageParser.parseLocalImagesToArray(mdContent)
-    if (parsedLocalImages.length === 0) {
+  public async parsePostImages(
+    pageId: string,
+    mdContent: string,
+    includeRemoteImages = false
+  ): Promise<ParsedImage[]> {
+    const parsedImages = includeRemoteImages
+      ? this.imageParser.parseImagesToArray(mdContent)
+      : this.imageParser.parseLocalImagesToArray(mdContent)
+    if (parsedImages.length === 0) {
       return []
     }
 
-    // 图片块只用于定位链接回写目标；数据库/嵌入块图片没有图片块，blockId 留空即可。
+    // 只有本地图片才需要查询图片块；外链图片没有块 ID，也不需要回写正文。
+    const hasLocalImages = parsedImages.some((image) => image.isLocal)
     let imageBlocks: any[] = []
-    try {
-      imageBlocks = await this.siyuanApi.getImageBlocksByID(pageId)
-    } catch (e) {
-      this.logger.warn("查询文章图片块失败，继续按正文解析本地图片", e)
+    if (hasLocalImages) {
+      try {
+        imageBlocks = await this.siyuanApi.getImageBlocksByID(pageId)
+      } catch (e) {
+        this.logger.warn("查询文章图片块失败，继续按正文解析图片", e)
+      }
     }
 
-    const uniqueLocalImages: ParsedImage[] = []
+    const uniqueImages: ParsedImage[] = []
     const seenUrls = new Set<string>()
-    for (const image of parsedLocalImages) {
+    for (const image of parsedImages) {
       if (seenUrls.has(image.url)) {
         continue
       }
       seenUrls.add(image.url)
 
-      // 同一张图片可能出现在多个图片块中，取第一个能匹配到该地址的块。
-      const imageBlock = imageBlocks.find(
-        (block: any) => typeof block?.markdown === "string" && block.markdown.includes(image.url)
-      )
-      uniqueLocalImages.push({ ...image, blockId: imageBlock?.id ?? "" })
+      let blockId = ""
+      if (image.isLocal) {
+        // 同一张图片可能出现在多个图片块中，取第一个能匹配到该地址的块。
+        const imageBlock = imageBlocks.find(
+          (block: any) => typeof block?.markdown === "string" && block.markdown.includes(image.url)
+        )
+        blockId = imageBlock?.id ?? ""
+      }
+      uniqueImages.push({ ...image, blockId })
     }
 
-    return uniqueLocalImages
+    return uniqueImages
+  }
+
+  /**
+   * 解析文章中的本地图片（兼容旧调用）。
+   */
+  public async parsePostLocalImages(pageId: string, mdContent: string): Promise<ParsedImage[]> {
+    return this.parsePostImages(pageId, mdContent, false)
   }
 
   /**
@@ -359,13 +383,20 @@ class SiyuanPicgoPostApi {
    * @param pageId 文章ID
    * @param attrs 文章属性
    * @param mdContent 文章的Markdown文本
+   * @param options 上传选项；includeRemoteImages 为 true 时同时上传外链图片
    */
-  public async uploadPostImagesToBed(pageId: string, attrs: any, mdContent: string): Promise<PicgoPostResult> {
+  public async uploadPostImagesToBed(
+    pageId: string,
+    attrs: any,
+    mdContent: string,
+    options: UploadMarkdownImagesOptions = {}
+  ): Promise<PicgoPostResult> {
     const ret = new PicgoPostResult()
+    const includeRemoteImages = options.includeRemoteImages === true
 
-    const uniqueLocalImages = await this.parsePostLocalImages(pageId, mdContent)
+    const uniqueImages = await this.parsePostImages(pageId, mdContent, includeRemoteImages)
 
-    if (uniqueLocalImages.length === 0) {
+    if (uniqueImages.length === 0) {
       ret.flag = false
       ret.hasImages = false
       ret.mdContent = mdContent
@@ -377,28 +408,37 @@ class SiyuanPicgoPostApi {
     try {
       ret.hasImages = true
 
-      const imageItemArray = await this.doConvertImagesToImagesItemArray(attrs, uniqueLocalImages)
+      const imageItemArray = await this.doConvertImagesToImagesItemArray(attrs, uniqueImages)
 
-      const replaceMap = {} as any
-      let hasLocalImages = false
+      const replaceMap = {} as Record<string, ImageItem>
+      const remoteImageItems: ImageItem[] = []
       for (let i = 0; i < imageItemArray.length; i++) {
         const imageItem = imageItemArray[i]
-        if (imageItem.originUrl.includes("assets")) {
+        if (imageItem.originUrl.startsWith("assets/")) {
           replaceMap[imageItem.hash] = imageItem
         }
 
         if (!imageItem.isLocal) {
-          continue
+          if (imageItem.originUrl.startsWith("assets/")) {
+            // 本地图片已经上传过，直接用于本地链接替换。
+            continue
+          }
+          if (!includeRemoteImages) {
+            continue
+          }
+          if (imageItem.url && imageItem.url !== imageItem.originUrl) {
+            // 外链图片命中缓存，不再重复上传，直接用于替换。
+            remoteImageItems.push(imageItem)
+            continue
+          }
         }
-
-        hasLocalImages = true
 
         let newattrs: any
         let isLocal: boolean
         let newImageItem: ImageItem
         try {
-          // 实际上传逻辑
-          await this.uploadSingleImageToBed(pageId, attrs, imageItem)
+          // 实际上传逻辑；外链图片需要 forceUpload 才会真正走 PicGo。
+          await this.uploadSingleImageToBed(pageId, attrs, imageItem, !imageItem.isLocal)
           // 上传完成，需要获取最新链接
           newattrs = await this.siyuanApi.getBlockAttrs(pageId)
           isLocal = false
@@ -412,22 +452,33 @@ class SiyuanPicgoPostApi {
           ret.errmsg = e.toString()
         }
 
+        if (!newImageItem) {
+          ret.flag = false
+          ret.errmsg = ret.errmsg || `图片上传失败: ${imageItem.originUrl}`
+          continue
+        }
+
         // 无论成功失败都要保存元数据，失败了当做本地图片
-        replaceMap[imageItem.hash] = new ImageItem(
+        const replaceItem = new ImageItem(
           newImageItem.originUrl,
           newImageItem.url,
           isLocal,
           newImageItem.alt,
           newImageItem.title
         )
+        if (imageItem.isLocal) {
+          replaceMap[imageItem.hash] = replaceItem
+        } else if (!isLocal) {
+          // 外链图片成功上传后才替换；失败时保留原始外链。
+          remoteImageItems.push(replaceItem)
+        }
       }
 
-      if (!hasLocalImages) {
-        // ElMessage.info("未发现本地图片，不上传！若之前上传过，将做链接替换")
-      }
-
-      // 处理链接替换
+      // 处理链接替换：本地图片走 assets 替换，外链图片按源 URL 替换。
       ret.mdContent = this.imageParser.replaceImagesWithImageItemArray(mdContent, replaceMap)
+      if (includeRemoteImages) {
+        ret.mdContent = this.imageParser.replaceRemoteImagesWithImageItemArray(ret.mdContent, remoteImageItems)
+      }
 
       ret.flag = true
     } catch (e: any) {
@@ -478,8 +529,8 @@ class SiyuanPicgoPostApi {
     if (isFileOrBlob(imageItem.url)) {
       imageFullPath = imageItem.url
     } else {
-      if (this.isSiyuanOrSiyuanNewWin) {
-        // 如果是路径解析路径
+      if (imageItem.isLocal && this.isSiyuanOrSiyuanNewWin) {
+        // 本地图片按 assets 路径解析
         const win = SiyuanDevice.siyuanWindow()
         const dataDir: string = win.siyuan.config.system.dataDir
         imageFullPath = `${dataDir}/assets/${imageItem.name}`
@@ -490,7 +541,7 @@ class SiyuanPicgoPostApi {
           imageFullPath = imageItem.url
         }
       } else {
-        // 浏览器环境直接上传
+        // 外链图片直接使用原始 URL；浏览器环境也直接上传 URL。
         imageFullPath = imageItem.url
       }
     }
@@ -515,6 +566,10 @@ class SiyuanPicgoPostApi {
       }
       newImageItem = new ImageItem(imageItem.originUrl, img.imgUrl, false, imageItem.alt, imageItem.title)
       newImageItem.blockId = imageItem.blockId
+      // 外链图片用完整 URL 作为缓存键，避免不同图床的同名文件互相覆盖。
+      if (!imageItem.isLocal) {
+        newImageItem.hash = getFileHash(newImageItem.originUrl)
+      }
       fileMap[newImageItem.hash] = newImageItem
     } else {
       throw new Error("图片上传失败，可能原因：PicGO配置错误，请检查配置。请打开picgo.log查看更多信息")

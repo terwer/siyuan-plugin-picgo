@@ -37,6 +37,12 @@ if (!validation.ok) {
 
 const uploaded = await manager.upload(input)
 const replaced = await manager.uploadMarkdownImages(pageId, attrs, mdContent)
+
+// 可选：把正文中已有的外链图片也上传到当前 PicGo 图床。
+// 默认 false，保持只上传本地图片的历史行为。
+const replacedWithRemote = await manager.uploadMarkdownImages(pageId, attrs, mdContent, {
+  includeRemoteImages: true,
+})
 ```
 
 SiYuan path resolution is handled internally by the same v2 path contract used

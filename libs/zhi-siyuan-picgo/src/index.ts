@@ -153,3 +153,4 @@ export type {
 } from "./lib/siyuanPicgoPaths"
 export type { SiyuanConfigLike } from "./lib/siyuanConfigLike"
 export type { ISiyuanPicGoHeadlessManager } from "./lib/SiyuanPicGoHeadlessManager"
+export type { UploadMarkdownImagesOptions } from "./lib/types"

@@ -66,14 +66,19 @@ export class ImageParser {
    * @private
    */
   public parseImagesToArray(content: string): ParsedImage[] {
-    let ret = [] as ParsedImage[]
     const remoteImages = this.parseRemoteImagesToArray(content)
     const localImages = this.parseLocalImagesToArray(content)
 
-    // 会有很多重复值
-    // ret = ret.concat(remoteImages, localImages)
-    // 下面的写法可以去重
-    ret = [...new Set([...remoteImages, ...localImages])]
+    // 按 URL 去重，避免同一张图片被重复上传。
+    const seenUrls = new Set<string>()
+    const ret: ParsedImage[] = []
+    for (const image of [...remoteImages, ...localImages]) {
+      if (seenUrls.has(image.url)) {
+        continue
+      }
+      seenUrls.add(image.url)
+      ret.push(image)
+    }
 
     return ret
   }
@@ -133,10 +138,11 @@ export class ImageParser {
   // }
 
   public parseRemoteImagesToArray(markdownText: string): ParsedImage[] {
+    // 不再要求图片地址必须带常见扩展名：外链图床经常使用无扩展名地址或
+    // 带查询参数的地址（如 ?imageView2/...）。是否真的是图片由 PicGo 下载时校验。
+    const regex = /!\[([^\]]*)\]\(\s*(https?:\/\/[^\s)]+)(?:\s+["']([^"']*)["'])?\s*(?:\{([^}]*)\})?\s*\)/g
 
-    const regex = /!\[(.*?)\]\((https?:\/\/\S+?\.(?:jpe?g|png|gif))(?:\s+"([^"]*)")?(?:{([^}]*)})?\)/g
-
-    const parsedImages = []
+    const parsedImages: ParsedImage[] = []
     let match
 
     while ((match = regex.exec(markdownText)) !== null) {
@@ -252,6 +258,34 @@ export class ImageParser {
         return `![${newAlt}](${replaceImageItem.url})`
       }
     )
+  }
+
+  /**
+   * 将已上传的外链图片替换为图床链接。
+   *
+   * 本地图片由 {@link replaceImagesWithImageItemArray} 处理；外链图片没有
+   * `assets/` 前缀，需要按原始 URL 精确替换。只替换上传成功（isLocal 已变为 false）
+   * 且地址确实变化的条目，失败时保留原链接。
+   *
+   * @param content 正文
+   * @param items 图片列表
+   */
+  public replaceRemoteImagesWithImageItemArray(content: string, items: ImageItem[]): string {
+    if (!content || !items || items.length === 0) {
+      return content
+    }
+
+    let result = content
+    // 先替换更长的 URL，避免一个 URL 是另一个 URL 前缀时被提前替换。
+    const replaceable = items
+      .filter((item) => item && !item.isLocal && item.originUrl && item.url && item.originUrl !== item.url)
+      .sort((left, right) => right.originUrl.length - left.originUrl.length)
+
+    for (const item of replaceable) {
+      result = result.split(item.originUrl).join(item.url)
+    }
+
+    return result
   }
 
   /**
